@@ -1559,16 +1559,8 @@
         <div class="card-value cv-purple" id="dk-empenhos">—</div>
       </div>
       <div class="card" style="border-left:4px solid var(--success);">
-        <div class="card-label">Total Recebido</div>
-        <div class="card-value cv-green" id="dk-recebido">—</div>
-      </div>
-      <div class="card" style="border-left:4px solid var(--success);">
         <div class="card-label">Lucro Total</div>
         <div class="card-value cv-green" id="dk-lucro">—</div>
-      </div>
-      <div class="card" style="border-left:4px solid var(--warning);">
-        <div class="card-label">A Receber</div>
-        <div class="card-value cv-yellow" id="dk-areceber">—</div>
       </div>
       <div class="card" style="border-left:4px solid var(--accent-primary);">
         <div class="card-label">Taxa Conversão</div>
@@ -1923,6 +1915,21 @@
         <div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
+        </div>
+
+        <!-- CAMPO PROPOSTA -->
+        <div class="fg full">
+          <label class="fl">📎 Arquivo da Proposta (PDF ou Excel)</label>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <label style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-secondary);">
+              📁 Escolher arquivo
+              <input type="file" id="d-proposta-file" accept=".pdf,.xlsx,.xls" style="display:none;" onchange="carregarPropostaBase64(this)">
+            </label>
+            <span id="d-proposta-nome" style="font-size:12px;color:var(--text-tertiary);">Nenhum arquivo selecionado</span>
+            <button type="button" id="d-proposta-limpar" onclick="limparProposta()" style="display:none;font-size:11px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:2px 8px;cursor:pointer;">✕ Remover</button>
+          </div>
+          <input type="hidden" id="d-proposta-data">
+          <input type="hidden" id="d-proposta-mime">
         </div>
         
 
@@ -3130,8 +3137,10 @@ function abrirPopupDisputa(id) {
           return (e.compras||[]).some(c => c.itemId === itemEmp.id && c.dpag);
         });
         const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
-        return '<tr>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong></td>' +
+        const semEmpenho = empsLote.length === 0;
+        const rowClick = semEmpenho ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
+        return '<tr ' + rowClick + '>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (semEmpenho ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
           '<td class="mono" style="color:var(--accent-primary);font-weight:600;">' + l.qtdEnviada + '</td>' +
@@ -3190,9 +3199,9 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value">' + (r.empresa||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
-
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
+      (r.propostaData ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -3361,7 +3370,7 @@ function onDisputaSelecionada(disputaId) {
       + `<span class="lote-saldo-badge ${semSaldo?'lote-saldo-zero':'lote-saldo-ok'}">${semSaldo?'✓ Completo':l.qtdRestante+' restantes'}</span>`
       + `<div class="lote-qtd-input-wrap" id="lqtd-wrap-${l.id}" style="display:none;">`
       + `<label style="font-size:11px;color:var(--text-tertiary);">Qtd:</label>`
-      + `<input type="number" min="1" max="${l.qtdRestante}" value="1" id="lqtd-${l.id}" onclick="event.stopPropagation()" data-lid="${l.id}" data-vunit="${l.vunit}" data-maxqtd="${l.qtdRestante}" oninput="atualizarVemPorLoteEl(this)">`
+      + `<input type="number" min="1" max="${l.qtdRestante}" value="${l.qtdRestante}" id="lqtd-${l.id}" onclick="event.stopPropagation()" data-lid="${l.id}" data-vunit="${l.vunit}" data-maxqtd="${l.qtdRestante}" oninput="atualizarVemPorLoteEl(this)">`
       + `</div>`
       + `<div style="font-size:11px;font-weight:700;color:var(--accent-primary);min-width:80px;text-align:right;" id="lval-${l.id}"></div>`
       + `</div>`;
@@ -3386,8 +3395,9 @@ function toggleLoteCard(el) {
     el.classList.add('selected');
     const chk = el.querySelector('input[type=checkbox]'); if(chk) chk.checked = true;
     const qtdWrap = g('lqtd-wrap-'+loteId); if(qtdWrap) qtdWrap.style.display = 'flex';
-    lotesSelecionados[loteId] = 1;
-    const valEl = g('lval-'+loteId); if(valEl) valEl.textContent = fmt(vunit*1);
+    lotesSelecionados[loteId] = maxQtd;
+    const qtdInput = g('lqtd-'+loteId); if(qtdInput) qtdInput.value = maxQtd;
+    const valEl = g('lval-'+loteId); if(valEl) valEl.textContent = fmt(vunit*maxQtd);
   }
   const av = g('lote-aviso'); if(av) av.style.display = 'none';
   atualizarVemTotal();
@@ -3833,7 +3843,10 @@ function atualizarDashboard() {
   if(ctx3) graficos.orgaos = new Chart(ctx3, {
     type: 'bar',
     data: { labels: top5.map(o=>o[0].substring(0,14)), datasets: [{ data: top5.map(o=>o[1]), backgroundColor: cores, borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend:{display:false} }, scales: { x: { ticks: { callback: v => 'R$'+v.toLocaleString('pt-BR') } } } }
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: {
+      legend:{display:false},
+      tooltip:{ callbacks:{ title: (items) => top5[items[0].dataIndex][0], label: (item) => ' R$'+item.raw.toLocaleString('pt-BR',{minimumFractionDigits:2}) } }
+    }, scales: { x: { ticks: { callback: v => 'R$'+v.toLocaleString('pt-BR') } } } }
   });
 
   // Gráfico 4: Performance por analista
@@ -3869,7 +3882,10 @@ function atualizarDashboard() {
   if(ctx5) graficos.velocidade = new Chart(ctx5, {
     type: 'bar',
     data: { labels: velMedia.map(v=>v[0].substring(0,12)), datasets: [{ label: 'Dias médios', data: velMedia.map(v=>v[1]), backgroundColor: velMedia.map(v=>v[1]<=30?'#10b981':v[1]<=60?'#f59e0b':'#ef4444'), borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{ y:{title:{display:true,text:'dias'}} } }
+    options: { responsive: true, maintainAspectRatio: false, plugins:{
+      legend:{display:false},
+      tooltip:{ callbacks:{ title: (items) => velMedia[items[0].dataIndex][0], label: (item) => ' '+item.raw+' dias' } }
+    }, scales:{ y:{title:{display:true,text:'dias'}} } }
   });
 
   // Gráfico 6: Comparativo mês atual vs anterior
@@ -4207,6 +4223,7 @@ function clearD(){
   resetFields('d');
   ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao'].forEach(id=>{const e=g(id);if(e)e.value='';});
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
+  limparProposta();
   calcD();
 }
 function saveD(){
@@ -4239,6 +4256,9 @@ function saveD(){
     aliq: 0,
     situacao: '',
     observacao: gv('d-observacao').toUpperCase(),
+    propostaData: gv('d-proposta-data') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaData || ''),
+    propostaMime: gv('d-proposta-mime') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaMime || ''),
+    propostaNome: (g('d-proposta-nome')?.textContent !== 'Nenhum arquivo selecionado' ? g('d-proposta-nome')?.textContent : null) || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaNome || ''),
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
   };
@@ -4254,6 +4274,15 @@ function editD(id){
   g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||''; g('d-analista').value=r.analista||'';
 
   g('d-observacao').value=r.observacao||'';
+
+  // Carrega proposta se existir
+  limparProposta();
+  if (r.propostaData) {
+    const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = r.propostaNome || 'Arquivo carregado';
+    const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = r.propostaData;
+    const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = r.propostaMime || '';
+    const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = '';
+  }
 
   // Carrega lotes (garante que todos tenham ID)
   lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0 }));
@@ -5478,6 +5507,67 @@ function exportarComprasDisputa(dispId) {
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo);
   toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
+}
+
+
+// ========== PROPOSTA FILE HANDLING ==========
+function carregarPropostaBase64(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 5MB.', 'error'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target.result.split(',')[1];
+    const mime = file.type;
+    const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = file.name;
+    const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = base64;
+    const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = mime;
+    const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = '';
+    toast('Arquivo carregado: ' + file.name, 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function limparProposta() {
+  const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = 'Nenhum arquivo selecionado';
+  const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = '';
+  const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = '';
+  const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = 'none';
+  const fileInput = g('d-proposta-file'); if(fileInput) fileInput.value = '';
+}
+
+function baixarProposta(disputaId) {
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d || !d.propostaData) { toast('Nenhum arquivo disponível.', 'error'); return; }
+  const link = document.createElement('a');
+  link.href = 'data:' + (d.propostaMime||'application/octet-stream') + ';base64,' + d.propostaData;
+  link.download = d.propostaNome || 'proposta';
+  link.click();
+}
+
+// ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
+function novoEmpenhoComItem(disputaId, loteId) {
+  fecharPopup('disputa');
+  EID['empenhos'] = null;
+  clearE();
+  lotesSelecionados = {};
+  const wrap = g('lote-selector-wrap'); if(wrap) wrap.style.display = 'none';
+  g('ttl-empenhos').textContent = 'Novo Empenho';
+  g('e-data').value = today();
+  populateDisputaSelect(disputaId);
+  g('modal-empenhos').classList.add('open');
+  // Após o modal abrir, seleciona o lote automaticamente
+  setTimeout(() => {
+    const card = g('lcard-' + loteId);
+    if (card && !card.classList.contains('sem-saldo')) {
+      if (!card.classList.contains('selected')) toggleLoteCard(card);
+      // Define quantidade máxima
+      const maxQtd = +card.dataset.maxqtd || 1;
+      const qtdInput = g('lqtd-' + loteId);
+      if (qtdInput) { qtdInput.value = maxQtd; atualizarVemPorLoteEl(qtdInput); }
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 120);
 }
 
 
