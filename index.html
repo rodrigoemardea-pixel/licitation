@@ -4342,12 +4342,15 @@ function saveE(){
     return;
   }
   
-  // Monta itens do empenho
+  // Monta itens do empenho — preserva IDs existentes para não quebrar vínculos com compras
+  const itensExistentes = EID.empenhos ? (DB.empenhos.find(x=>x.id===EID.empenhos)?.itens || []) : [];
   const itens = lotesKeys.map(loteId => {
     const qtd = lotesSelecionados[loteId] || 1;
     const lote = disp ? (disp.lotes||[]).find(l=>l.id===loteId) : null;
+    // Reutiliza o ID do item existente com mesmo loteId, para preservar referências das compras
+    const itemExistente = itensExistentes.find(i => i.loteId === loteId);
     return {
-      id: uid(),
+      id: itemExistente ? itemExistente.id : uid(),
       loteId: loteId,
       descricao: lote ? lote.descricao : '',
       qtd: qtd,
