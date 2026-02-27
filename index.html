@@ -3200,7 +3200,7 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
-      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><a href="' + r.propostaUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 ' + (r.propostaNome||'Baixar arquivo') + '</a></div></div>' : '') +
+      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -4255,8 +4255,8 @@ function saveD(){
     aliq: 0,
     situacao: '',
     observacao: gv('d-observacao').toUpperCase(),
-    propostaUrl: gv('d-proposta-url') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaUrl || ''),
-    propostaNome: (g('d-proposta-nome')?.textContent !== 'Nenhum arquivo selecionado' ? g('d-proposta-nome')?.textContent : null) || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaNome || ''),
+    propostaUrl: gv('d-proposta-url') || '',
+    propostaNome: gv('d-proposta-url') ? (g('d-proposta-nome')?.textContent !== 'Nenhum arquivo selecionado' ? g('d-proposta-nome')?.textContent : '') : '',
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
   };
@@ -5549,6 +5549,27 @@ function limparProposta() {
   const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = '';
   const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = 'none';
   const fileInput = g('d-proposta-file'); if(fileInput) fileInput.value = '';
+}
+
+async function baixarProposta(disputaId) {
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
+  try {
+    toast('⏳ Baixando arquivo...', 'info');
+    const res = await fetch(d.propostaUrl);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = d.propostaNome || 'proposta';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    // fallback: abre em nova aba
+    window.open(d.propostaUrl, '_blank');
+  }
 }
 
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
