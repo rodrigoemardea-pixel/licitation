@@ -2900,7 +2900,10 @@ function limparFiltrosEmpenhos() {
 }
 
 // ========== TABS ==========
+let _activeTab = 'disputas'; // rastreia a aba ativa atual
+
 function switchTab(tab,btn){
+  _activeTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
@@ -3315,6 +3318,7 @@ function abrirPopupEmpenho(id) {
 
 function fecharPopup(tipo) {
   g('popup-' + tipo).classList.remove('open');
+  _restoreTab();
 }
 
 // ===== LOTE SELECTOR no modal empenho =====
@@ -4068,7 +4072,26 @@ function openModal(tab){
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
 }
-function closeModal(tab){ g('modal-'+tab).classList.remove('open'); }
+function closeModal(tab){ 
+  g('modal-'+tab).classList.remove('open');
+  _restoreTab();
+}
+
+function _restoreTab() {
+  const algumAberto = document.querySelector('.modal-overlay.open, .detail-popup-overlay.open');
+  if (algumAberto) return;
+  const btn = [...document.querySelectorAll('.tab-btn')].find(b => {
+    const onclick = b.getAttribute('onclick') || '';
+    return onclick.includes("'" + _activeTab + "'") || onclick.includes('"' + _activeTab + '"');
+  });
+  if (btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const pane = g('tab-' + _activeTab);
+    if (pane) pane.classList.add('active');
+  }
+}
 const today=()=>new Date().toISOString().slice(0,10);
 
 function novoEmpenhoParaDisputa(disputaId) {
