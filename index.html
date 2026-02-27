@@ -4253,6 +4253,30 @@ function saveD(){
     M
   };
   upsert('disputas',row);
+
+  // Sincroniza descrições nos empenhos e compras vinculados
+  if (EID.disputas) {
+    const lotesMap = {};
+    row.lotes.forEach(l => { lotesMap[l.id] = l.descricao; });
+
+    DB.empenhos.filter(e => e.disputaId === row.id).forEach(e => {
+      let alterado = false;
+      // Atualiza descrição nos itens do empenho
+      (e.itens||[]).forEach(item => {
+        const novaDesc = lotesMap[item.loteId];
+        if (novaDesc && item.descricao !== novaDesc) {
+          item.descricao = novaDesc;
+          alterado = true;
+        }
+      });
+      // Atualiza produto (campo legado) 
+      if (alterado) {
+        e.produto = (e.itens||[]).map(i=>i.descricao).join(' / ');
+        save('empenhos', DB.empenhos);
+      }
+    });
+  }
+
   toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
   closeModal('disputas'); renderAll();
 }
