@@ -3507,8 +3507,9 @@ function renderD(){
 function sumD(){
   const a=DB.disputas.filter(r=>matches('disputas',r));
   const tv=a.reduce((s,r)=>s+getValorContrato(r),0);
-  // Lucro recebido: soma das compras pagas dos empenhos vinculados às disputas filtradas
   const idsDisputas = new Set(a.map(r=>r.id));
+
+  // Lucro recebido: compras COM data de pagamento
   const lucroRecebidoD = DB.empenhos
     .filter(e=>idsDisputas.has(e.disputaId))
     .reduce((s,e)=>s+(e.compras||[])
@@ -3517,10 +3518,22 @@ function sumD(){
         const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0),0);
+
+  // Lucro empenhado: compras SEM data de pagamento (ainda a receber)
+  const lucroEmpenhado = DB.empenhos
+    .filter(e=>idsDisputas.has(e.disputaId) && !e.finalizado)
+    .reduce((s,e)=>s+(e.compras||[])
+      .filter(c=>!c.dpag || c.dpag==='')
+      .reduce((ss,c)=>{
+        const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+        return ss+luc;
+      },0),0);
+
   g('sum-disputas').innerHTML=`
     <div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${a.length}</div></div>
     <div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">${fmt(tv)}</div></div>
-    <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>`;
+    <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
+    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>`;
 }
 
 function renderE(){
