@@ -5532,7 +5532,7 @@ async function uploadPropostaCloudinary(input) {
     });
     if (!res.ok) throw new Error('Erro no upload');
     const data = await res.json();
-    const url = data.secure_url;
+    const url = data.secure_url.replace('/image/upload/', '/raw/upload/');
     const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = url;
     if (nomeEl) nomeEl.textContent = file.name;
     if (limparBtn) limparBtn.style.display = '';
