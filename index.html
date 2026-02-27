@@ -1494,8 +1494,8 @@
 
 <div class="tabs">
   <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();">📊 Dashboard</button>
-  <button class="tab-btn active" onclick="switchTab('disputas',this)">🏆 Disputas Vencidas <span class="tab-badge" id="badge-disputas">0</span></button>
-  <button class="tab-btn" onclick="switchTab('empenhos',this)">📄 Empenhos <span class="tab-badge" id="badge-empenhos">0</span></button>
+  <button class="tab-btn active" onclick="switchTab('disputas',this)">🏆 Disputas em Andamento <span class="tab-badge" id="badge-disputas">0</span></button>
+  <button class="tab-btn" onclick="switchTab('empenhos',this)">📄 Empenhos Pendentes <span class="tab-badge" id="badge-empenhos">0</span></button>
   <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);">✅ Finalizadas <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
   <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);">📦 Emp. Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
 </div>
@@ -1673,14 +1673,6 @@
           <option value="sem-empenho">Sem empenho</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label>🏁 Situação:</label>
-        <select id="filtro-situacao-disputas" onchange="filtrarDisputas()">
-          <option value="todos">Todas</option>
-          <option value="em-andamento">Em andamento</option>
-          <option value="finalizada">Finalizadas</option>
-        </select>
-      </div>
 
       <div class="filter-group">
         <label>🏢 Empresa:</label>
@@ -1758,15 +1750,6 @@
 
       
       <div class="filter-group">
-        <label>💰 Status:</label>
-        <select id="filtro-status-empenhos" onchange="filtrarEmpenhos()">
-          <option value="todos">Todos</option>
-          <option value="pagos">Pagos</option>
-          <option value="nao-pagos">Não pagos</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
         <label>⏱️ Atraso:</label>
         <select id="filtro-atraso-empenhos" onchange="filtrarEmpenhos()">
           <option value="todos">Todos</option>
@@ -1785,15 +1768,6 @@
         </select>
       </div>
 
-      <div class="filter-group">
-        <label>🔗 Vínculo:</label>
-        <select id="filtro-vinculo-empenhos" onchange="filtrarEmpenhos()">
-          <option value="todos">Todos</option>
-          <option value="vinculados">Vinculados</option>
-          <option value="sem-vinculo">Sem vínculo</option>
-        </select>
-      </div>
-      
       <div class="filter-group">
         <label>🛒 Compras:</label>
         <select id="filtro-compras-empenhos" onchange="filtrarEmpenhos()">
@@ -2845,9 +2819,7 @@ function filtrarPorAnalista() {
 }
 
 function filtrarDisputas() {
-  // filtro situacao removido
   filtroEmpenhoDisputas = g('filtro-empenho-disputas')?.value || 'todos';
-  filtroSituacaoDisputas = g('filtro-situacao-disputas')?.value || 'todos';
   filtroEmpresaDisputas = g('filtro-empresa-disputas').value;
   filtroTipoDisputas = g('filtro-tipo-disputas').value;
   filtroRpDisputas = g('filtro-rp-disputas').value;
@@ -2860,16 +2832,14 @@ function filtrarDisputas() {
 let filtroAtrasoEmpenhos = 'todos';
 
 function filtrarEmpenhos() {
-  filtroStatusEmpenhos = g('filtro-status-empenhos').value;
   filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
-  filtroVinculoEmpenhos = g('filtro-vinculo-empenhos').value;
   filtroComprasEmpenhos = g('filtro-compras-empenhos')?.value || 'todos';
   filtroAtrasoEmpenhos = g('filtro-atraso-empenhos')?.value || 'todos';
   renderE();
 }
 
 function limparFiltrosDisputas() {
-  ['filtro-empenho-disputas','filtro-situacao-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas'].forEach(id => {
+  ['filtro-empenho-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas'].forEach(id => {
     const el = g(id); if(el) el.selectedIndex = 0;
   });
   filtroEmpresaDisputas = 'todas';
@@ -2879,21 +2849,18 @@ function limparFiltrosDisputas() {
   filtroEstadoDisputas = 'todos';
   filtroAnalistaDisputas = 'todos';
   filtroEmpenhoDisputas = 'todos';
-  filtroSituacaoDisputas = 'todos';
   g('search-disputas').value = '';
   FLT.disputas = '';
   renderD();
 }
 
 function limparFiltrosEmpenhos() {
-  g('filtro-status-empenhos').value = 'todos';
   g('filtro-analista-empenhos').value = 'todos';
-  g('filtro-vinculo-empenhos').value = 'todos';
   if(g('filtro-compras-empenhos')) g('filtro-compras-empenhos').value = 'todos';
-  filtroStatusEmpenhos = 'todos';
+  if(g('filtro-atraso-empenhos')) g('filtro-atraso-empenhos').value = 'todos';
   filtroAnalistaEmpenhos = 'todos';
-  filtroVinculoEmpenhos = 'todos';
   filtroComprasEmpenhos = 'todos';
+  filtroAtrasoEmpenhos = 'todos';
   g('search-empenhos').value = '';
   FLT.empenhos = '';
   renderE();
@@ -2989,28 +2956,10 @@ function matches(tab,r){
       if(filtroEmpenhoDisputas === 'com-empenho' && !temEmpenho) return false;
       if(filtroEmpenhoDisputas === 'sem-empenho' && temEmpenho) return false;
     }
-    if(filtroSituacaoDisputas !== 'todos') {
-      const finalizada = disputaEstaFinalizada(r.id);
-      if(filtroSituacaoDisputas === 'finalizada' && !finalizada) return false;
-      if(filtroSituacaoDisputas === 'em-andamento' && finalizada) return false;
-    }
   }
   
   if(tab === 'empenhos') {
-    // Filtro de analista específico da aba empenhos
     if(filtroAnalistaEmpenhos !== 'todos' && r.analista !== filtroAnalistaEmpenhos) return false;
-    // Filtro status pagamento
-    if(filtroStatusEmpenhos !== 'todos') {
-      const pago = empenhoEstaPago(r);
-      if(filtroStatusEmpenhos === 'pagos' && !pago) return false;
-      if(filtroStatusEmpenhos === 'nao-pagos' && pago) return false;
-    }
-    // Filtro vínculo com disputa
-    if(filtroVinculoEmpenhos !== 'todos') {
-      const temVinculo = !!r.disputaId;
-      if(filtroVinculoEmpenhos === 'vinculados' && !temVinculo) return false;
-      if(filtroVinculoEmpenhos === 'sem-vinculo' && temVinculo) return false;
-    }
     // Filtro compras
     if(filtroComprasEmpenhos !== 'todos') {
       const temCompras = (r.compras || []).length > 0;
