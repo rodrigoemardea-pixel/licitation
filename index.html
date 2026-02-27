@@ -5551,25 +5551,12 @@ function limparProposta() {
   const fileInput = g('d-proposta-file'); if(fileInput) fileInput.value = '';
 }
 
-async function baixarProposta(disputaId) {
+function baixarProposta(disputaId) {
   const d = DB.disputas.find(x => x.id === disputaId);
   if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  try {
-    toast('⏳ Baixando arquivo...', 'info');
-    const res = await fetch(d.propostaUrl);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = d.propostaNome || 'proposta';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch(e) {
-    // fallback: abre em nova aba
-    window.open(d.propostaUrl, '_blank');
-  }
+  // Adiciona fl_attachment para forçar download pelo Cloudinary sem corrupção
+  const downloadUrl = d.propostaUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
+  window.open(downloadUrl, '_blank');
 }
 
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
