@@ -2630,9 +2630,37 @@ function diasSemPagamento(r) {
 }
 // Empenho pago = todos os itens têm ao menos uma compra com dpag preenchido
 function disputaEstaFinalizada(disputaId) {
-  const emps = DB.empenhos.filter(e => e.disputaId === disputaId);
-  if (!emps.length) return false; // precisa ter ao menos 1 empenho
-  return emps.every(e => empenhoEstaPago(e));
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d) return false;
+  const emps = DB.empenhos.filter(e => e.disputaId === disputaId && !e.finalizado === false);
+  // Critério 1: precisa ter ao menos 1 empenho
+  const todosEmpenhos = DB.empenhos.filter(e => e.disputaId === disputaId);
+  if (!todosEmpenhos.length) return false;
+  // Critério 2: todos os empenhos precisam estar pagos
+  if (!todosEmpenhos.every(e => empenhoEstaPago(e))) return false;
+  // Critério 3: não pode haver saldo restante nos lotes
+  const lotes = d.lotes || [];
+  const saldoRestante = lotes.reduce((s, l) => s + Math.max(0, (l.qtd||0) - calcQtdEnviada(disputaId, l.id)), 0);
+  return saldoRestante === 0;
+}
+
+function verificarAutoFinalizarDisputa(disputaId) {
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d) return;
+  if (disputaEstaFinalizada(disputaId)) {
+    if (!d.finalizada) {
+      d.finalizada = true;
+      d.dataFinalizacao = d.dataFinalizacao || new Date().toISOString().slice(0,10);
+      d.finalizadaAuto = true;
+    }
+  } else {
+    // Se não atende mais os critérios e foi finalizada automaticamente, reabre
+    if (d.finalizada && d.finalizadaAuto) {
+      d.finalizada = false;
+      d.dataFinalizacao = null;
+      d.finalizadaAuto = false;
+    }
+  }
 }
 
 function empenhoEstaPago(r) {
@@ -3500,9 +3528,23 @@ function sumE(){
 }
 
 function renderAll(){ 
+  // Auto-finalizar empenhos pagos e disputas que atendem critérios
+  DB.empenhos.forEach(e => {
+    if (empenhoEstaPago(e)) {
+      if (!e.finalizado) {
+        e.finalizado = true;
+        e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
+      }
+    } else if (e.finalizado && e.dataFinalizacao && !e._manualFinalizado) {
+      // só reabre auto se não foi finalizado manualmente
+    }
+  });
+  // Auto-finalizar disputas
+  DB.disputas.forEach(d => { if (!d.finalizada || d.finalizadaAuto) verificarAutoFinalizarDisputa(d.id); });
   renderD(); 
   renderE(); 
   renderEmpFinalizados();
+  renderFinalizadas();
   updateBadges(); 
   updateHeader(); 
 }
@@ -4657,6 +4699,22 @@ function saveCompra() {
   if(!emp.compras) emp.compras = [];
   const idx = emp.compras.findIndex(c=>c.id===compra.id);
   if(idx !== -1) emp.compras[idx] = compra; else emp.compras.push(compra);
+
+  // ===== AUTO-FINALIZAR EMPENHO se todos os itens estiverem pagos =====
+  if (empenhoEstaPago(emp)) {
+    if (!emp.finalizado) {
+      emp.finalizado = true;
+      emp.dataFinalizacao = emp.dataFinalizacao || new Date().toISOString().slice(0,10);
+    }
+  } else {
+    // Se removeu pagamento, reabre automaticamente
+    emp.finalizado = false;
+    emp.dataFinalizacao = null;
+  }
+
+  // ===== AUTO-FINALIZAR DISPUTA se critérios atendidos =====
+  if (emp.disputaId) verificarAutoFinalizarDisputa(emp.disputaId);
+
   // Fecha modal ANTES de salvar (evita race condition com onSnapshot do Firebase)
   const _empId = compraEmpenhoId;
   closeModal('compra');
@@ -4669,6 +4727,13 @@ function saveCompra() {
 function delCompra(empenhoId, compraId) {
   const emp = DB.empenhos.find(x=>x.id===empenhoId); if(!emp) return;
   emp.compras = (emp.compras||[]).filter(c=>c.id!==compraId);
+  // Se empenho não está mais pago, reabre automaticamente
+  if (!empenhoEstaPago(emp)) {
+    emp.finalizado = false;
+    emp.dataFinalizacao = null;
+  }
+  // Verifica disputa
+  if (emp.disputaId) verificarAutoFinalizarDisputa(emp.disputaId);
   save('empenhos', DB.empenhos);
   toast('COMPRA EXCLUÍDA', 'info');
   renderAll();
@@ -5073,6 +5138,7 @@ function finalizarDisputa(id) {
   if (!d) return;
   if (!confirm('Finalizar a disputa "' + (d.orgao||id) + '"?\nEla será movida para a aba Finalizadas.')) return;
   d.finalizada = true;
+  d.finalizadaAuto = false;
   d.dataFinalizacao = new Date().toISOString().slice(0,10);
   save('disputas', DB.disputas);
   renderAll();
@@ -5085,6 +5151,7 @@ function reabrirDisputa(id) {
   if (!confirm('Reabrir a disputa "' + (d.orgao||id) + '"?\nEla voltará para Disputas Vencidas.')) return;
   d.finalizada = false;
   d.dataFinalizacao = null;
+  d.finalizadaAuto = false;
   save('disputas', DB.disputas);
   renderAll();
   toast('Disputa reaberta!', 'info');
@@ -5152,7 +5219,9 @@ function finalizarEmpenho(id) {
   if (!e) return;
   if (!confirm('Finalizar o empenho "' + (e.num||id) + '"?\nEle será movido para a aba Emp. Finalizados.')) return;
   e.finalizado = true;
-  e.dataFinalizacao = new Date().toISOString().slice(0,10);
+  e._manualFinalizado = true;
+  e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
+  if (e.disputaId) verificarAutoFinalizarDisputa(e.disputaId);
   save('empenhos', DB.empenhos);
   renderAll();
   toast('Empenho finalizado! ✅', 'success');
@@ -5163,7 +5232,17 @@ function reabrirEmpenho(id) {
   if (!e) return;
   if (!confirm('Reabrir o empenho "' + (e.num||id) + '"?\nEle voltará para a aba Empenhos.')) return;
   e.finalizado = false;
+  e._manualFinalizado = false;
   e.dataFinalizacao = null;
+  // Reabre disputa vinculada se necessário
+  if (e.disputaId) {
+    const d = DB.disputas.find(x => x.id === e.disputaId);
+    if (d && d.finalizada) {
+      d.finalizada = false;
+      d.dataFinalizacao = null;
+      d.finalizadaAuto = false;
+    }
+  }
   save('empenhos', DB.empenhos);
   renderAll();
   toast('Empenho reaberto!', 'info');
