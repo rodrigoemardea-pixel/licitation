@@ -1919,16 +1919,12 @@
 
         <!-- CAMPO PROPOSTA -->
         <div class="fg full">
-          <label class="fl">📎 Arquivo da Proposta (PDF ou Excel)</label>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <label style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-secondary);">
-              📁 Escolher arquivo
-              <input type="file" id="d-proposta-file" accept=".pdf,.xlsx,.xls" style="display:none;" onchange="uploadPropostaCloudinary(this)">
-            </label>
-            <span id="d-proposta-nome" style="font-size:12px;color:var(--text-tertiary);">Nenhum arquivo selecionado</span>
-            <button type="button" id="d-proposta-limpar" onclick="limparProposta()" style="display:none;font-size:11px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:2px 8px;cursor:pointer;">✕ Remover</button>
+          <label class="fl">📎 Link da Proposta (Google Drive, OneDrive, Dropbox...)</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="url" class="fc" id="d-proposta-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
+            <input type="text" class="fc" id="d-proposta-nome" placeholder="Nome (ex: Proposta Fruta de Leite)" style="flex:1;min-width:150px;">
           </div>
-          <input type="hidden" id="d-proposta-url">
+          <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
         </div>
         
 
@@ -2003,6 +1999,15 @@
         <div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
+        </div>
+
+        <!-- CAMPO LINK -->
+        <div class="fg full">
+          <label class="fl">📎 Link do Empenho (Google Drive, OneDrive...)</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="url" class="fc" id="e-link-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
+            <input type="text" class="fc" id="e-link-nome" placeholder="Nome (ex: Empenho nº 123)" style="flex:1;min-width:150px;">
+          </div>
         </div>
 
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
@@ -3287,6 +3292,7 @@ function abrirPopupEmpenho(id) {
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
+    (r.linkUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📎 LINK DO EMPENHO</div><div class="detail-field-value"><a href="'+r.linkUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 '+(r.linkNome||'Abrir arquivo')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent-primary)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(r.vem) + '</div></div>' +
@@ -4220,9 +4226,8 @@ document.addEventListener('keydown', (e) => {
 // ========== DISPUTAS ==========
 function clearD(){
   resetFields('d');
-  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
-  limparProposta();
   calcD();
 }
 function saveD(){
@@ -4256,7 +4261,7 @@ function saveD(){
     situacao: '',
     observacao: gv('d-observacao').toUpperCase(),
     propostaUrl: gv('d-proposta-url') || '',
-    propostaNome: gv('d-proposta-url') ? (g('d-proposta-nome')?.textContent !== 'Nenhum arquivo selecionado' ? g('d-proposta-nome')?.textContent : '') : '',
+    propostaNome: gv('d-proposta-nome') || '',
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
   };
@@ -4274,12 +4279,8 @@ function editD(id){
   g('d-observacao').value=r.observacao||'';
 
   // Carrega proposta se existir
-  limparProposta();
-  if (r.propostaUrl) {
-    const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = r.propostaNome || 'Arquivo carregado';
-    const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = r.propostaUrl;
-    const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = '';
-  }
+  const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = r.propostaUrl || '';
+  const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.value = r.propostaNome || '';
 
   // Carrega lotes (garante que todos tenham ID)
   lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0 }));
@@ -4297,7 +4298,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-link-url','e-link-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -4363,6 +4364,8 @@ function saveE(){
     recebido: gn('e-recebido'),
     dreceb: gv('e-dreceb'),
     observacao: gv('e-observacao').toUpperCase(),
+    linkUrl: gv('e-link-url') || '',
+    linkNome: gv('e-link-nome') || '',
     disputaId: disputaId,
     compras: (EID.empenhos ? (DB.empenhos.find(x=>x.id===EID.empenhos)?.compras || []) : []), // preserva compras
     M
@@ -4381,6 +4384,8 @@ function editE(id){
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
   g('e-analista').value=r.analista||'Márdea'; 
   g('e-observacao').value=r.observacao||'';
+  const eLinkUrl = g('e-link-url'); if(eLinkUrl) eLinkUrl.value = r.linkUrl||'';
+  const eLinkNome = g('e-link-nome'); if(eLinkNome) eLinkNome.value = r.linkNome||'';
   g('e-dcomp').value=r.dcomp||''; 
   g('e-aliq').value= (r.aliq*100).toFixed(1).replace('.',',');
   g('e-recebido').value=r.recebido||''; g('e-dreceb').value=r.dreceb||''; 
@@ -5554,9 +5559,7 @@ function limparProposta() {
 function baixarProposta(disputaId) {
   const d = DB.disputas.find(x => x.id === disputaId);
   if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  // fl_attachment funciona no endpoint /image/upload no plano gratuito
-  const downloadUrl = d.propostaUrl.replace('/image/upload/', '/image/upload/fl_attachment/');
-  window.open(downloadUrl, '_blank');
+  window.open(d.propostaUrl, '_blank');
 }
 
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
