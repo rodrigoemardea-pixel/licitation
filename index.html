@@ -5526,13 +5526,13 @@ async function uploadPropostaCloudinary(input) {
   formData.append('resource_type', 'auto');
 
   try {
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`, {
       method: 'POST',
       body: formData
     });
     if (!res.ok) throw new Error('Erro no upload');
     const data = await res.json();
-    const url = data.secure_url.replace('/image/upload/', '/raw/upload/');
+    const url = data.secure_url;
     const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = url;
     if (nomeEl) nomeEl.textContent = file.name;
     if (limparBtn) limparBtn.style.display = '';
