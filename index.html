@@ -1496,6 +1496,7 @@
   <button class="tab-btn active" onclick="switchTab('disputas',this)">🏆 Disputas Vencidas <span class="tab-badge" id="badge-disputas">0</span></button>
   <button class="tab-btn" onclick="switchTab('empenhos',this)">📄 Empenhos <span class="tab-badge" id="badge-empenhos">0</span></button>
   <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);">✅ Finalizadas <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
+  <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);">📦 Emp. Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
 </div>
 
 <div class="content">
@@ -1698,6 +1699,30 @@
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB EMPENHOS FINALIZADOS -->
+  <div class="tab-pane" id="tab-emp-finalizados">
+    <div class="summary-row" id="sum-emp-finalizados"></div>
+    <div class="toolbar">
+      <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº Empenho</th>
+            <th>Órgão</th>
+            <th>Analista</th>
+            <th>Val. Empenho</th>
+            <th>Lucro Recebido</th>
+            <th>Finalizado em</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-emp-finalizados"></tbody>
       </table>
     </div>
   </div>
@@ -3269,7 +3294,7 @@ function sumD(){
 }
 
 function renderE(){
-  const rows=getSorted('empenhos').filter(r=>matches('empenhos',r));
+  const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
   tb.innerHTML=rows.map(r=>{
@@ -3315,6 +3340,7 @@ function renderE(){
         '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + r.id + '\')" title="Editar">✏️</button>' +
         '<button class="btn btn-primary btn-sm" onclick="abrirCompra(\'' + r.id + '\')" title="Nova Compra" style="background:var(--success);border:none;">🛒</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="duplicarEmpenho(\'' + r.id + '\')" title="Duplicar">📋</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="finalizarEmpenho(\'' + r.id + '\')" title="Finalizar empenho" style="color:var(--purple);border-color:var(--purple);">✅ Finalizar</button>' +
         '<button class="btn btn-danger btn-sm" onclick="delRow(\'empenhos\',\'' + r.id + '\')" title="Excluir">🗑</button>' +
       '</td></tr>';
   }).join('');
@@ -3322,7 +3348,7 @@ function renderE(){
   verificarAlertas();
 }
 function sumE(){
-  const a=DB.empenhos.filter(r=>matches('empenhos',r));
+  const a=DB.empenhos.filter(r=>matches('empenhos',r) && !r.finalizado);
   const te=a.reduce((s,r)=>s+r.vem,0);
   const totalComprado=a.reduce((s,r)=>s+(r.compras||[]).reduce((ss,c)=>ss+(c.vtotal||0),0),0);
   // Lucro recebido = compras com dpag preenchido, usando luc salvo na compra
@@ -3344,6 +3370,7 @@ function sumE(){
 function renderAll(){ 
   renderD(); 
   renderE(); 
+  renderEmpFinalizados();
   updateBadges(); 
   updateHeader(); 
 }
@@ -3351,9 +3378,12 @@ function renderAll(){
 function updateBadges(){ 
   const _finQtd = DB.disputas.filter(d=>d.finalizada).length;
   const _ativasQtd = DB.disputas.filter(d=>!d.finalizada).length;
+  const _empFinQtd = DB.empenhos.filter(e=>e.finalizado).length;
+  const _empAtivosQtd = DB.empenhos.filter(e=>!e.finalizado).length;
   g('badge-disputas').textContent = _ativasQtd;
-  g('badge-empenhos').textContent=DB.empenhos.length;
+  g('badge-empenhos').textContent = _empAtivosQtd;
   const _badgeFin = g('badge-finalizadas'); if(_badgeFin) _badgeFin.textContent = _finQtd; 
+  const _badgeEmpFin = g('badge-emp-finalizados'); if(_badgeEmpFin) _badgeEmpFin.textContent = _empFinQtd;
 }
 
 function updateHeader(){ /* header stats removido */ }
@@ -4900,6 +4930,78 @@ function sumFinalizadas(rows) {
   if (el) el.innerHTML =
     '<div class="card"><div class="card-label">Finalizadas</div><div class="card-value cv-green">' + rows.length + '</div></div>' +
     '<div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">' + fmt(tv) + '</div></div>' +
+    '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>';
+}
+
+
+// ========== EMPENHOS FINALIZADOS ==========
+function finalizarEmpenho(id) {
+  const e = DB.empenhos.find(x => x.id === id);
+  if (!e) return;
+  if (!confirm('Finalizar o empenho "' + (e.num||id) + '"?\nEle será movido para a aba Emp. Finalizados.')) return;
+  e.finalizado = true;
+  e.dataFinalizacao = new Date().toISOString().slice(0,10);
+  save('empenhos', DB.empenhos);
+  renderAll();
+  toast('Empenho finalizado! ✅', 'success');
+}
+
+function reabrirEmpenho(id) {
+  const e = DB.empenhos.find(x => x.id === id);
+  if (!e) return;
+  if (!confirm('Reabrir o empenho "' + (e.num||id) + '"?\nEle voltará para a aba Empenhos.')) return;
+  e.finalizado = false;
+  e.dataFinalizacao = null;
+  save('empenhos', DB.empenhos);
+  renderAll();
+  toast('Empenho reaberto!', 'info');
+}
+
+function renderEmpFinalizados() {
+  const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
+  const rows = DB.empenhos.filter(e => {
+    if (!e.finalizado) return false;
+    if (!q) return true;
+    return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
+  }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
+
+  const tb = g('tbody-emp-finalizados');
+  if (!tb) return;
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📦</div><p>Nenhum empenho finalizado</p></div></td></tr>';
+    sumEmpFinalizados(rows);
+    return;
+  }
+  tb.innerHTML = rows.map(r => {
+    const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+      const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss+luc;
+    },0);
+    return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
+      '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
+      '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
+      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
+      '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
+      '<td onclick="event.stopPropagation()">' +
+        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
+      '</td></tr>';
+  }).join('');
+  sumEmpFinalizados(rows);
+}
+
+function sumEmpFinalizados(rows) {
+  const tv = rows.reduce((s,r) => s + (r.vem||0), 0);
+  const lucroTotal = rows.reduce((s,r) => s + (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+    const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+    return ss+luc;
+  },0), 0);
+  const el = g('sum-emp-finalizados');
+  if (el) el.innerHTML =
+    '<div class="card"><div class="card-label">Finalizados</div><div class="card-value cv-purple">' + rows.length + '</div></div>' +
+    '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value cv-blue">' + fmt(tv) + '</div></div>' +
     '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>';
 }
 
