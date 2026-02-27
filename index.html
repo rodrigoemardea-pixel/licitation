@@ -5359,7 +5359,6 @@ function exportarComprasSelecionadas(empId) {
   const emp = DB.empenhos.find(x => x.id === empId);
   if (!emp) return;
 
-  // Pega checkboxes marcados
   const selecionados = [...document.querySelectorAll('.chk-compra-' + empId + ':checked')].map(c => c.dataset.cid);
   if (!selecionados.length) { toast('Selecione ao menos uma compra!', 'error'); return; }
 
@@ -5368,13 +5367,11 @@ function exportarComprasSelecionadas(empId) {
 
   const comprasSel = (emp.compras||[]).filter(c => selecionados.includes(c.id));
 
-  // Nome da cidade = orgao do empenho
   const cidade = (emp.orgao || 'Empenho').replace(/[/\\?%*:|"<>]/g, '-');
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  // Monta dados
-  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma', 'Link da Compra'];
+  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
   const linhas = comprasSel.map(c => {
     const itemRef = itens.find(i => i.id === c.itemId);
     return [
@@ -5384,28 +5381,26 @@ function exportarComprasSelecionadas(empId) {
       c.custo || 0,
       c.luc || 0,
       c.rec || 0,
-      c.plataforma || '—',
-      c.link || ''
+      c.plataforma || '—'
     ];
   });
 
-  // Cria workbook com XLSX
   const wb = XLSX.utils.book_new();
-
-  // Título com nome da cidade
-  const tituloRow = [[cidade.toUpperCase()]];
-  const ws = XLSX.utils.aoa_to_sheet(tituloRow);
-
-  // Mescla título na primeira linha
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:7} }];
-
-  // Linha em branco + cabeçalho + dados
+  const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:6} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhas], { origin: 'A2' });
 
-  // Larguras das colunas
-  ws['!cols'] = [
-    {wch:35}, {wch:12}, {wch:18}, {wch:15}, {wch:15}, {wch:18}, {wch:20}, {wch:50}
-  ];
+  // Adiciona hiperlinks na coluna Plataforma (coluna G = índice 6), linha de dados começa na linha 4 (índice 3)
+  comprasSel.forEach((c, i) => {
+    if (c.link) {
+      const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 6 });
+      if (ws[cellRef]) {
+        ws[cellRef].l = { Target: c.link, Tooltip: c.link };
+      }
+    }
+  });
+
+  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo);
@@ -5424,7 +5419,6 @@ function exportarComprasDisputa(dispId) {
 
   const emps = DB.empenhos.filter(e => e.disputaId === dispId);
 
-  // Monta mapa de todas as compras com dados enriquecidos
   const todasCompras = [];
   emps.forEach(e => {
     const itensEmp = e.itens && e.itens.length ? e.itens :
@@ -5435,7 +5429,6 @@ function exportarComprasDisputa(dispId) {
     });
   });
 
-  // Pega selecionados
   const selecionados = [...document.querySelectorAll('.chk-compra-disp-' + dispId + ':checked')].map(c => c.dataset.cid);
   if (!selecionados.length) { toast('Selecione ao menos uma compra!', 'error'); return; }
 
@@ -5445,7 +5438,8 @@ function exportarComprasDisputa(dispId) {
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  const cabecalho = ['Nº Empenho', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma', 'Link da Compra'];
+  // Cabeçalho sem coluna separada de link (plataforma já será o hiperlink)
+  const cabecalho = ['Nº Empenho', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
 
   const linhas = comprasSel.map(c => [
     '#' + c._empNum,
@@ -5455,28 +5449,31 @@ function exportarComprasDisputa(dispId) {
     c.custo || 0,
     c.luc || 0,
     c.rec || 0,
-    c.plataforma || '—',
-    c.link || ''
+    c.plataforma || '—'
   ]);
 
-  // Linha de totais
   const totalVtotal = comprasSel.reduce((s,c) => s + (c.vtotal||0), 0);
   const totalCusto  = comprasSel.reduce((s,c) => s + (c.custo||0), 0);
   const totalLuc    = comprasSel.reduce((s,c) => s + (c.luc||0), 0);
   const totalRec    = comprasSel.reduce((s,c) => s + (c.rec||0), 0);
-  const linhaTotais = ['', 'TOTAL', comprasSel.reduce((s,c)=>s+(c.qtd||0),0), totalVtotal, totalCusto, totalLuc, totalRec, '', ''];
+  const linhaTotais = ['', 'TOTAL', comprasSel.reduce((s,c)=>s+(c.qtd||0),0), totalVtotal, totalCusto, totalLuc, totalRec, ''];
 
   const wb = XLSX.utils.book_new();
-
-  // Título na linha 1, linha em branco, cabeçalho, dados, linha em branco, totais
   const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:8} }];
-
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:7} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhas, [], linhaTotais], { origin: 'A2' });
 
-  ws['!cols'] = [
-    {wch:14}, {wch:35}, {wch:12}, {wch:18}, {wch:15}, {wch:15}, {wch:18}, {wch:20}, {wch:50}
-  ];
+  // Hiperlinks na coluna Plataforma (coluna H = índice 7), dados começam na linha 4 (índice 3)
+  comprasSel.forEach((c, i) => {
+    if (c.link) {
+      const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 7 });
+      if (ws[cellRef]) {
+        ws[cellRef].l = { Target: c.link, Tooltip: c.link };
+      }
+    }
+  });
+
+  ws['!cols'] = [{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo);
