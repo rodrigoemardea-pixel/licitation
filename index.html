@@ -1793,7 +1793,6 @@
           <th>Analista</th>
           <th onclick="sort('empenhos', 'vem')" id="sort-empenhos-vem">Val. Empenho</th>
           <th>⏱️ Dias</th>
-          <th>Status</th>
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
@@ -3443,11 +3442,12 @@ function renderD(){
       '<td class="mono" style="font-size:11px;">' + fmtD(r.data) + '</td>' +
       '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td onclick="event.stopPropagation()">'  +
-        '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar">✏️</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="duplicarDisputa(\'' + r.id + '\')" title="Duplicar">📋</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="finalizarDisputa(\'' + r.id + '\')" title="Finalizar disputa" style="color:var(--success);border-color:var(--success);">🏁</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delRow(\'disputas\',\'' + r.id + '\')" title="Excluir">🗑</button>' +
+      '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
+        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar" style="padding:5px 9px;font-size:15px;border-radius:8px;">✏️</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="duplicarDisputa(\'' + r.id + '\')" title="Duplicar" style="padding:5px 9px;font-size:15px;border-radius:8px;">📄</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="finalizarDisputa(\'' + r.id + '\')" title="Finalizar disputa" style="padding:5px 9px;font-size:15px;border-radius:8px;color:var(--success);border-color:var(--success);">🏁</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="delRow(\'disputas\',\'' + r.id + '\')" title="Excluir" style="padding:5px 9px;font-size:15px;border-radius:8px;">🗑️</button>' +
       '</td></tr>';
   }).join('');
   sumD();
@@ -3488,11 +3488,10 @@ function sumD(){
 function renderE(){
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
     const compras = r.compras || [];
-    // Pago = tem pelo menos 1 compra e todas têm dpag preenchido
     const todoPago = empenhoEstaPago(r);
     const naoRecebido = !todoPago;
     const dias = diasSemPagamento(r);
@@ -3503,10 +3502,9 @@ function renderE(){
       else if (dias >= 30) { rowClass = 'alerta-30'; diasBadge = '<span class="dias-badge dias-30">🟡 '+dias+'d</span>'; }
       else                 { diasBadge = '<span class="dias-badge dias-ok">'+dias+'d</span>'; }
     } else if (!naoRecebido) {
-      diasBadge = '<span class="dias-badge dias-ok">✓ pago</span>';
+      diasBadge = '<span class="dias-badge dias-ok">✓</span>';
     } else { diasBadge = '—'; }
 
-    // Lote vinculado
     let loteInfo = '—';
     if (r.disputaId) {
       const disp = DB.disputas.find(d => d.id === r.disputaId);
@@ -3516,10 +3514,7 @@ function renderE(){
       }
     }
 
-    const statusBadge = todoPago
-      ? '<span class="badge bg" style="font-size:10px;">✓ Pago</span>'
-      : '<span class="badge by" style="font-size:10px;">Pendente</span>';
-
+    const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
     return '<tr class="'+rowClass+'" style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
@@ -3527,13 +3522,13 @@ function renderE(){
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
       '<td>' + diasBadge + '</td>' +
-      '<td>' + statusBadge + '</td>' +
-      '<td onclick="event.stopPropagation()">' +
-        '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + r.id + '\')" title="Editar">✏️</button>' +
-        '<button class="btn btn-primary btn-sm" onclick="abrirCompra(\'' + r.id + '\')" title="Nova Compra" style="background:var(--success);border:none;">🛒</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="duplicarEmpenho(\'' + r.id + '\')" title="Duplicar">📋</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="finalizarEmpenho(\'' + r.id + '\')" title="Finalizar empenho" style="color:var(--purple);border-color:var(--purple);">✅ Finalizar</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delRow(\'empenhos\',\'' + r.id + '\')" title="Excluir">🗑</button>' +
+      '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
+        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + r.id + '\')" title="Editar" style="'+btnStyle+'">✏️</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="abrirCompra(\'' + r.id + '\')" title="Nova Compra" style="'+btnStyle+';color:var(--success);border-color:var(--success);">🛒</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="duplicarEmpenho(\'' + r.id + '\')" title="Duplicar" style="'+btnStyle+'">📄</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="finalizarEmpenho(\'' + r.id + '\')" title="Finalizar" style="'+btnStyle+';color:var(--purple);border-color:var(--purple);">☑️</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="delRow(\'empenhos\',\'' + r.id + '\')" title="Excluir" style="'+btnStyle+'">🗑️</button>' +
       '</td></tr>';
   }).join('');
   sumE();
@@ -3552,11 +3547,18 @@ function sumE(){
         : (c.rec||0) - (c.vtotal||0) - (c.custo||0);
       return ss + luc;
     },0),0);
+  const lucroEmpenhado = a.reduce((s,r)=>s+(r.compras||[])
+    .filter(c=>!c.dpag || c.dpag==='')
+    .reduce((ss,c)=>{
+      const luc = (c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss + luc;
+    },0),0);
   g('sum-empenhos').innerHTML=
     '<div class="card"><div class="card-label">Empenhos</div><div class="card-value cv-blue">'+a.length+'</div></div>'+
     '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value">'+fmt(te)+'</div></div>'+
     '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">'+fmt(totalComprado)+'</div></div>'+
-    '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">'+fmt(lucroRecebido)+'</div></div>';
+    '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">'+fmt(lucroRecebido)+'</div></div>'+
+    '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>';
 }
 
 function renderAll(){ 
