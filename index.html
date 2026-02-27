@@ -1493,6 +1493,7 @@
 </header>
 
 <div class="tabs">
+  <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();">📊 Dashboard</button>
   <button class="tab-btn active" onclick="switchTab('disputas',this)">🏆 Disputas Vencidas <span class="tab-badge" id="badge-disputas">0</span></button>
   <button class="tab-btn" onclick="switchTab('empenhos',this)">📄 Empenhos <span class="tab-badge" id="badge-empenhos">0</span></button>
   <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);">✅ Finalizadas <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
@@ -1522,6 +1523,137 @@
       </button>
     </div>
   </div>
+  <!-- DASHBOARD -->
+  <div class="tab-pane" id="tab-dashboard">
+    
+    <!-- Filtro rápido -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">📊 Visão Geral</span>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="dash-filtro-analista" onchange="atualizarDashboard()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Período:</label>
+        <select id="dash-filtro-periodo" onchange="atualizarDashboard()">
+          <option value="todos">Todo período</option>
+          <option value="mes">Mês atual</option>
+          <option value="trim">Últimos 3 meses</option>
+          <option value="ano">Este ano</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- KPIs principais -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
+      <div class="card" style="border-left:4px solid var(--accent-primary);">
+        <div class="card-label">Disputas Ativas</div>
+        <div class="card-value cv-blue" id="dk-disputas">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--purple);">
+        <div class="card-label">Empenhos Ativos</div>
+        <div class="card-value cv-purple" id="dk-empenhos">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--success);">
+        <div class="card-label">Total Recebido</div>
+        <div class="card-value cv-green" id="dk-recebido">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--success);">
+        <div class="card-label">Lucro Total</div>
+        <div class="card-value cv-green" id="dk-lucro">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--warning);">
+        <div class="card-label">A Receber</div>
+        <div class="card-value cv-yellow" id="dk-areceber">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--accent-primary);">
+        <div class="card-label">Taxa Conversão</div>
+        <div class="card-value cv-blue" id="dk-conversao">—</div>
+      </div>
+    </div>
+
+    <!-- Alertas / Status -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;">
+      <!-- Comparativo mês -->
+      <div class="card" style="grid-column:span 2;">
+        <h3 style="font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;">📅 Comparativo: Mês Atual vs Anterior</h3>
+        <div style="height:180px;"><canvas id="grafico-comparativo"></canvas></div>
+      </div>
+      <!-- Status de atraso -->
+      <div class="card">
+        <div class="card-label">Empenhos em Atraso</div>
+        <div style="font-size:18px;font-weight:700;margin:8px 0;" id="dk-atraso">—</div>
+        <div style="height:130px;"><canvas id="grafico-situacoes"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Gráficos principais -->
+    <div class="dashboard-grid" style="margin-bottom:20px;">
+      <div class="chart-card">
+        <h3>📈 Recebido & Lucro por Mês (últimos 12 meses)</h3>
+        <div style="height:240px;"><canvas id="grafico-lucro-mensal"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>🏆 Top 5 Órgãos por Lucro</h3>
+        <div style="height:240px;"><canvas id="grafico-orgaos"></canvas></div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="chart-card">
+        <h3>👤 Performance por Analista</h3>
+        <div style="height:220px;"><canvas id="grafico-analistas"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>⚡ Velocidade Média de Pagamento por Órgão</h3>
+        <div style="height:220px;"><canvas id="grafico-velocidade"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tabela: Empenhos urgentes -->
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>🚨 Empenhos Pendentes há mais de 30 dias</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Nº Empenho</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Analista</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Empenho</th>
+              <th style="padding:8px;text-align:center;font-weight:600;color:var(--text-tertiary);">Dias</th>
+            </tr>
+          </thead>
+          <tbody id="dash-tbody-urgentes"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Ranking órgãos -->
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>🏅 Ranking de Órgãos (por valor contratado)</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">#</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Disputas</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Contrato</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Lucro</th>
+            </tr>
+          </thead>
+          <tbody id="dash-tbody-ranking"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
   <!-- DISPUTAS VENCIDAS -->
   <div class="tab-pane active" id="tab-disputas">
     <div class="summary-row" id="sum-disputas"></div>
@@ -3467,43 +3599,105 @@ function verExcel(id, tipo) {
 
 // ========== DASHBOARD COMPLETO ==========
 function atualizarDashboard() {
-  const disputasFiltradas = DB.disputas.filter(r => filtroAnalista === 'todos' || r.analista === filtroAnalista);
-  const empenhosFiltrados = DB.empenhos.filter(r => filtroAnalista === 'todos' || r.analista === filtroAnalista);
+  const filtroAn = (g('dash-filtro-analista')?.value) || 'todos';
+  const filtroPer = (g('dash-filtro-periodo')?.value) || 'todos';
   const hoje = new Date();
   const mesAtual = hoje.toISOString().substring(0,7);
   const mesAnterior = new Date(hoje.getFullYear(), hoje.getMonth()-1, 1).toISOString().substring(0,7);
 
+  // Filtro de período
+  const dentroperiodo = (data) => {
+    if (filtroPer === 'todos') return true;
+    if (!data) return false;
+    const d = data.substring(0,7);
+    if (filtroPer === 'mes') return d === mesAtual;
+    if (filtroPer === 'trim') {
+      const limit = new Date(hoje.getFullYear(), hoje.getMonth()-2, 1).toISOString().substring(0,7);
+      return d >= limit;
+    }
+    if (filtroPer === 'ano') return d.substring(0,4) === mesAtual.substring(0,4);
+    return true;
+  };
+
+  const disputasFiltradas = DB.disputas.filter(r =>
+    (filtroAn === 'todos' || r.analista === filtroAn) && dentroperiodo(r.data)
+  );
+  const empenhosFiltrados = DB.empenhos.filter(r =>
+    (filtroAn === 'todos' || r.analista === filtroAn) && dentroperiodo(r.data)
+  );
+
   // KPIs
   const totalRecebido = empenhosFiltrados.reduce((s,r)=>s+(r.recebido||0), 0);
-  const totalLucroDisputas = disputasFiltradas.reduce((s,r)=>s+dVals(r).luc, 0);
-  const totalLucroEmpenhos = empenhosFiltrados.reduce((s,r)=>s+eVals(r).luc, 0);
-  const totalLucro = totalLucroDisputas + totalLucroEmpenhos;
-  const totalEmpenhadoVal = empenhosFiltrados.reduce((s,r)=>s+r.vem, 0);
+  const totalLucroEmpenhos = empenhosFiltrados.reduce((s,r)=>s+(r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+    const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+    return ss+luc;
+  },0), 0);
+  const totalEmpenhadoVal = empenhosFiltrados.reduce((s,r)=>s+(r.vem||0), 0);
   const aReceber = totalEmpenhadoVal - totalRecebido;
-  const emAtraso = empenhosFiltrados.filter(r=>!r.recebido&&diasSemPagamento(r)>=60).length;
-
-  // Taxa de conversão
+  const emAtraso = empenhosFiltrados.filter(r=>!empenhoEstaPago(r)&&diasSemPagamento(r)>=60).length;
   const disputasComEmpenho = disputasFiltradas.filter(d => DB.empenhos.some(e=>e.disputaId===d.id)).length;
   const taxaConv = disputasFiltradas.length ? Math.round(disputasComEmpenho/disputasFiltradas.length*100) : 0;
 
   const setKpi = (id, val) => { const el = g(id); if(el) el.textContent = val; };
-  setKpi('dk-disputas', disputasFiltradas.length);
-  setKpi('dk-empenhos', empenhosFiltrados.length);
+  setKpi('dk-disputas', disputasFiltradas.filter(d=>!d.finalizada).length);
+  setKpi('dk-empenhos', empenhosFiltrados.filter(e=>!e.finalizado).length);
   setKpi('dk-recebido', fmt(totalRecebido));
-  setKpi('dk-lucro', fmt(totalLucro));
+  setKpi('dk-lucro', fmt(totalLucroEmpenhos));
   setKpi('dk-conversao', taxaConv + '%');
   setKpi('dk-areceber', fmt(aReceber));
   const atrasoEl = g('dk-atraso');
-  if(atrasoEl) atrasoEl.textContent = emAtraso > 0 ? `⚠️ ${emAtraso} em atraso >60d` : '✓ em dia';
+  if(atrasoEl) atrasoEl.innerHTML = emAtraso > 0
+    ? `<span style="color:var(--danger);font-size:22px;font-weight:800;">⚠️ ${emAtraso}</span><div style="font-size:11px;color:var(--text-tertiary);">empenhos &gt;60 dias</div>`
+    : `<span style="color:var(--success);font-size:22px;font-weight:800;">✓</span><div style="font-size:11px;color:var(--text-tertiary);">tudo em dia</div>`;
+
+  // Tabela urgentes (pendentes >30 dias)
+  const urgentes = empenhosFiltrados.filter(r=>!empenhoEstaPago(r)&&diasSemPagamento(r)>=30)
+    .sort((a,b)=>diasSemPagamento(b)-diasSemPagamento(a)).slice(0,10);
+  const tbU = g('dash-tbody-urgentes');
+  if(tbU) tbU.innerHTML = urgentes.length ? urgentes.map(r=>{
+    const dias = diasSemPagamento(r);
+    const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
+    return `<tr><td style="padding:7px 8px;font-weight:600;font-family:'JetBrains Mono',monospace;">${r.num||'—'}</td>
+      <td style="padding:7px 8px;">${r.orgao||'—'}</td>
+      <td style="padding:7px 8px;"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);">${fmt(r.vem)}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${dias}d</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente há mais de 30 dias</td></tr>';
+
+  // Ranking de órgãos
+  const orgRank = {};
+  disputasFiltradas.forEach(d=>{
+    if(!orgRank[d.orgao]) orgRank[d.orgao] = {disputas:0, contrato:0, lucro:0};
+    orgRank[d.orgao].disputas++;
+    orgRank[d.orgao].contrato += getValorContrato(d);
+    const emps = DB.empenhos.filter(e=>e.disputaId===d.id);
+    orgRank[d.orgao].lucro += emps.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss+luc;
+    },0),0);
+  });
+  const rankTop = Object.entries(orgRank).sort((a,b)=>b[1].contrato-a[1].contrato).slice(0,10);
+  const tbR = g('dash-tbody-ranking');
+  const medalhas = ['🥇','🥈','🥉'];
+  if(tbR) tbR.innerHTML = rankTop.length ? rankTop.map(([org,v],i)=>
+    `<tr><td style="padding:7px 8px;font-weight:700;">${medalhas[i]||'#'+(i+1)}</td>
+    <td style="padding:7px 8px;">${org}</td>
+    <td style="padding:7px 8px;text-align:right;">${v.disputas}</td>
+    <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);font-weight:600;">${fmt(v.contrato)}</td>
+    <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--success);font-weight:600;">${fmt(v.lucro)}</td></tr>`
+  ).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">Nenhuma disputa encontrada</td></tr>';
 
   // Gráfico 1: Recebido + Lucro por Mês
   const porMes = {};
   empenhosFiltrados.forEach(e => {
-    const m = (e.dreceb||e.data||'').substring(0,7);
-    if(!m) return;
-    if(!porMes[m]) porMes[m] = { rec: 0, luc: 0 };
-    porMes[m].rec += e.recebido||0;
-    porMes[m].luc += eVals(e).luc;
+    (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').forEach(c=>{
+      const m = (c.dpag||'').substring(0,7);
+      if(!m) return;
+      if(!porMes[m]) porMes[m] = { rec: 0, luc: 0 };
+      porMes[m].rec += c.rec||0;
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      porMes[m].luc += luc;
+    });
   });
   const meses = Object.keys(porMes).sort().slice(-12);
   if(graficos.lucroMensal) graficos.lucroMensal.destroy();
@@ -3520,21 +3714,26 @@ function atualizarDashboard() {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels:{font:{size:10}} } }, scales: { y: { ticks: { callback: v => 'R$'+v.toLocaleString('pt-BR') } } } }
   });
 
-  // Gráfico 2: Situações
-  const situacoes = {};
-  disputasFiltradas.forEach(d => { situacoes[d.situacao] = (situacoes[d.situacao]||0)+1; });
+  // Gráfico 2: Situações disputas
+  const situacoes = { 'Ativas': disputasFiltradas.filter(d=>!d.finalizada).length, 'Finalizadas': disputasFiltradas.filter(d=>d.finalizada).length };
   if(graficos.situacoes) graficos.situacoes.destroy();
   const ctx2 = document.getElementById('grafico-situacoes')?.getContext('2d');
   const cores = ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
   if(ctx2) graficos.situacoes = new Chart(ctx2, {
     type: 'doughnut',
-    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: cores, borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
+    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: ['#2563eb','#10b981'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{font:{size:10}, boxWidth:12} } } }
   });
 
   // Gráfico 3: Top 5 órgãos por lucro
   const orgaos = {};
-  empenhosFiltrados.forEach(e => { orgaos[e.orgao] = (orgaos[e.orgao]||0) + eVals(e).luc; });
+  empenhosFiltrados.forEach(e => {
+    const lucro = (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss+luc;
+    },0);
+    orgaos[e.orgao||'?'] = (orgaos[e.orgao||'?']||0) + lucro;
+  });
   const top5 = Object.entries(orgaos).sort((a,b)=>b[1]-a[1]).slice(0,5);
   if(graficos.orgaos) graficos.orgaos.destroy();
   const ctx3 = document.getElementById('grafico-orgaos')?.getContext('2d');
@@ -3546,7 +3745,13 @@ function atualizarDashboard() {
 
   // Gráfico 4: Performance por analista
   const analistas = {};
-  empenhosFiltrados.forEach(e => { analistas[e.analista] = (analistas[e.analista]||0) + eVals(e).luc; });
+  empenhosFiltrados.forEach(e => {
+    const lucro = (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss+luc;
+    },0);
+    analistas[e.analista||'?'] = (analistas[e.analista||'?']||0) + lucro;
+  });
   if(graficos.analistas) graficos.analistas.destroy();
   const ctx4 = document.getElementById('grafico-analistas')?.getContext('2d');
   if(ctx4) graficos.analistas = new Chart(ctx4, {
@@ -3555,12 +3760,15 @@ function atualizarDashboard() {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels:{font:{size:10}} } } }
   });
 
-  // Gráfico 5: Velocidade de pagamento (dias médios por órgão)
+  // Gráfico 5: Velocidade de pagamento
   const velOrgao = {};
-  empenhosFiltrados.filter(e=>e.recebido>0&&e.dcomp&&e.dreceb).forEach(e => {
-    const dias = Math.floor((new Date(e.dreceb)-new Date(e.dcomp))/86400000);
-    if(!velOrgao[e.orgao]) velOrgao[e.orgao] = [];
-    velOrgao[e.orgao].push(dias);
+  empenhosFiltrados.forEach(e => {
+    (e.compras||[]).filter(c=>c.dpag&&c.dpag!==''&&e.data).forEach(c=>{
+      const dias = Math.floor((new Date(c.dpag)-new Date(e.data))/86400000);
+      if(dias<0||dias>365) return;
+      if(!velOrgao[e.orgao||'?']) velOrgao[e.orgao||'?'] = [];
+      velOrgao[e.orgao||'?'].push(dias);
+    });
   });
   const velMedia = Object.entries(velOrgao).map(([o,ds])=>([o, Math.round(ds.reduce((a,b)=>a+b,0)/ds.length)])).sort((a,b)=>a[1]-b[1]).slice(0,6);
   if(graficos.velocidade) graficos.velocidade.destroy();
@@ -3572,8 +3780,11 @@ function atualizarDashboard() {
   });
 
   // Gráfico 6: Comparativo mês atual vs anterior
-  const rec = (m) => empenhosFiltrados.filter(e=>((e.dreceb||'').substring(0,7))===m).reduce((s,e)=>s+(e.recebido||0),0);
-  const luc = (m) => empenhosFiltrados.filter(e=>((e.dreceb||e.data||'').substring(0,7))===m).reduce((s,e)=>s+eVals(e).luc,0);
+  const recMes = (m) => empenhosFiltrados.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&(c.dpag||'').substring(0,7)===m).reduce((ss,c)=>ss+(c.rec||0),0),0);
+  const lucMes = (m) => empenhosFiltrados.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&(c.dpag||'').substring(0,7)===m).reduce((ss,c)=>{
+    const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+    return ss+luc;
+  },0),0);
   if(graficos.comparativo) graficos.comparativo.destroy();
   const ctx6 = document.getElementById('grafico-comparativo')?.getContext('2d');
   const lblMesAt = mesAtual.substring(5)+'/'+mesAtual.substring(2,4);
@@ -3583,13 +3794,14 @@ function atualizarDashboard() {
     data: {
       labels: ['Recebido', 'Lucro'],
       datasets: [
-        { label: lblMesAnt, data: [rec(mesAnterior), luc(mesAnterior)], backgroundColor: 'rgba(37,99,235,0.4)', borderRadius: 4 },
-        { label: lblMesAt, data: [rec(mesAtual), luc(mesAtual)], backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 4 }
+        { label: lblMesAnt, data: [recMes(mesAnterior), lucMes(mesAnterior)], backgroundColor: 'rgba(37,99,235,0.4)', borderRadius: 4 },
+        { label: lblMesAt, data: [recMes(mesAtual), lucMes(mesAtual)], backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 4 }
       ]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{position:'top',labels:{font:{size:10}}}}, scales:{y:{ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR')}}} }
   });
 }
+
 
 let disputaAtiva = null;
 
