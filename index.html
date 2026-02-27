@@ -2127,6 +2127,10 @@
             <label class="fl">Plataforma</label>
             <input type="text" class="fc" id="c-plataforma" placeholder="MERCADO LIVRE, SHOPEE...">
           </div>
+          <div class="fg full">
+            <label class="fl">🔗 Link da Compra</label>
+            <input type="url" class="fc" id="c-link" placeholder="https://...">
+          </div>
           <div class="fg">
             <label class="fl">Vl. Unitário Compra (R$)</label>
             <input type="number" step="0.01" class="fc" id="c-vunit" oninput="calcCompra()">
@@ -3194,15 +3198,23 @@ function abrirPopupEmpenho(id) {
     </table>` : '';
   
   const comprasHTML = compras.length ? `
-    <div class="detail-section">🛒 COMPRAS INDIVIDUAIS</div>
-    <table class="lotes-status-table">
-      <thead><tr><th>Item</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th></tr></thead>
+    <div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>🛒 COMPRAS INDIVIDUAIS</span>
+      <button class="btn btn-ghost btn-sm" onclick="exportarComprasSelecionadas('${r.id}')" style="color:var(--success);border-color:var(--success);font-weight:700;">⬇ Exportar Selecionadas</button>
+    </div>
+    <table class="lotes-status-table" id="tabela-compras-${r.id}">
+      <thead><tr>
+        <th style="width:30px;"><input type="checkbox" id="chk-all-compras-${r.id}" onchange="toggleTodasCompras('${r.id}',this.checked)" title="Selecionar todas"></th>
+        <th>Item</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th>
+      </tr></thead>
       <tbody>${compras.map(c => {
         const itemRef = itens.find(i=>i.id===c.itemId);
         const pago = c.recebido > 0;
+        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" title="${c.link}" style="font-size:10px;color:var(--accent-primary);">🔗</a>` : '';
         return '<tr>' +
+          '<td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
           '<td style="font-size:10px;">'+((itemRef?.descricao||'—').toUpperCase())+'</td>' +
-          '<td style="font-size:10px;font-weight:600;">'+(c.plataforma||'—')+'</td>' +
+          '<td style="font-size:10px;font-weight:600;">'+(c.plataforma||'—')+' '+linkBtn+'</td>' +
           '<td class="mono">'+(c.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
           '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
@@ -4551,7 +4563,7 @@ function abrirCompra(empenhoId, compraId) {
   compraMSLuc = false; compraMSRec = false;
   setCompraField('luc', false); setCompraField('rec', false);
   compraLoteSelecionado = null;
-  ['c-lote-desc','c-qtd-empenho','c-vem-item','c-qtd','c-dcompra','c-plataforma','c-vunit','c-vtotal-compra','c-custo','c-dpag','c-recebido','c-obs','c-luc-m','c-rec-m'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  ['c-lote-desc','c-qtd-empenho','c-vem-item','c-qtd','c-dcompra','c-plataforma','c-link','c-vunit','c-vtotal-compra','c-custo','c-dpag','c-recebido','c-obs','c-luc-m','c-rec-m'].forEach(id=>{const el=g(id);if(el)el.value='';});
   g('compra-campos').style.display = 'none';
   // Reseta painel de cálculo de custo
   const _painel = g('c-custo-calc-painel');
@@ -4632,6 +4644,7 @@ function selecionarCompraLote(empenhoId, itemId, dadosExist) {
   if(dadosExist) {
     g('c-dcompra').value = dadosExist.dcompra||'';
     g('c-plataforma').value = dadosExist.plataforma||'';
+    g('c-link').value = dadosExist.link||'';
     g('c-vunit').value = dadosExist.vunit||'';
     g('c-vtotal-compra').value = dadosExist.vtotal||'';
     g('c-custo').value = dadosExist.custo||'';
@@ -4684,6 +4697,7 @@ function saveCompra() {
     qtd: +gv('c-qtd')||1,
     dcompra: gv('c-dcompra') || '',
     plataforma: gv('c-plataforma').toUpperCase(),
+    link: gv('c-link') || '',
     vunit: +gv('c-vunit')||0,
     vtotal: vtotal,
     custo: custo,
@@ -5294,6 +5308,69 @@ function sumEmpFinalizados(rows) {
     '<div class="card"><div class="card-label">Finalizados</div><div class="card-value cv-purple">' + rows.length + '</div></div>' +
     '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value cv-blue">' + fmt(tv) + '</div></div>' +
     '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>';
+}
+
+
+// ========== EXPORTAR COMPRAS SELECIONADAS ==========
+function toggleTodasCompras(empId, checked) {
+  document.querySelectorAll('.chk-compra-' + empId).forEach(chk => chk.checked = checked);
+}
+
+function exportarComprasSelecionadas(empId) {
+  const emp = DB.empenhos.find(x => x.id === empId);
+  if (!emp) return;
+
+  // Pega checkboxes marcados
+  const selecionados = [...document.querySelectorAll('.chk-compra-' + empId + ':checked')].map(c => c.dataset.cid);
+  if (!selecionados.length) { toast('Selecione ao menos uma compra!', 'error'); return; }
+
+  const itens = emp.itens && emp.itens.length ? emp.itens :
+    (emp.loteId ? [{ id:'leg1', loteId:emp.loteId, descricao:emp.produto||'', qtd:emp.qtd||1, vunit:emp.vunit||0 }] : []);
+
+  const comprasSel = (emp.compras||[]).filter(c => selecionados.includes(c.id));
+
+  // Nome da cidade = orgao do empenho
+  const cidade = (emp.orgao || 'Empenho').replace(/[/\\?%*:|"<>]/g, '-');
+  const hoje = new Date().toISOString().slice(0,10);
+  const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
+
+  // Monta dados
+  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma', 'Link da Compra'];
+  const linhas = comprasSel.map(c => {
+    const itemRef = itens.find(i => i.id === c.itemId);
+    return [
+      (itemRef?.descricao || '—').toUpperCase(),
+      c.qtd || 0,
+      c.vtotal || 0,
+      c.custo || 0,
+      c.luc || 0,
+      c.rec || 0,
+      c.plataforma || '—',
+      c.link || ''
+    ];
+  });
+
+  // Cria workbook com XLSX
+  const wb = XLSX.utils.book_new();
+
+  // Título com nome da cidade
+  const tituloRow = [[cidade.toUpperCase()]];
+  const ws = XLSX.utils.aoa_to_sheet(tituloRow);
+
+  // Mescla título na primeira linha
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:7} }];
+
+  // Linha em branco + cabeçalho + dados
+  XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhas], { origin: 'A2' });
+
+  // Larguras das colunas
+  ws['!cols'] = [
+    {wch:35}, {wch:12}, {wch:18}, {wch:15}, {wch:15}, {wch:18}, {wch:20}, {wch:50}
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Compras');
+  XLSX.writeFile(wb, nomeArquivo);
+  toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
 }
 
 
