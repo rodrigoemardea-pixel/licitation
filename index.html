@@ -1923,13 +1923,12 @@
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <label style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text-secondary);">
               📁 Escolher arquivo
-              <input type="file" id="d-proposta-file" accept=".pdf,.xlsx,.xls" style="display:none;" onchange="carregarPropostaBase64(this)">
+              <input type="file" id="d-proposta-file" accept=".pdf,.xlsx,.xls" style="display:none;" onchange="uploadPropostaCloudinary(this)">
             </label>
             <span id="d-proposta-nome" style="font-size:12px;color:var(--text-tertiary);">Nenhum arquivo selecionado</span>
             <button type="button" id="d-proposta-limpar" onclick="limparProposta()" style="display:none;font-size:11px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:2px 8px;cursor:pointer;">✕ Remover</button>
           </div>
-          <input type="hidden" id="d-proposta-data">
-          <input type="hidden" id="d-proposta-mime">
+          <input type="hidden" id="d-proposta-url">
         </div>
         
 
@@ -3201,7 +3200,7 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
-      (r.propostaData ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
+      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><a href="' + r.propostaUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 ' + (r.propostaNome||'Baixar arquivo') + '</a></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -4256,8 +4255,7 @@ function saveD(){
     aliq: 0,
     situacao: '',
     observacao: gv('d-observacao').toUpperCase(),
-    propostaData: gv('d-proposta-data') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaData || ''),
-    propostaMime: gv('d-proposta-mime') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaMime || ''),
+    propostaUrl: gv('d-proposta-url') || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaUrl || ''),
     propostaNome: (g('d-proposta-nome')?.textContent !== 'Nenhum arquivo selecionado' ? g('d-proposta-nome')?.textContent : null) || (DB.disputas.find(x=>x.id===EID.disputas)?.propostaNome || ''),
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
@@ -4277,10 +4275,9 @@ function editD(id){
 
   // Carrega proposta se existir
   limparProposta();
-  if (r.propostaData) {
+  if (r.propostaUrl) {
     const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = r.propostaNome || 'Arquivo carregado';
-    const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = r.propostaData;
-    const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = r.propostaMime || '';
+    const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = r.propostaUrl;
     const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = '';
   }
 
@@ -5510,39 +5507,48 @@ function exportarComprasDisputa(dispId) {
 }
 
 
-// ========== PROPOSTA FILE HANDLING ==========
-function carregarPropostaBase64(input) {
+// ========== PROPOSTA FILE HANDLING - CLOUDINARY ==========
+const CLOUDINARY_CLOUD = 'duik0m2ma';
+const CLOUDINARY_PRESET = 'aivv2qgc';
+
+async function uploadPropostaCloudinary(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 5MB.', 'error'); input.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const base64 = e.target.result.split(',')[1];
-    const mime = file.type;
-    const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = file.name;
-    const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = base64;
-    const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = mime;
-    const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = '';
-    toast('Arquivo carregado: ' + file.name, 'success');
-  };
-  reader.readAsDataURL(file);
+  if (file.size > 10 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 10MB.', 'error'); input.value=''; return; }
+
+  const nomeEl = g('d-proposta-nome');
+  const limparBtn = g('d-proposta-limpar');
+  if (nomeEl) nomeEl.textContent = '⏳ Enviando...';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  formData.append('resource_type', 'auto');
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) throw new Error('Erro no upload');
+    const data = await res.json();
+    const url = data.secure_url;
+    const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = url;
+    if (nomeEl) nomeEl.textContent = file.name;
+    if (limparBtn) limparBtn.style.display = '';
+    toast('Arquivo enviado: ' + file.name + ' ✅', 'success');
+  } catch(err) {
+    if (nomeEl) nomeEl.textContent = 'Erro no envio';
+    toast('Erro ao enviar arquivo. Tente novamente.', 'error');
+    console.error(err);
+  }
 }
 
 function limparProposta() {
   const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.textContent = 'Nenhum arquivo selecionado';
-  const dataEl = g('d-proposta-data'); if(dataEl) dataEl.value = '';
-  const mimeEl = g('d-proposta-mime'); if(mimeEl) mimeEl.value = '';
+  const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = '';
   const limparBtn = g('d-proposta-limpar'); if(limparBtn) limparBtn.style.display = 'none';
   const fileInput = g('d-proposta-file'); if(fileInput) fileInput.value = '';
-}
-
-function baixarProposta(disputaId) {
-  const d = DB.disputas.find(x => x.id === disputaId);
-  if (!d || !d.propostaData) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  const link = document.createElement('a');
-  link.href = 'data:' + (d.propostaMime||'application/octet-stream') + ';base64,' + d.propostaData;
-  link.download = d.propostaNome || 'proposta';
-  link.click();
 }
 
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
