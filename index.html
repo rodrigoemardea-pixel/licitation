@@ -3111,8 +3111,13 @@ function abrirPopupDisputa(id) {
   // Todas as compras de todos os empenhos desta disputa
   const todasCompras = [];
   emps.forEach(e => {
-    const itensEmp = e.itens && e.itens.length ? e.itens :
-      (e.loteId ? [{ id:'leg1', loteId:e.loteId, descricao:e.produto||'', qtd:e.qtd||1, vunit:e.vunit||0 }] : []);
+    const itensEmp = (e.itens && e.itens.length ? e.itens :
+      (e.loteId ? [{ id:'leg1', loteId:e.loteId, descricao:e.produto||'', qtd:e.qtd||1, vunit:e.vunit||0 }] : []))
+      .map(item => {
+        // Sempre busca descrição ao vivo do lote da disputa
+        const loteAtual = (r.lotes||[]).find(l => l.id === item.loteId);
+        return loteAtual ? { ...item, descricao: loteAtual.descricao } : item;
+      });
     (e.compras||[]).forEach(c => {
       const itemRef = itensEmp.find(i => i.id === c.itemId);
       todasCompras.push({ ...c, _empNum: e.num||'—', _produto: (itemRef?.descricao||e.produto||'—').toUpperCase() });
@@ -3174,9 +3179,16 @@ function abrirPopupEmpenho(id) {
   const dias = diasSemPagamento(r);
   const disp = r.disputaId ? DB.disputas.find(d => d.id === r.disputaId) : null;
   
-  // Itens do empenho
-  const itens = r.itens && r.itens.length ? r.itens : 
+  // Itens do empenho — descrição sempre buscada ao vivo da disputa para refletir edições
+  const itensRaw = r.itens && r.itens.length ? r.itens : 
     (r.loteId ? [{ id:'leg1', loteId:r.loteId, descricao:r.produto||'', qtd:r.qtd||1, vunit:r.vunit||0 }] : []);
+  const itens = itensRaw.map(item => {
+    if (item.loteId && disp) {
+      const loteAtual = (disp.lotes||[]).find(l => l.id === item.loteId);
+      if (loteAtual) return { ...item, descricao: loteAtual.descricao, vunit: loteAtual.vunit };
+    }
+    return item;
+  });
   
   const compras = r.compras || [];
   
@@ -5407,8 +5419,13 @@ function exportarComprasSelecionadas(empId) {
   const selecionados = [...document.querySelectorAll('.chk-compra-' + empId + ':checked')].map(c => c.dataset.cid);
   if (!selecionados.length) { toast('Selecione ao menos uma compra!', 'error'); return; }
 
-  const itens = emp.itens && emp.itens.length ? emp.itens :
+  const itensRaw = emp.itens && emp.itens.length ? emp.itens :
     (emp.loteId ? [{ id:'leg1', loteId:emp.loteId, descricao:emp.produto||'', qtd:emp.qtd||1, vunit:emp.vunit||0 }] : []);
+  const disp = emp.disputaId ? DB.disputas.find(d => d.id === emp.disputaId) : null;
+  const itens = itensRaw.map(item => {
+    const loteAtual = disp ? (disp.lotes||[]).find(l => l.id === item.loteId) : null;
+    return loteAtual ? { ...item, descricao: loteAtual.descricao } : item;
+  });
 
   const comprasSel = (emp.compras||[]).filter(c => selecionados.includes(c.id));
 
@@ -5466,8 +5483,12 @@ function exportarComprasDisputa(dispId) {
 
   const todasCompras = [];
   emps.forEach(e => {
-    const itensEmp = e.itens && e.itens.length ? e.itens :
-      (e.loteId ? [{ id:'leg1', loteId:e.loteId, descricao:e.produto||'', qtd:e.qtd||1, vunit:e.vunit||0 }] : []);
+    const itensEmp = (e.itens && e.itens.length ? e.itens :
+      (e.loteId ? [{ id:'leg1', loteId:e.loteId, descricao:e.produto||'', qtd:e.qtd||1, vunit:e.vunit||0 }] : []))
+      .map(item => {
+        const loteAtual = (disp.lotes||[]).find(l => l.id === item.loteId);
+        return loteAtual ? { ...item, descricao: loteAtual.descricao } : item;
+      });
     (e.compras||[]).forEach(c => {
       const itemRef = itensEmp.find(i => i.id === c.itemId);
       todasCompras.push({ ...c, _empNum: e.num||'—', _produto: (itemRef?.descricao||e.produto||'—').toUpperCase() });
