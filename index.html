@@ -5526,7 +5526,7 @@ async function uploadPropostaCloudinary(input) {
   formData.append('resource_type', 'auto');
 
   try {
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
       method: 'POST',
       body: formData
     });
@@ -5554,8 +5554,8 @@ function limparProposta() {
 function baixarProposta(disputaId) {
   const d = DB.disputas.find(x => x.id === disputaId);
   if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  // Adiciona fl_attachment para forçar download pelo Cloudinary sem corrupção
-  const downloadUrl = d.propostaUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
+  // fl_attachment funciona no endpoint /image/upload no plano gratuito
+  const downloadUrl = d.propostaUrl.replace('/image/upload/', '/image/upload/fl_attachment/');
   window.open(downloadUrl, '_blank');
 }
 
