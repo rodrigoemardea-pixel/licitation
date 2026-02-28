@@ -5,6 +5,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDR6IIRzs2NPutCi2S8LTs8HTAq49zI9KE",
@@ -17,6 +18,7 @@
   firebase.initializeApp(firebaseConfig);
   const fbAuth = firebase.auth();
   const fbDB  = firebase.firestore();
+  const fbStorage = firebase.storage();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,6 +27,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Tesseract.js para OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
@@ -1451,6 +1455,86 @@
     gap: 12px;
     margin-top: 24px;
   }
+
+  /* ===== KANBAN ===== */
+  .kanban-view { display: none; }
+  .kanban-view.active { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; align-items: flex-start; }
+  .kanban-col {
+    flex: 0 0 300px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .kanban-col-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 10px; margin-bottom: 10px;
+    border-bottom: 2px solid var(--border-light);
+    font-size: 13px; font-weight: 700; color: var(--text-primary);
+  }
+  .kanban-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 2px 7px; border-radius: 20px;
+    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
+    color: var(--text-tertiary);
+  }
+  .kanban-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+  }
+  .kanban-card:active { cursor: grabbing; opacity: 0.8; transform: scale(0.98); }
+  .kanban-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-medium); }
+  .kanban-card.drag-over-card { border-color: var(--accent-primary); background: var(--info-soft); }
+  .kanban-col.drag-over { background: var(--info-soft); border-color: var(--accent-primary); }
+  .kanban-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
+  .kanban-card-meta { font-size: 10px; color: var(--text-tertiary); margin-bottom: 6px; }
+  .kanban-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 6px; }
+  .kanban-empty { text-align: center; padding: 24px 12px; color: var(--text-tertiary); font-size: 12px; }
+
+  /* View toggle buttons */
+  .view-toggle { display: flex; gap: 4px; background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: 8px; padding: 2px; }
+  .view-toggle-btn { background: none; border: none; border-radius: 6px; padding: 5px 10px; font-size: 13px; cursor: pointer; color: var(--text-tertiary); transition: all 0.15s; }
+  .view-toggle-btn.active { background: var(--bg-surface); color: var(--accent-primary); box-shadow: var(--shadow-sm); }
+
+  /* ===== INLINE EDIT ===== */
+  .inline-edit-cell { position: relative; }
+  .inline-edit-cell:hover .inline-edit-trigger { opacity: 1; }
+  .inline-edit-trigger { opacity: 0; transition: opacity 0.15s; cursor: pointer; font-size: 11px; color: var(--accent-primary); margin-left: 4px; }
+  .inline-edit-input {
+    font-size: 11px; padding: 3px 6px; border: 1px solid var(--accent-primary);
+    border-radius: 5px; background: var(--bg-surface); color: var(--text-primary);
+    outline: none; width: 100%; box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+  }
+  .inline-edit-select {
+    font-size: 11px; padding: 3px 24px 3px 6px; border: 1px solid var(--accent-primary);
+    border-radius: 5px; background: var(--bg-surface); color: var(--text-primary);
+    outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 6px center;
+  }
+
+  /* ===== OCR / FILE UPLOAD ===== */
+  .file-upload-zone {
+    border: 2px dashed var(--border-medium); border-radius: var(--radius-md);
+    padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;
+    color: var(--text-tertiary); font-size: 12px; position: relative; overflow: hidden;
+  }
+  .file-upload-zone:hover, .file-upload-zone.dragover { border-color: var(--accent-primary); background: var(--info-soft); color: var(--accent-primary); }
+  .file-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .file-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--info-soft); color: var(--accent-primary); border: 1px solid rgba(37,99,235,0.2); border-radius: 20px; padding: 3px 10px; font-size: 10px; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-badge-remove { cursor: pointer; color: var(--danger); font-size: 12px; margin-left: 4px; flex-shrink: 0; }
+  .ocr-result-box { background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--text-secondary); max-height: 100px; overflow-y: auto; white-space: pre-wrap; }
+  .ocr-progress { height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .ocr-progress-bar { height: 100%; background: var(--accent-primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -1882,11 +1966,15 @@
       <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar disputas..." oninput="filterTable('disputas',this.value)"></div>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+        <div class="view-toggle">
+          <button class="view-toggle-btn active" id="vt-lista" onclick="setViewMode('lista')" title="Visualização em tabela">☰</button>
+          <button class="view-toggle-btn" id="vt-kanban" onclick="setViewMode('kanban')" title="Visualização Kanban">⊞</button>
+        </div>
         <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">🗑 Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
         <button class="btn btn-ghost btn-sm" onclick="exportCSV('disputas')">⬇ Exportar</button>
       </div>
     </div>
-    <div class="table-wrapper">
+    <div class="table-wrapper" id="disputas-table-view">
       <table>
         <thead><tr>
           <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
@@ -1897,6 +1985,45 @@
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
       </table>
+    </div>
+
+    <!-- KANBAN BOARD -->
+    <div class="kanban-view" id="disputas-kanban-view">
+      <div class="kanban-col" id="kanban-col-em-analise" ondragover="kanbanDragOver(event,'em-analise')" ondrop="kanbanDrop(event,'em-analise')" ondragleave="kanbanDragLeave(event)">
+        <div class="kanban-col-header">
+          <span>🔍 Em Análise</span>
+          <span class="kanban-count" id="kanban-count-em-analise">0</span>
+        </div>
+        <div id="kanban-cards-em-analise"></div>
+      </div>
+      <div class="kanban-col" id="kanban-col-participando" ondragover="kanbanDragOver(event,'participando')" ondrop="kanbanDrop(event,'participando')" ondragleave="kanbanDragLeave(event)">
+        <div class="kanban-col-header">
+          <span>⚡ Participando</span>
+          <span class="kanban-count" id="kanban-count-participando">0</span>
+        </div>
+        <div id="kanban-cards-participando"></div>
+      </div>
+      <div class="kanban-col" id="kanban-col-aguardando-empenho" ondragover="kanbanDragOver(event,'aguardando-empenho')" ondrop="kanbanDrop(event,'aguardando-empenho')" ondragleave="kanbanDragLeave(event)">
+        <div class="kanban-col-header">
+          <span>📄 Aguard. Empenho</span>
+          <span class="kanban-count" id="kanban-count-aguardando-empenho">0</span>
+        </div>
+        <div id="kanban-cards-aguardando-empenho"></div>
+      </div>
+      <div class="kanban-col" id="kanban-col-empenhado" ondragover="kanbanDragOver(event,'empenhado')" ondrop="kanbanDrop(event,'empenhado')" ondragleave="kanbanDragLeave(event)">
+        <div class="kanban-col-header">
+          <span>✅ Empenhado</span>
+          <span class="kanban-count" id="kanban-count-empenhado">0</span>
+        </div>
+        <div id="kanban-cards-empenhado"></div>
+      </div>
+      <div class="kanban-col" id="kanban-col-finalizada" ondragover="kanbanDragOver(event,'finalizada')" ondrop="kanbanDrop(event,'finalizada')" ondragleave="kanbanDragLeave(event)">
+        <div class="kanban-col-header">
+          <span>🏁 Finalizada</span>
+          <span class="kanban-count" id="kanban-count-finalizada">0</span>
+        </div>
+        <div id="kanban-cards-finalizada"></div>
+      </div>
     </div>
   </div>
 
@@ -2115,6 +2242,23 @@
           </div>
           <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
         </div>
+
+        <!-- UPLOAD EDITAL -->
+        <div class="fg full">
+          <label class="fl">📑 Edital (PDF) — Upload direto</label>
+          <div id="d-edital-preview" style="display:none;margin-bottom:6px;"></div>
+          <div class="file-upload-zone" id="d-edital-dropzone"
+            ondragover="event.preventDefault();this.classList.add('dragover')"
+            ondragleave="this.classList.remove('dragover')"
+            ondrop="handleStorageDrop(event,'disputa','edital')">
+            <input type="file" accept="application/pdf,image/*" id="d-edital-file" onchange="handleStorageUpload(this,'disputa','edital')">
+            📑 Clique ou arraste o PDF do edital (máx. 15MB)
+          </div>
+          <div class="ocr-progress" id="d-edital-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="d-edital-ocr-bar"></div></div>
+          <div id="d-edital-ocr-status" style="font-size:10px;color:var(--text-tertiary);margin-top:4px;display:none;"></div>
+          <input type="hidden" id="d-edital-url">
+          <input type="hidden" id="d-edital-nome">
+        </div>
         
 
 
@@ -2197,6 +2341,34 @@
             <input type="url" class="fc" id="e-link-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
             <input type="text" class="fc" id="e-link-nome" placeholder="Nome (ex: Empenho nº 123)" style="flex:1;min-width:150px;">
           </div>
+        </div>
+
+        <!-- UPLOAD NOTA DE EMPENHO + OCR -->
+        <div class="fg full">
+          <label class="fl" style="justify-content:space-between;">
+            🖼 Nota de Empenho (imagem ou PDF)
+            <span style="color:var(--accent-primary);font-size:9px;font-weight:600;background:var(--info-soft);padding:2px 6px;border-radius:10px;">✨ OCR automático</span>
+          </label>
+          <div id="e-ne-preview" style="display:none;margin-bottom:6px;"></div>
+          <div class="file-upload-zone" id="e-ne-dropzone"
+            ondragover="event.preventDefault();this.classList.add('dragover')"
+            ondragleave="this.classList.remove('dragover')"
+            ondrop="handleStorageDrop(event,'empenho','ne')">
+            <input type="file" accept="image/*,application/pdf" id="e-ne-file" onchange="handleStorageUpload(this,'empenho','ne')">
+            🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)
+          </div>
+          <div class="ocr-progress" id="e-ne-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="e-ne-ocr-bar"></div></div>
+          <div id="e-ne-ocr-status" style="font-size:10px;color:var(--text-tertiary);margin-top:4px;display:none;"></div>
+          <div id="e-ne-ocr-result" style="display:none;margin-top:6px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Dados extraídos pelo OCR:</div>
+            <div class="ocr-result-box" id="e-ne-ocr-text"></div>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <button class="btn btn-ghost btn-sm" onclick="ocrPreencherCampos()" style="color:var(--accent-primary);border-color:var(--accent-primary);">✨ Preencher campos automaticamente</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('e-ne-ocr-result').style.display='none'">✕ Fechar</button>
+            </div>
+          </div>
+          <input type="hidden" id="e-ne-url">
+          <input type="hidden" id="e-ne-nome">
         </div>
 
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
@@ -3403,6 +3575,7 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
+      (r.editalUrl ? '<div class="detail-field"><div class="detail-field-label">EDITAL</div><div class="detail-field-value"><a href="' + r.editalUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📑 ' + (r.editalNome||'Edital') + '</a></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -3509,6 +3682,7 @@ function abrirPopupEmpenho(id) {
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
     (r.linkUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📎 LINK DO EMPENHO</div><div class="detail-field-value"><a href="'+r.linkUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 '+(r.linkNome||'Abrir arquivo')+'</a></div></div>' : '') +
+    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">🖼 NOTA DE EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">🖼 '+(r.neNome||'Nota de Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent-primary)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(r.vem) + '</div></div>' +
@@ -3690,7 +3864,10 @@ function renderD(){
       : '<span style="color:var(--danger);font-size:10px;">⚠ sem itens</span>';
     return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-disputas" data-id="' + r.id + '" onchange="onRowCheck(\'disputas\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
-      '<td class="mono" style="font-size:11px;">' + fmtD(r.data) + '</td>' +
+      '<td class="inline-edit-cell" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
+        '<span class="mono" style="font-size:11px;">' + fmtD(r.data) + '</span>' +
+        '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
+      '</td>' +
       '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
@@ -3702,6 +3879,8 @@ function renderD(){
       '</td></tr>';
   }).join('');
   sumD();
+  // If in kanban view, also render kanban
+  if (_viewMode === 'kanban') renderKanban();
 }
 
 function sumD(){
@@ -4560,7 +4739,8 @@ document.addEventListener('keydown', (e) => {
 // ========== DISPUTAS ==========
 function clearD(){
   resetFields('d');
-  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-edital-url','d-edital-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  const ep = g('d-edital-preview'); if(ep) { ep.style.display='none'; ep.innerHTML=''; }
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
   calcD();
 }
@@ -4596,6 +4776,8 @@ function saveD(){
     observacao: gv('d-observacao').toUpperCase(),
     propostaUrl: gv('d-proposta-url') || '',
     propostaNome: gv('d-proposta-nome') || '',
+    editalUrl: gv('d-edital-url') || '',
+    editalNome: gv('d-edital-nome') || '',
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
   };
@@ -4639,6 +4821,8 @@ function editD(id){
   // Carrega proposta se existir
   const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = r.propostaUrl || '';
   const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.value = r.propostaNome || '';
+  // Carrega edital se existir
+  carregarArquivosDisputa(r);
 
   // Carrega lotes (garante que todos tenham ID)
   lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0 }));
@@ -4656,7 +4840,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-link-url','e-link-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-link-url','e-link-nome','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';neP.innerHTML='';} _ocrExtractedData=null;
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -4735,6 +4919,8 @@ function saveE(){
     observacao: gv('e-observacao').toUpperCase(),
     linkUrl: gv('e-link-url') || '',
     linkNome: gv('e-link-nome') || '',
+    neUrl: gv('e-ne-url') || '',
+    neNome: gv('e-ne-nome') || '',
     disputaId: disputaId,
     compras: (EID.empenhos ? (DB.empenhos.find(x=>x.id===EID.empenhos)?.compras || []) : []), // preserva compras
     M
@@ -4755,6 +4941,8 @@ function editE(id){
   g('e-observacao').value=r.observacao||'';
   const eLinkUrl = g('e-link-url'); if(eLinkUrl) eLinkUrl.value = r.linkUrl||'';
   const eLinkNome = g('e-link-nome'); if(eLinkNome) eLinkNome.value = r.linkNome||'';
+  // Carrega NE
+  carregarArquivosEmpenho(r);
   g('e-dcomp').value=r.dcomp||''; 
   g('e-aliq').value= (r.aliq*100).toFixed(1).replace('.',',');
   g('e-recebido').value=r.recebido||''; g('e-dreceb').value=r.dreceb||''; 
@@ -6920,8 +7108,401 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
   }
 }
 
+// ========== FIREBASE STORAGE UPLOAD ==========
+let _ocrExtractedData = null;
+
+async function handleStorageUpload(input, tipo, campo) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 15MB.', 'error'); input.value = ''; return; }
+
+  const prefix = tipo === 'disputa' ? 'd' : 'e';
+  const fieldPrefix = prefix + '-' + (campo === 'edital' ? 'edital' : 'ne');
+
+  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
+  const preview = document.getElementById(fieldPrefix + '-preview');
+  const urlHidden = document.getElementById(fieldPrefix + '-url');
+  const nomeHidden = document.getElementById(fieldPrefix + '-nome');
+
+  if (dropzone) dropzone.innerHTML = `<span style="color:var(--text-tertiary);">⏳ Enviando ${file.name}...</span>`;
+
+  try {
+    const uid_val = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const storageRef = fbStorage.ref(`documentos/${uid_val}_${file.name}`);
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on('state_changed',
+      snap => {
+        const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+        if (dropzone) dropzone.innerHTML = `<span style="color:var(--accent-primary);">⏳ ${pct}% enviado...</span>`;
+      },
+      err => {
+        toast('Erro no upload: ' + err.message, 'error');
+        if (dropzone) dropzone.innerHTML = campo === 'edital'
+          ? '📑 Clique ou arraste o PDF do edital (máx. 15MB)'
+          : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)';
+      },
+      async () => {
+        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        if (urlHidden) urlHidden.value = downloadURL;
+        if (nomeHidden) nomeHidden.value = file.name;
+
+        if (preview) {
+          preview.style.display = 'block';
+          preview.innerHTML = `<div class="file-badge">
+            <a href="${downloadURL}" target="_blank" style="color:inherit;text-decoration:none;">${campo === 'edital' ? '📑' : '🖼'} ${file.name}</a>
+            <span class="file-badge-remove" onclick="limparArquivoStorage('${fieldPrefix}','${campo === 'edital' ? '📑 Clique ou arraste o PDF do edital (máx. 15MB)' : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)'}')">✕</span>
+          </div>`;
+        }
+        if (dropzone) dropzone.innerHTML = `<input type="file" accept="${campo === 'edital' ? 'application/pdf,image/*' : 'image/*,application/pdf'}" id="${fieldPrefix}-file" onchange="handleStorageUpload(this,'${tipo}','${campo}')">
+          ✅ ${file.name} — <span style="color:var(--accent-primary);">Clique para trocar</span>`;
+
+        toast(`✅ ${file.name} enviado!`, 'success');
+
+        // Se for imagem ou PDF, oferece OCR
+        if (campo === 'ne' && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+          iniciarOCR(file, fieldPrefix);
+        }
+      }
+    );
+  } catch(err) {
+    toast('Erro ao fazer upload: ' + err.message, 'error');
+  }
+}
+
+async function handleStorageDrop(event, tipo, campo) {
+  event.preventDefault();
+  const prefix = tipo === 'disputa' ? 'd' : 'e';
+  const fieldPrefix = prefix + '-' + (campo === 'edital' ? 'edital' : 'ne');
+  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
+  if (dropzone) dropzone.classList.remove('dragover');
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  // Create a fake input
+  const fakeInput = { files: [file] };
+  await handleStorageUpload(fakeInput, tipo, campo);
+}
+
+function limparArquivoStorage(fieldPrefix, placeholder) {
+  const preview = document.getElementById(fieldPrefix + '-preview');
+  const urlHidden = document.getElementById(fieldPrefix + '-url');
+  const nomeHidden = document.getElementById(fieldPrefix + '-nome');
+  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
+  const ocrResult = document.getElementById(fieldPrefix + '-ocr-result');
+  if (preview) { preview.style.display = 'none'; preview.innerHTML = ''; }
+  if (urlHidden) urlHidden.value = '';
+  if (nomeHidden) nomeHidden.value = '';
+  if (ocrResult) ocrResult.style.display = 'none';
+  if (dropzone) dropzone.innerHTML = `<input type="file" accept="image/*,application/pdf" id="${fieldPrefix}-file" onchange="handleStorageUpload(this,'${fieldPrefix.startsWith('d') ? 'disputa' : 'empenho'}','${fieldPrefix.includes('edital') ? 'edital' : 'ne'}')">
+    ${placeholder}`;
+}
+
+// ========== OCR COM TESSERACT.JS ==========
+async function iniciarOCR(file, fieldPrefix) {
+  const progressWrap = document.getElementById(fieldPrefix + '-ocr-progress');
+  const progressBar = document.getElementById(fieldPrefix + '-ocr-bar');
+  const status = document.getElementById(fieldPrefix + '-ocr-status');
+  const ocrResult = document.getElementById(fieldPrefix + '-ocr-result');
+  const ocrText = document.getElementById(fieldPrefix + '-ocr-text');
+
+  if (progressWrap) progressWrap.style.display = 'block';
+  if (status) { status.style.display = 'block'; status.textContent = '🔍 Iniciando reconhecimento de texto...'; }
+  if (ocrResult) ocrResult.style.display = 'none';
+
+  try {
+    const worker = await Tesseract.createWorker('por', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          const pct = Math.round((m.progress || 0) * 100);
+          if (progressBar) progressBar.style.width = pct + '%';
+          if (status) status.textContent = `🔍 Reconhecendo texto... ${pct}%`;
+        }
+      }
+    });
+
+    const { data: { text } } = await worker.recognize(file);
+    await worker.terminate();
+
+    _ocrExtractedData = text;
+
+    if (progressWrap) progressWrap.style.display = 'none';
+    if (status) status.style.display = 'none';
+    if (ocrResult) ocrResult.style.display = 'block';
+    if (ocrText) ocrText.textContent = text.trim().substring(0, 800) + (text.length > 800 ? '...' : '');
+
+    toast('✨ OCR concluído! Revise os dados extraídos.', 'success');
+  } catch(err) {
+    if (progressWrap) progressWrap.style.display = 'none';
+    if (status) { status.style.display = 'block'; status.textContent = '❌ Erro no OCR: ' + err.message; }
+    console.error('OCR error:', err);
+  }
+}
+
+function ocrPreencherCampos() {
+  if (!_ocrExtractedData) return;
+  const text = _ocrExtractedData;
+
+  // Tenta extrair número do empenho (padrões comuns em NE)
+  const numMatch = text.match(/(?:empenho|ne|n[°º]\.?\s*)[\s:]*([0-9]{4,}\/[0-9]{4}|[0-9]{4,})/i);
+  if (numMatch) {
+    const el = g('e-num');
+    if (el && !el.value) { el.value = numMatch[1]; toast('Nº Empenho preenchido!', 'info'); }
+  }
+
+  // Tenta extrair valor (R$ X.XXX,XX)
+  const valorMatches = text.match(/R\$\s*([\d\.]+,\d{2})/g);
+  if (valorMatches && valorMatches.length > 0) {
+    // Pega o maior valor (provável valor do empenho)
+    const valores = valorMatches.map(v => {
+      const num = v.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+      return parseFloat(num);
+    }).filter(v => !isNaN(v) && v > 0);
+    if (valores.length) {
+      const maior = Math.max(...valores);
+      const vemEl = g('e-vem');
+      const vemAuto = g('e-vem-a');
+      if (vemEl && !vemEl.value && !vemManual) {
+        vemEl.value = maior.toFixed(2);
+        if (vemAuto) vemAuto.value = fmt(maior);
+        calcE();
+        toast(`Valor R$ ${maior.toLocaleString('pt-BR', {minimumFractionDigits: 2})} extraído!`, 'info');
+      }
+    }
+  }
+
+  // Tenta extrair data (DD/MM/AAAA)
+  const dataMatch = text.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (dataMatch) {
+    const [, d, m, y] = dataMatch;
+    const dataEl = g('e-data');
+    if (dataEl && !dataEl.value) {
+      dataEl.value = `${y}-${m}-${d}`;
+      toast('Data preenchida!', 'info');
+    }
+  }
+
+  document.getElementById('e-ne-ocr-result').style.display = 'none';
+}
+
+// ========== KANBAN ==========
+let _viewMode = 'lista';
+let _kanbanDragId = null;
+
+const KANBAN_STATUSES = {
+  'em-analise':        { label: '🔍 Em Análise',        color: '#64748b' },
+  'participando':      { label: '⚡ Participando',       color: '#2563eb' },
+  'aguardando-empenho':{ label: '📄 Aguard. Empenho',   color: '#d97706' },
+  'empenhado':         { label: '✅ Empenhado',          color: '#059669' },
+  'finalizada':        { label: '🏁 Finalizada',         color: '#7c3aed' },
+};
+
+function setViewMode(mode) {
+  _viewMode = mode;
+  const tableView = document.getElementById('disputas-table-view');
+  const kanbanView = document.getElementById('disputas-kanban-view');
+  const btnLista = document.getElementById('vt-lista');
+  const btnKanban = document.getElementById('vt-kanban');
+
+  if (mode === 'kanban') {
+    if (tableView) tableView.style.display = 'none';
+    if (kanbanView) { kanbanView.style.display = 'flex'; }
+    if (btnLista) btnLista.classList.remove('active');
+    if (btnKanban) btnKanban.classList.add('active');
+    renderKanban();
+  } else {
+    if (tableView) tableView.style.display = '';
+    if (kanbanView) { kanbanView.style.display = 'none'; }
+    if (btnLista) btnLista.classList.add('active');
+    if (btnKanban) btnKanban.classList.remove('active');
+    renderD();
+  }
+}
+
+function getKanbanStatus(r) {
+  // Retorna coluna do kanban baseado no estado da disputa
+  if (r.finalizada) return 'finalizada';
+  const hasEmpenhos = DB.empenhos.some(e => e.disputaId === r.id);
+  if (hasEmpenhos) {
+    const allPago = DB.empenhos.filter(e=>e.disputaId===r.id).every(e=>empenhoEstaPago(e));
+    if (allPago) return 'finalizada';
+    return 'empenhado';
+  }
+  // Usa campo kanbanStatus se existir (para arrastar)
+  if (r.kanbanStatus && KANBAN_STATUSES[r.kanbanStatus]) return r.kanbanStatus;
+  return 'em-analise';
+}
+
+function renderKanban() {
+  const rows = getSorted('disputas').filter(r => matches('disputas', r));
+
+  Object.keys(KANBAN_STATUSES).forEach(status => {
+    const container = document.getElementById('kanban-cards-' + status);
+    const count = document.getElementById('kanban-count-' + status);
+    if (!container) return;
+
+    const cards = rows.filter(r => getKanbanStatus(r) === status);
+    if (count) count.textContent = cards.length;
+
+    if (!cards.length) {
+      container.innerHTML = '<div class="kanban-empty">Nenhuma disputa</div>';
+      return;
+    }
+
+    container.innerHTML = cards.map(r => {
+      const lotes = r.lotes || [];
+      const contrato = getValorContrato(r);
+      const hasEmps = DB.empenhos.some(e => e.disputaId === r.id);
+      return `<div class="kanban-card" draggable="true"
+        ondragstart="kanbanDragStart(event,'${r.id}')"
+        ondragend="kanbanDragEnd(event)"
+        onclick="abrirPopupDisputa('${r.id}')">
+        <div class="kanban-card-title">${r.orgao || '—'}</div>
+        <div class="kanban-card-meta">${fmtD(r.data)} · ${r.estado || '—'} · ${r.analista || '—'}</div>
+        ${lotes.length ? `<div style="font-size:10px;color:var(--text-tertiary);">${lotes.length} lote(s) · ${fmt(contrato)}</div>` : ''}
+        <div class="kanban-card-footer">
+          <span class="badge ${r.analista === 'Márdea' ? 'bp' : 'bb'}" style="font-size:9px;">${r.analista || '—'}</span>
+          <div style="display:flex;gap:4px;">
+            ${hasEmps ? `<span style="font-size:9px;color:var(--success);">📄 ${DB.empenhos.filter(e=>e.disputaId===r.id).length} emp.</span>` : ''}
+            <button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:12px;" onclick="event.stopPropagation();editD('${r.id}')">✏️</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function kanbanDragStart(event, id) {
+  _kanbanDragId = id;
+  event.dataTransfer.effectAllowed = 'move';
+  event.target.style.opacity = '0.5';
+}
+
+function kanbanDragEnd(event) {
+  event.target.style.opacity = '';
+  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
+}
+
+function kanbanDragOver(event, status) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
+  document.getElementById('kanban-col-' + status)?.classList.add('drag-over');
+}
+
+function kanbanDragLeave(event) {
+  event.currentTarget.classList.remove('drag-over');
+}
+
+function kanbanDrop(event, newStatus) {
+  event.preventDefault();
+  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
+  if (!_kanbanDragId) return;
+
+  const r = DB.disputas.find(x => x.id === _kanbanDragId);
+  if (!r) return;
+
+  // Não deixa mover manualmente para "empenhado" ou "finalizada" (auto-calculados)
+  if (newStatus === 'empenhado' || newStatus === 'finalizada') {
+    toast('ℹ️ Status "Empenhado" e "Finalizada" são definidos automaticamente.', 'info');
+    _kanbanDragId = null;
+    return;
+  }
+
+  r.kanbanStatus = newStatus;
+  if (newStatus === 'finalizada') {
+    r.finalizada = true;
+    r.dataFinalizacao = r.dataFinalizacao || new Date().toISOString().slice(0, 10);
+  } else {
+    r.finalizada = false;
+  }
+  upsert('disputas', r);
+  toast(`✅ Movido para "${KANBAN_STATUSES[newStatus]?.label}"`, 'success');
+  renderKanban();
+  _kanbanDragId = null;
+}
+
+// ========== INLINE EDIT ==========
+function inlineEditStatus(id, tipo) {
+  const statuses = tipo === 'disputas'
+    ? [['em-analise','🔍 Em Análise'],['participando','⚡ Participando'],['aguardando-empenho','📄 Aguard. Empenho'],['empenhado','✅ Empenhado'],['finalizada','🏁 Finalizada']]
+    : [['pendente','⏳ Pendente'],['pago','✅ Pago']];
+
+  const r = DB[tipo].find(x => x.id === id);
+  if (!r) return;
+
+  const currentVal = tipo === 'disputas' ? getKanbanStatus(r) : (empenhoEstaPago(r) ? 'pago' : 'pendente');
+  const cellId = `inline-status-${tipo}-${id}`;
+  const cell = document.getElementById(cellId);
+  if (!cell) return;
+
+  const opts = statuses.map(([v, l]) => `<option value="${v}" ${v === currentVal ? 'selected' : ''}>${l}</option>`).join('');
+  cell.innerHTML = `<select class="inline-edit-select" onchange="commitInlineStatus('${id}','${tipo}',this.value,this)" onblur="renderAll()">${opts}</select>`;
+  cell.querySelector('select').focus();
+}
+
+function commitInlineStatus(id, tipo, newVal, el) {
+  const r = DB[tipo].find(x => x.id === id);
+  if (!r) return;
+
+  if (tipo === 'disputas') {
+    r.kanbanStatus = newVal;
+    if (newVal === 'finalizada') { r.finalizada = true; r.dataFinalizacao = r.dataFinalizacao || new Date().toISOString().slice(0,10); }
+    else { r.finalizada = false; }
+    upsert('disputas', DB.disputas);
+  }
+  toast('Status atualizado!', 'success');
+  setTimeout(() => renderAll(), 100);
+}
+
+function inlineEditDate(id, tipo) {
+  const r = DB[tipo].find(x => x.id === id);
+  if (!r) return;
+  const cellId = `inline-date-${tipo}-${id}`;
+  const cell = document.getElementById(cellId);
+  if (!cell) return;
+
+  const currentVal = r.data || '';
+  cell.innerHTML = `<input type="date" class="inline-edit-input" value="${currentVal}"
+    onchange="commitInlineDate('${id}','${tipo}',this.value)"
+    onblur="renderAll()" style="width:120px;">`;
+  cell.querySelector('input').focus();
+}
+
+function commitInlineDate(id, tipo, newVal) {
+  const r = DB[tipo].find(x => x.id === id);
+  if (!r) return;
+  r.data = newVal;
+  upsert(tipo, DB[tipo]);
+  toast('Data atualizada!', 'success');
+  setTimeout(() => renderAll(), 100);
+}
+
+// Helpers para carregar/salvar edital e NE nos modais
+function carregarArquivosDisputa(r) {
+  const editalUrl = g('d-edital-url'); const editalNome = g('d-edital-nome');
+  const editalPreview = g('d-edital-preview'); const editalDrop = g('d-edital-dropzone');
+  if (editalUrl) editalUrl.value = r.editalUrl || '';
+  if (editalNome) editalNome.value = r.editalNome || '';
+  if (r.editalUrl && editalPreview) {
+    editalPreview.style.display = 'block';
+    editalPreview.innerHTML = `<div class="file-badge"><a href="${r.editalUrl}" target="_blank" style="color:inherit;text-decoration:none;">📑 ${r.editalNome || 'Edital'}</a><span class="file-badge-remove" onclick="limparArquivoStorage('d-edital','📑 Clique ou arraste o PDF do edital (máx. 15MB)')">✕</span></div>`;
+  } else if (editalPreview) { editalPreview.style.display = 'none'; }
+}
+
+function carregarArquivosEmpenho(r) {
+  const neUrl = g('e-ne-url'); const neNome = g('e-ne-nome');
+  const nePreview = g('e-ne-preview');
+  if (neUrl) neUrl.value = r.neUrl || '';
+  if (neNome) neNome.value = r.neNome || '';
+  if (r.neUrl && nePreview) {
+    nePreview.style.display = 'block';
+    nePreview.innerHTML = `<div class="file-badge"><a href="${r.neUrl}" target="_blank" style="color:inherit;text-decoration:none;">🖼 ${r.neNome || 'Nota de Empenho'}</a><span class="file-badge-remove" onclick="limparArquivoStorage('e-ne','🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)')">✕</span></div>`;
+  } else if (nePreview) { nePreview.style.display = 'none'; }
+}
+
 // Verifica a cada 4 horas (enquanto sistema estiver aberto)
 setInterval(enviarAlertasEmail, 4 * 3600000);
+
 
 // ========== CONFIGURAÇÕES DE E-MAIL (modal) ==========
 function abrirConfigEmail() {
