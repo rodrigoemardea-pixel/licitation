@@ -3649,21 +3649,6 @@ function atualizarVemTotal() {
 }
 
 function selecionarLote(loteId, maxQtd, vunit) {
-  document.querySelectorAll('.lote-selector-card').forEach(c => c.classList.remove('selected'));
-  document.querySelectorAll('[id^="lqtd-wrap-"]').forEach(w => w.style.display = 'none');
-  document.querySelectorAll('input[name="lote-radio"]').forEach(r => r.checked = false);
-  lotesSelecionados = {};
-  const card = g('lcard-' + loteId);
-  if (card) { card.classList.add('selected'); const radio = card.querySelector('input[type=radio]'); if(radio) radio.checked = true; }
-  const qtdWrap = g('lqtd-wrap-' + loteId);
-  if (qtdWrap) qtdWrap.style.display = 'flex';
-  lotesSelecionados[loteId] = 1;
-  // Esconde o aviso de "selecione um lote"
-  const av = g('lote-aviso'); if(av) av.style.display = 'none';
-  atualizarVemPorLote(loteId, vunit, maxQtd);
-}
-
-function selecionarLote(loteId, maxQtd, vunit) {
   // Mantém compatibilidade - agora faz toggle
   const card = g('lcard-'+loteId);
   if(card) toggleLoteCard(card);
@@ -6696,59 +6681,6 @@ const ANALISTAS_EMAIL = {
   'Rodrigo': '',   // ex: 'rodrigo@empresa.com'
 };
 let _emailAlertasEnviados = new Set(); // evita reenvio na mesma sessão
-
-async function enviarAlertasEmail() {
-  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
-  const hoje = new Date();
-
-  // Empenhos >60 dias por analista
-  const empAtrasados = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60);
-  const porAnalista = {};
-  empAtrasados.forEach(e => {
-    const a = e.analista||'?';
-    if(!porAnalista[a]) porAnalista[a] = [];
-    porAnalista[a].push(e);
-  });
-
-  for(const [analista, emps] of Object.entries(porAnalista)) {
-    const emailDest = ANALISTAS_EMAIL[analista];
-    if(!emailDest) continue;
-    const chave = 'emp-atraso-'+analista+'-'+hoje.toISOString().slice(0,10);
-    if(_emailAlertasEnviados.has(chave)) continue;
-    _emailAlertasEnviados.add(chave);
-    const lista = emps.map(e=>`• Empenho #${e.num||'?'} — ${e.orgao||'?'} (${diasSemPagamento(e)} dias)`).join('\n');
-    try {
-      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: emailDest,
-        to_name: analista,
-        assunto: `⚠️ ${emps.length} empenho(s) com pagamento atrasado`,
-        mensagem: `Olá ${analista},\n\nVocê tem ${emps.length} empenho(s) com mais de 60 dias sem pagamento:\n\n${lista}\n\nAcesse o sistema para mais detalhes.`,
-        data: hoje.toLocaleDateString('pt-BR'),
-      }, EMAILJS_CONFIG.publicKey);
-      console.log('Email enviado para', analista);
-    } catch(err) { console.error('Erro EmailJS:', err); }
-  }
-
-  // Acompanhamentos com retorno vencido
-  const acompVencidos = (DB.acomp||[]).filter(r => r.retorno && new Date(r.retorno) < hoje && (r.status==='pendente'||r.status==='recurso'));
-  for(const acomp of acompVencidos) {
-    const analista = acomp.analista||'?';
-    const emailDest = ANALISTAS_EMAIL[analista];
-    if(!emailDest) continue;
-    const chave = 'acomp-'+acomp.id+'-'+hoje.toISOString().slice(0,10);
-    if(_emailAlertasEnviados.has(chave)) continue;
-    _emailAlertasEnviados.add(chave);
-    try {
-      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: emailDest,
-        to_name: analista,
-        assunto: `📋 Retorno vencido: ${acomp.orgao}`,
-        mensagem: `Olá ${analista},\n\nO acompanhamento do órgão "${acomp.orgao}" tinha retorno previsto para ${new Date(acomp.retorno).toLocaleDateString('pt-BR')} e ainda está ${acomp.status}.\n\nAcesse o sistema para atualizar.`,
-        data: hoje.toLocaleDateString('pt-BR'),
-      }, EMAILJS_CONFIG.publicKey);
-    } catch(err) { console.error('Erro EmailJS:', err); }
-  }
-}
 
 // Inicializa EmailJS com a public key
 (function initEmailJS() {
