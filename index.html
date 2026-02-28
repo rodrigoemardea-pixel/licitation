@@ -818,6 +818,9 @@
   }
 
   @keyframes slideInRight { from { transform:translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+  @keyframes scaleIn { from { transform:scale(0.7); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes fadeInOverlay { from { opacity:0; } to { opacity:1; } }
+  @keyframes bellShake { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-20deg)} 40%{transform:rotate(20deg)} 60%{transform:rotate(-10deg)} 80%{transform:rotate(10deg)} }
   @keyframes modalIn {
     from { opacity: 0; transform: scale(0.95) translateY(-10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
@@ -5916,12 +5919,15 @@ function iniciarNotificacoes() {
 function checarRetornos() {
   const agora = new Date();
   (DB.acomp||[]).forEach(r => {
-    if (!r.retorno || _notifShown.has(r.id)) return;
+    if (!r.retorno) return;
     const ret = new Date(r.retorno);
-    const diff = ret - agora;
-    // Notifica se chegou a hora (entre -2min e +2min) ou se está vencido há menos de 1h
-    if (diff <= 120000 && diff > -3600000) {
-      _notifShown.add(r.id);
+    const diff = ret - agora; // ms até o retorno
+    // Chave inclui o horário: se o usuário mudar, dispara novamente
+    const chave = r.id + '|' + r.retorno;
+    if (_notifShown.has(chave)) return;
+    // Dispara entre 90s antes e 30s depois do horário marcado (janela de ~2min)
+    if (diff <= 90000 && diff > -30000) {
+      _notifShown.add(chave);
       dispararNotificacao(r);
     }
   });
@@ -5931,7 +5937,7 @@ function dispararNotificacao(r) {
   const titulo = `⏰ Retorno: ${r.orgao}`;
   const corpo = `${r.analista} · ${r.sistema}\n${r.observacao||''}`;
 
-  // 1. Popup interno
+  // 1. Popup central grande
   mostrarPopupAlerta(r);
 
   // 2. Notificação do browser
@@ -5940,54 +5946,56 @@ function dispararNotificacao(r) {
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
-  // 3. Som
+  // 3. Som de alerta (mais chamativo)
   try {
     const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    [523, 659, 784].forEach((freq, i) => {
+    [659, 784, 659, 880].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + i*0.15);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.15 + 0.3);
-      osc.start(ctx.currentTime + i*0.15);
-      osc.stop(ctx.currentTime + i*0.15 + 0.3);
+      osc.type = 'triangle';
+      gain.gain.setValueAtTime(0.4, ctx.currentTime + i*0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.2 + 0.35);
+      osc.start(ctx.currentTime + i*0.2);
+      osc.stop(ctx.currentTime + i*0.2 + 0.35);
     });
   } catch(e) {}
 
-  // Atualiza badge
   updateBadges();
 }
 
 function mostrarPopupAlerta(r) {
-  // Remove popup anterior se houver
   const old = document.getElementById('notif-popup');
   if (old) old.remove();
 
-  const ret = r.retorno ? new Date(r.retorno).toLocaleString('pt-BR') : '';
-  const div = document.createElement('div');
-  div.id = 'notif-popup';
-  div.style.cssText = 'position:fixed;top:80px;right:24px;z-index:99999;background:var(--bg-surface);border:2px solid var(--warning);border-radius:16px;padding:20px 24px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideInRight 0.3s ease;';
-  div.innerHTML = `
-    <div style="display:flex;align-items:flex-start;gap:12px;">
-      <div style="font-size:32px;">⏰</div>
-      <div style="flex:1;">
-        <div style="font-size:14px;font-weight:700;color:var(--warning);margin-bottom:4px;">Lembrete de Retorno!</div>
-        <div style="font-size:15px;font-weight:700;color:var(--text-primary);">${r.orgao}</div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">👤 ${r.analista} · ${r.sistema}</div>
-        <div style="font-size:12px;color:var(--text-secondary);">⏰ ${ret}</div>
-        ${r.observacao ? `<div style="font-size:11px;color:var(--text-tertiary);margin-top:6px;border-top:1px solid var(--border-light);padding-top:6px;">${r.observacao}</div>` : ''}
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          ${r.link ? `<a href="${r.link}" target="_blank" class="btn btn-primary btn-sm" style="font-size:12px;text-decoration:none;">🔗 Abrir sistema</a>` : ''}
-          <button onclick="switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" class="btn btn-ghost btn-sm" style="font-size:12px;">Ver todos</button>
-          <button onclick="document.getElementById('notif-popup').remove();" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-tertiary);">✕</button>
-        </div>
+  const ret = r.retorno ? new Date(r.retorno).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+
+  // Overlay escuro de fundo
+  const overlay = document.createElement('div');
+  overlay.id = 'notif-popup';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;animation:fadeInOverlay 0.25s ease;';
+
+  overlay.innerHTML = `
+    <div style="background:var(--bg-surface);border:3px solid var(--warning);border-radius:24px;padding:36px 40px;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1);position:relative;text-align:center;">
+      <div style="font-size:64px;margin-bottom:8px;animation:bellShake 0.6s ease 0.3s;">⏰</div>
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--warning);text-transform:uppercase;margin-bottom:12px;">Lembrete de Retorno</div>
+      <div style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:8px;line-height:1.3;">${r.orgao}</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;">👤 ${r.analista} &nbsp;·&nbsp; 💻 ${r.sistema}</div>
+      <div style="font-size:18px;font-weight:700;color:var(--warning);margin:16px 0;padding:12px 20px;background:rgba(245,158,11,0.1);border-radius:12px;border:1px solid rgba(245,158,11,0.3);">📅 ${ret}</div>
+      ${r.observacao ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-surface-soft);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">💬 ${r.observacao}</div>` : ''}
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+        ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent-primary);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
+        <button onclick="switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
+        <button onclick="document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
       </div>
     </div>`;
-  document.body.appendChild(div);
-  // Auto-remove após 30 segundos
-  setTimeout(() => { if (div.parentNode) div.remove(); }, 30000);
+
+  // Fechar clicando fora do card
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+  // Auto-fecha após 60 segundos
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 60000);
 }
 
 // ========== PAINEL DE CONTROLE ==========
