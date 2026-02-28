@@ -2243,16 +2243,19 @@
           <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
         </div>
 
-        <!-- UPLOAD EDITAL -->
+        <!-- UPLOAD EDITAL via Cloudinary (gratuito) -->
         <div class="fg full">
-          <label class="fl">📑 Edital (PDF) — Upload direto</label>
+          <label class="fl" style="justify-content:space-between;">
+            📑 Edital (PDF ou imagem)
+            <span style="font-size:9px;color:var(--success);background:var(--success-soft);padding:2px 6px;border-radius:10px;font-weight:600;">☁️ Grátis · Cloudinary</span>
+          </label>
           <div id="d-edital-preview" style="display:none;margin-bottom:6px;"></div>
           <div class="file-upload-zone" id="d-edital-dropzone"
             ondragover="event.preventDefault();this.classList.add('dragover')"
             ondragleave="this.classList.remove('dragover')"
-            ondrop="handleStorageDrop(event,'disputa','edital')">
-            <input type="file" accept="application/pdf,image/*" id="d-edital-file" onchange="handleStorageUpload(this,'disputa','edital')">
-            📑 Clique ou arraste o PDF do edital (máx. 15MB)
+            ondrop="cloudinaryDrop(event,'d-edital')">
+            <input type="file" accept="application/pdf,image/*" id="d-edital-file" onchange="cloudinaryUpload(this,'d-edital')">
+            📑 Clique ou arraste o PDF do edital (máx. 10MB)
           </div>
           <div class="ocr-progress" id="d-edital-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="d-edital-ocr-bar"></div></div>
           <div id="d-edital-ocr-status" style="font-size:10px;color:var(--text-tertiary);margin-top:4px;display:none;"></div>
@@ -2343,18 +2346,21 @@
           </div>
         </div>
 
-        <!-- UPLOAD NOTA DE EMPENHO + OCR -->
+        <!-- UPLOAD NOTA DE EMPENHO via Cloudinary + OCR -->
         <div class="fg full">
           <label class="fl" style="justify-content:space-between;">
             🖼 Nota de Empenho (imagem ou PDF)
-            <span style="color:var(--accent-primary);font-size:9px;font-weight:600;background:var(--info-soft);padding:2px 6px;border-radius:10px;">✨ OCR automático</span>
+            <div style="display:flex;gap:4px;">
+              <span style="font-size:9px;color:var(--success);background:var(--success-soft);padding:2px 6px;border-radius:10px;font-weight:600;">☁️ Grátis · Cloudinary</span>
+              <span style="font-size:9px;color:var(--accent-primary);background:var(--info-soft);padding:2px 6px;border-radius:10px;font-weight:600;">✨ OCR automático</span>
+            </div>
           </label>
           <div id="e-ne-preview" style="display:none;margin-bottom:6px;"></div>
           <div class="file-upload-zone" id="e-ne-dropzone"
             ondragover="event.preventDefault();this.classList.add('dragover')"
             ondragleave="this.classList.remove('dragover')"
-            ondrop="handleStorageDrop(event,'empenho','ne')">
-            <input type="file" accept="image/*,application/pdf" id="e-ne-file" onchange="handleStorageUpload(this,'empenho','ne')">
+            ondrop="cloudinaryDrop(event,'e-ne')">
+            <input type="file" accept="image/*,application/pdf" id="e-ne-file" onchange="cloudinaryUpload(this,'e-ne',true)">
             🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)
           </div>
           <div class="ocr-progress" id="e-ne-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="e-ne-ocr-bar"></div></div>
@@ -7111,63 +7117,261 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
 // ========== FIREBASE STORAGE UPLOAD ==========
 let _ocrExtractedData = null;
 
-async function handleStorageUpload(input, tipo, campo) {
-  const file = input.files[0];
+// ========== CLOUDINARY UPLOAD (edital e NE) ==========
+async function cloudinaryUpload(input, fieldPrefix, withOcr = false) {
+  const file = input.files ? input.files[0] : input;
   if (!file) return;
-  if (file.size > 15 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 15MB.', 'error'); input.value = ''; return; }
+  if (file.size > 10 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 10MB.', 'error'); return; }
+
+  const isEdital = fieldPrefix.includes('edital');
+  const emoji    = isEdital ? '📑' : '🖼';
+  const acceptAttr = isEdital ? 'application/pdf,image/*' : 'image/*,application/pdf';
+  const placeholder = isEdital
+    ? '📑 Clique ou arraste o PDF do edital (máx. 10MB)'
+    : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)';
+
+  const dropzone   = document.getElementById(fieldPrefix + '-dropzone');
+  const preview    = document.getElementById(fieldPrefix + '-preview');
+  const urlHidden  = document.getElementById(fieldPrefix + '-url');
+  const nomeHidden = document.getElementById(fieldPrefix + '-nome');
+
+  const setProgress = pct => {
+    if (dropzone) dropzone.innerHTML = `
+      <div style="padding:4px 0;">
+        <span style="color:var(--accent-primary);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
+        <div style="height:4px;background:var(--border-light);border-radius:2px;margin-top:6px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:var(--accent-primary);border-radius:2px;transition:width .3s;"></div>
+        </div>
+      </div>`;
+  };
+
+  setProgress(0);
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  formData.append('resource_type', 'auto');
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`);
+
+  xhr.upload.onprogress = e => {
+    if (e.lengthComputable) setProgress(Math.round(e.loaded / e.total * 100));
+  };
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
+      const url  = data.secure_url;
+      if (urlHidden)  urlHidden.value  = url;
+      if (nomeHidden) nomeHidden.value = file.name;
+      if (preview) {
+        preview.style.display = 'block';
+        preview.innerHTML = `<div class="file-badge">
+          <a href="${url}" target="_blank" style="color:inherit;text-decoration:none;">${emoji} ${file.name}</a>
+          <span class="file-badge-remove" onclick="limparArquivoStorage('${fieldPrefix}','${placeholder}','${acceptAttr}')">✕</span>
+        </div>`;
+      }
+      if (dropzone) dropzone.innerHTML = `
+        <input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file"
+          onchange="cloudinaryUpload(this,'${fieldPrefix}',${withOcr})">
+        ✅ <strong>${file.name}</strong> — <span style="color:var(--accent-primary);">Clique para trocar</span>`;
+      toast(`✅ ${file.name} enviado!`, 'success');
+      if (withOcr && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+        iniciarOCR(file, fieldPrefix);
+      }
+    } else {
+      toast('Erro no upload: ' + xhr.statusText, 'error');
+      if (dropzone) dropzone.innerHTML = `<input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file" onchange="cloudinaryUpload(this,'${fieldPrefix}',${withOcr})"> ❌ Falha — clique para tentar novamente`;
+    }
+  };
+
+  xhr.onerror = () => {
+    toast('Erro de rede ao enviar arquivo.', 'error');
+    if (dropzone) dropzone.innerHTML = `<input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file" onchange="cloudinaryUpload(this,'${fieldPrefix}',${withOcr})"> ❌ Erro de rede`;
+  };
+
+  xhr.send(formData);
+}
+
+function cloudinaryDrop(event, fieldPrefix) {
+  event.preventDefault();
+  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
+  if (dropzone) dropzone.classList.remove('dragover');
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  const withOcr = fieldPrefix.includes('ne');
+  cloudinaryUpload(file, fieldPrefix, withOcr);
+}
+
+// ========== LEGADO (não usado mais) ==========
+async function handleStorageUpload(input, tipo, campo) {
+  const file = input.files ? input.files[0] : input; // aceita File direto ou input element
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('Arquivo muito grande! Máximo 15MB.', 'error'); return; }
 
   const prefix = tipo === 'disputa' ? 'd' : 'e';
   const fieldPrefix = prefix + '-' + (campo === 'edital' ? 'edital' : 'ne');
+  const placeholder = campo === 'edital'
+    ? '📑 Clique ou arraste o PDF do edital (máx. 15MB)'
+    : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)';
+  const acceptAttr = campo === 'edital' ? 'application/pdf,image/*' : 'image/*,application/pdf';
 
   const dropzone = document.getElementById(fieldPrefix + '-dropzone');
-  const preview = document.getElementById(fieldPrefix + '-preview');
-  const urlHidden = document.getElementById(fieldPrefix + '-url');
+  const preview  = document.getElementById(fieldPrefix + '-preview');
+  const urlHidden  = document.getElementById(fieldPrefix + '-url');
   const nomeHidden = document.getElementById(fieldPrefix + '-nome');
 
-  if (dropzone) dropzone.innerHTML = `<span style="color:var(--text-tertiary);">⏳ Enviando ${file.name}...</span>`;
+  const setDropzone = html => { if (dropzone) dropzone.innerHTML = html; };
+  const setProgress = pct => setDropzone(
+    `<div style="padding:4px 0;">
+       <span style="color:var(--accent-primary);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
+       <div style="height:4px;background:var(--border-light);border-radius:2px;margin-top:6px;overflow:hidden;">
+         <div style="width:${pct}%;height:100%;background:var(--accent-primary);border-radius:2px;transition:width .3s;"></div>
+       </div>
+     </div>`
+  );
 
+  const onSuccess = async (downloadURL) => {
+    if (urlHidden)  urlHidden.value  = downloadURL;
+    if (nomeHidden) nomeHidden.value = file.name;
+    if (preview) {
+      preview.style.display = 'block';
+      preview.innerHTML = `<div class="file-badge">
+        <a href="${downloadURL}" target="_blank" style="color:inherit;text-decoration:none;">
+          ${campo === 'edital' ? '📑' : '🖼'} ${file.name}
+        </a>
+        <span class="file-badge-remove"
+          onclick="limparArquivoStorage('${fieldPrefix}','${placeholder}')">✕</span>
+      </div>`;
+    }
+    setDropzone(`<input type="file" accept="${acceptAttr}"
+      id="${fieldPrefix}-file"
+      onchange="handleStorageUpload(this,'${tipo}','${campo}')">
+      ✅ <strong>${file.name}</strong> — <span style="color:var(--accent-primary);">Clique para trocar</span>`);
+    toast(`✅ ${file.name} enviado com sucesso!`, 'success');
+    if (campo === 'ne' && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+      iniciarOCR(file, fieldPrefix);
+    }
+  };
+
+  const onError = (err) => {
+    console.error('Upload error:', err);
+    const code = err.code || '';
+    let msg = err.message || 'Erro desconhecido';
+    if (code === 'storage/unauthorized' || code.includes('permission') || msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('unauthorized')) {
+      msg = '🔒 Permissão negada no Firebase Storage. Veja as instruções abaixo.';
+      mostrarInstrucaoStorage(fieldPrefix, placeholder, acceptAttr, tipo, campo);
+    }
+    toast('Erro no upload: ' + msg, 'error');
+    setDropzone(`<input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file" onchange="handleStorageUpload(this,'${tipo}','${campo}')">
+      ❌ Falha — clique para tentar novamente`);
+  };
+
+  setProgress(0);
+
+  // ── Tenta Firebase Storage primeiro ──
   try {
     const uid_val = Date.now().toString(36) + Math.random().toString(36).slice(2);
-    const storageRef = fbStorage.ref(`documentos/${uid_val}_${file.name}`);
-    const uploadTask = storageRef.put(file);
+    // Sanitiza nome do arquivo (remove caracteres proibidos no Storage)
+    const safeName = file.name.replace(/[#\[\]*?]/g, '_');
+    const storageRef = fbStorage.ref(`documentos/${uid_val}_${safeName}`);
+    const metadata  = { contentType: file.type, customMetadata: { uploadedBy: usuarioLogado || 'anon' } };
+    const uploadTask = storageRef.put(file, metadata);
+
+    // Timeout: se em 5s não começar a progredir, tenta Cloudinary
+    let progressStarted = false;
+    const timeoutId = setTimeout(() => {
+      if (!progressStarted) {
+        console.warn('Firebase Storage não progrediu — tentando Cloudinary...');
+        uploadTask.cancel();
+        uploadViaCloudinary(file, fieldPrefix, placeholder, acceptAttr, tipo, campo, onSuccess, onError, setProgress);
+      }
+    }, 5000);
 
     uploadTask.on('state_changed',
       snap => {
-        const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
-        if (dropzone) dropzone.innerHTML = `<span style="color:var(--accent-primary);">⏳ ${pct}% enviado...</span>`;
+        if (snap.bytesTransferred > 0) {
+          progressStarted = true;
+          clearTimeout(timeoutId);
+        }
+        const pct = snap.totalBytes > 0
+          ? Math.round(snap.bytesTransferred / snap.totalBytes * 100)
+          : 0;
+        setProgress(pct);
       },
       err => {
-        toast('Erro no upload: ' + err.message, 'error');
-        if (dropzone) dropzone.innerHTML = campo === 'edital'
-          ? '📑 Clique ou arraste o PDF do edital (máx. 15MB)'
-          : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)';
+        clearTimeout(timeoutId);
+        if (err.code === 'storage/cancelled') return; // cancelado intencionalmente
+        console.warn('Firebase Storage erro, tentando Cloudinary...', err);
+        // Tenta Cloudinary como fallback
+        uploadViaCloudinary(file, fieldPrefix, placeholder, acceptAttr, tipo, campo, onSuccess, onError, setProgress);
       },
       async () => {
-        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        if (urlHidden) urlHidden.value = downloadURL;
-        if (nomeHidden) nomeHidden.value = file.name;
-
-        if (preview) {
-          preview.style.display = 'block';
-          preview.innerHTML = `<div class="file-badge">
-            <a href="${downloadURL}" target="_blank" style="color:inherit;text-decoration:none;">${campo === 'edital' ? '📑' : '🖼'} ${file.name}</a>
-            <span class="file-badge-remove" onclick="limparArquivoStorage('${fieldPrefix}','${campo === 'edital' ? '📑 Clique ou arraste o PDF do edital (máx. 15MB)' : '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)'}')">✕</span>
-          </div>`;
-        }
-        if (dropzone) dropzone.innerHTML = `<input type="file" accept="${campo === 'edital' ? 'application/pdf,image/*' : 'image/*,application/pdf'}" id="${fieldPrefix}-file" onchange="handleStorageUpload(this,'${tipo}','${campo}')">
-          ✅ ${file.name} — <span style="color:var(--accent-primary);">Clique para trocar</span>`;
-
-        toast(`✅ ${file.name} enviado!`, 'success');
-
-        // Se for imagem ou PDF, oferece OCR
-        if (campo === 'ne' && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
-          iniciarOCR(file, fieldPrefix);
-        }
+        clearTimeout(timeoutId);
+        try {
+          const url = await uploadTask.snapshot.ref.getDownloadURL();
+          await onSuccess(url);
+        } catch(e) { onError(e); }
       }
     );
   } catch(err) {
-    toast('Erro ao fazer upload: ' + err.message, 'error');
+    // Fallback direto para Cloudinary
+    uploadViaCloudinary(file, fieldPrefix, placeholder, acceptAttr, tipo, campo, onSuccess, onError, setProgress);
   }
+}
+
+async function uploadViaCloudinary(file, fieldPrefix, placeholder, acceptAttr, tipo, campo, onSuccess, onError, setProgress) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+    formData.append('resource_type', 'auto');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`);
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) setProgress(Math.round(e.loaded / e.total * 100));
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        onSuccess(data.secure_url);
+      } else {
+        onError(new Error('Cloudinary: ' + xhr.statusText));
+      }
+    };
+    xhr.onerror = () => onError(new Error('Erro de rede'));
+    xhr.send(formData);
+  } catch(err) {
+    onError(err);
+  }
+}
+
+function mostrarInstrucaoStorage(fieldPrefix, placeholder, acceptAttr, tipo, campo) {
+  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
+  if (!dropzone) return;
+  dropzone.innerHTML = `
+    <div style="text-align:left;padding:8px;">
+      <div style="color:var(--warning);font-weight:700;margin-bottom:6px;">⚠️ Firebase Storage: permissão negada</div>
+      <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+        Vá em <strong>Firebase Console → Storage → Rules</strong> e substitua por:<br>
+        <code style="background:var(--bg-inset);padding:2px 6px;border-radius:4px;font-size:10px;display:block;margin:6px 0;white-space:pre;">rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}</code>
+        <em style="color:var(--text-tertiary);">O sistema tentará via Cloudinary automaticamente como alternativa.</em>
+      </div>
+      <input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file"
+        onchange="handleStorageUpload(this,'${tipo}','${campo}')"
+        style="margin-top:8px;font-size:11px;">
+    </div>`;
 }
 
 async function handleStorageDrop(event, tipo, campo) {
@@ -7178,23 +7382,23 @@ async function handleStorageDrop(event, tipo, campo) {
   if (dropzone) dropzone.classList.remove('dragover');
   const file = event.dataTransfer.files[0];
   if (!file) return;
-  // Create a fake input
-  const fakeInput = { files: [file] };
-  await handleStorageUpload(fakeInput, tipo, campo);
+  await handleStorageUpload(file, tipo, campo); // passa File direto
 }
 
-function limparArquivoStorage(fieldPrefix, placeholder) {
-  const preview = document.getElementById(fieldPrefix + '-preview');
-  const urlHidden = document.getElementById(fieldPrefix + '-url');
+function limparArquivoStorage(fieldPrefix, placeholder, acceptAttr) {
+  const accept  = acceptAttr || (fieldPrefix.includes('edital') ? 'application/pdf,image/*' : 'image/*,application/pdf');
+  const withOcr = fieldPrefix.includes('ne');
+  const preview   = document.getElementById(fieldPrefix + '-preview');
+  const urlHidden  = document.getElementById(fieldPrefix + '-url');
   const nomeHidden = document.getElementById(fieldPrefix + '-nome');
-  const dropzone = document.getElementById(fieldPrefix + '-dropzone');
-  const ocrResult = document.getElementById(fieldPrefix + '-ocr-result');
-  if (preview) { preview.style.display = 'none'; preview.innerHTML = ''; }
-  if (urlHidden) urlHidden.value = '';
+  const dropzone   = document.getElementById(fieldPrefix + '-dropzone');
+  const ocrResult  = document.getElementById(fieldPrefix + '-ocr-result');
+  if (preview)  { preview.style.display = 'none'; preview.innerHTML = ''; }
+  if (urlHidden)  urlHidden.value  = '';
   if (nomeHidden) nomeHidden.value = '';
-  if (ocrResult) ocrResult.style.display = 'none';
-  if (dropzone) dropzone.innerHTML = `<input type="file" accept="image/*,application/pdf" id="${fieldPrefix}-file" onchange="handleStorageUpload(this,'${fieldPrefix.startsWith('d') ? 'disputa' : 'empenho'}','${fieldPrefix.includes('edital') ? 'edital' : 'ne'}')">
-    ${placeholder}`;
+  if (ocrResult)  ocrResult.style.display = 'none';
+  if (dropzone) dropzone.innerHTML = `<input type="file" accept="${accept}" id="${fieldPrefix}-file" onchange="cloudinaryUpload(this,'${fieldPrefix}',${withOcr})">
+    ${placeholder || (withOcr ? '🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)' : '📑 Clique ou arraste o PDF do edital (máx. 10MB)')}`;
 }
 
 // ========== OCR COM TESSERACT.JS ==========
