@@ -2243,25 +2243,8 @@
           <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
         </div>
 
-        <!-- UPLOAD EDITAL via Cloudinary (gratuito) -->
-        <div class="fg full">
-          <label class="fl" style="justify-content:space-between;">
-            📑 Edital (PDF ou imagem)
-            <span style="font-size:9px;color:var(--success);background:var(--success-soft);padding:2px 6px;border-radius:10px;font-weight:600;">☁️ Grátis · Cloudinary</span>
-          </label>
-          <div id="d-edital-preview" style="display:none;margin-bottom:6px;"></div>
-          <div class="file-upload-zone" id="d-edital-dropzone"
-            ondragover="event.preventDefault();this.classList.add('dragover')"
-            ondragleave="this.classList.remove('dragover')"
-            ondrop="cloudinaryDrop(event,'d-edital')">
-            <input type="file" accept="application/pdf,image/*" id="d-edital-file" onchange="cloudinaryUpload(this,'d-edital')">
-            📑 Clique ou arraste o PDF do edital (máx. 10MB)
-          </div>
-          <div class="ocr-progress" id="d-edital-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="d-edital-ocr-bar"></div></div>
-          <div id="d-edital-ocr-status" style="font-size:10px;color:var(--text-tertiary);margin-top:4px;display:none;"></div>
-          <input type="hidden" id="d-edital-url">
-          <input type="hidden" id="d-edital-nome">
-        </div>
+        <input type="hidden" id="d-edital-url">
+        <input type="hidden" id="d-edital-nome">
         
 
 
@@ -2346,36 +2329,8 @@
           </div>
         </div>
 
-        <!-- UPLOAD NOTA DE EMPENHO via Cloudinary + OCR -->
-        <div class="fg full">
-          <label class="fl" style="justify-content:space-between;">
-            🖼 Nota de Empenho (imagem ou PDF)
-            <div style="display:flex;gap:4px;">
-              <span style="font-size:9px;color:var(--success);background:var(--success-soft);padding:2px 6px;border-radius:10px;font-weight:600;">☁️ Grátis · Cloudinary</span>
-              <span style="font-size:9px;color:var(--accent-primary);background:var(--info-soft);padding:2px 6px;border-radius:10px;font-weight:600;">✨ OCR automático</span>
-            </div>
-          </label>
-          <div id="e-ne-preview" style="display:none;margin-bottom:6px;"></div>
-          <div class="file-upload-zone" id="e-ne-dropzone"
-            ondragover="event.preventDefault();this.classList.add('dragover')"
-            ondragleave="this.classList.remove('dragover')"
-            ondrop="cloudinaryDrop(event,'e-ne')">
-            <input type="file" accept="image/*,application/pdf" id="e-ne-file" onchange="cloudinaryUpload(this,'e-ne',true)">
-            🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)
-          </div>
-          <div class="ocr-progress" id="e-ne-ocr-progress" style="display:none;"><div class="ocr-progress-bar" id="e-ne-ocr-bar"></div></div>
-          <div id="e-ne-ocr-status" style="font-size:10px;color:var(--text-tertiary);margin-top:4px;display:none;"></div>
-          <div id="e-ne-ocr-result" style="display:none;margin-top:6px;">
-            <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Dados extraídos pelo OCR:</div>
-            <div class="ocr-result-box" id="e-ne-ocr-text"></div>
-            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-              <button class="btn btn-ghost btn-sm" onclick="ocrPreencherCampos()" style="color:var(--accent-primary);border-color:var(--accent-primary);">✨ Preencher campos automaticamente</button>
-              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('e-ne-ocr-result').style.display='none'">✕ Fechar</button>
-            </div>
-          </div>
           <input type="hidden" id="e-ne-url">
           <input type="hidden" id="e-ne-nome">
-        </div>
 
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
         <input type="hidden" id="e-dcomp">
