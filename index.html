@@ -5630,36 +5630,92 @@ function buscaGlobal(q) {
   const qL = q.toLowerCase();
   const resultados = [];
 
+  // ===== DISPUTAS — todos os campos + lotes =====
   DB.disputas.forEach(d => {
-    if ((d.orgao||'').toLowerCase().includes(qL) || (d.processo||'').toLowerCase().includes(qL)) {
-      resultados.push({ tipo: '🏆 Disputa', label: d.orgao + (d.processo ? ' · ' + d.processo : ''), sub: fmtD(d.data)||'', onclick: `fecharBuscaGlobal();abrirPopupDisputa('${d.id}')` });
+    const campos = [
+      d.orgao, d.processo, d.plataforma, d.analista, d.estado,
+      d.observacao, d.empresa, fmtD(d.data),
+      ...(d.lotes||[]).map(l => l.descricao),
+      ...(d.lotes||[]).map(l => String(l.qtd||'')),
+    ];
+    if (campos.some(c => (c||'').toLowerCase().includes(qL))) {
+      // Descobre qual campo bateu para mostrar no sub
+      const matchLote = (d.lotes||[]).find(l => (l.descricao||'').toLowerCase().includes(qL));
+      const sub = matchLote
+        ? `Lote: ${matchLote.descricao.substring(0,30)}`
+        : (d.finalizada ? '✅ Finalizada' : '🔵 Em andamento') + ' · ' + (fmtD(d.data)||'');
+      resultados.push({
+        tipo: '🏆 Disputa',
+        label: (d.orgao||'—') + (d.processo ? ' · ' + d.processo : ''),
+        sub,
+        onclick: `fecharBuscaGlobal();abrirPopupDisputa('${d.id}')`
+      });
     }
   });
+
+  // ===== EMPENHOS — todos os campos + lotes + compras =====
   DB.empenhos.forEach(e => {
-    if ((e.orgao||'').toLowerCase().includes(qL) || (e.num||'').toLowerCase().includes(qL) || (e.produto||'').toLowerCase().includes(qL)) {
-      resultados.push({ tipo: '📄 Empenho', label: '#' + (e.num||'?') + ' · ' + (e.orgao||''), sub: fmt(e.vem), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
+    const camposEmp = [
+      e.orgao, e.num, e.analista, e.plataforma, e.observacao,
+      e.produto, fmtD(e.data), String(e.vem||''),
+      ...(e.lotes||[]).map(l => l.descricao),
+    ];
+    if (camposEmp.some(c => (c||'').toLowerCase().includes(qL))) {
+      const matchLote = (e.lotes||[]).find(l => (l.descricao||'').toLowerCase().includes(qL));
+      resultados.push({
+        tipo: '📄 Empenho',
+        label: '#' + (e.num||'?') + ' · ' + (e.orgao||'—'),
+        sub: matchLote ? `Lote: ${matchLote.descricao.substring(0,25)}` : fmt(e.vem),
+        onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')`
+      });
     }
+
+    // ===== COMPRAS deste empenho =====
     (e.compras||[]).forEach(c => {
-      if ((c.plataforma||'').toLowerCase().includes(qL)) {
-        resultados.push({ tipo: '🛒 Compra', label: (e.orgao||'') + ' · ' + (c.plataforma||''), sub: fmt(c.vtotal), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
+      const camposCompra = [
+        c.plataforma, c.pedido, c.nf, c.transportadora,
+        c.observacao, String(c.vtotal||''), String(c.rec||''),
+        String(c.luc||''), fmtD(c.dpag), fmtD(c.dped), fmtD(c.dent),
+      ];
+      if (camposCompra.some(f => (f||'').toLowerCase().includes(qL))) {
+        const detalhe = c.pedido ? 'Pedido: ' + c.pedido
+          : c.nf ? 'NF: ' + c.nf
+          : c.plataforma || 'Compra';
+        resultados.push({
+          tipo: '🛒 Compra',
+          label: (e.orgao||'—') + ' · ' + (c.plataforma||'—'),
+          sub: detalhe + ' · ' + fmt(c.vtotal),
+          onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')`
+        });
       }
     });
   });
+
+  // ===== ACOMPANHAMENTOS =====
   (DB.acomp||[]).forEach(a => {
-    if ((a.orgao||'').toLowerCase().includes(qL) || (a.observacao||'').toLowerCase().includes(qL) || (a.sistema||'').toLowerCase().includes(qL)) {
-      resultados.push({ tipo: '👁 Acompanhamento', label: a.orgao + (a.sistema ? ' · ' + a.sistema : ''), sub: a.status||'', onclick: `fecharBuscaGlobal();switchTab('acompanhamentos',document.querySelectorAll('.tab-btn')[5])` });
+    const campos = [a.orgao, a.sistema, a.observacao, a.analista, a.estado, a.status, fmtRetorno(a.retorno)];
+    if (campos.some(c => (c||'').toLowerCase().includes(qL))) {
+      resultados.push({
+        tipo: '👁 Acompanhamento',
+        label: (a.orgao||'—') + (a.sistema ? ' · ' + a.sistema : ''),
+        sub: (a.status||'') + (a.retorno ? ' · ' + fmtRetorno(a.retorno) : ''),
+        onclick: `fecharBuscaGlobal();switchTab('acompanhamentos',document.querySelectorAll('.tab-btn')[5])`
+      });
     }
   });
 
   if (!resultados.length) {
-    panel.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:8px;">Nenhum resultado para "'+q+'"</div>';
+    panel.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:8px;">Nenhum resultado para "' + q + '"</div>';
   } else {
-    panel.innerHTML = resultados.slice(0,12).map(r =>
+    panel.innerHTML = resultados.slice(0, 15).map(r =>
       `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">
-        <div><div style="font-size:10px;color:#94a3b8;">${r.tipo}</div><div style="font-size:13px;font-weight:600;color:#f1f5f9;">${r.label}</div></div>
-        <div style="font-size:11px;color:#60a5fa;white-space:nowrap;margin-left:8px;">${r.sub}</div>
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:10px;color:#94a3b8;">${r.tipo}</div>
+          <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.label}</div>
+        </div>
+        <div style="font-size:11px;color:#60a5fa;white-space:nowrap;margin-left:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
       </div>`
-    ).join('');
+    ).join('') + (resultados.length > 15 ? `<div style="color:#94a3b8;font-size:11px;padding:6px 8px;text-align:center;">+${resultados.length-15} resultado(s) — refine a busca</div>` : '');
   }
   panel.style.display = 'block';
 }
