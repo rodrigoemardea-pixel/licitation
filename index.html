@@ -6175,6 +6175,7 @@ function exportarComprasSelecionadas(empId) {
       const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 6 });
       if (ws[cellRef]) {
         ws[cellRef].l = { Target: c.link, Tooltip: c.link };
+        ws[cellRef].s = { font: { color: { rgb: '0563C1' }, underline: true } };
       }
     }
   });
@@ -6182,7 +6183,7 @@ function exportarComprasSelecionadas(empId) {
   ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
-  XLSX.writeFile(wb, nomeArquivo);
+  XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
   toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
 }
 
@@ -6252,6 +6253,7 @@ function exportarComprasDisputa(dispId) {
       const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 7 });
       if (ws[cellRef]) {
         ws[cellRef].l = { Target: c.link, Tooltip: c.link };
+        ws[cellRef].s = { font: { color: { rgb: '0563C1' }, underline: true } };
       }
     }
   });
@@ -6259,7 +6261,7 @@ function exportarComprasDisputa(dispId) {
   ws['!cols'] = [{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
-  XLSX.writeFile(wb, nomeArquivo);
+  XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
   toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
 }
 
