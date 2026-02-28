@@ -1488,16 +1488,16 @@
       🔔
       <span id="notif-badge" style="display:none;position:absolute;top:0;right:2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
     </button>
-    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:420px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9999;padding:12px;">
-      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text-primary);">🔔 Notificações</div>
-      <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#f1f5f9;">🔔 Notificações</div>
+      <div id="notif-list"><div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div></div>
     </div>
   </div>
 
   <!-- BUSCA GLOBAL -->
   <div style="position:relative;margin-right:8px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:var(--bg-input,rgba(255,255,255,0.08));border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:6px 12px;font-size:12px;width:200px;">
-    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:360px;max-height:400px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9999;padding:8px;"></div>
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#f1f5f9;padding:6px 12px;font-size:12px;width:200px;">
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:360px;max-height:400px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
   </div>
 
   <!-- USUÁRIO LOGADO -->
@@ -5476,8 +5476,8 @@ function buscaGlobal(q) {
   const resultados = [];
 
   DB.disputas.forEach(d => {
-    if ((d.orgao||'').toLowerCase().includes(qL) || (d.processo||'').toLowerCase().includes(qL) || (d.produto||'').toLowerCase().includes(qL)) {
-      resultados.push({ tipo: '🏆 Disputa', label: d.orgao + ' · ' + (d.processo||''), sub: 'Disputa', onclick: `fecharBuscaGlobal();abrirPopupDisputa('${d.id}')` });
+    if ((d.orgao||'').toLowerCase().includes(qL) || (d.processo||'').toLowerCase().includes(qL)) {
+      resultados.push({ tipo: '🏆 Disputa', label: d.orgao + (d.processo ? ' · ' + d.processo : ''), sub: fmtD(d.data)||'', onclick: `fecharBuscaGlobal();abrirPopupDisputa('${d.id}')` });
     }
   });
   DB.empenhos.forEach(e => {
@@ -5485,19 +5485,24 @@ function buscaGlobal(q) {
       resultados.push({ tipo: '📄 Empenho', label: '#' + (e.num||'?') + ' · ' + (e.orgao||''), sub: fmt(e.vem), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
     }
     (e.compras||[]).forEach(c => {
-      if ((c.plataforma||'').toLowerCase().includes(qL) || (e.orgao||'').toLowerCase().includes(qL)) {
+      if ((c.plataforma||'').toLowerCase().includes(qL)) {
         resultados.push({ tipo: '🛒 Compra', label: (e.orgao||'') + ' · ' + (c.plataforma||''), sub: fmt(c.vtotal), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
       }
     });
   });
+  (DB.acomp||[]).forEach(a => {
+    if ((a.orgao||'').toLowerCase().includes(qL) || (a.observacao||'').toLowerCase().includes(qL) || (a.sistema||'').toLowerCase().includes(qL)) {
+      resultados.push({ tipo: '👁 Acompanhamento', label: a.orgao + (a.sistema ? ' · ' + a.sistema : ''), sub: a.status||'', onclick: `fecharBuscaGlobal();switchTab('acompanhamentos',document.querySelectorAll('.tab-btn')[5])` });
+    }
+  });
 
   if (!resultados.length) {
-    panel.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum resultado para "'+q+'"</div>';
+    panel.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:8px;">Nenhum resultado para "'+q+'"</div>';
   } else {
     panel.innerHTML = resultados.slice(0,12).map(r =>
-      `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
-        <div><div style="font-size:11px;color:var(--text-tertiary);">${r.tipo}</div><div style="font-size:13px;font-weight:600;">${r.label}</div></div>
-        <div style="font-size:11px;color:var(--accent-primary);">${r.sub}</div>
+      `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">
+        <div><div style="font-size:10px;color:#94a3b8;">${r.tipo}</div><div style="font-size:13px;font-weight:600;color:#f1f5f9;">${r.label}</div></div>
+        <div style="font-size:11px;color:#60a5fa;white-space:nowrap;margin-left:8px;">${r.sub}</div>
       </div>`
     ).join('');
   }
@@ -5523,6 +5528,9 @@ function toggleNotificacoes() {
   if (p.style.display === 'none') {
     atualizarNotificacoes();
     p.style.display = 'block';
+    // Esconde badge ao abrir
+    const badge = g('notif-badge');
+    if (badge) badge.style.display = 'none';
   } else {
     p.style.display = 'none';
   }
@@ -5531,7 +5539,6 @@ function atualizarNotificacoes() {
   const alertas = [];
   const hoje = new Date();
 
-  // Empenhos vencidos por faixa
   const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
   const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);
   const emp90 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 90);
@@ -5539,7 +5546,6 @@ function atualizarNotificacoes() {
   if (emp60.length) alertas.push({ icon: '🟠', msg: `${emp60.length} empenho(s) com +60 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
   if (emp30.length) alertas.push({ icon: '🟡', msg: `${emp30.length} empenho(s) com +30 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
 
-  // Disputas sem empenho há mais de 15 dias
   const dispSemEmp = DB.disputas.filter(d => {
     if (d.finalizada) return false;
     const temEmp = DB.empenhos.some(e => e.disputaId === d.id);
@@ -5550,20 +5556,23 @@ function atualizarNotificacoes() {
   });
   if (dispSemEmp.length) alertas.push({ icon: '📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, onclick: "toggleNotificacoes();switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" });
 
-  // Empenhos sem compra
   const empSemCompra = DB.empenhos.filter(e => !e.finalizado && !(e.compras||[]).length);
   if (empSemCompra.length) alertas.push({ icon: '⚠️', msg: `${empSemCompra.length} empenho(s) sem compra cadastrada`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
 
   const badge = g('notif-badge');
   const list = g('notif-list');
-  if (badge) { badge.textContent = alertas.length; badge.style.display = alertas.length ? 'block' : 'none'; }
+  // Badge só aparece quando painel está fechado
+  if (badge && g('notif-panel').style.display === 'none') {
+    badge.textContent = alertas.length;
+    badge.style.display = alertas.length ? 'block' : 'none';
+  }
   if (list) {
     list.innerHTML = alertas.length
-      ? alertas.map(a => `<div onclick="${a.onclick}" style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;border-left:3px solid var(--warning);" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
-          <span style="font-size:16px;">${a.icon}</span>
-          <span style="font-size:12px;line-height:1.4;">${a.msg}</span>
+      ? alertas.map(a => `<div onclick="${a.onclick}" style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);" onmouseover="this.style.background='rgba(245,158,11,0.15)'" onmouseout="this.style.background='rgba(245,158,11,0.08)'">
+          <span style="font-size:16px;flex-shrink:0;">${a.icon}</span>
+          <span style="font-size:12px;line-height:1.5;color:#f1f5f9;">${a.msg}</span>
         </div>`).join('')
-      : '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
+      : '<div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div>';
   }
 }
 
@@ -6385,6 +6394,7 @@ boot();
     <div id="popup-d-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
+      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
       <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">＋ Novo Empenho</button>
       <button class="btn btn-primary" id="popup-d-edit-btn">✏️ Editar</button>
     </div>
