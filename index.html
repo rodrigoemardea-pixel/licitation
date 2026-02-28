@@ -6366,7 +6366,6 @@ async function enviarEmailAlarme(r) {
 
   const analista = r.analista || '?';
 
-  // Lê e-mail sempre do localStorage para garantir valor mais recente
   let emailDest = ANALISTAS_EMAIL[analista];
   try {
     const saved = JSON.parse(localStorage.getItem('analistas_email') || '{}');
@@ -6378,9 +6377,8 @@ async function enviarEmailAlarme(r) {
     return;
   }
 
-  const retStr = r.retorno
-    ? new Date(r.retorno).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
-    : '—';
+  const retStr = fmtRetorno(r.retorno);
+  const hoje = new Date();
 
   try {
     await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
@@ -6388,7 +6386,7 @@ async function enviarEmailAlarme(r) {
       to_name:   analista,
       assunto:   `⏰ RETORNO AGORA: ${r.orgao}`,
       mensagem:  `Olá ${analista},\n\nO sistema está apitando para o seguinte acompanhamento:\n\n• Órgão: ${r.orgao}\n• Sistema: ${r.sistema||'—'}\n• Retorno: ${retStr}\n• Status: ${r.status||'—'}\n• Observação: ${r.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
-      data:      new Date().toLocaleDateString('pt-BR'),
+      data:      hoje.toLocaleDateString('pt-BR'),
     });
     console.log('✅ Email alarme enviado para', analista, '-', emailDest);
   } catch(err) {
@@ -6768,29 +6766,30 @@ async function enviarAlertasEmail() {
   const acompAlertar = (DB.acomp||[]).filter(r => {
     if (!r.retorno) return false;
     if (r.status !== 'pendente' && r.status !== 'recurso') return false;
-    const ret = new Date(r.retorno + 'T08:00');
+    const ret = parseRetorno(r.retorno);
+    if (!ret) return false;
     const diffDias = Math.floor((ret - hoje) / 86400000);
-    return diffDias <= 0; // vencido ou hoje
+    return diffDias <= 0;
   });
 
   for(const acomp of acompAlertar) {
     const analista = acomp.analista||'?';
-    const emailDest = ANALISTAS_EMAIL[analista];
+    let emailDest = ANALISTAS_EMAIL[analista];
+    try { const s = JSON.parse(localStorage.getItem('analistas_email')||'{}'); if(s[analista]) emailDest=s[analista]; } catch(e){}
     if(!emailDest) continue;
     const chave = 'acomp-'+acomp.id+'-'+hoje_str;
     if(_emailAlertasEnviados.has(chave)) continue;
     _emailAlertasEnviados.add(chave);
-    const vencido = new Date(acomp.retorno) < hoje;
+    const vencido = parseRetorno(acomp.retorno) < hoje;
+    const retFormatado = fmtRetorno(acomp.retorno);
     try {
       await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
         to_email: emailDest,
         to_name: analista,
-        assunto: vencido
-          ? `🔴 Retorno VENCIDO: ${acomp.orgao}`
-          : `📋 Retorno HOJE: ${acomp.orgao}`,
+        assunto: vencido ? `🔴 Retorno VENCIDO: ${acomp.orgao}` : `📋 Retorno HOJE: ${acomp.orgao}`,
         mensagem: `Olá ${analista},\n\n${vencido
-          ? `O acompanhamento do órgão "${acomp.orgao}" tinha retorno previsto para ${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')} e ainda está ${acomp.status}.`
-          : `Você tem retorno agendado para HOJE com o órgão "${acomp.orgao}".`
+          ? `O acompanhamento do órgão "${acomp.orgao}" tinha retorno em ${retFormatado} e ainda está ${acomp.status}.`
+          : `Você tem retorno agendado para HOJE (${retFormatado}) com o órgão "${acomp.orgao}".`
         }\n\nSistema: ${acomp.sistema||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
         data: hoje.toLocaleDateString('pt-BR'),
       });
@@ -6800,6 +6799,23 @@ async function enviarAlertasEmail() {
 }
 
 // Dispara ao salvar um acompanhamento
+// Helper: parseia campo retorno (datetime-local ou date) de forma segura
+function parseRetorno(val) {
+  if (!val) return null;
+  // Se já tem 'T' (datetime-local: "2025-03-01T14:30"), usa direto
+  // Se é só data ("2025-03-01"), adiciona meio-dia para evitar problema de fuso
+  const str = val.includes('T') ? val : val + 'T12:00';
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// Helper: formata data de retorno para exibição
+function fmtRetorno(val) {
+  const d = parseRetorno(val);
+  if (!d) return '—';
+  return d.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+
 async function enviarAlertaAcompanhamentoImediato(acomp) {
   if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
   const analista = acomp.analista||'?';
@@ -6811,32 +6827,32 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
     if (saved[analista]) emailDest = saved[analista];
   } catch(e) {}
 
-  console.log('📧 Tentando enviar para analista:', analista, '→ email:', emailDest);
-
   if (!emailDest) {
     toast('⚠️ E-mail do analista não configurado. Clique em ⚙️ para configurar.', 'error');
     return;
   }
   if (!acomp.retorno) return;
 
-  const ret = new Date(acomp.retorno + 'T08:00');
+  const ret = parseRetorno(acomp.retorno);
+  if (!ret) return;
   const hoje = new Date();
   const diffDias = Math.floor((ret - hoje) / 86400000);
 
   // Só dispara se retorno for em até 3 dias ou já vencido
   if (diffDias > 3) return;
 
+  const retFormatado = fmtRetorno(acomp.retorno);
   const msg = diffDias < 0
-    ? `O acompanhamento do órgão "${acomp.orgao}" está com retorno VENCIDO (era ${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')}).`
+    ? `O acompanhamento do órgão "${acomp.orgao}" está com retorno VENCIDO (era ${retFormatado}).`
     : diffDias === 0
-    ? `Você tem retorno HOJE com o órgão "${acomp.orgao}".`
-    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${acomp.orgao}" (${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')}).`;
+    ? `Você tem retorno HOJE (${retFormatado}) com o órgão "${acomp.orgao}".`
+    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${acomp.orgao}" (${retFormatado}).`;
 
   try {
     const result = await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
       to_email: emailDest,
-      to_name: analista,
-      assunto: diffDias <= 0 ? `🔴 Retorno urgente: ${acomp.orgao}` : `📋 Lembrete de retorno: ${acomp.orgao}`,
+      to_name:  analista,
+      assunto:  diffDias <= 0 ? `🔴 Retorno urgente: ${acomp.orgao}` : `📋 Lembrete de retorno: ${acomp.orgao}`,
       mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${acomp.sistema||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar.`,
       data: hoje.toLocaleDateString('pt-BR'),
     });
