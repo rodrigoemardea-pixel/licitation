@@ -1482,6 +1482,24 @@
   <!-- CONTROLES DO HEADER -->
 
 
+  <!-- SININHO DE NOTIFICAÇÕES -->
+  <div style="position:relative;margin-right:8px;">
+    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:22px;position:relative;padding:4px 8px;" title="Notificações">
+      🔔
+      <span id="notif-badge" style="display:none;position:absolute;top:0;right:2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+    </button>
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:420px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9999;padding:12px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text-primary);">🔔 Notificações</div>
+      <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
+    </div>
+  </div>
+
+  <!-- BUSCA GLOBAL -->
+  <div style="position:relative;margin-right:8px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:var(--bg-input,rgba(255,255,255,0.08));border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:6px 12px;font-size:12px;width:200px;">
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:360px;max-height:400px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9999;padding:8px;"></div>
+  </div>
+
   <!-- USUÁRIO LOGADO -->
   <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para trocar usuário">
     <div class="user-avatar" id="user-avatar">?</div>
@@ -1713,6 +1731,13 @@
           <option value="todos">Todos</option>
           <option value="Márdea">Márdea</option>
           <option value="Rodrigo">Rodrigo</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>📅 Mês/Ano:</label>
+        <select id="filtro-mes-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
         </select>
       </div>
 
@@ -2949,6 +2974,7 @@ function filtrarDisputas() {
   filtroSistemaDisputas = g('filtro-sistema-disputas').value;
   filtroEstadoDisputas = g('filtro-estado-disputas').value;
   filtroAnalistaDisputas = g('filtro-analista-disputas')?.value || 'todos';
+  filtroMesDisputas = g('filtro-mes-disputas')?.value || 'todos';
   renderD();
 }
 
@@ -2962,7 +2988,7 @@ function filtrarEmpenhos() {
 }
 
 function limparFiltrosDisputas() {
-  ['filtro-empenho-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas'].forEach(id => {
+  ['filtro-empenho-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas','filtro-mes-disputas'].forEach(id => {
     const el = g(id); if(el) el.selectedIndex = 0;
   });
   filtroEmpresaDisputas = 'todas';
@@ -2972,6 +2998,7 @@ function limparFiltrosDisputas() {
   filtroEstadoDisputas = 'todos';
   filtroAnalistaDisputas = 'todos';
   filtroEmpenhoDisputas = 'todos';
+  filtroMesDisputas = 'todos';
   g('search-disputas').value = '';
   FLT.disputas = '';
   renderD();
@@ -3078,6 +3105,9 @@ function matches(tab,r){
       const temEmpenho = DB.empenhos.some(e => e.disputaId === r.id);
       if(filtroEmpenhoDisputas === 'com-empenho' && !temEmpenho) return false;
       if(filtroEmpenhoDisputas === 'sem-empenho' && temEmpenho) return false;
+    }
+    if(filtroMesDisputas !== 'todos') {
+      if(!(r.data||'').startsWith(filtroMesDisputas)) return false;
     }
   }
   
@@ -3293,6 +3323,16 @@ function abrirPopupDisputa(id) {
 
   g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
   g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
+  // Botão reabrir — só aparece se a disputa está finalizada
+  const reabrirBtn = g('popup-d-reabrir-btn');
+  if (reabrirBtn) {
+    if (r.finalizada) {
+      reabrirBtn.style.display = '';
+      reabrirBtn.onclick = () => { fecharPopup('disputa'); reabrirDisputa(id); };
+    } else {
+      reabrirBtn.style.display = 'none';
+    }
+  }
   g('popup-disputa').classList.add('open');
 }
 
@@ -3363,6 +3403,7 @@ function abrirPopupEmpenho(id) {
           '<td class="mono">'+(fmtD(c.dpag)||'—')+'</td>' +
           '<td onclick="event.stopPropagation()">' +
             '<button class="btn btn-ghost btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\',\''+c.id+'\')" title="Editar">✏️</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="duplicarCompra(\''+r.id+'\',\''+c.id+'\')" title="Duplicar compra" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄</button>' +
             '<button class="btn btn-danger btn-sm" onclick="delCompra(\''+r.id+'\',\''+c.id+'\')" title="Excluir">🗑</button>' +
           '</td>' +
           '</tr>';
@@ -3717,6 +3758,8 @@ function renderAll(){
   renderFinalizadas();
   updateBadges(); 
   updateHeader();
+  popularFiltroMes();
+  atualizarNotificacoes();
   // Atualiza painel e acomp se estiverem visíveis
   if (_activeTab === 'painel') atualizarPainel();
   if (_activeTab === 'acompanhamentos') renderAcomp();
@@ -3794,6 +3837,7 @@ function verExcel(id, tipo) {
     <div id="popup-d-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
+      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
       <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">＋ Novo Empenho</button>
       <button class="btn btn-primary" id="popup-d-edit-btn">✏️ Editar</button>
     </div>
@@ -4467,6 +4511,14 @@ function saveE(){
     toast('SELECIONE A DISPUTA VINCULADA (OBRIGATÓRIO)', 'error');
     g('e-disputa-id').focus();
     return;
+  }
+  // Detecção de empenho duplicado
+  const numDigitado = gv('e-num').toUpperCase().trim();
+  if (numDigitado) {
+    const duplicado = DB.empenhos.find(e => e.num === numDigitado && e.id !== (EID.empenhos||''));
+    if (duplicado) {
+      if (!confirm(`⚠️ Já existe um empenho com o número "${numDigitado}" (${duplicado.orgao||'?'}).\nDeseja salvar mesmo assim?`)) return;
+    }
   }
   // Pega todos os lotes selecionados
   const lotesKeys = Object.keys(lotesSelecionados);
@@ -5394,7 +5446,7 @@ function finalizarDisputa(id) {
 function reabrirDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  if (!confirm('Reabrir a disputa "' + (d.orgao||id) + '"?\nEla voltará para Disputas Vencidas.')) return;
+  if (!confirm('Reabrir a disputa "' + (d.orgao||id) + '"?\nEla voltará para Disputas em Andamento.')) return;
   d.finalizada = false;
   d.dataFinalizacao = null;
   d.finalizadaAuto = false;
@@ -5402,6 +5454,136 @@ function reabrirDisputa(id) {
   renderAll();
   toast('Disputa reaberta!', 'info');
 }
+
+// ===== DUPLICAR COMPRA =====
+function duplicarCompra(empId, compraId) {
+  const emp = DB.empenhos.find(x => x.id === empId);
+  if (!emp) return;
+  const original = (emp.compras||[]).find(c => c.id === compraId);
+  if (!original) return;
+  const nova = { ...original, id: uid(), dpag: '', recebido: 0, _duplicada: true };
+  emp.compras = [...(emp.compras||[]), nova];
+  upsert('empenhos', emp);
+  toast('Compra duplicada! Edite os dados necessários.', 'success');
+  setTimeout(() => abrirPopupEmpenho(empId), 150);
+}
+
+// ===== BUSCA GLOBAL =====
+function buscaGlobal(q) {
+  const panel = g('busca-global-result');
+  if (!q || q.length < 2) { panel.style.display = 'none'; return; }
+  const qL = q.toLowerCase();
+  const resultados = [];
+
+  DB.disputas.forEach(d => {
+    if ((d.orgao||'').toLowerCase().includes(qL) || (d.processo||'').toLowerCase().includes(qL) || (d.produto||'').toLowerCase().includes(qL)) {
+      resultados.push({ tipo: '🏆 Disputa', label: d.orgao + ' · ' + (d.processo||''), sub: 'Disputa', onclick: `fecharBuscaGlobal();abrirPopupDisputa('${d.id}')` });
+    }
+  });
+  DB.empenhos.forEach(e => {
+    if ((e.orgao||'').toLowerCase().includes(qL) || (e.num||'').toLowerCase().includes(qL) || (e.produto||'').toLowerCase().includes(qL)) {
+      resultados.push({ tipo: '📄 Empenho', label: '#' + (e.num||'?') + ' · ' + (e.orgao||''), sub: fmt(e.vem), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
+    }
+    (e.compras||[]).forEach(c => {
+      if ((c.plataforma||'').toLowerCase().includes(qL) || (e.orgao||'').toLowerCase().includes(qL)) {
+        resultados.push({ tipo: '🛒 Compra', label: (e.orgao||'') + ' · ' + (c.plataforma||''), sub: fmt(c.vtotal), onclick: `fecharBuscaGlobal();abrirPopupEmpenho('${e.id}')` });
+      }
+    });
+  });
+
+  if (!resultados.length) {
+    panel.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum resultado para "'+q+'"</div>';
+  } else {
+    panel.innerHTML = resultados.slice(0,12).map(r =>
+      `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
+        <div><div style="font-size:11px;color:var(--text-tertiary);">${r.tipo}</div><div style="font-size:13px;font-weight:600;">${r.label}</div></div>
+        <div style="font-size:11px;color:var(--accent-primary);">${r.sub}</div>
+      </div>`
+    ).join('');
+  }
+  panel.style.display = 'block';
+}
+function fecharBuscaGlobal() {
+  const p = g('busca-global-result'); if(p) p.style.display='none';
+  const i = g('busca-global-input'); if(i) i.value='';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#busca-global-input') && !e.target.closest('#busca-global-result')) {
+    const p = g('busca-global-result'); if(p) p.style.display='none';
+  }
+  if (!e.target.closest('#notif-bell') && !e.target.closest('#notif-panel')) {
+    const p = g('notif-panel'); if(p) p.style.display='none';
+  }
+});
+
+// ===== NOTIFICAÇÕES =====
+function toggleNotificacoes() {
+  const p = g('notif-panel');
+  if (!p) return;
+  if (p.style.display === 'none') {
+    atualizarNotificacoes();
+    p.style.display = 'block';
+  } else {
+    p.style.display = 'none';
+  }
+}
+function atualizarNotificacoes() {
+  const alertas = [];
+  const hoje = new Date();
+
+  // Empenhos vencidos por faixa
+  const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
+  const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);
+  const emp90 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 90);
+  if (emp90.length) alertas.push({ icon: '🔴', msg: `${emp90.length} empenho(s) com +90 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+  if (emp60.length) alertas.push({ icon: '🟠', msg: `${emp60.length} empenho(s) com +60 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+  if (emp30.length) alertas.push({ icon: '🟡', msg: `${emp30.length} empenho(s) com +30 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+
+  // Disputas sem empenho há mais de 15 dias
+  const dispSemEmp = DB.disputas.filter(d => {
+    if (d.finalizada) return false;
+    const temEmp = DB.empenhos.some(e => e.disputaId === d.id);
+    if (temEmp) return false;
+    if (!d.data) return false;
+    const dias = Math.floor((hoje - new Date(d.data)) / 86400000);
+    return dias >= 15;
+  });
+  if (dispSemEmp.length) alertas.push({ icon: '📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, onclick: "toggleNotificacoes();switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" });
+
+  // Empenhos sem compra
+  const empSemCompra = DB.empenhos.filter(e => !e.finalizado && !(e.compras||[]).length);
+  if (empSemCompra.length) alertas.push({ icon: '⚠️', msg: `${empSemCompra.length} empenho(s) sem compra cadastrada`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+
+  const badge = g('notif-badge');
+  const list = g('notif-list');
+  if (badge) { badge.textContent = alertas.length; badge.style.display = alertas.length ? 'block' : 'none'; }
+  if (list) {
+    list.innerHTML = alertas.length
+      ? alertas.map(a => `<div onclick="${a.onclick}" style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;border-left:3px solid var(--warning);" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
+          <span style="font-size:16px;">${a.icon}</span>
+          <span style="font-size:12px;line-height:1.4;">${a.msg}</span>
+        </div>`).join('')
+      : '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
+  }
+}
+
+// ===== FILTRO DE MÊS/ANO DISPUTAS =====
+function popularFiltroMes() {
+  const sel = g('filtro-mes-disputas');
+  if (!sel) return;
+  const meses = new Set();
+  DB.disputas.forEach(d => { if (d.data) meses.add(d.data.slice(0,7)); });
+  const sorted = [...meses].sort().reverse();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    sorted.map(m => {
+      const [y, mo] = m.split('-');
+      const nome = new Date(y, parseInt(mo)-1).toLocaleString('pt-BR',{month:'short',year:'numeric'});
+      return `<option value="${m}">${nome}</option>`;
+    }).join('');
+}
+let filtroMesDisputas = 'todos';
+
+
 
 function renderFinalizadas() {
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
