@@ -21,6 +21,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LicitationBiznis · Gestão de Licitações</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -6319,7 +6320,7 @@ function dispararNotificacao(r) {
 
   // 2. Notificação do browser
   if ('Notification' in window && Notification.permission === 'granted') {
-    const n = new Notification(titulo, { body: corpo, icon: '⚖️', tag: r.id });
+    const n = new Notification(titulo, { body: corpo, tag: r.id });
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
@@ -6764,8 +6765,20 @@ async function enviarAlertasEmail() {
 async function enviarAlertaAcompanhamentoImediato(acomp) {
   if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
   const analista = acomp.analista||'?';
-  const emailDest = ANALISTAS_EMAIL[analista];
-  if (!emailDest) return;
+
+  // Sempre lê do localStorage na hora do envio, garantindo valor mais recente
+  let emailDest = ANALISTAS_EMAIL[analista];
+  try {
+    const saved = JSON.parse(localStorage.getItem('analistas_email')||'{}');
+    if (saved[analista]) emailDest = saved[analista];
+  } catch(e) {}
+
+  console.log('📧 Tentando enviar para analista:', analista, '→ email:', emailDest);
+
+  if (!emailDest) {
+    toast('⚠️ E-mail do analista não configurado. Clique em ⚙️ para configurar.', 'error');
+    return;
+  }
   if (!acomp.retorno) return;
 
   const ret = new Date(acomp.retorno + 'T08:00');
@@ -6782,16 +6795,18 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
     : `Você tem retorno em ${diffDias} dia(s) com o órgão "${acomp.orgao}" (${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')}).`;
 
   try {
-    await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+    const result = await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
       to_email: emailDest,
       to_name: analista,
       assunto: diffDias <= 0 ? `🔴 Retorno urgente: ${acomp.orgao}` : `📋 Lembrete de retorno: ${acomp.orgao}`,
       mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${acomp.sistema||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar.`,
       data: hoje.toLocaleDateString('pt-BR'),
     });
+    console.log('✅ Email enviado!', result);
     toast('📧 E-mail enviado para ' + analista, 'success');
   } catch(err) {
     console.error('Erro EmailJS imediato:', err);
+    toast('❌ Erro ao enviar e-mail: ' + (err.text||err.message||'verifique o console'), 'error');
   }
 }
 
