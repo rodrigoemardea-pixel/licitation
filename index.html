@@ -24,6 +24,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   * {
     margin: 0;
@@ -1482,21 +1484,27 @@
   <!-- CONTROLES DO HEADER -->
 
 
+  <!-- CONFIG E-MAIL -->
+  <button onclick="abrirConfigEmail()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.7;" title="Configurar alertas por e-mail">⚙️</button>
+
   <!-- SININHO DE NOTIFICAÇÕES -->
   <div style="position:relative;margin-right:8px;">
     <button id="notif-bell" onclick="toggleNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:22px;position:relative;padding:4px 8px;" title="Notificações">
       🔔
       <span id="notif-badge" style="display:none;position:absolute;top:0;right:2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
     </button>
-    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
-      <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#f1f5f9;">🔔 Notificações</div>
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:460px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-weight:700;font-size:13px;color:#f1f5f9;">🔔 Notificações</div>
+        <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;" title="Limpar todas">🗑 Limpar tudo</button>
+      </div>
       <div id="notif-list"><div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div></div>
     </div>
   </div>
 
   <!-- BUSCA GLOBAL -->
   <div style="position:relative;margin-right:8px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#f1f5f9;padding:6px 12px;font-size:12px;width:200px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:#1e293b;border:1px solid #475569;border-radius:8px;color:#f1f5f9;padding:6px 12px;font-size:12px;width:200px;">
     <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:360px;max-height:400px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
   </div>
 
@@ -1715,6 +1723,78 @@
       </div>
     </div>
 
+    <!-- VISÃO DE CAIXA 30/60/90 dias -->
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>💰 Previsão de Caixa — Empenhos Pendentes</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
+        <div class="card" style="border-left:4px solid var(--success);text-align:center;">
+          <div class="card-label">Próximos 30 dias</div>
+          <div class="card-value cv-green" id="caixa-30">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-30-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--warning);text-align:center;">
+          <div class="card-label">31 a 60 dias</div>
+          <div class="card-value cv-yellow" id="caixa-60">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-60-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--danger);text-align:center;">
+          <div class="card-label">61 a 90 dias</div>
+          <div class="card-value" style="color:var(--danger);" id="caixa-90">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--purple);text-align:center;">
+          <div class="card-label">Acima de 90 dias</div>
+          <div class="card-value cv-purple" id="caixa-90p">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90p-qt"></div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;" id="dash-caixa-tabela">
+          <thead><tr style="background:var(--bg-surface-soft);">
+            <th style="padding:8px;text-align:left;">Nº Empenho</th>
+            <th style="padding:8px;text-align:left;">Órgão</th>
+            <th style="padding:8px;text-align:left;">Analista</th>
+            <th style="padding:8px;text-align:right;">A Receber</th>
+            <th style="padding:8px;text-align:center;">Dias</th>
+            <th style="padding:8px;text-align:center;">Faixa</th>
+          </tr></thead>
+          <tbody id="dash-tbody-caixa"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TOP ÓRGÃOS DEVEDORES + TAXA DE RECEBIMENTO -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+      <div class="chart-card">
+        <h3>⚠️ Top Órgãos Devedores</h3>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;font-size:12px;border-collapse:collapse;">
+            <thead><tr style="background:var(--bg-surface-soft);">
+              <th style="padding:7px 8px;text-align:left;">Órgão</th>
+              <th style="padding:7px 8px;text-align:right;">Empenhos</th>
+              <th style="padding:7px 8px;text-align:right;">A Receber</th>
+              <th style="padding:7px 8px;text-align:center;">Maior Atraso</th>
+            </tr></thead>
+            <tbody id="dash-tbody-devedores"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>📊 Taxa de Recebimento por Órgão</h3>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;font-size:12px;border-collapse:collapse;">
+            <thead><tr style="background:var(--bg-surface-soft);">
+              <th style="padding:7px 8px;text-align:left;">Órgão</th>
+              <th style="padding:7px 8px;text-align:center;">Pagos</th>
+              <th style="padding:7px 8px;text-align:center;">Total</th>
+              <th style="padding:7px 8px;text-align:center;">Taxa</th>
+            </tr></thead>
+            <tbody id="dash-tbody-taxa"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- DISPUTAS VENCIDAS -->
@@ -1825,6 +1905,7 @@
     <div class="summary-row" id="sum-empenhos"></div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('empenhos')">＋ Novo Empenho</button>
+      <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
 
       
       <div class="filter-group">
@@ -2603,12 +2684,15 @@ fbAuth.onAuthStateChanged(user => {
         DB.disputas = data.disputas || [];
         DB.empenhos = data.empenhos || [];
         DB.acomp = data.acomp || [];
+        DB.comentarios = data.comentarios || [];
       } else {
         DB.disputas = [];
         DB.empenhos = [];
       }
       renderAll();
       atualizarPainel();
+      // Dispara alertas de e-mail ao carregar
+      setTimeout(enviarAlertasEmail, 3000);
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
         iniciarNotificacoes();
@@ -3319,7 +3403,8 @@ function abrirPopupDisputa(id) {
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
-    comprasDisputaHTML;
+    comprasDisputaHTML +
+    renderComentarios('disputa', id);
 
   g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
   g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
@@ -3435,7 +3520,8 @@ function abrirPopupEmpenho(id) {
       '<button class="btn btn-primary btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\')" style="width:100%;">＋ NOVA COMPRA PARA ESTE EMPENHO</button>' +
     '</div>' +
     comprasHTML +
-    (r.observacao ? '<div class="detail-field" style="margin-top:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '');
+    (r.observacao ? '<div class="detail-field" style="margin-top:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
+    renderComentarios('empenho', id);
 
   g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
   g('popup-empenho').classList.add('open');
@@ -3666,6 +3752,7 @@ function renderE(){
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
+  if(_agrupado) { renderEAgrupado(rows, tb); sumE(); verificarAlertas(); return; }
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
     const compras = r.compras || [];
@@ -3954,7 +4041,87 @@ function atualizarDashboard() {
     <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--success);font-weight:600;">${fmt(v.lucro)}</td></tr>`
   ).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">Nenhuma disputa encontrada</td></tr>';
 
-  // Gráfico 1: Recebido + Lucro por Mês
+  // ===== VISÃO DE CAIXA =====
+  const empPendentes = DB.empenhos.filter(e => !e.finalizado && !empenhoEstaPago(e));
+  const caixaBands = { b30:[], b60:[], b90:[], b90p:[] };
+  empPendentes.forEach(e => {
+    const dias = diasSemPagamento(e);
+    const aReceber = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    const entry = { e, dias, aReceber };
+    if (dias <= 30) caixaBands.b30.push(entry);
+    else if (dias <= 60) caixaBands.b60.push(entry);
+    else if (dias <= 90) caixaBands.b90.push(entry);
+    else caixaBands.b90p.push(entry);
+  });
+  const sumBand = b => b.reduce((s,x)=>s+x.aReceber,0);
+  ['30','60','90','90p'].forEach(k => {
+    const band = caixaBands['b'+k];
+    const el = g('caixa-'+k); if(el) el.textContent = fmt(sumBand(band));
+    const qt = g('caixa-'+k+'-qt'); if(qt) qt.textContent = band.length + ' empenho(s)';
+  });
+  const allBands = [
+    ...caixaBands.b30.map(x=>({...x,faixa:'≤30d',cor:'var(--success)'})),
+    ...caixaBands.b60.map(x=>({...x,faixa:'31-60d',cor:'var(--warning)'})),
+    ...caixaBands.b90.map(x=>({...x,faixa:'61-90d',cor:'var(--danger)'})),
+    ...caixaBands.b90p.map(x=>({...x,faixa:'>90d',cor:'var(--purple)'}))
+  ].sort((a,b)=>b.dias-a.dias).slice(0,15);
+  const tbC = g('dash-tbody-caixa');
+  if(tbC) tbC.innerHTML = allBands.length ? allBands.map(({e,dias,aReceber,faixa,cor})=>
+    `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${e.id}')">
+      <td style="padding:7px 8px;font-weight:600;font-family:monospace;">${e.num||'—'}</td>
+      <td style="padding:7px 8px;">${(e.orgao||'—').substring(0,30)}</td>
+      <td style="padding:7px 8px;"><span class="badge ${e.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${e.analista||'—'}</span></td>
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(aReceber)}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:700;">${dias}d</td>
+      <td style="padding:7px 8px;text-align:center;"><span style="background:${cor};color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;">${faixa}</span></td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente</td></tr>';
+
+  // ===== TOP DEVEDORES =====
+  const devedores = {};
+  DB.empenhos.filter(e=>!e.finalizado&&!empenhoEstaPago(e)).forEach(e=>{
+    const org = e.orgao||'?';
+    if(!devedores[org]) devedores[org] = { count:0, total:0, maxDias:0 };
+    devedores[org].count++;
+    devedores[org].total += (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    devedores[org].maxDias = Math.max(devedores[org].maxDias, diasSemPagamento(e));
+  });
+  const topDev = Object.entries(devedores).sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+  const tbDev = g('dash-tbody-devedores');
+  if(tbDev) tbDev.innerHTML = topDev.length ? topDev.map(([org,v])=>{
+    const cor = v.maxDias>=90?'var(--danger)':v.maxDias>=60?'var(--warning)':'var(--text-secondary)';
+    return `<tr><td style="padding:7px 8px;">${org.substring(0,28)}</td>
+      <td style="padding:7px 8px;text-align:right;">${v.count}</td>
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(v.total)}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${v.maxDias}d</td></tr>`;
+  }).join('') : '<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text-tertiary);">✅ Nenhum devedor</td></tr>';
+
+  // ===== TAXA DE RECEBIMENTO POR ÓRGÃO =====
+  const taxaOrg = {};
+  DB.empenhos.forEach(e=>{
+    const org = e.orgao||'?';
+    if(!taxaOrg[org]) taxaOrg[org] = { pagos:0, total:0 };
+    taxaOrg[org].total++;
+    if(empenhoEstaPago(e)) taxaOrg[org].pagos++;
+  });
+  const topTaxa = Object.entries(taxaOrg).filter(([,v])=>v.total>=2).sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+  const tbTaxa = g('dash-tbody-taxa');
+  if(tbTaxa) tbTaxa.innerHTML = topTaxa.length ? topTaxa.map(([org,v])=>{
+    const pct = Math.round(v.pagos/v.total*100);
+    const cor = pct>=80?'var(--success)':pct>=50?'var(--warning)':'var(--danger)';
+    return `<tr><td style="padding:7px 8px;">${org.substring(0,28)}</td>
+      <td style="padding:7px 8px;text-align:center;">${v.pagos}</td>
+      <td style="padding:7px 8px;text-align:center;">${v.total}</td>
+      <td style="padding:7px 8px;text-align:center;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:6px;background:var(--bg-inset);border-radius:3px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${cor};border-radius:3px;"></div>
+          </div>
+          <span style="font-weight:700;color:${cor};font-size:11px;">${pct}%</span>
+        </div>
+      </td></tr>`;
+  }).join('') : '<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text-tertiary);">Poucos dados ainda</td></tr>';
+
+
   const porMes = {};
   empenhosFiltrados.forEach(e => {
     (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').forEach(c=>{
@@ -5522,7 +5689,30 @@ document.addEventListener('click', e => {
 });
 
 // ===== NOTIFICAÇÕES =====
-function toggleNotificacoes() {
+let _notifDismissed = new Set();
+
+function limparTodasNotificacoes() {
+  _notifDismissed = new Set(['__all__' + Date.now()]);
+  // Adiciona todas as chaves atuais ao dismissed
+  const hoje = new Date();
+  const emp90 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 90);
+  const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);
+  const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
+  if (emp90.length) _notifDismissed.add('emp90');
+  if (emp60.length) _notifDismissed.add('emp60');
+  if (emp30.length) _notifDismissed.add('emp30');
+  _notifDismissed.add('disp-sem-emp');
+  _notifDismissed.add('emp-sem-compra');
+  const badge = g('notif-badge');
+  if (badge) badge.style.display = 'none';
+  const list = g('notif-list');
+  if (list) list.innerHTML = '<div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div>';
+}
+
+function dispensarNotificacao(chave) {
+  _notifDismissed.add(chave);
+  atualizarNotificacoes();
+}
   const p = g('notif-panel');
   if (!p) return;
   if (p.style.display === 'none') {
@@ -5542,35 +5732,40 @@ function atualizarNotificacoes() {
   const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
   const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);
   const emp90 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 90);
-  if (emp90.length) alertas.push({ icon: '🔴', msg: `${emp90.length} empenho(s) com +90 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
-  if (emp60.length) alertas.push({ icon: '🟠', msg: `${emp60.length} empenho(s) com +60 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
-  if (emp30.length) alertas.push({ icon: '🟡', msg: `${emp30.length} empenho(s) com +30 dias sem pagamento`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+
+  if (emp90.length && !_notifDismissed.has('emp90'))
+    alertas.push({ chave:'emp90', icon:'🔴', msg:`${emp90.length} empenho(s) com +90 dias sem pagamento`, onclick:"toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+  if (emp60.length && !_notifDismissed.has('emp60'))
+    alertas.push({ chave:'emp60', icon:'🟠', msg:`${emp60.length} empenho(s) com +60 dias sem pagamento`, onclick:"toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+  if (emp30.length && !_notifDismissed.has('emp30'))
+    alertas.push({ chave:'emp30', icon:'🟡', msg:`${emp30.length} empenho(s) com +30 dias sem pagamento`, onclick:"toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
 
   const dispSemEmp = DB.disputas.filter(d => {
     if (d.finalizada) return false;
-    const temEmp = DB.empenhos.some(e => e.disputaId === d.id);
-    if (temEmp) return false;
+    if (DB.empenhos.some(e => e.disputaId === d.id)) return false;
     if (!d.data) return false;
-    const dias = Math.floor((hoje - new Date(d.data)) / 86400000);
-    return dias >= 15;
+    return Math.floor((hoje - new Date(d.data)) / 86400000) >= 15;
   });
-  if (dispSemEmp.length) alertas.push({ icon: '📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, onclick: "toggleNotificacoes();switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" });
+  if (dispSemEmp.length && !_notifDismissed.has('disp-sem-emp'))
+    alertas.push({ chave:'disp-sem-emp', icon:'📋', msg:`${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, onclick:"toggleNotificacoes();switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" });
 
   const empSemCompra = DB.empenhos.filter(e => !e.finalizado && !(e.compras||[]).length);
-  if (empSemCompra.length) alertas.push({ icon: '⚠️', msg: `${empSemCompra.length} empenho(s) sem compra cadastrada`, onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
+  if (empSemCompra.length && !_notifDismissed.has('emp-sem-compra'))
+    alertas.push({ chave:'emp-sem-compra', icon:'⚠️', msg:`${empSemCompra.length} empenho(s) sem compra cadastrada`, onclick:"toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" });
 
   const badge = g('notif-badge');
   const list = g('notif-list');
-  // Badge só aparece quando painel está fechado
   if (badge && g('notif-panel').style.display === 'none') {
     badge.textContent = alertas.length;
     badge.style.display = alertas.length ? 'block' : 'none';
   }
   if (list) {
     list.innerHTML = alertas.length
-      ? alertas.map(a => `<div onclick="${a.onclick}" style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);" onmouseover="this.style.background='rgba(245,158,11,0.15)'" onmouseout="this.style.background='rgba(245,158,11,0.08)'">
-          <span style="font-size:16px;flex-shrink:0;">${a.icon}</span>
-          <span style="font-size:12px;line-height:1.5;color:#f1f5f9;">${a.msg}</span>
+      ? alertas.map(a => `
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;margin-bottom:4px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);">
+          <span style="font-size:16px;flex-shrink:0;cursor:pointer;" onclick="${a.onclick}">${a.icon}</span>
+          <span style="font-size:12px;line-height:1.5;color:#f1f5f9;flex:1;cursor:pointer;" onclick="${a.onclick}">${a.msg}</span>
+          <button onclick="dispensarNotificacao('${a.chave}')" title="Dispensar" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:14px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'">✕</button>
         </div>`).join('')
       : '<div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div>';
   }
@@ -5978,6 +6173,8 @@ function saveAcomp() {
   EID_acomp = null;
   closeModal('acomp');
   renderAcomp();
+  // Dispara e-mail imediato se retorno for em até 3 dias
+  enviarAlertaAcompanhamentoImediato(row);
   updateBadges();
   atualizarPainel();
 }
@@ -6369,6 +6566,346 @@ function atualizarPainel() {
       </div>
     </div>`;
 }
+
+// ========== AGRUPAMENTO POR ÓRGÃO ==========
+let _agrupado = false;
+function toggleAgrupamento() {
+  _agrupado = !_agrupado;
+  const btn = g('btn-agrupar-orgao');
+  if(btn) btn.style.background = _agrupado ? 'var(--accent-primary)' : '';
+  if(btn) btn.style.color = _agrupado ? '#fff' : '';
+  renderE();
+}
+
+function renderEAgrupado(rows, tb) {
+  const grupos = {};
+  rows.forEach(r => {
+    const org = r.orgao||'—';
+    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, maxDias:0 };
+    grupos[org].empenhos.push(r);
+    grupos[org].totalVem += r.vem||0;
+    grupos[org].totalRec += (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    grupos[org].maxDias = Math.max(grupos[org].maxDias, diasSemPagamento(r));
+  });
+  const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
+  tb.innerHTML = sorted.map(([org, g_]) => {
+    const corDias = g_.maxDias>=90?'var(--danger)':g_.maxDias>=60?'var(--warning)':g_.maxDias>=30?'var(--text-secondary)':'var(--success)';
+    const rows_ = g_.empenhos.map(r => {
+      const dias = diasSemPagamento(r);
+      const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
+      const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
+      return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+        <td></td>
+        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
+        <td></td>
+        <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+        <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+        <td>${diasBadge}</td>
+        <td onclick="event.stopPropagation()" style="white-space:nowrap;">
+          <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
+          <button class="btn btn-ghost btn-sm" onclick="editE('${r.id}')" style="${btnStyle}">✏️</button>
+          <button class="btn btn-ghost btn-sm" onclick="abrirCompra('${r.id}')" style="${btnStyle};color:var(--success);border-color:var(--success);">🛒</button>
+        </td>
+      </tr>`;
+    }).join('');
+    return `<tr style="background:var(--bg-inset);">
+        <td colspan="7" style="padding:8px 12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;">
+            <span>🏢 ${org}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
+            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--warning);">A receber: ${fmt(g_.totalRec)}</span>
+            <span style="font-size:11px;color:${corDias};">Maior atraso: ${g_.maxDias}d</span>
+          </div>
+        </td>
+      </tr>${rows_}`;
+  }).join('');
+}
+
+// ========== COMENTÁRIOS INTERNOS ==========
+function renderComentarios(tipo, itemId) {
+  const key = tipo + ':' + itemId;
+  const todos = (DB.comentarios||[]).filter(c=>c.key===key).sort((a,b)=>a.ts-b.ts);
+  return `<div class="detail-section" style="margin-top:16px;">💬 COMENTÁRIOS <span style="font-size:11px;color:var(--text-tertiary);">(${todos.length})</span></div>
+  <div id="coment-list-${itemId}" style="max-height:200px;overflow-y:auto;margin-bottom:8px;">
+    ${todos.length ? todos.map(c=>`
+      <div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;position:relative;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="badge ${c.autor==='Márdea'?'bp':'bb'}" style="font-size:10px;">${c.autor}</span>
+          <span style="font-size:10px;color:var(--text-tertiary);">${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+          ${c.autor===usuarioLogado?`<button onclick="delComentario('${c.id}','${itemId}')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger);font-size:12px;">✕</button>`:''}
+        </div>
+        <div style="font-size:12px;line-height:1.5;">${c.texto}</div>
+      </div>`).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum comentário ainda.</div>'}
+  </div>
+  <div style="display:flex;gap:8px;">
+    <input type="text" id="coment-input-${itemId}" placeholder="Escrever comentário..." style="flex:1;" class="fc" maxlength="300" onkeydown="if(event.key==='Enter')salvarComentario('${tipo}','${itemId}')">
+    <button class="btn btn-primary btn-sm" onclick="salvarComentario('${tipo}','${itemId}')">Enviar</button>
+  </div>`;
+}
+
+function salvarComentario(tipo, itemId) {
+  const input = g('coment-input-'+itemId);
+  if(!input||!input.value.trim()) return;
+  if(!DB.comentarios) DB.comentarios=[];
+  const novo = { id:uid(), key:tipo+':'+itemId, autor:usuarioLogado||'Usuário', texto:input.value.trim(), ts:Date.now() };
+  DB.comentarios.push(novo);
+  save('comentarios', DB.comentarios);
+  input.value='';
+  // Atualiza só a lista de comentários sem fechar o popup
+  const listEl = g('coment-list-'+itemId);
+  if(listEl) {
+    const todos = DB.comentarios.filter(c=>c.key===tipo+':'+itemId).sort((a,b)=>a.ts-b.ts);
+    listEl.innerHTML = todos.map(c=>`
+      <div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="badge ${c.autor==='Márdea'?'bp':'bb'}" style="font-size:10px;">${c.autor}</span>
+          <span style="font-size:10px;color:var(--text-tertiary);">${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+          ${c.autor===usuarioLogado?`<button onclick="delComentario('${c.id}','${itemId}')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger);font-size:12px;">✕</button>`:''}
+        </div>
+        <div style="font-size:12px;line-height:1.5;">${c.texto}</div>
+      </div>`).join('');
+    listEl.scrollTop = listEl.scrollHeight;
+  }
+}
+
+function delComentario(comentId, itemId) {
+  DB.comentarios = (DB.comentarios||[]).filter(c=>c.id!==comentId);
+  save('comentarios', DB.comentarios);
+  // Re-render full popup to refresh
+  const popup = g('popup-e-body') || g('popup-d-body');
+  // Just remove the element
+  const allItems = document.querySelectorAll('[id^="coment-list-"]');
+  allItems.forEach(el => {
+    const iid = el.id.replace('coment-list-','');
+    const todos = (DB.comentarios||[]).filter(c=>c.key.endsWith(':'+iid)).sort((a,b)=>a.ts-b.ts);
+    if(todos.length===0) el.innerHTML='<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum comentário ainda.</div>';
+    else el.innerHTML = todos.map(c=>`<div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;"><div style="font-size:12px;">${c.autor} · ${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div style="font-size:12px;line-height:1.5;">${c.texto}</div></div>`).join('');
+  });
+}
+
+// ========== EMAILJS — ALERTAS AUTOMÁTICOS ==========
+// Configuração (preencher após criar conta em emailjs.com)
+const EMAILJS_CONFIG = {
+  publicKey:   'GI1jO1l-TCc-KxTXY',
+  serviceId:   'service_rxbo8kk',
+  templateId:  'template_scme3nc',
+};
+const ANALISTAS_EMAIL = {
+  'Márdea':  '',   // ex: 'mardea@empresa.com'
+  'Rodrigo': '',   // ex: 'rodrigo@empresa.com'
+};
+let _emailAlertasEnviados = new Set(); // evita reenvio na mesma sessão
+
+async function enviarAlertasEmail() {
+  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
+  const hoje = new Date();
+
+  // Empenhos >60 dias por analista
+  const empAtrasados = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60);
+  const porAnalista = {};
+  empAtrasados.forEach(e => {
+    const a = e.analista||'?';
+    if(!porAnalista[a]) porAnalista[a] = [];
+    porAnalista[a].push(e);
+  });
+
+  for(const [analista, emps] of Object.entries(porAnalista)) {
+    const emailDest = ANALISTAS_EMAIL[analista];
+    if(!emailDest) continue;
+    const chave = 'emp-atraso-'+analista+'-'+hoje.toISOString().slice(0,10);
+    if(_emailAlertasEnviados.has(chave)) continue;
+    _emailAlertasEnviados.add(chave);
+    const lista = emps.map(e=>`• Empenho #${e.num||'?'} — ${e.orgao||'?'} (${diasSemPagamento(e)} dias)`).join('\n');
+    try {
+      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: emailDest,
+        to_name: analista,
+        assunto: `⚠️ ${emps.length} empenho(s) com pagamento atrasado`,
+        mensagem: `Olá ${analista},\n\nVocê tem ${emps.length} empenho(s) com mais de 60 dias sem pagamento:\n\n${lista}\n\nAcesse o sistema para mais detalhes.`,
+        data: hoje.toLocaleDateString('pt-BR'),
+      }, EMAILJS_CONFIG.publicKey);
+      console.log('Email enviado para', analista);
+    } catch(err) { console.error('Erro EmailJS:', err); }
+  }
+
+  // Acompanhamentos com retorno vencido
+  const acompVencidos = (DB.acomp||[]).filter(r => r.retorno && new Date(r.retorno) < hoje && (r.status==='pendente'||r.status==='recurso'));
+  for(const acomp of acompVencidos) {
+    const analista = acomp.analista||'?';
+    const emailDest = ANALISTAS_EMAIL[analista];
+    if(!emailDest) continue;
+    const chave = 'acomp-'+acomp.id+'-'+hoje.toISOString().slice(0,10);
+    if(_emailAlertasEnviados.has(chave)) continue;
+    _emailAlertasEnviados.add(chave);
+    try {
+      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: emailDest,
+        to_name: analista,
+        assunto: `📋 Retorno vencido: ${acomp.orgao}`,
+        mensagem: `Olá ${analista},\n\nO acompanhamento do órgão "${acomp.orgao}" tinha retorno previsto para ${new Date(acomp.retorno).toLocaleDateString('pt-BR')} e ainda está ${acomp.status}.\n\nAcesse o sistema para atualizar.`,
+        data: hoje.toLocaleDateString('pt-BR'),
+      }, EMAILJS_CONFIG.publicKey);
+    } catch(err) { console.error('Erro EmailJS:', err); }
+  }
+}
+
+// Inicializa EmailJS com a public key
+(function initEmailJS() {
+  try { emailjs.init('GI1jO1l-TCc-KxTXY'); } catch(e) {}
+})();
+
+// Dispara alertas de e-mail sempre que necessário (ao salvar acomp e ao carregar)
+async function enviarAlertasEmail() {
+  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
+  const hoje = new Date();
+  const hoje_str = hoje.toISOString().slice(0,10);
+
+  // Empenhos >60 dias por analista
+  const empAtrasados = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60);
+  const porAnalista = {};
+  empAtrasados.forEach(e => {
+    const a = e.analista||'?';
+    if(!porAnalista[a]) porAnalista[a] = [];
+    porAnalista[a].push(e);
+  });
+
+  for(const [analista, emps] of Object.entries(porAnalista)) {
+    const emailDest = ANALISTAS_EMAIL[analista];
+    if(!emailDest) continue;
+    const chave = 'emp-atraso-'+analista+'-'+hoje_str;
+    if(_emailAlertasEnviados.has(chave)) continue;
+    _emailAlertasEnviados.add(chave);
+    const lista = emps.map(e=>`• Empenho #${e.num||'?'} — ${e.orgao||'?'} (${diasSemPagamento(e)} dias)`).join('\n');
+    try {
+      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: emailDest,
+        to_name: analista,
+        assunto: `⚠️ ${emps.length} empenho(s) com pagamento atrasado`,
+        mensagem: `Olá ${analista},\n\nVocê tem ${emps.length} empenho(s) com mais de 60 dias sem pagamento:\n\n${lista}\n\nAcesse o sistema para mais detalhes.`,
+        data: hoje.toLocaleDateString('pt-BR'),
+      });
+      console.log('✅ Email enviado para', analista);
+    } catch(err) { console.error('Erro EmailJS empenhos:', err); }
+  }
+
+  // Acompanhamentos com retorno vencido ou hoje
+  const acompAlertar = (DB.acomp||[]).filter(r => {
+    if (!r.retorno) return false;
+    if (r.status !== 'pendente' && r.status !== 'recurso') return false;
+    const ret = new Date(r.retorno + 'T08:00');
+    const diffDias = Math.floor((ret - hoje) / 86400000);
+    return diffDias <= 0; // vencido ou hoje
+  });
+
+  for(const acomp of acompAlertar) {
+    const analista = acomp.analista||'?';
+    const emailDest = ANALISTAS_EMAIL[analista];
+    if(!emailDest) continue;
+    const chave = 'acomp-'+acomp.id+'-'+hoje_str;
+    if(_emailAlertasEnviados.has(chave)) continue;
+    _emailAlertasEnviados.add(chave);
+    const vencido = new Date(acomp.retorno) < hoje;
+    try {
+      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: emailDest,
+        to_name: analista,
+        assunto: vencido
+          ? `🔴 Retorno VENCIDO: ${acomp.orgao}`
+          : `📋 Retorno HOJE: ${acomp.orgao}`,
+        mensagem: `Olá ${analista},\n\n${vencido
+          ? `O acompanhamento do órgão "${acomp.orgao}" tinha retorno previsto para ${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')} e ainda está ${acomp.status}.`
+          : `Você tem retorno agendado para HOJE com o órgão "${acomp.orgao}".`
+        }\n\nSistema: ${acomp.sistema||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
+        data: hoje.toLocaleDateString('pt-BR'),
+      });
+      console.log('✅ Email acomp enviado para', analista, '-', acomp.orgao);
+    } catch(err) { console.error('Erro EmailJS acomp:', err); }
+  }
+}
+
+// Dispara ao salvar um acompanhamento
+async function enviarAlertaAcompanhamentoImediato(acomp) {
+  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
+  const analista = acomp.analista||'?';
+  const emailDest = ANALISTAS_EMAIL[analista];
+  if (!emailDest) return;
+  if (!acomp.retorno) return;
+
+  const ret = new Date(acomp.retorno + 'T08:00');
+  const hoje = new Date();
+  const diffDias = Math.floor((ret - hoje) / 86400000);
+
+  // Só dispara se retorno for em até 3 dias ou já vencido
+  if (diffDias > 3) return;
+
+  const msg = diffDias < 0
+    ? `O acompanhamento do órgão "${acomp.orgao}" está com retorno VENCIDO (era ${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')}).`
+    : diffDias === 0
+    ? `Você tem retorno HOJE com o órgão "${acomp.orgao}".`
+    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${acomp.orgao}" (${new Date(acomp.retorno+'T12:00').toLocaleDateString('pt-BR')}).`;
+
+  try {
+    await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+      to_email: emailDest,
+      to_name: analista,
+      assunto: diffDias <= 0 ? `🔴 Retorno urgente: ${acomp.orgao}` : `📋 Lembrete de retorno: ${acomp.orgao}`,
+      mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${acomp.sistema||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar.`,
+      data: hoje.toLocaleDateString('pt-BR'),
+    });
+    toast('📧 E-mail enviado para ' + analista, 'success');
+  } catch(err) {
+    console.error('Erro EmailJS imediato:', err);
+  }
+}
+
+// Verifica a cada 4 horas (enquanto sistema estiver aberto)
+setInterval(enviarAlertasEmail, 4 * 3600000);
+
+// ========== CONFIGURAÇÕES DE E-MAIL (modal) ==========
+function abrirConfigEmail() {
+  const cur = { publicKey: EMAILJS_CONFIG.publicKey, serviceId: EMAILJS_CONFIG.serviceId, templateId: EMAILJS_CONFIG.templateId };
+  const curAnalistas = { ...ANALISTAS_EMAIL };
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML=`<div style="background:var(--bg-surface);border-radius:16px;padding:32px;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+    <h3 style="margin-bottom:20px;font-size:16px;">✉️ Configurar Alertas por E-mail</h3>
+    <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Crie sua conta gratuita em <a href="https://emailjs.com" target="_blank" style="color:var(--accent-primary);">emailjs.com</a> (200 e-mails/mês grátis), crie um template e preencha abaixo:</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><label class="fl" style="font-size:11px;">Public Key</label><input class="fc" id="cfg-ejs-pub" value="${cur.publicKey||''}" placeholder="user_xxxxxxxxxxxx"></div>
+      <div><label class="fl" style="font-size:11px;">Service ID</label><input class="fc" id="cfg-ejs-svc" value="${cur.serviceId||''}" placeholder="service_gmail"></div>
+      <div><label class="fl" style="font-size:11px;">Template ID</label><input class="fc" id="cfg-ejs-tpl" value="${cur.templateId||''}" placeholder="template_alertas"></div>
+      <div><label class="fl" style="font-size:11px;">E-mail da Márdea</label><input class="fc" id="cfg-email-mardea" value="${curAnalistas['Márdea']||''}" placeholder="mardea@empresa.com"></div>
+      <div><label class="fl" style="font-size:11px;">E-mail do Rodrigo</label><input class="fc" id="cfg-email-rodrigo" value="${curAnalistas['Rodrigo']||''}" placeholder="rodrigo@empresa.com"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="this.closest('[style*=fixed]').remove()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarConfigEmail(this)">💾 Salvar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function salvarConfigEmail(btn) {
+  const cfg = { publicKey: document.getElementById('cfg-ejs-pub').value.trim(), serviceId: document.getElementById('cfg-ejs-svc').value.trim(), templateId: document.getElementById('cfg-ejs-tpl').value.trim() };
+  const emails = { 'Márdea': document.getElementById('cfg-email-mardea').value.trim(), 'Rodrigo': document.getElementById('cfg-email-rodrigo').value.trim() };
+  localStorage.setItem('emailjs_config', JSON.stringify(cfg));
+  localStorage.setItem('analistas_email', JSON.stringify(emails));
+  Object.assign(EMAILJS_CONFIG, cfg);
+  Object.assign(ANALISTAS_EMAIL, emails);
+  toast('Configurações salvas!', 'success');
+  btn.closest('[style*=fixed]').remove();
+}
+
+// Carrega config salva ao iniciar
+(function() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('emailjs_config')||'{}');
+    const emails = JSON.parse(localStorage.getItem('analistas_email')||'{}');
+    Object.assign(EMAILJS_CONFIG, cfg);
+    Object.assign(ANALISTAS_EMAIL, emails);
+  } catch(e){}
+})();
 
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
