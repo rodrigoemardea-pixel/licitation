@@ -5946,21 +5946,36 @@ function dispararNotificacao(r) {
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
-  // 3. Som de alerta (mais chamativo)
+  // 3. Som em loop até o usuário fechar
+  let _alarmCtx = null;
+  let _alarmTimeout = null;
   try {
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    [659, 784, 659, 880].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'triangle';
-      gain.gain.setValueAtTime(0.4, ctx.currentTime + i*0.2);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.2 + 0.35);
-      osc.start(ctx.currentTime + i*0.2);
-      osc.stop(ctx.currentTime + i*0.2 + 0.35);
-    });
+    _alarmCtx = new (window.AudioContext||window.webkitAudioContext)();
+    function tocarCiclo() {
+      if (!_alarmCtx) return;
+      [659, 784, 659, 880].forEach((freq, i) => {
+        const osc = _alarmCtx.createOscillator();
+        const gain = _alarmCtx.createGain();
+        osc.connect(gain); gain.connect(_alarmCtx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'triangle';
+        gain.gain.setValueAtTime(0.4, _alarmCtx.currentTime + i*0.2);
+        gain.gain.exponentialRampToValueAtTime(0.001, _alarmCtx.currentTime + i*0.2 + 0.35);
+        osc.start(_alarmCtx.currentTime + i*0.2);
+        osc.stop(_alarmCtx.currentTime + i*0.2 + 0.35);
+      });
+      // Repete a cada 1.5s
+      _alarmTimeout = setTimeout(tocarCiclo, 1500);
+    }
+    tocarCiclo();
   } catch(e) {}
+
+  // Guarda ref para parar o som ao fechar
+  window._pararAlarme = () => {
+    clearTimeout(_alarmTimeout);
+    _alarmTimeout = null;
+    if (_alarmCtx) { try { _alarmCtx.close(); } catch(e){} _alarmCtx = null; }
+  };
 
   updateBadges();
 }
@@ -5986,16 +6001,16 @@ function mostrarPopupAlerta(r) {
       ${r.observacao ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-surface-soft);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">💬 ${r.observacao}</div>` : ''}
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
         ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent-primary);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
-        <button onclick="switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
-        <button onclick="document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
+        <button onclick="window._pararAlarme?.();switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
+        <button onclick="window._pararAlarme?.();document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
       </div>
     </div>`;
 
   // Fechar clicando fora do card
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  overlay.addEventListener('click', e => { if (e.target === overlay) { window._pararAlarme?.(); overlay.remove(); } });
   document.body.appendChild(overlay);
   // Auto-fecha após 60 segundos
-  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 60000);
+  setTimeout(() => { if (overlay.parentNode) { window._pararAlarme?.(); overlay.remove(); } }, 60000);
 }
 
 // ========== PAINEL DE CONTROLE ==========
