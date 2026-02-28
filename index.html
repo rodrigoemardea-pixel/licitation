@@ -6324,7 +6324,10 @@ function dispararNotificacao(r) {
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
-  // 3. Som em loop até o usuário fechar
+  // 3. E-mail automático para o analista
+  enviarEmailAlarme(r);
+
+  // 4. Som em loop até o usuário fechar
   let _alarmCtx = null;
   let _alarmTimeout = null;
   try {
@@ -6356,6 +6359,41 @@ function dispararNotificacao(r) {
   };
 
   updateBadges();
+}
+
+async function enviarEmailAlarme(r) {
+  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
+
+  const analista = r.analista || '?';
+
+  // Lê e-mail sempre do localStorage para garantir valor mais recente
+  let emailDest = ANALISTAS_EMAIL[analista];
+  try {
+    const saved = JSON.parse(localStorage.getItem('analistas_email') || '{}');
+    if (saved[analista]) emailDest = saved[analista];
+  } catch(e) {}
+
+  if (!emailDest) {
+    console.warn('📧 E-mail não configurado para analista:', analista);
+    return;
+  }
+
+  const retStr = r.retorno
+    ? new Date(r.retorno).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    : '—';
+
+  try {
+    await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+      to_email:  emailDest,
+      to_name:   analista,
+      assunto:   `⏰ RETORNO AGORA: ${r.orgao}`,
+      mensagem:  `Olá ${analista},\n\nO sistema está apitando para o seguinte acompanhamento:\n\n• Órgão: ${r.orgao}\n• Sistema: ${r.sistema||'—'}\n• Retorno: ${retStr}\n• Status: ${r.status||'—'}\n• Observação: ${r.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
+      data:      new Date().toLocaleDateString('pt-BR'),
+    });
+    console.log('✅ Email alarme enviado para', analista, '-', emailDest);
+  } catch(err) {
+    console.error('Erro ao enviar email alarme:', err);
+  }
 }
 
 function mostrarPopupAlerta(r) {
