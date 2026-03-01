@@ -19,6 +19,14 @@
   const fbAuth = firebase.auth();
   const fbDB  = firebase.firestore();
   const fbStorage = firebase.storage();
+  // ✅ MELHORIA 10: Modo offline — persiste dados localmente para uso sem internet
+  fbDB.enablePersistence({ synchronizeTabs: true }).catch(err => {
+    if (err.code === 'failed-precondition') {
+      console.warn('Persistência offline: múltiplas abas abertas. Apenas uma aba terá persistência.');
+    } else if (err.code === 'unimplemented') {
+      console.warn('Persistência offline não suportada neste navegador.');
+    }
+  });
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -833,6 +841,140 @@
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
 
+  /* ===== MELHORIA 8: Modal de confirmação estilizado ===== */
+  .confirm-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 99000;
+    align-items: center;
+    justify-content: center;
+  }
+  .confirm-modal-overlay.open { display: flex; }
+  .confirm-modal-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 32px 28px 24px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+    animation: modalIn 0.2s ease;
+    text-align: center;
+  }
+  .confirm-modal-icon {
+    font-size: 44px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .confirm-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .confirm-modal-msg {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .confirm-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* ===== MELHORIA 9: Busca global com atalho ===== */
+  #busca-global-input {
+    transition: width 0.25s ease, box-shadow 0.2s;
+  }
+  #busca-global-input:focus {
+    width: 320px !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.25) !important;
+    border-color: #3b82f6 !important;
+  }
+  .busca-kbd-hint {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    color: #94a3b8;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
+    transition: opacity 0.2s;
+  }
+  #busca-global-input:focus + .busca-kbd-hint { opacity: 0; }
+
+  /* ===== MELHORIA 12: Validação de formulário ===== */
+  .fc.field-error {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.15) !important;
+    animation: shakeField 0.35s ease;
+  }
+  @keyframes shakeField {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 60%{transform:translateX(5px)} 80%{transform:translateX(-3px)}
+  }
+  .field-error-msg {
+    font-size: 10px;
+    color: var(--danger);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* ===== MELHORIA 15: Banner de status offline/online ===== */
+  #offline-banner {
+    display: none;
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #f1f5f9;
+    border: 1px solid #475569;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 99999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    gap: 8px;
+    align-items: center;
+    animation: slideUpBanner 0.3s ease;
+  }
+  @keyframes slideUpBanner {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+  }
+  #offline-banner.show { display: flex; }
+
+  /* ===== MELHORIA 15: Notificações push aprimoradas ===== */
+  .push-notif-btn {
+    background: var(--bg-surface-soft);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+  }
+  .push-notif-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+  .push-notif-btn.active { background: var(--success-soft); border-color: var(--success); color: var(--success); }
+
   .modal-header {
     padding: 18px 24px 14px;
     border-bottom: 1px solid var(--border-light);
@@ -1594,9 +1736,15 @@
 
   <!-- BUSCA GLOBAL -->
   <div style="position:relative;margin-right:8px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:#1e293b;border:1px solid #475569;border-radius:8px;color:#f1f5f9;padding:6px 12px;font-size:12px;width:200px;">
-    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:360px;max-height:400px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:#1e293b;border:1px solid #475569;border-radius:8px;color:#f1f5f9;padding:6px 34px 6px 12px;font-size:12px;width:200px;" autocomplete="off">
+    <span class="busca-kbd-hint">/</span>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
   </div>
+
+  <!-- MELHORIA 15: Botão de Notificações Push -->
+  <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Ativar notificações push do navegador">
+    🔔 <span id="push-notif-label">Notificações</span>
+  </button>
 
   <!-- USUÁRIO LOGADO -->
   <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para trocar usuário">
@@ -2728,15 +2876,23 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-confirm">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-header"><div class="modal-title">Confirmar exclusão</div><button class="modal-close" onclick="closeConfirm()">✕</button></div>
-    <div class="modal-body"><p id="confirm-msg" style="color:var(--text-secondary); font-size:13px;">Tem certeza que deseja excluir este registro?</p></div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeConfirm()">Cancelar</button>
-      <button class="btn btn-danger" onclick="confirmDel()">🗑 Excluir</button>
+<!-- MELHORIA 8: Modal de confirmação estilizado -->
+<div class="confirm-modal-overlay" id="modal-confirm">
+  <div class="confirm-modal-box">
+    <span class="confirm-modal-icon" id="confirm-modal-icon">🗑️</span>
+    <div class="confirm-modal-title" id="confirm-modal-title">Confirmar exclusão</div>
+    <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
+    <div class="confirm-modal-actions">
+      <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
+      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn" onclick="confirmDel()">🗑 Sim, excluir</button>
     </div>
   </div>
+</div>
+
+<!-- MELHORIA 15: Banner de status offline -->
+<div id="offline-banner">
+  <span id="offline-icon">📡</span>
+  <span id="offline-msg">Sem conexão — trabalhando offline</span>
 </div>
 
 <div class="toast-container" id="toasts"></div>
@@ -4776,6 +4932,11 @@ function clearD(){
   calcD();
 }
 function saveD(){
+  // MELHORIA 12: Validação com feedback visual
+  if (!validarFormDisputa()) {
+    toast('Preencha os campos obrigatórios destacados em vermelho', 'error');
+    return;
+  }
   // Validação: lotes obrigatórios
   const lotesValidos = lotesTemp.filter(l => l.descricao && l.vunit > 0);
   if (!lotesValidos.length) {
@@ -4875,7 +5036,14 @@ function clearE(){
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
+let _skipDupCheck = false;
+function _continuarSaveE() { _skipDupCheck = true; saveE(); }
 function saveE(){
+  // MELHORIA 12: Validação com feedback visual
+  if (!validarFormEmpenho()) {
+    toast('Preencha os campos obrigatórios destacados em vermelho', 'error');
+    return;
+  }
   const disputaId = gv('e-disputa-id');
   if (!disputaId) {
     toast('SELECIONE A DISPUTA VINCULADA (OBRIGATÓRIO)', 'error');
@@ -4884,12 +5052,15 @@ function saveE(){
   }
   // Detecção de empenho duplicado
   const numDigitado = gv('e-num').toUpperCase().trim();
-  if (numDigitado) {
+  if (numDigitado && !_skipDupCheck) {
     const duplicado = DB.empenhos.find(e => e.num === numDigitado && e.id !== (EID.empenhos||''));
     if (duplicado) {
-      if (!confirm(`⚠️ Já existe um empenho com o número "${numDigitado}" (${duplicado.orgao||'?'}).\nDeseja salvar mesmo assim?`)) return;
+      // MELHORIA 8: Usa modal estilizado para confirmar duplicação
+      _confirmarAcao({icon:'⚠️', titulo:'Empenho duplicado', msg:`Já existe um empenho com o número <strong>${numDigitado}</strong> (${duplicado.orgao||'?'}).<br><br>Deseja salvar mesmo assim?`, btnLabel:'Salvar mesmo assim', btnClass:'btn-ghost', onConfirm: () => { _continuarSaveE(); }});
+      return;
     }
   }
+  _skipDupCheck = false;
   // Pega todos os lotes selecionados
   const lotesKeys = Object.keys(lotesSelecionados);
   const disp = DB.disputas.find(d => d.id === disputaId);
@@ -5038,24 +5209,39 @@ let PDel=null;
 function delRow(tab,id){
   PDel={tab,id};
   let msg = 'Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.';
+  let titulo = 'Confirmar exclusão';
+  let icon = '🗑️';
   if(tab === 'disputas') {
     const disp = DB.disputas.find(r=>r.id===id);
     const empsVinculados = DB.empenhos.filter(e=>e.disputaId===id);
     const totalCompras = empsVinculados.reduce((s,e)=>s+(e.compras||[]).length,0);
     const nome = disp ? disp.orgao : 'esta disputa';
+    titulo = `Excluir disputa`;
+    icon = '⚠️';
     if(empsVinculados.length > 0) {
-      msg = `⚠️ Ao excluir a disputa <strong>${nome}</strong>, serão excluídos também:<br><br>`
+      msg = `Ao excluir a disputa <strong>${nome}</strong>, serão excluídos também:<br><br>`
           + `• <strong>${empsVinculados.length} empenho(s)</strong> vinculado(s)<br>`
           + (totalCompras > 0 ? `• <strong>${totalCompras} compra(s)</strong> registrada(s)<br>` : '')
-          + `<br>Esta ação não pode ser desfeita.`;
+          + `<br>Esta ação <strong>não pode ser desfeita</strong>.`;
     } else {
-      msg = `Tem certeza que deseja excluir a disputa <strong>${nome}</strong>? Esta ação não pode ser desfeita.`;
+      msg = `Tem certeza que deseja excluir a disputa <strong>${nome}</strong>?<br><br>Esta ação não pode ser desfeita.`;
     }
+  } else if(tab === 'empenhos') {
+    const emp = DB.empenhos.find(r=>r.id===id);
+    const nome = emp ? `#${emp.num||'?'} · ${emp.orgao||'?'}` : 'este empenho';
+    const totalCompras = (emp?.compras||[]).length;
+    titulo = `Excluir empenho`;
+    icon = totalCompras > 0 ? '⚠️' : '🗑️';
+    msg = totalCompras > 0
+      ? `Ao excluir o empenho <strong>${nome}</strong>, serão excluídas também <strong>${totalCompras} compra(s)</strong> registrada(s).<br><br>Esta ação não pode ser desfeita.`
+      : `Tem certeza que deseja excluir o empenho <strong>${nome}</strong>?<br><br>Esta ação não pode ser desfeita.`;
   }
+  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = icon;
+  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = titulo;
   const el = g('confirm-msg'); if(el) el.innerHTML = msg;
   g('modal-confirm').classList.add('open');
 }
-function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); }
+function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; }
 function confirmDel(){
   if(!PDel) return;
   if(PDel.tab === 'disputas') {
@@ -5092,19 +5278,34 @@ function atualizarBotaoLote(tab) {
 function deletarSelecionados(tab) {
   const ids = Array.from(document.querySelectorAll('.chk-row-' + tab + ':checked')).map(c => c.dataset.id);
   if (!ids.length) return;
-  if (!confirm('Excluir ' + ids.length + ' registro(s) selecionado(s)? Esta ação não pode ser desfeita.')) return;
-  if (tab === 'disputas') {
-    // Cascata: remove empenhos (e compras dentro deles) vinculados às disputas excluídas
-    DB.empenhos = DB.empenhos.filter(e => !ids.includes(e.disputaId));
-    save('empenhos', DB.empenhos);
+  // Usa modal estilizado em vez do confirm nativo
+  PDel = { tab, ids };
+  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = '⚠️';
+  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = `Excluir ${ids.length} registro(s)`;
+  const el = g('confirm-msg');
+  const cascata = tab === 'disputas' ? DB.empenhos.filter(e => ids.includes(e.disputaId)).length : 0;
+  if(el) el.innerHTML = `Você está prestes a excluir <strong>${ids.length} ${tab === 'disputas' ? 'disputa(s)' : 'empenho(s)'}</strong>.`
+    + (cascata > 0 ? `<br><br>Isso também excluirá <strong>${cascata} empenho(s) vinculado(s)</strong>.` : '')
+    + `<br><br>Esta ação <strong>não pode ser desfeita</strong>.`;
+  const btn = g('confirm-del-btn');
+  if(btn) {
+    btn.onclick = () => {
+      if (tab === 'disputas') {
+        DB.empenhos = DB.empenhos.filter(e => !ids.includes(e.disputaId));
+        save('empenhos', DB.empenhos);
+      }
+      DB[tab] = DB[tab].filter(r => !ids.includes(r.id));
+      save(tab, DB[tab]);
+      renderAll();
+      const chkAll = g('chk-all-' + tab);
+      if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
+      atualizarBotaoLote(tab);
+      toast(ids.length + ' registro(s) excluído(s)', 'info');
+      PDel = null;
+      closeConfirm();
+    };
   }
-  DB[tab] = DB[tab].filter(r => !ids.includes(r.id));
-  save(tab, DB[tab]);
-  renderAll();
-  const chkAll = g('chk-all-' + tab);
-  if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
-  atualizarBotaoLote(tab);
-  toast(ids.length + ' registro(s) excluído(s)', 'info');
+  g('modal-confirm').classList.add('open');
 }
 
 // ========== EXPORT ==========
@@ -5808,25 +6009,19 @@ function calcCustoAplicar() {
 function finalizarDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  if (!confirm('Finalizar a disputa "' + (d.orgao||id) + '"?\nEla será movida para a aba Finalizadas.')) return;
-  d.finalizada = true;
-  d.finalizadaAuto = false;
-  d.dataFinalizacao = new Date().toISOString().slice(0,10);
-  save('disputas', DB.disputas);
-  renderAll();
-  toast('Disputa finalizada! ✅', 'success');
+  _confirmarAcao({icon:'✅', titulo:'Finalizar disputa', msg:`Finalizar a disputa <strong>${d.orgao||id}</strong>?<br>Ela será movida para a aba Finalizadas.`, btnLabel:'✅ Finalizar', btnClass:'btn-success', onConfirm: () => {
+    d.finalizada = true; d.finalizadaAuto = false; d.dataFinalizacao = new Date().toISOString().slice(0,10);
+    save('disputas', DB.disputas); renderAll(); toast('Disputa finalizada! ✅', 'success');
+  }}); return;
 }
 
 function reabrirDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  if (!confirm('Reabrir a disputa "' + (d.orgao||id) + '"?\nEla voltará para Disputas em Andamento.')) return;
-  d.finalizada = false;
-  d.dataFinalizacao = null;
-  d.finalizadaAuto = false;
-  save('disputas', DB.disputas);
-  renderAll();
-  toast('Disputa reaberta!', 'info');
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+    d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
+    save('disputas', DB.disputas); renderAll(); toast('Disputa reaberta!', 'info');
+  }}); return;
 }
 
 // ===== DUPLICAR COMPRA =====
@@ -5950,6 +6145,205 @@ document.addEventListener('click', e => {
     const p = g('notif-panel'); if(p) p.style.display='none';
   }
 });
+
+// ===== MELHORIA 8: Função auxiliar para confirmar ações com modal estilizado =====
+function _confirmarAcao({ icon = '⚠️', titulo = 'Confirmar', msg = '', btnLabel = 'Confirmar', btnClass = 'btn-danger', onConfirm }) {
+  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = icon;
+  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = titulo;
+  const el = g('confirm-msg'); if(el) el.innerHTML = msg;
+  const btn = g('confirm-del-btn');
+  if(btn) {
+    btn.textContent = btnLabel;
+    btn.className = 'btn ' + btnClass;
+    btn.style.minWidth = '120px';
+    btn.onclick = () => { onConfirm(); PDel = null; closeConfirm(); };
+  }
+  g('modal-confirm').classList.add('open');
+}
+
+// ===== MELHORIA 9: Atalho de teclado "/" para busca global =====
+document.addEventListener('keydown', e => {
+  // Não interfere se está digitando em campo de texto
+  const tag = document.activeElement?.tagName;
+  const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if (e.key === '/' && !isInput && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const inp = g('busca-global-input');
+    if (inp) { inp.focus(); inp.select(); }
+  }
+  // Escape fecha a busca
+  if (e.key === 'Escape') {
+    fecharBuscaGlobal();
+    const modal = g('modal-confirm');
+    if (modal && modal.classList.contains('open')) closeConfirm();
+  }
+});
+
+// ===== MELHORIA 10: Monitor de status offline/online =====
+(function monitorarConexao() {
+  const banner = () => g('offline-banner');
+  function mostrarOffline() {
+    const b = banner(); if (!b) return;
+    const icon = g('offline-icon'); const msg = g('offline-msg');
+    if(icon) icon.textContent = '📡';
+    if(msg) msg.textContent = 'Sem conexão — trabalhando offline';
+    b.style.background = '#1e293b';
+    b.style.borderColor = '#ef4444';
+    b.classList.add('show');
+  }
+  function mostrarOnline() {
+    const b = banner(); if (!b) return;
+    const icon = g('offline-icon'); const msg = g('offline-msg');
+    if(icon) icon.textContent = '✅';
+    if(msg) msg.textContent = 'Conexão restaurada — dados sincronizados';
+    b.style.borderColor = '#10b981';
+    b.classList.add('show');
+    setTimeout(() => b.classList.remove('show'), 3000);
+  }
+  window.addEventListener('offline', mostrarOffline);
+  window.addEventListener('online', mostrarOnline);
+  if (!navigator.onLine) mostrarOffline();
+})();
+
+// ===== MELHORIA 12: Validação de formulário com feedback visual =====
+function validarCampo(id, regra, msgErro) {
+  const el = g(id); if (!el) return true;
+  const val = (el.value || '').trim();
+  const ok = regra(val);
+  el.classList.toggle('field-error', !ok);
+  // Remove mensagem de erro anterior
+  const old = el.parentElement?.querySelector('.field-error-msg');
+  if (old) old.remove();
+  if (!ok && msgErro) {
+    const span = document.createElement('span');
+    span.className = 'field-error-msg';
+    span.innerHTML = '⚠ ' + msgErro;
+    el.parentElement?.appendChild(span);
+  }
+  // Remove classe de erro ao começar a digitar
+  if (!ok) el.addEventListener('input', () => { el.classList.remove('field-error'); const m = el.parentElement?.querySelector('.field-error-msg'); if(m) m.remove(); }, { once: true });
+  return ok;
+}
+
+function validarFormDisputa() {
+  let ok = true;
+  ok = validarCampo('d-data', v => !!v, 'Data obrigatória') && ok;
+  ok = validarCampo('d-orgao', v => v.length >= 3, 'Órgão muito curto (mín. 3 caracteres)') && ok;
+  ok = validarCampo('d-analista', v => !!v, 'Selecione um analista') && ok;
+  return ok;
+}
+
+function validarFormEmpenho() {
+  let ok = true;
+  ok = validarCampo('e-data', v => !!v, 'Data obrigatória') && ok;
+  ok = validarCampo('e-num', v => v.length >= 2, 'Número do empenho obrigatório') && ok;
+  ok = validarCampo('e-analista', v => !!v, 'Selecione um analista') && ok;
+  return ok;
+}
+
+// ===== MELHORIA 15: Notificações push aprimoradas =====
+function togglePushNotificacoes() {
+  if (!('Notification' in window)) {
+    toast('Seu navegador não suporta notificações push.', 'error');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    // Já ativado — mostra status
+    toast('✅ Notificações push já estão ativadas!', 'success');
+    atualizarBtnPush();
+    // Envia notificação de teste
+    new Notification('🔔 LicitationBiznis', { body: 'Notificações push ativas! Você receberá alertas de retorno e empenhos.', icon: '' });
+  } else if (Notification.permission === 'denied') {
+    toast('❌ Notificações bloqueadas pelo navegador. Acesse as configurações do site para liberar.', 'error');
+  } else {
+    Notification.requestPermission().then(perm => {
+      atualizarBtnPush();
+      if (perm === 'granted') {
+        toast('🔔 Notificações push ativadas com sucesso!', 'success');
+        new Notification('🔔 LicitationBiznis', { body: 'Ótimo! Você receberá alertas importantes aqui.' });
+      } else {
+        toast('Permissão de notificação negada.', 'info');
+      }
+    });
+  }
+}
+
+function atualizarBtnPush() {
+  const btn = g('btn-push-notif');
+  const label = g('push-notif-label');
+  if (!btn || !label) return;
+  if (!('Notification' in window)) { btn.style.display = 'none'; return; }
+  if (Notification.permission === 'granted') {
+    btn.classList.add('active');
+    label.textContent = 'Push ativo';
+    btn.title = 'Notificações push ativas — clique para testar';
+  } else if (Notification.permission === 'denied') {
+    btn.classList.remove('active');
+    label.textContent = 'Push bloqueado';
+    btn.style.color = 'var(--danger)';
+    btn.style.borderColor = 'var(--danger)';
+  } else {
+    btn.classList.remove('active');
+    label.textContent = 'Ativar push';
+  }
+}
+
+// Inicializa o estado do botão push ao carregar
+setTimeout(atualizarBtnPush, 500);
+
+// ===== MELHORIA BÔNUS: Abertura automática às 8h30 em dias úteis =====
+// Isso funciona com Service Worker — implementado como verificação ao abrir a página
+(function verificarAberturaAutomatica() {
+  const agora = new Date();
+  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg..5=Sex, 6=Sab
+  const ehDiaUtil = diaSemana >= 1 && diaSemana <= 5;
+  const hora = agora.getHours();
+  const min = agora.getMinutes();
+  
+  // Salva o horário do próximo agendamento no localStorage
+  function proximoAgendamento() {
+    const agora = new Date();
+    const alvo = new Date(agora);
+    alvo.setSeconds(0); alvo.setMilliseconds(0);
+    
+    // Acha o próximo dia útil às 8:30
+    alvo.setHours(8, 30, 0, 0);
+    if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
+    // Pula fim de semana
+    while (alvo.getDay() === 0 || alvo.getDay() === 6) alvo.setDate(alvo.getDate() + 1);
+    return alvo;
+  }
+  
+  // Agenda verificação para o próximo 8:30 dia útil
+  function agendarProximaVerificacao() {
+    const prox = proximoAgendamento();
+    const msAte = prox - new Date();
+    console.log(`⏰ Próxima verificação automática: ${prox.toLocaleString('pt-BR')}`);
+    setTimeout(() => {
+      // Ao disparar, envia notificação push se permitido
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('📋 LicitationBiznis — Bom dia!', {
+          body: 'Hora de verificar seus acompanhamentos e empenhos do dia.',
+          icon: '',
+          requireInteraction: false
+        });
+      }
+      // Re-agenda para o próximo dia
+      agendarProximaVerificacao();
+    }, msAte);
+  }
+  
+  // Inicia agendamento (funciona enquanto a aba estiver aberta)
+  agendarProximaVerificacao();
+  
+  // Mostra dica de como configurar abertura automática
+  const ultimaDicaAbertura = localStorage.getItem('dicaAberturaAuto');
+  const hoje = new Date().toISOString().slice(0,10);
+  if (ehDiaUtil && hora === 8 && min >= 28 && min <= 35 && ultimaDicaAbertura !== hoje) {
+    localStorage.setItem('dicaAberturaAuto', hoje);
+    setTimeout(() => toast('⏰ Bom dia! Sessão de trabalho iniciada às 8h30.', 'success'), 2000);
+  }
+})();
 
 // ===== TOGGLE TEMA =====
 (function() {
@@ -6131,10 +6525,19 @@ function toggleTarefa(id) {
 }
 
 function excluirTarefa(id) {
-  if (!confirm('Excluir esta tarefa?')) return;
-  DB.tarefas = (DB.tarefas||[]).filter(x => x.id !== id);
-  save('tarefas', DB.tarefas);
-  renderTarefas();
+  PDel = { tab: 'tarefas', id };
+  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = '📌';
+  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = 'Excluir tarefa';
+  const el = g('confirm-msg'); if(el) el.innerHTML = 'Tem certeza que deseja excluir esta tarefa?';
+  const btn = g('confirm-del-btn');
+  if(btn) btn.onclick = () => {
+    DB.tarefas = (DB.tarefas||[]).filter(x => x.id !== id);
+    save('tarefas', DB.tarefas);
+    renderTarefas();
+    toast('Tarefa excluída', 'info');
+    PDel = null; closeConfirm();
+  };
+  g('modal-confirm').classList.add('open');
 }
 
 // ===== NOTIFICAÇÕES =====
@@ -6303,38 +6706,27 @@ function sumFinalizadas(rows) {
 
 
 // ========== EMPENHOS FINALIZADOS ==========
-function finalizarEmpenho(id) {
-  const e = DB.empenhos.find(x => x.id === id);
-  if (!e) return;
-  if (!confirm('Finalizar o empenho "' + (e.num||id) + '"?\nEle será movido para a aba Emp. Finalizados.')) return;
-  e.finalizado = true;
-  e._manualFinalizado = true;
+function _doFinalizarEmpenho(id) {
+  const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  e.finalizado = true; e._manualFinalizado = true;
   e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
   if (e.disputaId) verificarAutoFinalizarDisputa(e.disputaId);
-  save('empenhos', DB.empenhos);
-  renderAll();
-  toast('Empenho finalizado! ✅', 'success');
+  save('empenhos', DB.empenhos); renderAll(); toast('Empenho finalizado! ✅', 'success');
+}
+function _doReabrirEmpenho(id) {
+  const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+  if (e.disputaId) { const d = DB.disputas.find(x => x.id === e.disputaId); if (d && d.finalizada) { d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false; } }
+  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto!', 'info');
+}
+function finalizarEmpenho(id) {
+  const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  _confirmarAcao({icon:'📦', titulo:'Finalizar empenho', msg:`Finalizar o empenho <strong>${e.num||id}</strong>?<br>Ele será movido para a aba Emp. Finalizados.`, btnLabel:'📦 Finalizar', btnClass:'btn-success', onConfirm: () => { _doFinalizarEmpenho(id); }});
 }
 
 function reabrirEmpenho(id) {
-  const e = DB.empenhos.find(x => x.id === id);
-  if (!e) return;
-  if (!confirm('Reabrir o empenho "' + (e.num||id) + '"?\nEle voltará para a aba Empenhos.')) return;
-  e.finalizado = false;
-  e._manualFinalizado = false;
-  e.dataFinalizacao = null;
-  // Reabre disputa vinculada se necessário
-  if (e.disputaId) {
-    const d = DB.disputas.find(x => x.id === e.disputaId);
-    if (d && d.finalizada) {
-      d.finalizada = false;
-      d.dataFinalizacao = null;
-      d.finalizadaAuto = false;
-    }
-  }
-  save('empenhos', DB.empenhos);
-  renderAll();
-  toast('Empenho reaberto!', 'info');
+  const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir empenho', msg:`Reabrir o empenho <strong>${e.num||id}</strong>?<br>Ele voltará para a aba Empenhos.`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => { _doReabrirEmpenho(id); }});
 }
 
 let _agrupadoFin = false;
@@ -6722,11 +7114,20 @@ function editAcomp(id) {
 }
 
 function delAcomp(id) {
-  if (!confirm('Excluir este acompanhamento?')) return;
-  DB.acomp = (DB.acomp||[]).filter(x => x.id !== id);
-  save('acomp', DB.acomp);
-  renderAcomp(); updateBadges(); atualizarPainel();
-  toast('Excluído!', 'success');
+  const a = (DB.acomp||[]).find(x => x.id === id);
+  PDel = { tab: 'acomp', id };
+  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = '👁️';
+  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = 'Excluir acompanhamento';
+  const el = g('confirm-msg'); if(el) el.innerHTML = `Tem certeza que deseja excluir o acompanhamento <strong>${a?.orgao||'?'}</strong>?<br><br>Esta ação não pode ser desfeita.`;
+  const btn = g('confirm-del-btn');
+  if(btn) btn.onclick = () => {
+    DB.acomp = (DB.acomp||[]).filter(x => x.id !== id);
+    save('acomp', DB.acomp);
+    renderAcomp(); updateBadges(); atualizarPainel();
+    toast('Excluído!', 'success');
+    PDel = null; closeConfirm();
+  };
+  g('modal-confirm').classList.add('open');
 }
 
 function renderAcomp() {
@@ -6792,10 +7193,7 @@ function verAcomp(id) {
   alert(`📋 ${r.orgao} — ${r.estado}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
 }
 
-function converterEmDisputa(id) {
-  const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
-  if(!confirm(`Converter "${r.orgao}" em Disputa Vencida?`)) return;
-  // Pré-preenche o modal de disputa
+function _doCriarDisputaDeAcomp(r) {
   clearD();
   document.getElementById('d-data').value = r.data||'';
   document.getElementById('d-orgao').value = r.orgao||'';
@@ -6804,6 +7202,11 @@ function converterEmDisputa(id) {
   document.getElementById('d-analista').value = r.analista||'';
   document.getElementById('ttl-disputas').textContent = 'Nova Disputa (de Acompanhamento)';
   document.getElementById('modal-disputas').classList.add('open');
+}
+
+function converterEmDisputa(id) {
+  const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
+  _confirmarAcao({icon:'🏆', titulo:'Converter em Disputa Vencida', msg:`Converter o acompanhamento <strong>${r.orgao}</strong> em Disputa Vencida?<br><br>Ele será criado na aba de Disputas com status ativo.`, btnLabel:'🏆 Converter', btnClass:'btn-primary', onConfirm: () => { _doCriarDisputaDeAcomp(r); }});
 }
 
 // ========== NOTIFICAÇÕES DE RETORNO ==========
