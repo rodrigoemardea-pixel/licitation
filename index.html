@@ -726,7 +726,8 @@
   }
 
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg-surface-hover); color: var(--text-primary); }
+  tbody tr:nth-child(even) td { background: var(--bg-surface-soft); }
+  tr:hover td { background: var(--bg-surface-hover) !important; color: var(--text-primary); }
 
   td.mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
   td.hi { color: var(--text-primary); font-weight: 500; }
@@ -2245,6 +2246,14 @@
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+        </select>
+      </div>
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
     </div>
     <div class="table-wrapper">
@@ -4010,7 +4019,7 @@ function renderD(){
 }
 
 function sumD(){
-  const a=DB.disputas.filter(r=>matches('disputas',r));
+  const a=DB.disputas.filter(r=>!r.finalizada && matches('disputas',r));
   const tv=a.reduce((s,r)=>s+getValorContrato(r),0);
   const idsDisputas = new Set(a.map(r=>r.id));
   const empsVinculados = DB.empenhos.filter(e=>idsDisputas.has(e.disputaId));
@@ -6785,8 +6794,10 @@ function toggleAgrupamentoFin() {
 
 function renderEmpFinalizados() {
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
+  const analista = g('filtro-analista-emp-fin')?.value || 'todos';
   const rows = DB.empenhos.filter(e => {
     if (!e.finalizado) return false;
+    if (analista !== 'todos' && e.analista !== analista) return false;
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
   }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
