@@ -4413,7 +4413,7 @@ function atualizarDashboard() {
   ).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">Nenhuma disputa encontrada</td></tr>';
 
   // ===== VISÃO DE CAIXA =====
-  const empPendentes = DB.empenhos.filter(e => !e.finalizado && !empenhoEstaPago(e));
+  const empPendentes = empenhosFiltrados.filter(e => !e.finalizado && !empenhoEstaPago(e));
   const caixaBands = { b30:[], b60:[], b90:[], b90p:[] };
   empPendentes.forEach(e => {
     const dias = diasSemPagamento(e);
@@ -4449,7 +4449,7 @@ function atualizarDashboard() {
 
   // ===== TOP DEVEDORES =====
   const devedores = {};
-  DB.empenhos.filter(e=>!e.finalizado&&!empenhoEstaPago(e)).forEach(e=>{
+  empenhosFiltrados.filter(e=>!e.finalizado&&!empenhoEstaPago(e)).forEach(e=>{
     const org = e.orgao||'?';
     if(!devedores[org]) devedores[org] = { count:0, total:0, maxDias:0 };
     devedores[org].count++;
@@ -4468,7 +4468,7 @@ function atualizarDashboard() {
 
   // ===== TAXA DE RECEBIMENTO POR ÓRGÃO =====
   const taxaOrg = {};
-  DB.empenhos.forEach(e=>{
+  empenhosFiltrados.forEach(e=>{
     const org = e.orgao||'?';
     if(!taxaOrg[org]) taxaOrg[org] = { pagos:0, total:0 };
     taxaOrg[org].total++;
@@ -4571,10 +4571,16 @@ function atualizarDashboard() {
   // Gráfico 5: Velocidade de pagamento
   const velOrgao = {};
   empenhosFiltrados.forEach(e => {
-    (e.compras||[]).filter(c=>c.dpag&&c.dpag!==''&&e.data).forEach(c=>{
-      const dias = Math.floor((new Date(c.dpag)-new Date(e.data))/86400000);
-      if(dias<0||dias>365) return;
-      if(!velOrgao[e.orgao||'?']) velOrgao[e.orgao||'?'] = [];
+    const comprasPagas = (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='');
+    if (!comprasPagas.length) return;
+    // Usa a última data de compra (dcompra) como referência; cai para data do empenho se não houver
+    const dcomprasDatas = comprasPagas.map(c=>c.dcompra).filter(Boolean).sort();
+    const dataRef = dcomprasDatas.length ? dcomprasDatas[dcomprasDatas.length - 1] : e.data;
+    if (!dataRef) return;
+    comprasPagas.forEach(c => {
+      const dias = Math.floor((new Date(c.dpag) - new Date(dataRef)) / 86400000);
+      if (dias < 0 || dias > 730) return;
+      if (!velOrgao[e.orgao||'?']) velOrgao[e.orgao||'?'] = [];
       velOrgao[e.orgao||'?'].push(dias);
     });
   });
