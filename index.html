@@ -2097,6 +2097,7 @@
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
     </div>
     <div class="table-wrapper">
       <table>
@@ -6336,6 +6337,15 @@ function reabrirEmpenho(id) {
   toast('Empenho reaberto!', 'info');
 }
 
+let _agrupadoFin = false;
+
+function toggleAgrupamentoFin() {
+  _agrupadoFin = !_agrupadoFin;
+  const btn = g('btn-agrupar-orgao-fin');
+  if (btn) { btn.style.background = _agrupadoFin ? 'var(--accent-primary)' : ''; btn.style.color = _agrupadoFin ? '#fff' : ''; }
+  renderEmpFinalizados();
+}
+
 function renderEmpFinalizados() {
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
   const rows = DB.empenhos.filter(e => {
@@ -6351,23 +6361,65 @@ function renderEmpFinalizados() {
     sumEmpFinalizados(rows);
     return;
   }
-  tb.innerHTML = rows.map(r => {
-    const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-      const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
-      return ss+luc;
-    },0);
-    return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
-      '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
-      '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
-      '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
-      '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
-      '<td onclick="event.stopPropagation()">' +
-        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
-      '</td></tr>';
-  }).join('');
+
+  if (_agrupadoFin) {
+    const grupos = {};
+    rows.forEach(r => {
+      const org = r.orgao||'—';
+      if (!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalLucro:0 };
+      grupos[org].empenhos.push(r);
+      grupos[org].totalVem += r.vem||0;
+      grupos[org].totalLucro += (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+        const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
+      },0);
+    });
+    const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
+    tb.innerHTML = sorted.map(([org, g_]) => {
+      const linhasEmp = g_.empenhos.map(r => {
+        const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+          const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
+        },0);
+        return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
+          <td></td>
+          <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+          <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+          <td class="mono" style="color:var(--success);font-weight:600;">${fmt(lucroRec)}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-tertiary);">${fmtD(r.dataFinalizacao)}</td>
+          <td onclick="event.stopPropagation()">
+            <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')">🔍</button>
+            <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
+          </td></tr>`;
+      }).join('');
+      return `<tr style="background:var(--bg-inset);">
+        <td colspan="7" style="padding:8px 12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;">
+            <span>🏢 ${org}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
+            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--success);">Lucro: ${fmt(g_.totalLucro)}</span>
+          </div>
+        </td></tr>${linhasEmp}`;
+    }).join('');
+  } else {
+    tb.innerHTML = rows.map(r => {
+      const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
+        const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
+        return ss+luc;
+      },0);
+      return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
+        '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
+        '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
+        '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+        '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+        '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
+        '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
+        '<td onclick="event.stopPropagation()">' +
+          '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
+        '</td></tr>';
+    }).join('');
+  }
   sumEmpFinalizados(rows);
 }
 
