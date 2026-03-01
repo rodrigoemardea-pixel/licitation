@@ -1571,6 +1571,9 @@
   <!-- CONTROLES DO HEADER -->
 
 
+  <!-- TOGGLE TEMA -->
+  <button onclick="toggleTema()" id="btn-tema" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.8;" title="Alternar tema claro/escuro">🌙</button>
+
   <!-- CONFIG E-MAIL -->
   <button onclick="abrirConfigEmail()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.7;" title="Configurar alertas por e-mail">⚙️</button>
 
@@ -2821,6 +2824,7 @@ fbAuth.onAuthStateChanged(user => {
         DB.empenhos = data.empenhos || [];
         DB.acomp = data.acomp || [];
         DB.comentarios = data.comentarios || [];
+        DB.tarefas = data.tarefas || [];
       } else {
         DB.disputas = [];
         DB.empenhos = [];
@@ -2832,6 +2836,7 @@ fbAuth.onAuthStateChanged(user => {
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
         iniciarNotificacoes();
+        setTimeout(mostrarResumoDiario, 1200);
         // Vai para painel na primeira carga
         const btnPainel = document.getElementById('tab-btn-painel');
         if (btnPainel) {
@@ -3662,6 +3667,8 @@ function abrirPopupEmpenho(id) {
     renderComentarios('empenho', id);
 
   g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
+  const tarefaBtnE = g('popup-e-tarefa-btn');
+  if (tarefaBtnE) tarefaBtnE.onclick = () => abrirModalTarefas('empenho', id, 'Empenho #' + (r.num||'—') + ' · ' + (r.orgao||''));
   g('popup-empenho').classList.add('open');
 }
 
@@ -4053,6 +4060,7 @@ function verExcel(id, tipo) {
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
       <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
+      <button class="btn btn-ghost btn-sm" id="popup-d-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
       <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">＋ Novo Empenho</button>
       <button class="btn btn-primary" id="popup-d-edit-btn">✏️ Editar</button>
     </div>
@@ -4060,6 +4068,66 @@ function verExcel(id, tipo) {
 </div>
 
 <!-- POPUP DETALHES EMPENHO -->
+<!-- MODAL RESUMO DIÁRIO -->
+<div class="detail-popup-overlay" id="modal-resumo-diario" style="z-index:10001;">
+  <div class="detail-popup" style="max-width:520px;">
+    <div class="detail-popup-header" style="background:linear-gradient(135deg,var(--accent-primary),var(--purple));border-radius:12px 12px 0 0;padding:20px 24px;">
+      <div>
+        <div class="detail-popup-title" id="resumo-titulo" style="color:#fff;font-size:18px;">☀️ Bom dia!</div>
+        <div class="detail-popup-sub" style="color:rgba(255,255,255,0.8);" id="resumo-data"></div>
+      </div>
+      <button class="detail-close" onclick="fecharResumoDiario()" style="color:#fff;opacity:0.8;">✕</button>
+    </div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;" id="resumo-body"></div>
+    <div class="detail-actions">
+      <label style="font-size:11px;color:var(--text-tertiary);display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="resumo-nao-mostrar" onchange="salvarPreferenciasResumo()"> Não mostrar hoje
+      </label>
+      <button class="btn btn-primary" onclick="fecharResumoDiario()">Vamos lá! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TAREFAS -->
+<div class="detail-popup-overlay" id="modal-tarefas" style="z-index:10000;">
+  <div class="detail-popup" style="max-width:480px;">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="tarefa-popup-title">📌 Tarefas</div>
+        <div class="detail-popup-sub" id="tarefa-popup-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharModalTarefas()">✕</button>
+    </div>
+    <div style="padding:16px 20px;">
+      <div id="tarefa-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:260px;overflow-y:auto;"></div>
+      <div style="border-top:1px solid var(--border-light);padding-top:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;">Nova Tarefa</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input type="text" id="tarefa-input-desc" class="fc" placeholder="Descreva a tarefa..." style="font-size:13px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <label class="fl" style="font-size:11px;">Responsável</label>
+              <select id="tarefa-input-resp" class="fc" style="font-size:12px;">
+                <option value="">Qualquer um</option>
+                <option>Márdea</option>
+                <option>Rodrigo</option>
+              </select>
+            </div>
+            <div>
+              <label class="fl" style="font-size:11px;">Prazo</label>
+              <input type="date" id="tarefa-input-prazo" class="fc" style="font-size:12px;">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="salvarTarefa()" style="align-self:flex-end;">＋ Adicionar</button>
+        </div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharModalTarefas()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="detail-popup-overlay" id="popup-empenho">
   <div class="detail-popup">
     <div class="detail-popup-header">
@@ -4072,6 +4140,7 @@ function verExcel(id, tipo) {
     <div id="popup-e-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
+      <button class="btn btn-ghost btn-sm" id="popup-e-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">✏️ Editar</button>
     </div>
   </div>
@@ -5880,6 +5949,192 @@ document.addEventListener('click', e => {
     const p = g('notif-panel'); if(p) p.style.display='none';
   }
 });
+
+// ===== TOGGLE TEMA =====
+(function() {
+  const saved = localStorage.getItem('tema') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  const btn = document.getElementById('btn-tema');
+  if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+
+function toggleTema() {
+  const atual = document.body.getAttribute('data-theme') || 'light';
+  const novo = atual === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', novo);
+  localStorage.setItem('tema', novo);
+  const btn = document.getElementById('btn-tema');
+  if (btn) btn.textContent = novo === 'dark' ? '☀️' : '🌙';
+}
+
+// ===== RESUMO DIÁRIO =====
+function saudacao() {
+  const h = new Date().getHours();
+  if (h < 12) return '☀️ Bom dia';
+  if (h < 18) return '🌤️ Boa tarde';
+  return '🌙 Boa noite';
+}
+
+function mostrarResumoDiario() {
+  const hoje = new Date().toISOString().slice(0,10);
+  const saved = JSON.parse(localStorage.getItem('resumoDiario') || '{}');
+  if (saved.data === hoje && saved.naoMostrar) return;
+
+  const titulo = document.getElementById('resumo-titulo');
+  const dataEl = document.getElementById('resumo-data');
+  const body = document.getElementById('resumo-body');
+  if (!titulo || !body) return;
+
+  const nomeUsuario = usuarioLogado || 'você';
+  titulo.textContent = saudacao() + ', ' + nomeUsuario + '!';
+
+  const diasSemana = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const agora = new Date();
+  dataEl.textContent = diasSemana[agora.getDay()] + ', ' + agora.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+
+  // Calcular dados
+  const empPendentes = DB.empenhos.filter(e => !e.finalizado && !empenhoEstaPago(e));
+  const emp30 = empPendentes.filter(e => diasSemPagamento(e) >= 30);
+  const emp60 = empPendentes.filter(e => diasSemPagamento(e) >= 60);
+  const aReceber = empPendentes.reduce((s,e) => s + (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((ss,c)=>ss+(c.rec||0),0), 0);
+  const dispSemEmp = DB.disputas.filter(d => {
+    if (d.finalizada || d.cancelada) return false;
+    const temEmp = DB.empenhos.some(e => e.disputaId === d.id);
+    if (temEmp) return false;
+    const dias = d.data ? Math.floor((new Date() - new Date(d.data)) / 86400000) : 0;
+    return dias >= 15;
+  });
+
+  // Tarefas do dia
+  const tarefasHoje = (DB.tarefas||[]).filter(t => !t.concluida && t.prazo && t.prazo <= hoje);
+  const tarefasResp = tarefasHoje.filter(t => !t.responsavel || t.responsavel === usuarioLogado);
+
+  let html = '';
+
+  // Card A receber
+  html += `<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">💰</span>
+    <div><div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">Total a receber</div>
+    <div style="font-size:20px;font-weight:800;color:var(--success);">${fmt(aReceber)}</div>
+    <div style="font-size:11px;color:var(--text-tertiary);">${empPendentes.length} empenho(s) pendente(s)</div></div>
+  </div>`;
+
+  // Alertas
+  const alertas = [];
+  if (emp60.length) alertas.push({ icon:'🔴', msg: `${emp60.length} empenho(s) com +60 dias sem pagamento`, cor:'var(--danger)' });
+  else if (emp30.length) alertas.push({ icon:'🟡', msg: `${emp30.length} empenho(s) com +30 dias sem pagamento`, cor:'var(--warning)' });
+  if (dispSemEmp.length) alertas.push({ icon:'📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, cor:'var(--accent-primary)' });
+  if (tarefasResp.length) alertas.push({ icon:'📌', msg: `${tarefasResp.length} tarefa(s) no prazo hoje`, cor:'var(--purple)' });
+
+  if (alertas.length) {
+    html += `<div style="display:flex;flex-direction:column;gap:6px;">`;
+    alertas.forEach(a => {
+      html += `<div style="background:var(--bg-surface-soft);border-left:3px solid ${a.cor};border-radius:6px;padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:8px;">
+        <span>${a.icon}</span><span>${a.msg}</span></div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px 16px;text-align:center;color:var(--success);font-size:13px;font-weight:600;">✅ Tudo em dia! Nenhum alerta pendente.</div>`;
+  }
+
+  body.innerHTML = html;
+  document.getElementById('resumo-nao-mostrar').checked = false;
+  document.getElementById('modal-resumo-diario').classList.add('open');
+}
+
+function fecharResumoDiario() {
+  const hoje = new Date().toISOString().slice(0,10);
+  const naoMostrar = document.getElementById('resumo-nao-mostrar')?.checked || false;
+  localStorage.setItem('resumoDiario', JSON.stringify({ data: hoje, naoMostrar }));
+  document.getElementById('modal-resumo-diario').classList.remove('open');
+}
+
+function salvarPreferenciasResumo() {
+  // Salva em tempo real ao marcar checkbox
+}
+
+// ===== TAREFAS =====
+let _tarefaContexto = { tipo: '', id: '', nome: '' };
+
+function abrirModalTarefas(tipo, id, nome) {
+  _tarefaContexto = { tipo, id, nome };
+  document.getElementById('tarefa-popup-title').textContent = '📌 Tarefas — ' + nome;
+  document.getElementById('tarefa-popup-sub').textContent = tipo === 'empenho' ? 'Empenho' : 'Disputa';
+  document.getElementById('tarefa-input-desc').value = '';
+  document.getElementById('tarefa-input-resp').value = '';
+  document.getElementById('tarefa-input-prazo').value = '';
+  renderTarefas();
+  document.getElementById('modal-tarefas').classList.add('open');
+}
+
+function fecharModalTarefas() {
+  document.getElementById('modal-tarefas').classList.remove('open');
+}
+
+function renderTarefas() {
+  const { tipo, id } = _tarefaContexto;
+  const lista = document.getElementById('tarefa-lista');
+  if (!lista) return;
+  const tarefas = (DB.tarefas||[]).filter(t => t.tipo === tipo && t.refId === id);
+  if (!tarefas.length) {
+    lista.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;text-align:center;padding:12px;">Nenhuma tarefa cadastrada</div>';
+    return;
+  }
+  const hoje = new Date().toISOString().slice(0,10);
+  lista.innerHTML = tarefas.map(t => {
+    const vencida = !t.concluida && t.prazo && t.prazo < hoje;
+    const proxima = !t.concluida && t.prazo && t.prazo === hoje;
+    const corBorda = t.concluida ? 'var(--success)' : vencida ? 'var(--danger)' : proxima ? 'var(--warning)' : 'var(--border-light)';
+    return `<div style="background:var(--bg-surface-soft);border-left:3px solid ${corBorda};border-radius:8px;padding:10px 12px;display:flex;align-items:flex-start;gap:10px;">
+      <input type="checkbox" ${t.concluida?'checked':''} onchange="toggleTarefa('${t.id}')" style="margin-top:2px;cursor:pointer;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;${t.concluida?'text-decoration:line-through;color:var(--text-tertiary);':''}">${t.desc}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;display:flex;gap:8px;">
+          ${t.responsavel ? `<span>👤 ${t.responsavel}</span>` : ''}
+          ${t.prazo ? `<span style="color:${vencida?'var(--danger)':proxima?'var(--warning)':'var(--text-tertiary)'};">📅 ${new Date(t.prazo+'T12:00').toLocaleDateString('pt-BR')}</span>` : ''}
+        </div>
+      </div>
+      <button onclick="excluirTarefa('${t.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:14px;padding:0;" title="Excluir">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function salvarTarefa() {
+  const desc = document.getElementById('tarefa-input-desc').value.trim();
+  if (!desc) { toast('Descreva a tarefa!', 'error'); return; }
+  const nova = {
+    id: 'tar_' + Date.now(),
+    tipo: _tarefaContexto.tipo,
+    refId: _tarefaContexto.id,
+    desc,
+    responsavel: document.getElementById('tarefa-input-resp').value,
+    prazo: document.getElementById('tarefa-input-prazo').value,
+    concluida: false,
+    criadaEm: new Date().toISOString()
+  };
+  if (!DB.tarefas) DB.tarefas = [];
+  DB.tarefas.push(nova);
+  save('tarefas', DB.tarefas);
+  document.getElementById('tarefa-input-desc').value = '';
+  document.getElementById('tarefa-input-prazo').value = '';
+  renderTarefas();
+  toast('Tarefa adicionada!', 'success');
+}
+
+function toggleTarefa(id) {
+  const t = (DB.tarefas||[]).find(x => x.id === id);
+  if (!t) return;
+  t.concluida = !t.concluida;
+  save('tarefas', DB.tarefas);
+  renderTarefas();
+}
+
+function excluirTarefa(id) {
+  if (!confirm('Excluir esta tarefa?')) return;
+  DB.tarefas = (DB.tarefas||[]).filter(x => x.id !== id);
+  save('tarefas', DB.tarefas);
+  renderTarefas();
+}
 
 // ===== NOTIFICAÇÕES =====
 let _notifDismissed = new Set(JSON.parse(localStorage.getItem('notifDismissed') || '[]'));
@@ -7752,6 +8007,7 @@ boot();
 </div>
 
 <!-- POPUP DETALHES EMPENHO -->
+
 <div class="detail-popup-overlay" id="popup-empenho">
   <div class="detail-popup">
     <div class="detail-popup-header">
