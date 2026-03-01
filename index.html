@@ -6248,24 +6248,61 @@ function togglePushNotificacoes() {
     return;
   }
   if (Notification.permission === 'granted') {
-    // Já ativado — mostra status
-    toast('✅ Notificações push já estão ativadas!', 'success');
-    atualizarBtnPush();
-    // Envia notificação de teste
-    new Notification('🔔 LicitationBiznis', { body: 'Notificações push ativas! Você receberá alertas de retorno e empenhos.', icon: '' });
+    // Já ativo: mostra opções (testar ou desativar via settings)
+    _mostrarMenuPush();
   } else if (Notification.permission === 'denied') {
-    toast('❌ Notificações bloqueadas pelo navegador. Acesse as configurações do site para liberar.', 'error');
+    toast('❌ Notificações bloqueadas. Para liberar: clique no 🔒 cadeado na barra de endereço → Notificações → Permitir.', 'error');
   } else {
     Notification.requestPermission().then(perm => {
       atualizarBtnPush();
       if (perm === 'granted') {
-        toast('🔔 Notificações push ativadas com sucesso!', 'success');
-        new Notification('🔔 LicitationBiznis', { body: 'Ótimo! Você receberá alertas importantes aqui.' });
+        toast('🔔 Notificações push ativadas!', 'success');
+        new Notification('🔔 LicitationBiznis', { body: 'Pronto! Você receberá alertas de retornos e empenhos atrasados.' });
       } else {
-        toast('Permissão de notificação negada.', 'info');
+        toast('Permissão negada. Você pode ativar depois pelo cadeado na barra de endereço.', 'info');
       }
     });
   }
+}
+
+function _mostrarMenuPush() {
+  // Remove menu anterior se existir
+  const old = document.getElementById('push-menu-popup');
+  if (old) { old.remove(); return; }
+
+  const btn = g('btn-push-notif');
+  const rect = btn.getBoundingClientRect();
+
+  const menu = document.createElement('div');
+  menu.id = 'push-menu-popup';
+  menu.style.cssText = `position:fixed;top:${rect.bottom + 6}px;right:${window.innerWidth - rect.right}px;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:99999;min-width:220px;overflow:hidden;animation:modalIn 0.15s ease;`;
+  menu.innerHTML = `
+    <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);letter-spacing:0.5px;">🔔 Notificações Push</div>
+    <div onclick="new Notification('🔔 LicitationBiznis', {body:'Teste de notificação — tudo funcionando!'});document.getElementById('push-menu-popup')?.remove();toast('Notificação de teste enviada!','success');"
+      style="padding:10px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"
+      onmouseover="this.style.background='var(--bg-surface-hover)'" onmouseout="this.style.background=''">
+      📣 Enviar notificação de teste
+    </div>
+    <div onclick="window.open('','_blank');document.getElementById('push-menu-popup')?.remove();toast('Para desativar: clique no 🔒 cadeado → Notificações → Bloquear','info');"
+      style="padding:10px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;color:var(--text-secondary);border-top:1px solid var(--border-light);"
+      onmouseover="this.style.background='var(--bg-surface-hover)'" onmouseout="this.style.background=''">
+      🔒 Desativar (via configurações do browser)
+    </div>
+    <div style="padding:8px 14px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border-light);line-height:1.5;">
+      Browsers não permitem desativar por código.<br>Use o cadeado 🔒 na barra de endereço.
+    </div>`;
+
+  document.body.appendChild(menu);
+
+  // Fecha ao clicar fora
+  setTimeout(() => {
+    document.addEventListener('click', function _close(e) {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.remove();
+        document.removeEventListener('click', _close);
+      }
+    });
+  }, 50);
 }
 
 function atualizarBtnPush() {
