@@ -3768,7 +3768,7 @@ function abrirPopupEmpenho(id) {
     <table class="lotes-status-table" id="tabela-compras-${r.id}">
       <thead><tr>
         <th style="width:30px;"><input type="checkbox" id="chk-all-compras-${r.id}" onchange="toggleTodasCompras('${r.id}',this.checked)" title="Selecionar todas"></th>
-        <th>Item</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th>
+        <th>Item</th><th>Plataforma</th><th>Dt.Compra</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th>
       </tr></thead>
       <tbody>${compras.map(c => {
         const itemRef = itens.find(i=>i.id===c.itemId);
@@ -3778,6 +3778,7 @@ function abrirPopupEmpenho(id) {
           '<td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
           '<td style="font-size:10px;">'+((itemRef?.descricao||'—').toUpperCase())+'</td>' +
           '<td style="font-size:10px;font-weight:600;">'+(c.plataforma||'—')+' '+linkBtn+'</td>' +
+          '<td class="mono" style="color:var(--text-secondary);">'+(fmtD(c.dcompra)||'—')+'</td>' +
           '<td class="mono">'+(c.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
           '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
