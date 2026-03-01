@@ -4013,20 +4013,21 @@ function sumD(){
   const a=DB.disputas.filter(r=>matches('disputas',r));
   const tv=a.reduce((s,r)=>s+getValorContrato(r),0);
   const idsDisputas = new Set(a.map(r=>r.id));
+  const empsVinculados = DB.empenhos.filter(e=>idsDisputas.has(e.disputaId));
 
-  // Lucro recebido: compras COM data de pagamento
-  const lucroRecebidoD = DB.empenhos
-    .filter(e=>idsDisputas.has(e.disputaId))
-    .reduce((s,e)=>s+(e.compras||[])
-      .filter(c=>c.dpag && c.dpag!=='')
-      .reduce((ss,c)=>{
-        const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
-        return ss+luc;
-      },0),0);
+  // Total comprado: soma de todas as compras dos empenhos vinculados
+  const totalComprado = empsVinculados.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.vtotal||0),0),0);
+
+  // Lucro recebido: apenas compras COM data de pagamento preenchida
+  const lucroRecebidoD = empsVinculados.reduce((s,e)=>s+(e.compras||[])
+    .filter(c=>c.dpag && c.dpag!=='')
+    .reduce((ss,c)=>{
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
+      return ss+luc;
+    },0),0);
 
   // Lucro empenhado: compras SEM data de pagamento (ainda a receber)
-  const lucroEmpenhado = DB.empenhos
-    .filter(e=>idsDisputas.has(e.disputaId) && !e.finalizado)
+  const lucroEmpenhado = empsVinculados.filter(e=>!e.finalizado)
     .reduce((s,e)=>s+(e.compras||[])
       .filter(c=>!c.dpag || c.dpag==='')
       .reduce((ss,c)=>{
@@ -4034,11 +4035,18 @@ function sumD(){
         return ss+luc;
       },0),0);
 
+  // % Lucro = lucro recebido (pagos) / total comprado
+  const pctLucro = totalComprado > 0 ? (lucroRecebidoD / totalComprado * 100) : 0;
+  const corPct = pctLucro >= 0 ? 'var(--success)' : 'var(--danger)';
+  const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%';
+
   g('sum-disputas').innerHTML=`
     <div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${a.length}</div></div>
     <div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">${fmt(tv)}</div></div>
+    <div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">${fmt(totalComprado)}</div></div>
     <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
-    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>`;
+    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
+    <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
 }
 
 function renderE(){
@@ -4098,35 +4106,23 @@ function sumE(){
   const a=DB.empenhos.filter(r=>matches('empenhos',r) && !r.finalizado);
   const te=a.reduce((s,r)=>s+r.vem,0);
   const totalComprado=a.reduce((s,r)=>s+(r.compras||[]).reduce((ss,c)=>ss+(c.vtotal||0),0),0);
-  // Lucro recebido = compras com dpag preenchido, usando luc salvo na compra
-  const lucroRecebido=a.reduce((s,r)=>s+(r.compras||[])
-    .filter(c=>c.dpag && c.dpag !== '')
-    .reduce((ss,c)=>{
-      // luc pode estar salvo ou precisar ser recalculado
-      const luc = (c.luc !== undefined && c.luc !== null) ? c.luc
-        : (c.rec||0) - (c.vtotal||0) - (c.custo||0);
-      return ss + luc;
-    },0),0);
   const lucroEmpenhado = a.reduce((s,r)=>s+(r.compras||[])
     .filter(c=>!c.dpag || c.dpag==='')
     .reduce((ss,c)=>{
       const luc = (c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss + luc;
     },0),0);
-  const pctLucroEmpenhado  = totalComprado > 0 ? (lucroEmpenhado  / totalComprado * 100) : 0;
-  const pctLucroRealizado  = totalComprado > 0 ? (lucroRecebido   / totalComprado * 100) : 0;
 
+  const pctLucroEmpenhado = totalComprado > 0 ? (lucroEmpenhado / totalComprado * 100) : 0;
   const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%';
-  const corEmp = pctLucroEmpenhado  >= 0 ? 'var(--warning)' : 'var(--danger)';
-  const corRea = pctLucroRealizado  >= 0 ? 'var(--success)' : 'var(--danger)';
+  const corEmp = pctLucroEmpenhado >= 0 ? 'var(--warning)' : 'var(--danger)';
 
   g('sum-empenhos').innerHTML=
     '<div class="card"><div class="card-label">Empenhos</div><div class="card-value cv-blue">'+a.length+'</div></div>'+
     '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value">'+fmt(te)+'</div></div>'+
     '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">'+fmt(totalComprado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>'+
-    '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>'+
-    '<div class="card" style="border-left:3px solid '+corRea+';"><div class="card-label">% Lucro Realizado</div><div class="card-value" style="color:'+corRea+';">'+fmtPct(pctLucroRealizado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>';
+    '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
 }
 
 function renderAll(){ 
