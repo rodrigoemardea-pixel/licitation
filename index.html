@@ -6164,23 +6164,25 @@ function exportarComprasSelecionadas(empId) {
     ];
   });
 
+  // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
+  const linhasComLink = comprasSel.map((c, i) => {
+    const row = [...linhas[i]];
+    if (c.link) row[6] = c.link;
+    return row;
+  });
+
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
   ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:6} }];
-  XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhas], { origin: 'A2' });
+  XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink], { origin: 'A2' });
 
-  // Adiciona hiperlinks na coluna Plataforma (coluna G = índice 6), linha de dados começa na linha 4 (índice 3)
-  comprasSel.forEach((c, i) => {
-    if (c.link) {
-      const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 6 });
-      if (ws[cellRef]) {
-        ws[cellRef].l = { Target: c.link, Tooltip: c.link };
-        ws[cellRef].s = { font: { color: { rgb: '0563C1' }, underline: true } };
-      }
-    }
+  // Centralizar todas as células preenchidas
+  Object.keys(ws).filter(k => !k.startsWith('!')).forEach(ref => {
+    if (!ws[ref].s) ws[ref].s = {};
+    ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
+  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
@@ -6242,23 +6244,25 @@ function exportarComprasDisputa(dispId) {
   const totalRec    = comprasSel.reduce((s,c) => s + (c.rec||0), 0);
   const linhaTotais = ['', 'TOTAL', comprasSel.reduce((s,c)=>s+(c.qtd||0),0), totalVtotal, totalCusto, totalLuc, totalRec, ''];
 
+  // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
+  const linhasComLink = comprasSel.map((c, i) => {
+    const row = [...linhas[i]];
+    if (c.link) row[7] = c.link;
+    return row;
+  });
+
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
   ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:7} }];
-  XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhas, [], linhaTotais], { origin: 'A2' });
+  XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink, [], linhaTotais], { origin: 'A2' });
 
-  // Hiperlinks na coluna Plataforma (coluna H = índice 7), dados começam na linha 4 (índice 3)
-  comprasSel.forEach((c, i) => {
-    if (c.link) {
-      const cellRef = XLSX.utils.encode_cell({ r: 3 + i, c: 7 });
-      if (ws[cellRef]) {
-        ws[cellRef].l = { Target: c.link, Tooltip: c.link };
-        ws[cellRef].s = { font: { color: { rgb: '0563C1' }, underline: true } };
-      }
-    }
+  // Centralizar todas as células preenchidas
+  Object.keys(ws).filter(k => !k.startsWith('!')).forEach(ref => {
+    if (!ws[ref].s) ws[ref].s = {};
+    ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:25}];
+  ws['!cols'] = [{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
