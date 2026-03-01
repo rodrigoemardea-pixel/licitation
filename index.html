@@ -5882,7 +5882,11 @@ document.addEventListener('click', e => {
 });
 
 // ===== NOTIFICAÇÕES =====
-let _notifDismissed = new Set();
+let _notifDismissed = new Set(JSON.parse(localStorage.getItem('notifDismissed') || '[]'));
+
+function _salvarNotifDismissed() {
+  localStorage.setItem('notifDismissed', JSON.stringify([..._notifDismissed]));
+}
 
 function limparTodasNotificacoes() {
   _notifDismissed = new Set(['__all__' + Date.now()]);
@@ -5896,6 +5900,7 @@ function limparTodasNotificacoes() {
   if (emp30.length) _notifDismissed.add('emp30');
   _notifDismissed.add('disp-sem-emp');
   _notifDismissed.add('emp-sem-compra');
+  _salvarNotifDismissed();
   const badge = g('notif-badge');
   if (badge) badge.style.display = 'none';
   const list = g('notif-list');
@@ -5904,6 +5909,7 @@ function limparTodasNotificacoes() {
 
 function dispensarNotificacao(chave) {
   _notifDismissed.add(chave);
+  _salvarNotifDismissed();
   atualizarNotificacoes();
 }
 
