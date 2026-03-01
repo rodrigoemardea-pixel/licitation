@@ -7327,29 +7327,25 @@ function dispararNotificacao(r) {
 
 async function enviarEmailAlarme(r) {
   if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
-
   const analista = r.analista || '?';
-
   let emailDest = ANALISTAS_EMAIL[analista];
   try {
     const saved = JSON.parse(localStorage.getItem('analistas_email') || '{}');
     if (saved[analista]) emailDest = saved[analista];
   } catch(e) {}
-
-  if (!emailDest) {
-    console.warn('📧 E-mail não configurado para analista:', analista);
-    return;
-  }
-
+  if (!emailDest) { console.warn('📧 E-mail não configurado para analista:', analista); return; }
   const retStr = fmtRetorno(r.retorno);
   const hoje = new Date();
-
+  const _lim = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g,(_, h)=>String.fromCharCode(parseInt(h,16))).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+  const orgaoLimpo = _lim(r.orgao);
+  const sistemaLimpo = _lim(r.sistema);
+  const obsLimpa = _lim(r.observacao);
   try {
     await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
       to_email:  emailDest,
       to_name:   analista,
-      assunto:   `⏰ RETORNO AGORA: ${r.orgao}`,
-      mensagem:  `Olá ${analista},\n\nO sistema está apitando para o seguinte acompanhamento:\n\n• Órgão: ${r.orgao}\n• Sistema: ${r.sistema||'—'}\n• Retorno: ${retStr}\n• Status: ${r.status||'—'}\n• Observação: ${r.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
+      assunto:   `⏰ RETORNO AGORA: ${orgaoLimpo}`,
+      mensagem:  `Olá ${analista},\n\nO sistema está apitando para o seguinte acompanhamento:\n\n• Órgão: ${orgaoLimpo}\n• Sistema: ${sistemaLimpo||'—'}\n• Retorno: ${retStr}\n• Status: ${r.status||'—'}\n• Observação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar o status.`,
       data:      hoje.toLocaleDateString('pt-BR'),
     });
     console.log('✅ Email alarme enviado para', analista, '-', emailDest);
@@ -7357,6 +7353,7 @@ async function enviarEmailAlarme(r) {
     console.error('Erro ao enviar email alarme:', err);
   }
 }
+
 
 function mostrarPopupAlerta(r) {
   const old = document.getElementById('notif-popup');
@@ -7726,14 +7723,23 @@ async function enviarAlertasEmail() {
     } catch(err) { console.error('Erro EmailJS empenhos:', err); }
   }
 
-  // Acompanhamentos com retorno vencido ou hoje
+  // ─── Helper: remove entidades HTML (ex: &#x2F; → /) antes de enviar no email ───
+  const limparTexto = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g, (_, h) => String.fromCharCode(parseInt(h,16)))
+                                   .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+
+  // ─── Comparação de datas por dia (ignora horário) para evitar alertas adiantados ───
+  const hojeStr = hoje.toISOString().slice(0,10); // "YYYY-MM-DD" no fuso local, mas mais confiável:
+  const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()); // meia-noite local
+
+  // Acompanhamentos com retorno vencido ou hoje (comparação por dia, não por ms)
   const acompAlertar = (DB.acomp||[]).filter(r => {
     if (!r.retorno) return false;
     if (r.status !== 'pendente' && r.status !== 'recurso') return false;
     const ret = parseRetorno(r.retorno);
     if (!ret) return false;
-    const diffDias = Math.floor((ret - hoje) / 86400000);
-    return diffDias <= 0;
+    // Compara apenas a data (ano/mês/dia), ignorando o horário
+    const retLocal = new Date(ret.getFullYear(), ret.getMonth(), ret.getDate());
+    return retLocal <= hojeLocal; // retorno é hoje ou já passou
   });
 
   for(const acomp of acompAlertar) {
@@ -7744,20 +7750,29 @@ async function enviarAlertasEmail() {
     const chave = 'acomp-'+acomp.id+'-'+hoje_str;
     if(_emailAlertasEnviados.has(chave)) continue;
     _emailAlertasEnviados.add(chave);
-    const vencido = parseRetorno(acomp.retorno) < hoje;
+
+    const ret = parseRetorno(acomp.retorno);
+    const retLocal = new Date(ret.getFullYear(), ret.getMonth(), ret.getDate());
+    const vencido = retLocal < hojeLocal; // passou antes de hoje
     const retFormatado = fmtRetorno(acomp.retorno);
+
+    // Limpa entidades HTML dos campos de texto
+    const orgaoLimpo = limparTexto(acomp.orgao);
+    const sistemaLimpo = limparTexto(acomp.sistema);
+    const obsLimpa = limparTexto(acomp.observacao);
+
     try {
       await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
         to_email: emailDest,
         to_name: analista,
-        assunto: vencido ? `🔴 Retorno VENCIDO: ${acomp.orgao}` : `📋 Retorno HOJE: ${acomp.orgao}`,
+        assunto: vencido ? `🔴 Retorno VENCIDO: ${orgaoLimpo}` : `📋 Retorno HOJE: ${orgaoLimpo}`,
         mensagem: `Olá ${analista},\n\n${vencido
-          ? `O acompanhamento do órgão "${acomp.orgao}" tinha retorno em ${retFormatado} e ainda está ${acomp.status}.`
-          : `Você tem retorno agendado para HOJE (${retFormatado}) com o órgão "${acomp.orgao}".`
-        }\n\nSistema: ${acomp.sistema||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar o status.`,
+          ? `O acompanhamento do órgão "${orgaoLimpo}" tinha retorno em ${retFormatado} e ainda está ${acomp.status}.`
+          : `Você tem retorno agendado para HOJE (${retFormatado}) com o órgão "${orgaoLimpo}".`
+        }\n\nSistema: ${sistemaLimpo||'—'}\nObservação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar o status.`,
         data: hoje.toLocaleDateString('pt-BR'),
       });
-      console.log('✅ Email acomp enviado para', analista, '-', acomp.orgao);
+      console.log('✅ Email acomp enviado para', analista, '-', orgaoLimpo);
     } catch(err) { console.error('Erro EmailJS acomp:', err); }
   }
 }
@@ -7784,7 +7799,6 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
   if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
   const analista = acomp.analista||'?';
 
-  // Sempre lê do localStorage na hora do envio, garantindo valor mais recente
   let emailDest = ANALISTAS_EMAIL[analista];
   try {
     const saved = JSON.parse(localStorage.getItem('analistas_email')||'{}');
@@ -7800,24 +7814,35 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
   const ret = parseRetorno(acomp.retorno);
   if (!ret) return;
   const hoje = new Date();
-  const diffDias = Math.floor((ret - hoje) / 86400000);
 
-  // Só dispara se retorno for em até 3 dias ou já vencido
+  // Compara por dia (ignora horário) para evitar adiantamento por fuso
+  const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const retLocal  = new Date(ret.getFullYear(),  ret.getMonth(),  ret.getDate());
+  const diffDias  = Math.round((retLocal - hojeLocal) / 86400000);
+
   if (diffDias > 3) return;
 
+  // Limpa entidades HTML (ex: &#x2F; → /)
+  const limparTexto = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g, (_, h) => String.fromCharCode(parseInt(h,16)))
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+
+  const orgaoLimpo   = limparTexto(acomp.orgao);
+  const sistemaLimpo = limparTexto(acomp.sistema);
+  const obsLimpa     = limparTexto(acomp.observacao);
   const retFormatado = fmtRetorno(acomp.retorno);
+
   const msg = diffDias < 0
-    ? `O acompanhamento do órgão "${acomp.orgao}" está com retorno VENCIDO (era ${retFormatado}).`
+    ? `O acompanhamento do órgão "${orgaoLimpo}" está com retorno VENCIDO (era ${retFormatado}).`
     : diffDias === 0
-    ? `Você tem retorno HOJE (${retFormatado}) com o órgão "${acomp.orgao}".`
-    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${acomp.orgao}" (${retFormatado}).`;
+    ? `Você tem retorno HOJE (${retFormatado}) com o órgão "${orgaoLimpo}".`
+    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${orgaoLimpo}" (${retFormatado}).`;
 
   try {
     const result = await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
       to_email: emailDest,
       to_name:  analista,
-      assunto:  diffDias <= 0 ? `🔴 Retorno urgente: ${acomp.orgao}` : `📋 Lembrete de retorno: ${acomp.orgao}`,
-      mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${acomp.sistema||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${acomp.observacao||'—'}\n\nAcesse o sistema para atualizar.`,
+      assunto:  diffDias <= 0 ? `🔴 Retorno urgente: ${orgaoLimpo}` : `📋 Lembrete de retorno: ${orgaoLimpo}`,
+      mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${sistemaLimpo||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar.`,
       data: hoje.toLocaleDateString('pt-BR'),
     });
     console.log('✅ Email enviado!', result);
@@ -7827,11 +7852,6 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
     toast('❌ Erro ao enviar e-mail: ' + (err.text||err.message||'verifique o console'), 'error');
   }
 }
-
-// ========== FIREBASE STORAGE UPLOAD ==========
-let _ocrExtractedData = null;
-
-// ========== CLOUDINARY UPLOAD (edital e NE) ==========
 async function cloudinaryUpload(input, fieldPrefix, withOcr = false) {
   const file = input.files ? input.files[0] : input;
   if (!file) return;
