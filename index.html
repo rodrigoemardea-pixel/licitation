@@ -4041,6 +4041,9 @@ function sumD(){
 }
 
 function renderE(){
+  // Sincroniza estilo do botão de agrupamento
+  const _btnAgr = g('btn-agrupar-orgao');
+  if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent-primary)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
@@ -7555,7 +7558,12 @@ function atualizarPainel() {
 }
 
 // ========== AGRUPAMENTO POR ÓRGÃO ==========
-let _agrupado = false;
+let _agrupado = true;
+// Aplica estilo ativo no botão assim que o DOM carregar
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = g('btn-agrupar-orgao');
+  if(btn) { btn.style.background = 'var(--accent-primary)'; btn.style.color = '#fff'; }
+});
 function toggleAgrupamento() {
   _agrupado = !_agrupado;
   const btn = g('btn-agrupar-orgao');
