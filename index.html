@@ -7267,6 +7267,7 @@ function carregarContratoDisputa(r) {
   const urlField = g('d-contrato-url'); if(urlField) urlField.value = r.contratoUrl || '';
   const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = r.contratoNome || '';
   const dataField = g('d-contrato-data'); if(dataField) dataField.value = r.contratoData || '';
+  const vencField = g('d-contrato-vencimento');
   // Vencimento: converte DD/MM/YYYY para YYYY-MM-DD se necessário (registros antigos)
   if (vencField) {
     const v = r.contratoVencimento || '';
