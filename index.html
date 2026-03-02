@@ -2447,8 +2447,7 @@
 
         <input type="hidden" id="d-contrato-url">
         <input type="hidden" id="d-contrato-nome">
-        <input type="hidden" id="d-edital-url">
-        <input type="hidden" id="d-edital-nome">
+
         
 
 
@@ -2524,15 +2523,37 @@
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-        <!-- CAMPO LINK -->
+
+
+        <!-- PDF DO EMPENHO (Supabase) -->
         <div class="fg full">
-          <label class="fl">📎 Link do Empenho (Google Drive, OneDrive...)</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input type="url" class="fc" id="e-link-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
-            <input type="text" class="fc" id="e-link-nome" placeholder="Nome (ex: Empenho nº 123)" style="flex:1;min-width:150px;">
+          <label class="fl">📄 PDF do Empenho</label>
+          <div id="e-ne-upload-area"
+            onclick="document.getElementById('e-ne-file').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent-primary)'"
+            ondragleave="this.style.borderColor='var(--border)'"
+            ondrop="handleEmpenhoFileDrop(event)"
+            style="border:2px dashed var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
+            <span style="font-size:1.4rem;">📁</span>
+            <div>
+              <div id="e-ne-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do empenho aqui</div>
+              <div style="font-size:11px;color:var(--text-tertiary);">PDF · máx. 50MB</div>
+            </div>
+          </div>
+          <input type="file" id="e-ne-file" accept="application/pdf" style="display:none" onchange="handleEmpenhoFile(this.files[0])">
+          <div id="e-ne-progress" style="display:none;margin-top:8px;">
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="e-ne-progress-bar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.3s;border-radius:3px;"></div>
+            </div>
+            <div id="e-ne-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
+          </div>
+          <div id="e-ne-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
+            <span>📄</span>
+            <span id="e-ne-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;"
+              onclick="window.open(document.getElementById('e-ne-url').value,'_blank')"></span>
+            <button onclick="removerEmpenhoFile()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
           </div>
         </div>
-
           <input type="hidden" id="e-ne-url">
           <input type="hidden" id="e-ne-nome">
 
@@ -3253,6 +3274,75 @@ let DB={disputas:[],empenhos:[],acomp:[]};
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
+// ══════════════════════════════════════════════════════════
+//   LIMPEZA AUTOMÁTICA — Remove PDFs após 120 dias finalizados
+// ══════════════════════════════════════════════════════════
+async function limparPDFsAntigos() {
+  const DIAS_LIMITE = 120;
+  const hoje = new Date();
+  let alterou = false;
+
+  // Extrai o path do Supabase a partir da URL pública
+  function extrairPath(url) {
+    if (!url) return null;
+    // URL: .../storage/v1/object/public/contratos/PATH
+    const match = url.match(/\/object\/public\/contratos\/(.+)$/);
+    return match ? match[1] : null;
+  }
+
+  async function deletarSupabase(path) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
+        {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${SUPABASE_ANON}` }
+        }
+      );
+      return res.ok;
+    } catch(e) {
+      console.warn('Erro ao deletar arquivo:', path, e);
+      return false;
+    }
+  }
+
+  // Verifica disputas finalizadas há +120 dias
+  for (const d of DB.disputas) {
+    if (!d.finalizada || !d.dataFinalizacao) continue;
+    const diasFinalizada = Math.floor((hoje - new Date(d.dataFinalizacao + 'T12:00')) / 86400000);
+    if (diasFinalizada < DIAS_LIMITE) continue;
+
+    if (d.contratoUrl) {
+      const path = extrairPath(d.contratoUrl);
+      if (path) {
+        const ok = await deletarSupabase(path);
+        if (ok) { d.contratoUrl = ''; d.contratoNome = ''; alterou = true; }
+      }
+    }
+  }
+
+  // Verifica empenhos finalizados há +120 dias
+  for (const e of DB.empenhos) {
+    if (!e.finalizado || !e.dataFinalizacao) continue;
+    const diasFinalizado = Math.floor((hoje - new Date(e.dataFinalizacao + 'T12:00')) / 86400000);
+    if (diasFinalizado < DIAS_LIMITE) continue;
+
+    if (e.neUrl) {
+      const path = extrairPath(e.neUrl);
+      if (path) {
+        const ok = await deletarSupabase(path);
+        if (ok) { e.neUrl = ''; e.neNome = ''; alterou = true; }
+      }
+    }
+  }
+
+  if (alterou) {
+    save('disputas', DB.disputas);
+    save('empenhos', DB.empenhos);
+    console.log('🧹 Limpeza automática: PDFs antigos removidos do Supabase.');
+  }
+}
+
 function inicializarApp(dadosSalvos) {
   const temDados = dadosSalvos &&
     (dadosSalvos.initialized ||
@@ -3268,6 +3358,14 @@ function inicializarApp(dadosSalvos) {
     const tela = document.getElementById('tela-boasvindas');
     if (tela) tela.style.display = 'flex';
     renderAll();
+  }
+
+  // Roda limpeza em background, sem travar a UI, 1x por dia
+  const ultimaLimpeza = localStorage.getItem('_ultima_limpeza_pdfs');
+  const hoje = new Date().toISOString().slice(0, 10);
+  if (ultimaLimpeza !== hoje) {
+    localStorage.setItem('_ultima_limpeza_pdfs', hoje);
+    setTimeout(() => limparPDFsAntigos(), 5000); // aguarda 5s após carregar
   }
 }
 
@@ -3750,7 +3848,7 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
-      (r.editalUrl ? '<div class="detail-field"><div class="detail-field-label">EDITAL</div><div class="detail-field-value"><a href="' + r.editalUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📑 ' + (r.editalNome||'Edital') + '</a></div></div>' : '') +
+
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`⚠️ Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
       (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
@@ -3860,8 +3958,8 @@ function abrirPopupEmpenho(id) {
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
-    (r.linkUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📎 LINK DO EMPENHO</div><div class="detail-field-value"><a href="'+r.linkUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 '+(r.linkNome||'Abrir arquivo')+'</a></div></div>' : '') +
-    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">🖼 NOTA DE EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">🖼 '+(r.neNome||'Nota de Empenho')+'</a></div></div>' : '') +
+
+    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent-primary)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(r.vem) + '</div></div>' +
@@ -4849,6 +4947,7 @@ function populateDisputaSelect(preSelectId) {
 
 // ========== MODAL ==========
 let EID={};
+let _acompConvertendoId = null;
 function openModal(tab){
   if (tab === 'acomp') { clearAcomp(); document.getElementById('modal-acomp').classList.add('open'); return; }
   EID[tab]=null;
@@ -5040,9 +5139,10 @@ document.addEventListener('keydown', (e) => {
 
 // ========== DISPUTAS ==========
 function clearD(){
+  _acompConvertendoId = null; // limpa conversão pendente
   resetFields('d');
-  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-edital-url','d-edital-nome','d-contrato-url','d-contrato-nome','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
-  const ep = g('d-edital-preview'); if(ep) { ep.style.display='none'; ep.innerHTML=''; }
+  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-contrato-url','d-contrato-nome','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
+
   const cp = g('d-contrato-preview'); if(cp) { cp.style.display='none'; }
   const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
   const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
@@ -5086,8 +5186,7 @@ function saveD(){
     observacao: gv('d-observacao').toUpperCase(),
     propostaUrl: gv('d-proposta-url') || '',
     propostaNome: gv('d-proposta-nome') || '',
-    editalUrl: gv('d-edital-url') || '',
-    editalNome: gv('d-edital-nome') || '',
+
     contratoUrl: gv('d-contrato-url') || '',
     contratoNome: gv('d-contrato-nome') || '',
     contratoData: gv('d-contrato-data') || '',
@@ -5120,7 +5219,15 @@ function saveD(){
     });
   }
 
-  toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
+  // Se veio de conversão de acompanhamento, remove o acomp
+  if (_acompConvertendoId && !EID.disputas) {
+    DB.acomp = (DB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
+    save('acomp', DB.acomp);
+    _acompConvertendoId = null;
+    toast('Disputa criada e acompanhamento removido da lista!', 'success');
+  } else {
+    toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
+  }
   closeModal('disputas'); renderAll();
 }
 function editD(id){
@@ -5156,7 +5263,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-link-url','e-link-nome','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';neP.innerHTML='';} _ocrExtractedData=null;
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -5243,8 +5350,7 @@ function saveE(){
     recebido: gn('e-recebido'),
     dreceb: gv('e-dreceb'),
     observacao: gv('e-observacao').toUpperCase(),
-    linkUrl: gv('e-link-url') || '',
-    linkNome: gv('e-link-nome') || '',
+
     neUrl: gv('e-ne-url') || '',
     neNome: gv('e-ne-nome') || '',
     disputaId: disputaId,
@@ -5265,8 +5371,7 @@ function editE(id){
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
   g('e-analista').value=r.analista||'Márdea'; 
   g('e-observacao').value=r.observacao||'';
-  const eLinkUrl = g('e-link-url'); if(eLinkUrl) eLinkUrl.value = r.linkUrl||'';
-  const eLinkNome = g('e-link-nome'); if(eLinkNome) eLinkNome.value = r.linkNome||'';
+
   // Carrega NE
   carregarArquivosEmpenho(r);
   g('e-dcomp').value=r.dcomp||''; 
@@ -7254,6 +7359,92 @@ function removerContratoUpload() {
   const fileInput = g('d-contrato-file'); if(fileInput) fileInput.value = '';
 }
 
+// ══════════════════════════════════════════
+//   SUPABASE — Upload PDF do Empenho
+// ══════════════════════════════════════════
+async function handleEmpenhoFile(file) {
+  if (!file) return;
+  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
+  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
+  await uploadEmpenhoSupabase(file);
+}
+
+function handleEmpenhoFileDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0];
+  const area = g('e-ne-upload-area');
+  if (area) area.style.borderColor = 'var(--border)';
+  handleEmpenhoFile(file);
+}
+
+async function uploadEmpenhoSupabase(file) {
+  const progress      = g('e-ne-progress');
+  const progressBar   = g('e-ne-progress-bar');
+  const progressLabel = g('e-ne-progress-label');
+  const uploadLabel   = g('e-ne-upload-label');
+  const preview       = g('e-ne-preview');
+  const area          = g('e-ne-upload-area');
+
+  if (progress) progress.style.display = 'block';
+  if (progressBar) progressBar.style.width = '10%';
+  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
+  if (area) area.style.borderColor = 'var(--accent-primary)';
+
+  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `empenhos/${Date.now()}_${baseName}`;
+
+  try {
+    if (progressBar) progressBar.style.width = '40%';
+    const res = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/pdf',
+          'x-upsert': 'true'
+        },
+        body: file
+      }
+    );
+    if (progressBar) progressBar.style.width = '90%';
+    if (!res.ok) { const err = await res.text(); throw new Error(err); }
+
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
+    const nome = file.name;
+
+    if (progressBar) progressBar.style.width = '100%';
+    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
+    if (area) area.style.borderColor = 'var(--border)';
+
+    const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = url;
+    const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = nome;
+    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
+    if (preview) {
+      preview.style.display = 'flex';
+      const link = g('e-ne-link');
+      if (link) link.textContent = '📄 ' + nome;
+    }
+    toast('PDF do empenho enviado com sucesso!', 'success');
+    return url;
+  } catch(e) {
+    console.error('Supabase empenho upload error:', e);
+    if (progress) progress.style.display = 'none';
+    if (area) area.style.borderColor = 'var(--border)';
+    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
+    toast('Erro ao enviar PDF: ' + e.message, 'error');
+    return null;
+  }
+}
+
+function removerEmpenhoFile() {
+  const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = '';
+  const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = '';
+  const preview   = g('e-ne-preview'); if(preview) preview.style.display = 'none';
+  const label     = g('e-ne-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do empenho aqui';
+  const fileInput = g('e-ne-file'); if(fileInput) fileInput.value = '';
+}
+
 function calcVencimentoContrato() {
   const dataVal = g('d-contrato-data')?.value;
   const vencField = g('d-contrato-vencimento');
@@ -7525,6 +7716,7 @@ function verAcomp(id) {
 
 function _doCriarDisputaDeAcomp(r) {
   clearD();
+  _acompConvertendoId = r.id; // guarda para remover após salvar
   document.getElementById('d-data').value = r.data||'';
   document.getElementById('d-orgao').value = r.orgao||'';
   document.getElementById('d-estado').value = r.estado||'';
@@ -8700,6 +8892,16 @@ function carregarArquivosDisputa(r) {
 function carregarArquivosEmpenho(r) {
   const neUrl = g('e-ne-url'); const neNome = g('e-ne-nome');
   const nePreview = g('e-ne-preview');
+  // Carregar preview do PDF se já existir
+  if (r.neUrl && neUrl) {
+    neUrl.value = r.neUrl;
+    if (neNome) neNome.value = r.neNome || '';
+    const lbl = g('e-ne-upload-label'); if(lbl) lbl.textContent = '✅ ' + (r.neNome || 'PDF carregado');
+    if (nePreview) {
+      nePreview.style.display = 'flex';
+      const lnk = g('e-ne-link'); if(lnk) lnk.textContent = '📄 ' + (r.neNome || 'PDF do empenho');
+    }
+  }
   if (neUrl) neUrl.value = r.neUrl || '';
   if (neNome) neNome.value = r.neNome || '';
   if (r.neUrl && nePreview) {
