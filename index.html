@@ -2523,14 +2523,7 @@
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-        <!-- CAMPO LINK -->
-        <div class="fg full">
-          <label class="fl">📎 Link do Empenho (Google Drive, OneDrive...)</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input type="url" class="fc" id="e-link-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
-            <input type="text" class="fc" id="e-link-nome" placeholder="Nome (ex: Empenho nº 123)" style="flex:1;min-width:150px;">
-          </div>
-        </div>
+
 
         <!-- PDF DO EMPENHO (Supabase) -->
         <div class="fg full">
@@ -3888,7 +3881,7 @@ function abrirPopupEmpenho(id) {
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
-    (r.linkUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📎 LINK DO EMPENHO</div><div class="detail-field-value"><a href="'+r.linkUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📎 '+(r.linkNome||'Abrir arquivo')+'</a></div></div>' : '') +
+
     (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent-primary)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
@@ -5183,7 +5176,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-link-url','e-link-nome','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -5270,8 +5263,7 @@ function saveE(){
     recebido: gn('e-recebido'),
     dreceb: gv('e-dreceb'),
     observacao: gv('e-observacao').toUpperCase(),
-    linkUrl: gv('e-link-url') || '',
-    linkNome: gv('e-link-nome') || '',
+
     neUrl: gv('e-ne-url') || '',
     neNome: gv('e-ne-nome') || '',
     disputaId: disputaId,
@@ -5292,8 +5284,7 @@ function editE(id){
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
   g('e-analista').value=r.analista||'Márdea'; 
   g('e-observacao').value=r.observacao||'';
-  const eLinkUrl = g('e-link-url'); if(eLinkUrl) eLinkUrl.value = r.linkUrl||'';
-  const eLinkNome = g('e-link-nome'); if(eLinkNome) eLinkNome.value = r.linkNome||'';
+
   // Carrega NE
   carregarArquivosEmpenho(r);
   g('e-dcomp').value=r.dcomp||''; 
