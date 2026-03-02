@@ -7180,7 +7180,7 @@ async function uploadContratoPDF(file) {
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_PRESET);
   formData.append('folder', 'contratos');
-  formData.append('resource_type', 'raw');
+  formData.append('resource_type', 'auto');
 
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
@@ -7196,7 +7196,10 @@ async function uploadContratoPDF(file) {
       if (area) area.style.borderColor = 'var(--border)';
       if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
-        const url = data.secure_url;
+        // Garante URL com fl_attachment para o browser abrir/baixar corretamente
+        let url = data.secure_url;
+        // Para PDFs no Cloudinary: trocar /upload/ por /upload/fl_attachment/
+        url = url.replace('/upload/', '/upload/fl_attachment/');
         const nome = file.name;
         // Salva nos campos hidden
         const urlField = g('d-contrato-url'); if(urlField) urlField.value = url;
@@ -7223,7 +7226,7 @@ async function uploadContratoPDF(file) {
       toast('Erro de conexão ao enviar contrato.', 'error');
       resolve(null);
     };
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`);
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`);
     xhr.send(formData);
   });
 }
