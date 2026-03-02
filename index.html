@@ -3274,6 +3274,75 @@ let DB={disputas:[],empenhos:[],acomp:[]};
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
+// ══════════════════════════════════════════════════════════
+//   LIMPEZA AUTOMÁTICA — Remove PDFs após 120 dias finalizados
+// ══════════════════════════════════════════════════════════
+async function limparPDFsAntigos() {
+  const DIAS_LIMITE = 120;
+  const hoje = new Date();
+  let alterou = false;
+
+  // Extrai o path do Supabase a partir da URL pública
+  function extrairPath(url) {
+    if (!url) return null;
+    // URL: .../storage/v1/object/public/contratos/PATH
+    const match = url.match(/\/object\/public\/contratos\/(.+)$/);
+    return match ? match[1] : null;
+  }
+
+  async function deletarSupabase(path) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
+        {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${SUPABASE_ANON}` }
+        }
+      );
+      return res.ok;
+    } catch(e) {
+      console.warn('Erro ao deletar arquivo:', path, e);
+      return false;
+    }
+  }
+
+  // Verifica disputas finalizadas há +120 dias
+  for (const d of DB.disputas) {
+    if (!d.finalizada || !d.dataFinalizacao) continue;
+    const diasFinalizada = Math.floor((hoje - new Date(d.dataFinalizacao + 'T12:00')) / 86400000);
+    if (diasFinalizada < DIAS_LIMITE) continue;
+
+    if (d.contratoUrl) {
+      const path = extrairPath(d.contratoUrl);
+      if (path) {
+        const ok = await deletarSupabase(path);
+        if (ok) { d.contratoUrl = ''; d.contratoNome = ''; alterou = true; }
+      }
+    }
+  }
+
+  // Verifica empenhos finalizados há +120 dias
+  for (const e of DB.empenhos) {
+    if (!e.finalizado || !e.dataFinalizacao) continue;
+    const diasFinalizado = Math.floor((hoje - new Date(e.dataFinalizacao + 'T12:00')) / 86400000);
+    if (diasFinalizado < DIAS_LIMITE) continue;
+
+    if (e.neUrl) {
+      const path = extrairPath(e.neUrl);
+      if (path) {
+        const ok = await deletarSupabase(path);
+        if (ok) { e.neUrl = ''; e.neNome = ''; alterou = true; }
+      }
+    }
+  }
+
+  if (alterou) {
+    save('disputas', DB.disputas);
+    save('empenhos', DB.empenhos);
+    console.log('🧹 Limpeza automática: PDFs antigos removidos do Supabase.');
+  }
+}
+
 function inicializarApp(dadosSalvos) {
   const temDados = dadosSalvos &&
     (dadosSalvos.initialized ||
@@ -3289,6 +3358,14 @@ function inicializarApp(dadosSalvos) {
     const tela = document.getElementById('tela-boasvindas');
     if (tela) tela.style.display = 'flex';
     renderAll();
+  }
+
+  // Roda limpeza em background, sem travar a UI, 1x por dia
+  const ultimaLimpeza = localStorage.getItem('_ultima_limpeza_pdfs');
+  const hoje = new Date().toISOString().slice(0, 10);
+  if (ultimaLimpeza !== hoje) {
+    localStorage.setItem('_ultima_limpeza_pdfs', hoje);
+    setTimeout(() => limparPDFsAntigos(), 5000); // aguarda 5s após carregar
   }
 }
 
