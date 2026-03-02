@@ -2431,9 +2431,9 @@
           </div>
           <input type="file" id="d-contrato-file" accept="application/pdf" style="display:none" onchange="handleContratoFile(this.files[0])">
           <!-- Preview após upload -->
-          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;align-items:center;gap:8px;">
+          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
             <span>📄</span>
-            <a id="d-contrato-link" href="#" target="_blank" style="font-size:13px;font-weight:600;color:var(--accent-primary);text-decoration:none;flex:1;"></a>
+            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;" onclick="baixarContrato(document.getElementById('d-contrato-url').value, document.getElementById('d-contrato-nome').value)"></span>
             <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
           </div>
           <div id="d-contrato-progress" style="display:none;margin-top:8px;">
@@ -3752,7 +3752,7 @@ function abrirPopupDisputa(id) {
       (r.editalUrl ? '<div class="detail-field"><div class="detail-field-label">EDITAL</div><div class="detail-field-value"><a href="' + r.editalUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📑 ' + (r.editalNome||'Edital') + '</a></div></div>' : '') +
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`⚠️ Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
-      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><a href="' + r.contratoUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📄 ' + (r.contratoNome||'Ver contrato') + '</a></div></div>' : '') +
+      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -7211,7 +7211,7 @@ async function uploadContratoPDF(file) {
         if (preview) {
           preview.style.display = 'flex';
           const link = g('d-contrato-link');
-          if (link) { link.href = url; link.textContent = '📄 ' + nome; }
+          if (link) { link.textContent = '📄 ' + nome; }
         }
         toast('Contrato enviado com sucesso!', 'success');
         resolve(url);
@@ -7230,6 +7230,29 @@ async function uploadContratoPDF(file) {
     xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`);
     xhr.send(formData);
   });
+}
+
+function baixarContrato(url, nome) {
+  if (!url) return;
+  // Força download via fetch + blob para evitar erro de renderização inline
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nome || 'contrato.pdf';
+  a.target = '_blank';
+  // Tenta download direto primeiro; se falhar por CORS, abre em nova aba
+  fetch(url)
+    .then(r => r.blob())
+    .then(blob => {
+      const blobUrl = URL.createObjectURL(blob);
+      a.href = blobUrl;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(blobUrl); document.body.removeChild(a); }, 2000);
+    })
+    .catch(() => {
+      // Fallback: abre direto no browser
+      window.open(url, '_blank');
+    });
 }
 
 function removerContratoUpload() {
@@ -7288,7 +7311,7 @@ function carregarContratoDisputa(r) {
     if (preview) {
       preview.style.display = 'flex';
       const link = g('d-contrato-link');
-      if (link) { link.href = r.contratoUrl; link.textContent = '📄 ' + (r.contratoNome || 'Contrato'); }
+      if (link) { link.textContent = '📄 ' + (r.contratoNome || 'Contrato'); }
     }
     const label = g('d-contrato-upload-label');
     if (label) label.textContent = '✅ ' + (r.contratoNome || 'Contrato carregado');
