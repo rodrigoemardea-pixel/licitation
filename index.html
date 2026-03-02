@@ -7242,13 +7242,11 @@ function calcVencimentoContrato() {
   if (!dataVal || !vencField) return;
   // Só calcula automaticamente se o campo de vencimento estiver vazio
   if (!vencField.value) {
-    const base = new Date(dataVal + 'T12:00');
-    const venc = new Date(base.getFullYear() + 1, base.getMonth(), base.getDate());
-    // Formata como YYYY-MM-DD para input type="date"
-    const y = venc.getFullYear();
-    const m = String(venc.getMonth()+1).padStart(2,'0');
-    const d = String(venc.getDate()).padStart(2,'0');
-    vencField.value = `${y}-${m}-${d}`;
+    // Parseia YYYY-MM-DD manualmente para evitar problemas de fuso horário
+    const [ano, mes, dia] = dataVal.split('-').map(Number);
+    const m = String(mes).padStart(2,'0');
+    const d = String(dia).padStart(2,'0');
+    vencField.value = (ano + 1) + '-' + m + '-' + d;
   }
   atualizarCorVencimento();
 }
