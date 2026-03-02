@@ -2418,29 +2418,30 @@
         </div>
         <div class="fg full">
           <label class="fl">📄 PDF do Contrato</label>
-          <div id="d-contrato-upload-area" onclick="document.getElementById('d-contrato-file').click()"
-            style="border:2px dashed var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);"
+          <div id="d-contrato-upload-area"
+            onclick="document.getElementById('d-contrato-file').click()"
             ondragover="event.preventDefault();this.style.borderColor='var(--accent-primary)'"
             ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleContratoDrop(event)">
+            ondrop="handleContratoDrop(event)"
+            style="border:2px dashed var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
             <span style="font-size:1.5rem;">📁</span>
             <div>
               <div id="d-contrato-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do contrato aqui</div>
-              <div style="font-size:11px;color:var(--text-tertiary);">Apenas PDF · máx. 10MB</div>
+              <div style="font-size:11px;color:var(--text-tertiary);">Apenas PDF · máx. 50MB</div>
             </div>
           </div>
           <input type="file" id="d-contrato-file" accept="application/pdf" style="display:none" onchange="handleContratoFile(this.files[0])">
-          <!-- Preview após upload -->
-          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
-            <span>📄</span>
-            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;" onclick="baixarContrato(document.getElementById('d-contrato-url').value, document.getElementById('d-contrato-nome').value)"></span>
-            <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
-          </div>
           <div id="d-contrato-progress" style="display:none;margin-top:8px;">
             <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
               <div id="d-contrato-progress-bar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.3s;border-radius:3px;"></div>
             </div>
             <div id="d-contrato-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
+          </div>
+          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
+            <span>📄</span>
+            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;"
+              onclick="window.open(document.getElementById('d-contrato-url').value,'_blank')"></span>
+            <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
           </div>
         </div>
 
@@ -7147,12 +7148,18 @@ function exportarComprasDisputa(dispId) {
 const CLOUDINARY_CLOUD = 'dlggcy5f4';
 const CLOUDINARY_PRESET = 'licitacao_uploads';
 
-// ── Cloudinary: upload de contrato PDF ──
+// ══════════════════════════════════════════════
+//   SUPABASE STORAGE — Upload de contratos PDF
+// ══════════════════════════════════════════════
+const SUPABASE_URL    = 'https://yhuzzaqhjjsybyhglaig.supabase.co';
+const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlodXp6YXFoampzeWJ5aGdsYWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NDE4ODgsImV4cCI6MjA4ODAxNzg4OH0.rtz7tqMpL4KLc32EtRXZ6HBl_okjTCuXuhFA8PT5aKU';
+const SUPABASE_BUCKET = 'contratos';
+
 async function handleContratoFile(file) {
   if (!file) return;
   if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
-  if (file.size > 10 * 1024 * 1024) { toast('Arquivo muito grande (máx. 10MB)', 'error'); return; }
-  await uploadContratoPDF(file);
+  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
+  await uploadContratoSupabase(file);
 }
 
 function handleContratoDrop(event) {
@@ -7163,96 +7170,80 @@ function handleContratoDrop(event) {
   handleContratoFile(file);
 }
 
-async function uploadContratoPDF(file) {
-  const progress = g('d-contrato-progress');
-  const progressBar = g('d-contrato-progress-bar');
-  const progressLabel = g('d-contrato-progress-label');
-  const uploadLabel = g('d-contrato-upload-label');
-  const preview = g('d-contrato-preview');
-  const area = g('d-contrato-upload-area');
+async function uploadContratoSupabase(file) {
+  const progress     = g('d-contrato-progress');
+  const progressBar  = g('d-contrato-progress-bar');
+  const progressLabel= g('d-contrato-progress-label');
+  const uploadLabel  = g('d-contrato-upload-label');
+  const preview      = g('d-contrato-preview');
+  const area         = g('d-contrato-upload-area');
 
-  if (progress) { progress.style.display = 'block'; }
-  if (progressBar) { progressBar.style.width = '0%'; }
+  if (progress) progress.style.display = 'block';
+  if (progressBar) progressBar.style.width = '10%';
   if (uploadLabel) uploadLabel.textContent = 'Enviando...';
   if (area) area.style.borderColor = 'var(--accent-primary)';
 
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_PRESET);
-  formData.append('folder', 'contratos');
-  // resource_type=raw garante que o Cloudinary armazene como arquivo bruto e retorne URL /raw/upload/
-  formData.append('resource_type', 'raw');
+  // Nome único para evitar conflitos
+  const ext      = file.name.split('.').pop();
+  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path     = `${Date.now()}_${baseName}`;
 
-  return new Promise((resolve) => {
-    const xhr = new XMLHttpRequest();
-    xhr.upload.onprogress = e => {
-      if (e.lengthComputable) {
-        const pct = Math.round((e.loaded / e.total) * 100);
-        if (progressBar) progressBar.style.width = pct + '%';
-        if (progressLabel) progressLabel.textContent = `Enviando... ${pct}%`;
+  try {
+    if (progressBar) progressBar.style.width = '40%';
+
+    const res = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/pdf',
+          'x-upsert': 'true'
+        },
+        body: file
       }
-    };
-    xhr.onload = () => {
-      if (progress) progress.style.display = 'none';
-      if (area) area.style.borderColor = 'var(--border)';
-      if (xhr.status === 200) {
-        const data = JSON.parse(xhr.responseText);
-        // Usa a URL retornada pelo Cloudinary, removendo o número de versão que causa 404 em assets raw
-        let url = data.secure_url;
-        // Remove /vNUMERO/ do path: /raw/upload/v1234567890/pasta/arquivo.pdf → /raw/upload/pasta/arquivo.pdf
-        url = url.replace(/\/raw\/upload\/v\d+\//, '/raw/upload/');
-        const nome = file.name;
-        // Salva nos campos hidden
-        const urlField = g('d-contrato-url'); if(urlField) urlField.value = url;
-        const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = nome;
-        // Atualiza label
-        if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
-        // Mostra preview
-        if (preview) {
-          preview.style.display = 'flex';
-          const link = g('d-contrato-link');
-          if (link) { link.textContent = '📄 ' + nome; }
-        }
-        toast('Contrato enviado com sucesso!', 'success');
-        resolve(url);
-      } else {
-        if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
-        toast('Erro ao enviar contrato. Tente novamente.', 'error');
-        resolve(null);
-      }
-    };
-    xhr.onerror = () => {
-      if (progress) progress.style.display = 'none';
-      if (uploadLabel) uploadLabel.textContent = '❌ Erro de conexão';
-      toast('Erro de conexão ao enviar contrato.', 'error');
-      resolve(null);
-    };
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`);
-    xhr.send(formData);
-  });
+    );
+
+    if (progressBar) progressBar.style.width = '90%';
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+
+    // URL pública permanente
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
+    const nome = file.name;
+
+    if (progressBar) progressBar.style.width = '100%';
+    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
+    if (area) area.style.borderColor = 'var(--border)';
+
+    const urlField  = g('d-contrato-url');  if(urlField)  urlField.value  = url;
+    const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = nome;
+    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
+    if (preview) {
+      preview.style.display = 'flex';
+      const link = g('d-contrato-link');
+      if (link) link.textContent = '📄 ' + nome;
+    }
+    toast('Contrato enviado com sucesso!', 'success');
+    return url;
+
+  } catch(e) {
+    console.error('Supabase upload error:', e);
+    if (progress) progress.style.display = 'none';
+    if (area) area.style.borderColor = 'var(--border)';
+    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
+    toast('Erro ao enviar contrato: ' + e.message, 'error');
+    return null;
+  }
 }
 
 function baixarContrato(url, nome) {
   if (!url) return;
-  // Força download via fetch + blob para evitar erro de renderização inline
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = nome || 'contrato.pdf';
-  a.target = '_blank';
-  // Tenta download direto primeiro; se falhar por CORS, abre em nova aba
-  fetch(url)
-    .then(r => r.blob())
-    .then(blob => {
-      const blobUrl = URL.createObjectURL(blob);
-      a.href = blobUrl;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(blobUrl); document.body.removeChild(a); }, 2000);
-    })
-    .catch(() => {
-      // Fallback: abre direto no browser
-      window.open(url, '_blank');
-    });
+  // Supabase serve PDFs com Content-Type correto — abre direto em nova aba
+  window.open(url, '_blank');
 }
 
 function removerContratoUpload() {
