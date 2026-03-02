@@ -7196,10 +7196,10 @@ async function uploadContratoPDF(file) {
       if (area) area.style.borderColor = 'var(--border)';
       if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
-        // Garante URL com fl_attachment para o browser abrir/baixar corretamente
+        // PDFs no Cloudinary devem usar /raw/upload/ para ser servidos corretamente
         let url = data.secure_url;
-        // Para PDFs no Cloudinary: trocar /upload/ por /upload/fl_attachment/
-        url = url.replace('/upload/', '/upload/fl_attachment/');
+        // Normaliza: qualquer tipo (/image/, /video/) vira /raw/ para PDFs
+        url = url.replace('/image/upload/', '/raw/upload/').replace('/video/upload/', '/raw/upload/');
         const nome = file.name;
         // Salva nos campos hidden
         const urlField = g('d-contrato-url'); if(urlField) urlField.value = url;
