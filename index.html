@@ -7180,7 +7180,8 @@ async function uploadContratoPDF(file) {
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_PRESET);
   formData.append('folder', 'contratos');
-  formData.append('resource_type', 'auto');
+  // resource_type=raw garante que o Cloudinary armazene como arquivo bruto e retorne URL /raw/upload/
+  formData.append('resource_type', 'raw');
 
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
@@ -7196,10 +7197,10 @@ async function uploadContratoPDF(file) {
       if (area) area.style.borderColor = 'var(--border)';
       if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
-        // PDFs no Cloudinary devem usar /raw/upload/ para ser servidos corretamente
+        // Usa a URL retornada pelo Cloudinary, removendo o número de versão que causa 404 em assets raw
         let url = data.secure_url;
-        // Normaliza: qualquer tipo (/image/, /video/) vira /raw/ para PDFs
-        url = url.replace('/image/upload/', '/raw/upload/').replace('/video/upload/', '/raw/upload/');
+        // Remove /vNUMERO/ do path: /raw/upload/v1234567890/pasta/arquivo.pdf → /raw/upload/pasta/arquivo.pdf
+        url = url.replace(/\/raw\/upload\/v\d+\//, '/raw/upload/');
         const nome = file.name;
         // Salva nos campos hidden
         const urlField = g('d-contrato-url'); if(urlField) urlField.value = url;
@@ -7226,7 +7227,7 @@ async function uploadContratoPDF(file) {
       toast('Erro de conexão ao enviar contrato.', 'error');
       resolve(null);
     };
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`);
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`);
     xhr.send(formData);
   });
 }
