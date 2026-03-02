@@ -7751,15 +7751,11 @@ function checarRetornos() {
     if (!ret) return;
     const diff = ret - agora; // ms até o retorno
 
-    // ── Email: 2 min antes — janela ampla (entre 5min e 1min antes) para não ser pulada pelo intervalo de 30s ──
+    // ── Email: dispara entre 5min e 1min antes (janela ampla para não ser pulada pelo intervalo de 30s) ──
     const chaveAlerta = 'alerta|' + r.id + '|' + r.retorno;
-    const jaEnviou = _emailAlertasEnviados.has(chaveAlerta);
-    const diffMin = (diff/60000).toFixed(1);
-    console.log(`⏱ [${r.orgao}] diff=${diffMin}min | jaEnviou=${jaEnviou} | na janela=${diff<=300000 && diff>60000}`);
-    if (!jaEnviou && diff <= 300000 && diff > 60000) {
+    if (!_emailAlertasEnviados.has(chaveAlerta) && diff <= 300000 && diff > 60000) {
       _emailAlertasEnviados.add(chaveAlerta);
       enviarEmailAlarme(r);
-      console.log('📧 Email de retorno enviado (~2min antes):', r.orgao);
     }
 
     // ── Popup + som + notificação browser: no horário exato (janela: 90s antes até 30s depois) ──
