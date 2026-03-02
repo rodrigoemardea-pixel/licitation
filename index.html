@@ -2039,6 +2039,9 @@
   <!-- DISPUTAS VENCIDAS -->
   <div class="tab-pane active" id="tab-disputas">
     <div class="summary-row" id="sum-disputas"></div>
+    <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
+      📃 <span id="alerta-contratos-txt"></span>
+    </div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('disputas')">＋ Nova Disputa</button>
       <button class="btn" onclick="abrirCalculadora()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;font-weight:700;display:flex;align-items:center;gap:6px;" title="Calculadora de Custos e Lucros">🧮 Cálculo Rápido</button>
@@ -2404,6 +2407,45 @@
           <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
         </div>
 
+        <!-- CONTRATO: data + PDF + vencimento -->
+        <div class="fg">
+          <label class="fl">📅 Data do Contrato</label>
+          <input type="date" class="fc" id="d-contrato-data" onchange="calcVencimentoContrato()">
+        </div>
+        <div class="fg">
+          <label class="fl">📆 Vencimento do Contrato <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano, ou defina manualmente)</span></label>
+          <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()" placeholder="Calculado automaticamente">
+        </div>
+        <div class="fg full">
+          <label class="fl">📄 PDF do Contrato</label>
+          <div id="d-contrato-upload-area" onclick="document.getElementById('d-contrato-file').click()"
+            style="border:2px dashed var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent-primary)'"
+            ondragleave="this.style.borderColor='var(--border)'"
+            ondrop="handleContratoDrop(event)">
+            <span style="font-size:1.5rem;">📁</span>
+            <div>
+              <div id="d-contrato-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do contrato aqui</div>
+              <div style="font-size:11px;color:var(--text-tertiary);">Apenas PDF · máx. 10MB</div>
+            </div>
+          </div>
+          <input type="file" id="d-contrato-file" accept="application/pdf" style="display:none" onchange="handleContratoFile(this.files[0])">
+          <!-- Preview após upload -->
+          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;align-items:center;gap:8px;">
+            <span>📄</span>
+            <a id="d-contrato-link" href="#" target="_blank" style="font-size:13px;font-weight:600;color:var(--accent-primary);text-decoration:none;flex:1;"></a>
+            <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
+          </div>
+          <div id="d-contrato-progress" style="display:none;margin-top:8px;">
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="d-contrato-progress-bar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.3s;border-radius:3px;"></div>
+            </div>
+            <div id="d-contrato-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
+          </div>
+        </div>
+
+        <input type="hidden" id="d-contrato-url">
+        <input type="hidden" id="d-contrato-nome">
         <input type="hidden" id="d-edital-url">
         <input type="hidden" id="d-edital-nome">
         
@@ -3708,6 +3750,9 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
       (r.editalUrl ? '<div class="detail-field"><div class="detail-field-label">EDITAL</div><div class="detail-field-value"><a href="' + r.editalUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📑 ' + (r.editalNome||'Edital') + '</a></div></div>' : '') +
+      (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
+      (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`⚠️ Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
+      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><a href="' + r.contratoUrl + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);text-decoration:none;">📄 ' + (r.contratoNome||'Ver contrato') + '</a></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -3997,13 +4042,31 @@ function renderD(){
         + '<div style="height:4px;background:var(--bg-inset);border-radius:2px;width:80px;overflow:hidden;"><div style="height:100%;background:var(--accent-primary);border-radius:2px;width:'+pctProg+'%"></div></div>'
         + '<span style="font-size:9px;color:var(--text-tertiary);">' + totalEnviado + '/' + totalContratado + ' enviados</span></div>'
       : '<span style="color:var(--danger);font-size:10px;">⚠ sem itens</span>';
-    return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+    // ── Alerta vencimento de contrato ──
+    let contratoAlerta = '';
+    let rowStyle = 'cursor:pointer;';
+    if (r.contratoVencimento) {
+      const vs = r.contratoVencimento;
+      const vencDate = vs.includes('/') ? new Date(vs.split('/').reverse().join('-')+'T12:00') : new Date(vs+'T12:00');
+      if (!isNaN(vencDate.getTime())) {
+        const diasVenc = Math.floor((vencDate - new Date()) / 86400000);
+        if (diasVenc < 0) {
+          rowStyle = 'cursor:pointer;border-left:4px solid var(--danger);background:rgba(239,68,68,0.04);';
+          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">🔴 CONTRATO VENCIDO</span>';
+        } else if (diasVenc <= 15) {
+          rowStyle = 'cursor:pointer;border-left:4px solid var(--warning);background:rgba(245,158,11,0.05);';
+          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:#fef3c7;color:#d97706;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">⚠️ Vence em ' + diasVenc + 'd</span>';
+        }
+      }
+    }
+
+    return '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-disputas" data-id="' + r.id + '" onchange="onRowCheck(\'disputas\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="inline-edit-cell" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
         '<span class="mono" style="font-size:11px;">' + fmtD(r.data) + '</span>' +
         '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
       '</td>' +
-      '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
+      '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
@@ -4198,6 +4261,34 @@ function verificarAlertas() {
       txt.textContent = `${empenhosSemPagamento.length} empenho${empenhosSemPagamento.length>1?'s':''} há mais de 60 dias sem recebimento`;
     } else {
       banner.style.display = 'none';
+    }
+  }
+
+  // Alertas de vencimento de contrato
+  const hoje = new Date();
+  const contratosVencendo = DB.disputas.filter(d => {
+    if (!d.contratoVencimento || d.finalizada) return false;
+    const vs = d.contratoVencimento;
+    const venc = vs.includes('/') ? new Date(vs.split('/').reverse().join('-')+'T12:00') : new Date(vs+'T12:00');
+    if (isNaN(venc.getTime())) return false;
+    const dias = Math.floor((venc - hoje) / 86400000);
+    return dias <= 60; // vence em até 60 dias ou já venceu
+  });
+  const bannerContrato = g('alerta-contratos-banner');
+  const txtContrato = g('alerta-contratos-txt');
+  if (bannerContrato && txtContrato) {
+    if (contratosVencendo.length > 0) {
+      bannerContrato.style.display = 'flex';
+      const vencidos = contratosVencendo.filter(d => {
+        const parts = d.contratoVencimento.split('/');
+        const venc = new Date(parts[2]+'-'+parts[1]+'-'+parts[0]+'T12:00');
+        return venc < hoje;
+      });
+      txtContrato.textContent = vencidos.length > 0
+        ? `${vencidos.length} contrato(s) VENCIDO(S) e ${contratosVencendo.length - vencidos.length} vencendo em breve`
+        : `${contratosVencendo.length} contrato(s) vencendo nos próximos 60 dias`;
+    } else {
+      bannerContrato.style.display = 'none';
     }
   }
 }
@@ -4949,8 +5040,11 @@ document.addEventListener('keydown', (e) => {
 // ========== DISPUTAS ==========
 function clearD(){
   resetFields('d');
-  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-edital-url','d-edital-nome'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-edital-url','d-edital-nome','d-contrato-url','d-contrato-nome','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
   const ep = g('d-edital-preview'); if(ep) { ep.style.display='none'; ep.innerHTML=''; }
+  const cp = g('d-contrato-preview'); if(cp) { cp.style.display='none'; }
+  const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
+  const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
   calcD();
 }
@@ -4993,6 +5087,10 @@ function saveD(){
     propostaNome: gv('d-proposta-nome') || '',
     editalUrl: gv('d-edital-url') || '',
     editalNome: gv('d-edital-nome') || '',
+    contratoUrl: gv('d-contrato-url') || '',
+    contratoNome: gv('d-contrato-nome') || '',
+    contratoData: gv('d-contrato-data') || '',
+    contratoVencimento: gv('d-contrato-vencimento') || '',
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
     M
   };
@@ -5038,6 +5136,8 @@ function editD(id){
   const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.value = r.propostaNome || '';
   // Carrega edital se existir
   carregarArquivosDisputa(r);
+  // Carrega contrato
+  carregarContratoDisputa(r);
 
   // Carrega lotes (garante que todos tenham ID)
   lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0 }));
@@ -7044,8 +7144,153 @@ function exportarComprasDisputa(dispId) {
 
 
 // ========== PROPOSTA FILE HANDLING - CLOUDINARY ==========
-const CLOUDINARY_CLOUD = 'duik0m2ma';
-const CLOUDINARY_PRESET = 'aivv2qgc';
+const CLOUDINARY_CLOUD = 'dlggcy5f4';
+const CLOUDINARY_PRESET = 'licitacao_uploads';
+
+// ── Cloudinary: upload de contrato PDF ──
+async function handleContratoFile(file) {
+  if (!file) return;
+  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { toast('Arquivo muito grande (máx. 10MB)', 'error'); return; }
+  await uploadContratoPDF(file);
+}
+
+function handleContratoDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0];
+  const area = document.getElementById('d-contrato-upload-area');
+  if (area) area.style.borderColor = 'var(--border)';
+  handleContratoFile(file);
+}
+
+async function uploadContratoPDF(file) {
+  const progress = g('d-contrato-progress');
+  const progressBar = g('d-contrato-progress-bar');
+  const progressLabel = g('d-contrato-progress-label');
+  const uploadLabel = g('d-contrato-upload-label');
+  const preview = g('d-contrato-preview');
+  const area = g('d-contrato-upload-area');
+
+  if (progress) { progress.style.display = 'block'; }
+  if (progressBar) { progressBar.style.width = '0%'; }
+  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
+  if (area) area.style.borderColor = 'var(--accent-primary)';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  formData.append('folder', 'contratos');
+  formData.append('resource_type', 'raw');
+
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressLabel) progressLabel.textContent = `Enviando... ${pct}%`;
+      }
+    };
+    xhr.onload = () => {
+      if (progress) progress.style.display = 'none';
+      if (area) area.style.borderColor = 'var(--border)';
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        const url = data.secure_url;
+        const nome = file.name;
+        // Salva nos campos hidden
+        const urlField = g('d-contrato-url'); if(urlField) urlField.value = url;
+        const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = nome;
+        // Atualiza label
+        if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
+        // Mostra preview
+        if (preview) {
+          preview.style.display = 'flex';
+          const link = g('d-contrato-link');
+          if (link) { link.href = url; link.textContent = '📄 ' + nome; }
+        }
+        toast('Contrato enviado com sucesso!', 'success');
+        resolve(url);
+      } else {
+        if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
+        toast('Erro ao enviar contrato. Tente novamente.', 'error');
+        resolve(null);
+      }
+    };
+    xhr.onerror = () => {
+      if (progress) progress.style.display = 'none';
+      if (uploadLabel) uploadLabel.textContent = '❌ Erro de conexão';
+      toast('Erro de conexão ao enviar contrato.', 'error');
+      resolve(null);
+    };
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/raw/upload`);
+    xhr.send(formData);
+  });
+}
+
+function removerContratoUpload() {
+  const urlField = g('d-contrato-url'); if(urlField) urlField.value = '';
+  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = '';
+  const preview = g('d-contrato-preview'); if(preview) preview.style.display = 'none';
+  const label = g('d-contrato-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do contrato aqui';
+  const fileInput = g('d-contrato-file'); if(fileInput) fileInput.value = '';
+}
+
+function calcVencimentoContrato() {
+  const dataVal = g('d-contrato-data')?.value;
+  const vencField = g('d-contrato-vencimento');
+  if (!dataVal || !vencField) return;
+  // Só calcula automaticamente se o campo de vencimento estiver vazio
+  if (!vencField.value) {
+    const base = new Date(dataVal + 'T12:00');
+    const venc = new Date(base.getFullYear() + 1, base.getMonth(), base.getDate());
+    // Formata como YYYY-MM-DD para input type="date"
+    const y = venc.getFullYear();
+    const m = String(venc.getMonth()+1).padStart(2,'0');
+    const d = String(venc.getDate()).padStart(2,'0');
+    vencField.value = `${y}-${m}-${d}`;
+  }
+  atualizarCorVencimento();
+}
+
+function atualizarCorVencimento() {
+  const vencField = g('d-contrato-vencimento');
+  if (!vencField || !vencField.value) return;
+  const venc = new Date(vencField.value + 'T12:00');
+  const hoje = new Date();
+  const diffDias = Math.floor((venc - hoje) / 86400000);
+  vencField.style.color = diffDias < 0 ? 'var(--danger)' : diffDias <= 30 ? 'var(--warning)' : 'var(--success)';
+  vencField.style.fontWeight = '700';
+}
+
+function carregarContratoDisputa(r) {
+  const urlField = g('d-contrato-url'); if(urlField) urlField.value = r.contratoUrl || '';
+  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = r.contratoNome || '';
+  const dataField = g('d-contrato-data'); if(dataField) dataField.value = r.contratoData || '';
+  // Vencimento: converte DD/MM/YYYY para YYYY-MM-DD se necessário (registros antigos)
+  if (vencField) {
+    const v = r.contratoVencimento || '';
+    if (v.includes('/')) {
+      const parts = v.split('/');
+      vencField.value = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : '';
+    } else {
+      vencField.value = v;
+    }
+  }
+  // Recalcula cor do vencimento
+  if (r.contratoData || r.contratoVencimento) atualizarCorVencimento();
+  // Mostra preview se já houver contrato salvo
+  if (r.contratoUrl) {
+    const preview = g('d-contrato-preview');
+    if (preview) {
+      preview.style.display = 'flex';
+      const link = g('d-contrato-link');
+      if (link) { link.href = r.contratoUrl; link.textContent = '📄 ' + (r.contratoNome || 'Contrato'); }
+    }
+    const label = g('d-contrato-upload-label');
+    if (label) label.textContent = '✅ ' + (r.contratoNome || 'Contrato carregado');
+  }
+}
 
 async function uploadPropostaCloudinary(input) {
   const file = input.files[0];
@@ -7293,14 +7538,23 @@ function checarRetornos() {
   const agora = new Date();
   (DB.acomp||[]).forEach(r => {
     if (!r.retorno) return;
-    const ret = new Date(r.retorno);
+    if (r.status !== 'pendente' && r.status !== 'recurso') return;
+    const ret = parseRetorno(r.retorno);
+    if (!ret) return;
     const diff = ret - agora; // ms até o retorno
-    // Chave inclui o horário: se o usuário mudar, dispara novamente
-    const chave = r.id + '|' + r.retorno;
-    if (_notifShown.has(chave)) return;
-    // Dispara entre 90s antes e 30s depois do horário marcado (janela de ~2min)
-    if (diff <= 90000 && diff > -30000) {
-      _notifShown.add(chave);
+
+    // ── Email: dispara 10 min antes (janela: entre 11min e 9min antes) ──
+    const chaveEmail = 'alarme-email|' + r.id + '|' + r.retorno;
+    if (!_emailAlertasEnviados.has(chaveEmail) && diff <= 660000 && diff > 540000) {
+      _emailAlertasEnviados.add(chaveEmail);
+      enviarEmailAlarme(r);
+      console.log('📧 Email de retorno enviado (10min antes):', r.orgao);
+    }
+
+    // ── Popup + som + notificação browser: no horário exato (janela: 90s antes até 30s depois) ──
+    const chavePopup = 'popup|' + r.id + '|' + r.retorno;
+    if (!_notifShown.has(chavePopup) && diff <= 90000 && diff > -30000) {
+      _notifShown.add(chavePopup);
       dispararNotificacao(r);
     }
   });
@@ -7718,7 +7972,21 @@ const ANALISTAS_EMAIL = {
   'Márdea':  '',   // ex: 'mardea@empresa.com'
   'Rodrigo': '',   // ex: 'rodrigo@empresa.com'
 };
-let _emailAlertasEnviados = new Set(); // evita reenvio na mesma sessão
+// Controle de emails enviados — persiste no localStorage para sobreviver a refreshes
+const _emailAlertasEnviados = {
+  _key: 'email_alertas_enviados',
+  _load() {
+    try { return new Set(JSON.parse(localStorage.getItem(this._key) || '[]')); } catch(e) { return new Set(); }
+  },
+  _save(set) {
+    // Limpa chaves de dias anteriores para não acumular eternamente
+    const hoje = new Date().toISOString().slice(0,10);
+    const filtradas = [...set].filter(k => k.includes(hoje) || k.includes(new Date().getFullYear()));
+    try { localStorage.setItem(this._key, JSON.stringify(filtradas)); } catch(e) {}
+  },
+  has(chave) { return this._load().has(chave); },
+  add(chave) { const s = this._load(); s.add(chave); this._save(s); }
+};
 
 // Inicializa EmailJS com a public key
 (function initEmailJS() {
@@ -7759,58 +8027,7 @@ async function enviarAlertasEmail() {
     } catch(err) { console.error('Erro EmailJS empenhos:', err); }
   }
 
-  // ─── Helper: remove entidades HTML (ex: &#x2F; → /) antes de enviar no email ───
-  const limparTexto = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g, (_, h) => String.fromCharCode(parseInt(h,16)))
-                                   .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
-
-  // ─── Comparação de datas por dia (ignora horário) para evitar alertas adiantados ───
-  const hojeStr = hoje.toISOString().slice(0,10); // "YYYY-MM-DD" no fuso local, mas mais confiável:
-  const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()); // meia-noite local
-
-  // Acompanhamentos com retorno vencido ou hoje (comparação por dia, não por ms)
-  const acompAlertar = (DB.acomp||[]).filter(r => {
-    if (!r.retorno) return false;
-    if (r.status !== 'pendente' && r.status !== 'recurso') return false;
-    const ret = parseRetorno(r.retorno);
-    if (!ret) return false;
-    // Compara apenas a data (ano/mês/dia), ignorando o horário
-    const retLocal = new Date(ret.getFullYear(), ret.getMonth(), ret.getDate());
-    return retLocal <= hojeLocal; // retorno é hoje ou já passou
-  });
-
-  for(const acomp of acompAlertar) {
-    const analista = acomp.analista||'?';
-    let emailDest = ANALISTAS_EMAIL[analista];
-    try { const s = JSON.parse(localStorage.getItem('analistas_email')||'{}'); if(s[analista]) emailDest=s[analista]; } catch(e){}
-    if(!emailDest) continue;
-    const chave = 'acomp-'+acomp.id+'-'+hoje_str;
-    if(_emailAlertasEnviados.has(chave)) continue;
-    _emailAlertasEnviados.add(chave);
-
-    const ret = parseRetorno(acomp.retorno);
-    const retLocal = new Date(ret.getFullYear(), ret.getMonth(), ret.getDate());
-    const vencido = retLocal < hojeLocal; // passou antes de hoje
-    const retFormatado = fmtRetorno(acomp.retorno);
-
-    // Limpa entidades HTML dos campos de texto
-    const orgaoLimpo = limparTexto(acomp.orgao);
-    const sistemaLimpo = limparTexto(acomp.sistema);
-    const obsLimpa = limparTexto(acomp.observacao);
-
-    try {
-      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: emailDest,
-        to_name: analista,
-        assunto: vencido ? `🔴 Retorno VENCIDO: ${orgaoLimpo}` : `📋 Retorno HOJE: ${orgaoLimpo}`,
-        mensagem: `Olá ${analista},\n\n${vencido
-          ? `O acompanhamento do órgão "${orgaoLimpo}" tinha retorno em ${retFormatado} e ainda está ${acomp.status}.`
-          : `Você tem retorno agendado para HOJE (${retFormatado}) com o órgão "${orgaoLimpo}".`
-        }\n\nSistema: ${sistemaLimpo||'—'}\nObservação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar o status.`,
-        data: hoje.toLocaleDateString('pt-BR'),
-      });
-      console.log('✅ Email acomp enviado para', analista, '-', orgaoLimpo);
-    } catch(err) { console.error('Erro EmailJS acomp:', err); }
-  }
+  // Acompanhamentos são disparados pelo checarRetornos (10 min antes) — não aqui
 }
 
 // Dispara ao salvar um acompanhamento
@@ -8474,8 +8691,8 @@ function carregarArquivosEmpenho(r) {
   } else if (nePreview) { nePreview.style.display = 'none'; }
 }
 
-// Verifica a cada 4 horas (enquanto sistema estiver aberto)
-setInterval(enviarAlertasEmail, 4 * 3600000);
+// Empenhos atrasados: verifica 1x por dia na carga inicial (via setTimeout no onSnapshot)
+// Alertas de retorno: gerenciados pelo checarRetornos (a cada 30s)
 
 
 // ========== CONFIGURAÇÕES DE E-MAIL (modal) ==========
