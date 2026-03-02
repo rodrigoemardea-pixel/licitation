@@ -4947,6 +4947,7 @@ function populateDisputaSelect(preSelectId) {
 
 // ========== MODAL ==========
 let EID={};
+let _acompConvertendoId = null;
 function openModal(tab){
   if (tab === 'acomp') { clearAcomp(); document.getElementById('modal-acomp').classList.add('open'); return; }
   EID[tab]=null;
@@ -5138,6 +5139,7 @@ document.addEventListener('keydown', (e) => {
 
 // ========== DISPUTAS ==========
 function clearD(){
+  _acompConvertendoId = null; // limpa conversão pendente
   resetFields('d');
   ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-contrato-url','d-contrato-nome','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
 
@@ -5217,7 +5219,15 @@ function saveD(){
     });
   }
 
-  toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
+  // Se veio de conversão de acompanhamento, remove o acomp
+  if (_acompConvertendoId && !EID.disputas) {
+    DB.acomp = (DB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
+    save('acomp', DB.acomp);
+    _acompConvertendoId = null;
+    toast('Disputa criada e acompanhamento removido da lista!', 'success');
+  } else {
+    toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
+  }
   closeModal('disputas'); renderAll();
 }
 function editD(id){
@@ -7590,8 +7600,7 @@ function saveAcomp() {
   EID_acomp = null;
   closeModal('acomp');
   renderAcomp();
-  // Dispara e-mail imediato se retorno for em até 3 dias
-  enviarAlertaAcompanhamentoImediato(row);
+  // E-mail gerenciado exclusivamente pelo checarRetornos (2min antes)
   updateBadges();
   atualizarPainel();
 }
@@ -7706,6 +7715,7 @@ function verAcomp(id) {
 
 function _doCriarDisputaDeAcomp(r) {
   clearD();
+  _acompConvertendoId = r.id; // guarda para remover após salvar
   document.getElementById('d-data').value = r.data||'';
   document.getElementById('d-orgao').value = r.orgao||'';
   document.getElementById('d-estado').value = r.estado||'';
@@ -7741,12 +7751,12 @@ function checarRetornos() {
     if (!ret) return;
     const diff = ret - agora; // ms até o retorno
 
-    // ── Email: dispara 10 min antes (janela: entre 11min e 9min antes) ──
-    const chaveEmail = 'alarme-email|' + r.id + '|' + r.retorno;
-    if (!_emailAlertasEnviados.has(chaveEmail) && diff <= 660000 && diff > 540000) {
-      _emailAlertasEnviados.add(chaveEmail);
+    // ── Email + Popup + Som: tudo junto, 2 min antes (janela: entre 150s e 90s antes) ──
+    const chaveAlerta = 'alerta|' + r.id + '|' + r.retorno;
+    if (!_emailAlertasEnviados.has(chaveAlerta) && diff <= 150000 && diff > 90000) {
+      _emailAlertasEnviados.add(chaveAlerta);
       enviarEmailAlarme(r);
-      console.log('📧 Email de retorno enviado (10min antes):', r.orgao);
+      console.log('📧 Email de retorno enviado (2min antes):', r.orgao);
     }
 
     // ── Popup + som + notificação browser: no horário exato (janela: 90s antes até 30s depois) ──
@@ -7771,8 +7781,7 @@ function dispararNotificacao(r) {
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
-  // 3. E-mail automático para o analista
-  enviarEmailAlarme(r);
+  // 3. E-mail já disparado pelo checarRetornos (2min antes) — não duplicar aqui
 
   // 4. Som em loop até o usuário fechar
   let _alarmCtx = null;
