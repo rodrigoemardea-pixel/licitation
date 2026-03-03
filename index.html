@@ -2794,7 +2794,7 @@
   <div class="modal" style="max-width:100%;width:100%;max-height:100%;height:100%;display:flex;flex-direction:column;border-radius:16px;">
     <div class="modal-header">
       <div class="modal-title">🧮 Cálculo Rápido de Custos / Lucros</div>
-      <button class="modal-close" onclick="closeModal('calc')">✕</button>
+      <button class="modal-close" onclick="closeModal('calc');_calcRetornarLoteIdx=null;g('calc-retornar-wrap').style.display='none';">✕</button>
     </div>
     <div class="modal-body" style="flex:1;overflow-y:auto;padding:16px 20px;">
 
@@ -2947,6 +2947,14 @@
               </div>
               <!-- Detalhamento ICMS -->
               <div id="calc-icms-detalhes" style="font-size:11px;color:var(--text-secondary);border-top:1px solid rgba(16,185,129,0.3);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;"></div>
+              <!-- Botão retornar custo para lote (aparece só quando chamado do form de disputa) -->
+              <div id="calc-retornar-wrap" style="display:none;margin-top:14px;border-top:1px solid rgba(16,185,129,0.3);padding-top:12px;">
+                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">↩️ Retornar resultado para o item na disputa:</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="calcUsarCusto()" style="flex:1;">✅ Usar Custo Total: <strong id="calc-retornar-custo-label">—</strong></button>
+                  <button class="btn btn-ghost btn-sm" onclick="calcCancelarRetorno()">✕ Cancelar</button>
+                </div>
+              </div>
             </div>
 
           </div><!-- /coluna direita -->
@@ -3137,18 +3145,25 @@ function renderLotes() {
   }
   const disputaId = EID.disputas;
   c.innerHTML = lotesTemp.map((l, i) => {
-    const total = (l.qtd||1)*(l.vunit||0);
-    const compraPrev = l.compraPrev || 0;
-    const custoPrev  = l.custoPrev  || 0;
-    const lucPrev    = total - compraPrev - custoPrev;
+    const qtd        = l.qtd || 1;
+    const total      = qtd * (l.vunit||0);
+    // compraPrev e custoPrev são valores UNITÁRIOS — multiplica pela qtd para obter o total
+    const compraPrevUnit = l.compraPrev || 0;
+    const custoPrevUnit  = l.custoPrev  || 0;
+    const compraPrevTotal = compraPrevUnit * qtd;
+    const custoPrevTotal  = custoPrevUnit  * qtd;
+    const lucPrev         = total - compraPrevTotal - custoPrevTotal;
     return '<div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;align-items:center;margin-bottom:4px;" id="lote-row-'+i+'">' +
       '<input type="text" class="fc" value="'+(l.descricao||'')+'" placeholder="Ex: Armário" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].descricao=this.value">' +
       '<input type="number" class="fc" value="'+(l.qtd||1)+'" min="1" step="1" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].qtd=+this.value;atualizarLoteTotais('+i+')">' +
       '<input type="number" class="fc" value="'+(l.vunit||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].vunit=+this.value;atualizarLoteTotais('+i+')">' +
       '<input type="number" class="fc" id="lote-total-'+i+'" value="'+total.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--accent-primary);font-weight:600;">' +
-      '<input type="number" class="fc" value="'+(compraPrev||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].compraPrev=+this.value;atualizarLoteTotais('+i+')">' +
-      '<input type="number" class="fc" value="'+(custoPrev||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].custoPrev=+this.value;atualizarLoteTotais('+i+')">' +
-      '<input type="number" class="fc" id="lote-luc-prev-'+i+'" value="'+lucPrev.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--success);font-weight:700;">' +
+      '<input type="number" class="fc" value="'+(compraPrevUnit||'')+'" placeholder="unit." step="0.01" title="Valor unitário de compra previsto (será multiplicado pela qtd)" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].compraPrev=+this.value;atualizarLoteTotais('+i+')">' +
+      '<div style="display:flex;gap:2px;align-items:center;">' +
+        '<input type="number" class="fc" id="lote-custo-prev-input-'+i+'" value="'+(custoPrevUnit||'')+'" placeholder="unit." step="0.01" title="Custo unitário previsto (será multiplicado pela qtd)" style="font-size:12px;padding:5px 8px;flex:1;" oninput="lotesTemp['+i+'].custoPrev=+this.value;atualizarLoteTotais('+i+')">' +
+        '<button type="button" title="Calcular custo via calculadora rápida" onclick="abrirCalcParaLote('+i+')" style="padding:4px 7px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface);cursor:pointer;font-size:13px;white-space:nowrap;flex-shrink:0;">🧮</button>' +
+      '</div>' +
+      '<input type="number" class="fc" id="lote-luc-prev-'+i+'" value="'+lucPrev.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--success);font-weight:700;" title="Lucro previsto total = Vl.Total - (Compra × Qtd) - (Custo × Qtd)">' +
       '<button class="btn-lote-del" onclick="removerLote('+i+')">✕</button>' +
     '</div>';
   }).join('');
@@ -3158,11 +3173,14 @@ function renderLotes() {
 // Atualiza só os campos calculados de uma linha, SEM re-renderizar (preserva o foco)
 function atualizarLoteTotais(i) {
   const l = lotesTemp[i];
-  const total = (l.qtd||0) * (l.vunit||0);
+  const qtd   = l.qtd  || 0;
+  const total = qtd * (l.vunit||0);
   const totEl = document.getElementById('lote-total-'+i);
   if (totEl) totEl.value = total.toFixed(2);
-  // Atualiza lucro previsto automaticamente
-  const lucPrev = total - (l.compraPrev||0) - (l.custoPrev||0);
+  // compraPrev e custoPrev são unitários — multiplica pela qtd
+  const compraPrevTotal = (l.compraPrev||0) * qtd;
+  const custoPrevTotal  = (l.custoPrev||0)  * qtd;
+  const lucPrev = total - compraPrevTotal - custoPrevTotal;
   const lucEl = document.getElementById('lote-luc-prev-'+i);
   if (lucEl) lucEl.value = lucPrev.toFixed(2);
   atualizarTotalContrato();
@@ -3171,8 +3189,9 @@ function atualizarLoteTotais(i) {
 function atualizarTotalContrato() {
   const total    = lotesTemp.reduce((s, l) => s + (l.qtd||0)*(l.vunit||0), 0);
   const lucPrevTotal = lotesTemp.reduce((s, l) => {
-    const t = (l.qtd||0)*(l.vunit||0);
-    return s + t - (l.compraPrev||0) - (l.custoPrev||0);
+    const qtd = l.qtd || 0;
+    const t   = qtd * (l.vunit||0);
+    return s + t - (l.compraPrev||0)*qtd - (l.custoPrev||0)*qtd;
   }, 0);
   const totEl = document.getElementById('lotes-totais');
   if (totEl) {
@@ -3773,10 +3792,11 @@ function abrirPopupDisputa(id) {
   const lucroRealizado = emps.reduce((s,e) => {
     return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0);
   }, 0);
-  // Lucro previsto = soma de (vlTotal - compraPrev - custoPrev) de cada lote
+  // Lucro previsto = soma de (vlTotal - compraPrev*qtd - custoPrev*qtd) de cada lote
   const lucroPrevisto = lotes.reduce((s,l) => {
-    const total = (l.qtd||0)*(l.vunit||0);
-    return s + total - (l.compraPrev||0) - (l.custoPrev||0);
+    const qtd   = l.qtd || 0;
+    const total = qtd * (l.vunit||0);
+    return s + total - (l.compraPrev||0)*qtd - (l.custoPrev||0)*qtd;
   }, 0);
 
   const lotesHTML = lotes.length ? `
@@ -4207,9 +4227,9 @@ function renderD(){
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       (()=>{
         const _lts = r.lotes||[];
-        const _vlCont   = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
-        const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0),0);
-        const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0),0);
+        const _vlCont     = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
+        const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
+        const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
         const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
         const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
         const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
@@ -5981,26 +6001,36 @@ function calcSelecionarDisputa(id) {
   g('calc-credito-icms').value = '';
   g('calc-custo-empresa').checked = false;
 
-  // Montar lista de itens
-  const empenhos = DB.empenhos.filter(e => e.disputaId === id);
-  let itens = [];
-  empenhos.forEach(emp => {
-    (emp.itens || []).forEach(item => {
-      if (!itens.find(x => x.itemId === item.id)) {
-        const _vu = item.vunit || (item.vtotal && item.qtd ? item.vtotal/item.qtd : 0) || emp.vunit || 0;
-        itens.push({ itemId: item.id, empId: emp.id, descricao: item.descricao||item.loteDesc||'Item', qtd: item.qtd||1, vunit: _vu });
+  // Montar lista de itens direto dos lotes da disputa (independente de ter empenho)
+  const lotes = d.lotes || [];
+  let itens = lotes.map(l => ({
+    itemId: l.id,
+    descricao: l.descricao || 'Item',
+    qtd: l.qtd || 1,
+    vunit: l.vunit || 0
+  }));
+
+  // Fallback: se a disputa não tiver lotes, tenta carregar dos empenhos (legado)
+  if (!itens.length) {
+    const empenhos = DB.empenhos.filter(e => e.disputaId === id);
+    empenhos.forEach(emp => {
+      (emp.itens || []).forEach(item => {
+        if (!itens.find(x => x.itemId === item.id)) {
+          const _vu = item.vunit || (item.vtotal && item.qtd ? item.vtotal/item.qtd : 0) || emp.vunit || 0;
+          itens.push({ itemId: item.id, empId: emp.id, descricao: item.descricao||item.loteDesc||'Item', qtd: item.qtd||1, vunit: _vu });
+        }
+      });
+      if (!(emp.itens||[]).length) {
+        const _vu = emp.vunit || (emp.qtd ? emp.vem/emp.qtd : emp.vem) || 0;
+        itens.push({ itemId: emp.id, empId: emp.id, descricao: emp.produto||'Empenho #'+emp.num, qtd: emp.qtd||1, vunit: _vu });
       }
     });
-    if (!(emp.itens||[]).length) {
-      const _vu = emp.vunit || (emp.qtd ? emp.vem/emp.qtd : emp.vem) || 0;
-      itens.push({ itemId: emp.id, empId: emp.id, descricao: emp.produto||'Empenho #'+emp.num, qtd: emp.qtd||1, vunit: _vu });
-    }
-  });
+  }
   calcItensDisputa = itens;
 
   const listaEl = g('calc-itens-lista');
   if (!itens.length) {
-    listaEl.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum item encontrado nos empenhos desta disputa.</div>';
+    listaEl.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum item cadastrado nesta disputa.</div>';
   } else {
     listaEl.innerHTML = itens.map(it =>
       `<div onclick="calcAbrirFormItem('${it.itemId}')" id="calc-item-${it.itemId}" style="padding:8px 12px;border:2px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:12px;transition:all .15s;min-width:180px;flex:1;">
@@ -6020,6 +6050,81 @@ function calcSelecionarDisputa(id) {
 }
 
 let calcItensDisputa = [];
+let _calcRetornarLoteIdx = null; // índice do lote que receberá o custo calculado
+
+// Abre a calculadora rápida a partir do botão 🧮 no form de lote da disputa
+function abrirCalcParaLote(loteIdx) {
+  const lote = lotesTemp[loteIdx];
+  if (!lote) return;
+
+  // Determina a disputa sendo editada para pré-configurar a calculadora
+  const disputaId = EID.disputas;
+  const disputa = disputaId ? DB.disputas.find(d => d.id === disputaId) : null;
+
+  _calcRetornarLoteIdx = loteIdx;
+  g('calc-retornar-wrap').style.display = 'none';
+
+  // Abre a calculadora
+  abrirCalculadora();
+
+  // Se tiver disputa selecionada, pré-seleciona ela e carrega o item do lote
+  if (disputa) {
+    // Pequeno delay para garantir que o modal abriu e o DOM está pronto
+    setTimeout(() => {
+      calcSelecionarDisputa(disputa.id);
+      // Tenta encontrar o item correspondente ao lote pelo id
+      const itemCorrespondente = calcItensDisputa.find(it => it.itemId === lote.id);
+      if (itemCorrespondente) {
+        calcAbrirFormItem(itemCorrespondente.itemId);
+      } else if (calcItensDisputa.length === 1) {
+        // Se só tem um item, seleciona automaticamente
+        calcAbrirFormItem(calcItensDisputa[0].itemId);
+      }
+    }, 100);
+  }
+}
+
+// Usa o custo calculado e preenche o campo custoPrev do lote
+function calcUsarCusto() {
+  if (_calcRetornarLoteIdx === null) return;
+  const d = calcDisputaSelecionada;
+  if (!d || !calcItensCalculo.length) { toast('Faça o cálculo antes de usar o resultado.', 'error'); return; }
+
+  const tipo = calcGetTipo();
+  const creditoICMS = tipo === 'icms' ? (+g('calc-credito-icms').value || 0) : 0;
+
+  // Calcula custo total
+  let totalCusto = 0;
+  calcItensCalculo.forEach(({ item, qtd }) => {
+    const vemTotal = item.vunit * qtd;
+    totalCusto += calcCustoItem(vemTotal, tipo, d);
+  });
+  totalCusto -= creditoICMS;
+
+  // O custo unitário = custo total / qtd do lote
+  const lote = lotesTemp[_calcRetornarLoteIdx];
+  const qtdLote = lote.qtd || 1;
+  const custoUnit = qtdLote > 0 ? totalCusto / qtdLote : totalCusto;
+
+  // Preenche o campo no lotesTemp e atualiza o input
+  lotesTemp[_calcRetornarLoteIdx].custoPrev = custoUnit;
+  atualizarLoteTotais(_calcRetornarLoteIdx);
+
+  // Atualiza visualmente o input do custo previsto
+  const inputEl = document.getElementById('lote-custo-prev-input-' + _calcRetornarLoteIdx);
+  if (inputEl) inputEl.value = custoUnit.toFixed(2);
+
+  // Fecha calculadora e limpa estado
+  closeModal('calc');
+  _calcRetornarLoteIdx = null;
+  g('calc-retornar-wrap').style.display = 'none';
+  toast('Custo previsto preenchido: ' + fmt(totalCusto) + ' (total) · ' + fmt(custoUnit) + '/un', 'success');
+}
+
+function calcCancelarRetorno() {
+  _calcRetornarLoteIdx = null;
+  g('calc-retornar-wrap').style.display = 'none';
+}
 
 function calcAbrirFormItem(itemId) {
   const it = calcItensDisputa.find(x => x.itemId === itemId);
@@ -6209,6 +6314,15 @@ function calcRecalcular() {
 
   // Atualiza tabela com novos custos calculados
   calcRenderTabela();
+
+  // Mostra botão de retorno se chamado a partir de um lote da disputa
+  if (_calcRetornarLoteIdx !== null) {
+    g('calc-retornar-wrap').style.display = '';
+    const lbl = g('calc-retornar-custo-label');
+    if (lbl) lbl.textContent = fmt(totalCusto);
+  } else {
+    g('calc-retornar-wrap').style.display = 'none';
+  }
 }
 
 
