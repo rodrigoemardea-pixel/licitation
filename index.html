@@ -667,9 +667,19 @@
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 280px);
     box-shadow: var(--shadow-md);
     width: 100%;
     margin-bottom: 20px;
+  }
+  .table-wrapper table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-surface);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08), 0 1px 0 var(--border-light);
+    backdrop-filter: blur(8px);
   }
 
   table {
@@ -4283,10 +4293,20 @@ function sumD(){
   const corPct = pctLucro >= 0 ? 'var(--success)' : 'var(--danger)';
   const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%';
 
+  // Lucro previsto: soma de todos os lotes das disputas ativas
+  const lucroPrevTotal = a.reduce((s, r) => {
+    return s + (r.lotes||[]).reduce((ss, l) => {
+      const qtd = l.qtd || 0;
+      const total = qtd * (l.vunit||0);
+      return ss + total - (l.compraPrev||0)*qtd - (l.custoPrev||0)*qtd;
+    }, 0);
+  }, 0);
+
   g('sum-disputas').innerHTML=`
     <div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${a.length}</div></div>
     <div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">${fmt(tv)}</div></div>
     <div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">${fmt(totalComprado)}</div></div>
+    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">💡 Lucro Previsto</div><div class="card-value cv-yellow">${fmt(lucroPrevTotal)}</div></div>
     <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
     <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
     <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
