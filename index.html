@@ -2236,6 +2236,9 @@
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
           <th>Analista</th>
           <th onclick="sort('empenhos', 'vem')" id="sort-empenhos-vem">Val. Empenho</th>
+          <th>💰 Vl. Compra</th>
+          <th>📈 Lucro</th>
+          <th>⏳ A Receber</th>
           <th>⏱️ Dias</th>
           <th>Ações</th>
         </tr></thead>
@@ -3946,6 +3949,16 @@ function abrirPopupEmpenho(id) {
           '</td>' +
           '</tr>';
       }).join('')}</tbody>
+      <tfoot>
+        <tr style="background:var(--bg-inset);font-weight:700;border-top:2px solid var(--border);">
+          <td colspan="5" style="padding:6px 8px;font-size:11px;color:var(--text-secondary);text-align:right;letter-spacing:.05em;">TOTAL</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent-primary);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--warning);" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--success);font-weight:800;" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent-primary);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
     </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
 
   // Impostos calculados a partir das compras realizadas (soma dos custos)
@@ -4254,12 +4267,18 @@ function renderE(){
     }
 
     const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
+    const _vlCompra = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
+    const _vlLucro  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+    const _vlRec    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
     return '<tr class="'+rowClass+'" style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
-      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
+      '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+      '<td class="mono" style="color:var(--text-secondary);font-size:11px;">' + (_vlCompra>0 ? fmt(_vlCompra) : '—') + '</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">' + (_vlRec>0 ? fmt(_vlRec) : '—') + '</td>' +
       '<td>' + diasBadge + '</td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
@@ -7600,8 +7619,7 @@ function saveAcomp() {
   EID_acomp = null;
   closeModal('acomp');
   renderAcomp();
-  // Dispara e-mail imediato se retorno for em até 3 dias
-  enviarAlertaAcompanhamentoImediato(row);
+  // E-mail gerenciado exclusivamente pelo checarRetornos (2min antes)
   updateBadges();
   atualizarPainel();
 }
@@ -7752,12 +7770,11 @@ function checarRetornos() {
     if (!ret) return;
     const diff = ret - agora; // ms até o retorno
 
-    // ── Email: dispara 10 min antes (janela: entre 11min e 9min antes) ──
-    const chaveEmail = 'alarme-email|' + r.id + '|' + r.retorno;
-    if (!_emailAlertasEnviados.has(chaveEmail) && diff <= 660000 && diff > 540000) {
-      _emailAlertasEnviados.add(chaveEmail);
+    // ── Email: dispara entre 5min e 1min antes (janela ampla para não ser pulada pelo intervalo de 30s) ──
+    const chaveAlerta = 'alerta|' + r.id + '|' + r.retorno;
+    if (!_emailAlertasEnviados.has(chaveAlerta) && diff <= 300000 && diff > 60000) {
+      _emailAlertasEnviados.add(chaveAlerta);
       enviarEmailAlarme(r);
-      console.log('📧 Email de retorno enviado (10min antes):', r.orgao);
     }
 
     // ── Popup + som + notificação browser: no horário exato (janela: 90s antes até 30s depois) ──
@@ -7782,8 +7799,7 @@ function dispararNotificacao(r) {
     n.onclick = () => { window.focus(); switchTab('acompanhamentos', document.querySelector('[onclick*="acompanhamentos"]')); renderAcomp(); };
   }
 
-  // 3. E-mail automático para o analista
-  enviarEmailAlarme(r);
+  // 3. E-mail já disparado pelo checarRetornos (2min antes) — não duplicar aqui
 
   // 4. Som em loop até o usuário fechar
   let _alarmCtx = null;
@@ -8067,10 +8083,11 @@ function renderEAgrupado(rows, tb) {
   const grupos = {};
   rows.forEach(r => {
     const org = r.orgao||'—';
-    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, maxDias:0 };
+    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, totalLucro:0, maxDias:0 };
     grupos[org].empenhos.push(r);
     grupos[org].totalVem += r.vem||0;
     grupos[org].totalRec += (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    grupos[org].totalLucro += (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
     grupos[org].maxDias = Math.max(grupos[org].maxDias, diasSemPagamento(r));
   });
   const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
@@ -8080,12 +8097,17 @@ function renderEAgrupado(rows, tb) {
       const dias = diasSemPagamento(r);
       const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
       const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
+      const _vlLucroR = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+      const _vlRecR   = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
       return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
         <td></td>
         <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
         <td></td>
         <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
         <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+        <td></td>
+        <td class="mono" style="color:var(--success);font-size:11px;">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
+        <td class="mono" style="color:var(--accent-primary);font-size:11px;">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
         <td>${diasBadge}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap;">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
@@ -8095,11 +8117,12 @@ function renderEAgrupado(rows, tb) {
       </tr>`;
     }).join('');
     return `<tr style="background:var(--bg-inset);">
-        <td colspan="7" style="padding:8px 12px;">
-          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;">
+        <td colspan="10" style="padding:8px 12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
             <span>🏢 ${org}</span>
             <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
-            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">Emp: ${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--success);font-weight:700;">Lucro: ${fmt(g_.totalLucro)}</span>
             <span style="font-size:11px;color:var(--warning);">A receber: ${fmt(g_.totalRec)}</span>
             <span style="font-size:11px;color:${corDias};">Maior atraso: ${g_.maxDias}d</span>
           </div>
