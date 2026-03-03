@@ -7020,15 +7020,26 @@ function finalizarEmpenho(id) {
   if (semRecebido.length > 0) problemas.push(`${semRecebido.length} compra(s) sem <strong>valor recebido</strong>`);
 
   if (problemas.length > 0) {
+    // Encontra a primeira compra pendente (sem dpag ou sem recebido) para abrir direto na edição
+    const primeiraPendente = compras.find(c => !c.dpag || c.dpag === '' || !c.recebido || c.recebido <= 0);
     _confirmarAcao({
       icon: '⚠️',
       titulo: 'Empenho incompleto',
       msg: `Não é possível finalizar o empenho <strong>${e.num||id}</strong>.<br><br>
 Pendências encontradas:<br>• ${problemas.join('<br>• ')}<br><br>
 Edite as compras e informe a data de pagamento e o valor recebido antes de finalizar.`,
-      btnLabel: '✏️ Ir para compras',
+      btnLabel: '✏️ Editar compras',
       btnClass: 'btn-primary',
-      onConfirm: () => { fecharPopup('empenho'); abrirCompra(id); }
+      onConfirm: () => {
+        fecharPopup('empenho');
+        fecharPopup('disputa');
+        if (primeiraPendente) {
+          // Abre direto na edição da compra pendente
+          abrirCompra(id, primeiraPendente.id);
+        } else {
+          abrirCompra(id);
+        }
+      }
     });
     return;
   }
