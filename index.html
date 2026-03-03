@@ -1835,7 +1835,7 @@
       </div>
       <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="renderAcomp()"></div>
     </div>
-    <div class="table-wrapper">
+    <div class="table-wrap">
       <table>
         <thead><tr>
           <th>Data</th>
@@ -2052,10 +2052,6 @@
     <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
       📃 <span id="alerta-contratos-txt"></span>
     </div>
-    <div id="alerta-sem-empenho-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="filtrarDisputasSemEmpenho()" title="Ver disputas sem empenho">
-      📋 <span id="alerta-sem-empenho-txt"></span>
-      <button onclick="event.stopPropagation();abrirConfigAlertaSemEmpenho()" style="margin-left:auto;background:none;border:1px solid currentColor;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;color:inherit;">⚙️ Configurar</button>
-    </div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('disputas')">＋ Nova Disputa</button>
       <button class="btn" onclick="abrirCalculadora()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;font-weight:700;display:flex;align-items:center;gap:6px;" title="Calculadora de Custos e Lucros">🧮 Cálculo Rápido</button>
@@ -2208,6 +2204,7 @@
     </div>
     <div class="summary-row" id="sum-empenhos"></div>
     <div class="toolbar">
+      <button class="btn btn-primary" onclick="openModal('empenhos')">＋ Novo Empenho</button>
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
 
       
@@ -2304,8 +2301,7 @@
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="renderFinalizadas()"></div>
     </div>
-    <div class="table-wrapper">
-    <table>
+    <table class="data-table">
       <thead>
         <tr>
           <th>Data</th>
@@ -2320,7 +2316,6 @@
       </thead>
       <tbody id="tbody-finalizadas"></tbody>
     </table>
-    </div>
   </div>
 
 </div>
@@ -3268,17 +3263,11 @@ function renderExcelPreview(prefix) {
   </table></div>`;
 }
 
-// FIX 4: Dias sem recebimento — usa compras para verificar se foi pago, não r.recebido
+// Dias sem recebimento (desde dcomp)
 function diasSemPagamento(r) {
-  const compras = r.compras || [];
-  const todasPagas = compras.length > 0 && compras.every(c => c.dpag && c.dpag !== '' && (c.rec || 0) > 0);
-  if (todasPagas) return 0;
-  // Usa a data da compra mais antiga sem pagamento
-  const semPag = compras.filter(c => !c.dpag || c.dpag === '' || (c.rec || 0) <= 0);
-  const datas = semPag.map(c => c.dcompra || r.dcomp).filter(Boolean);
-  if (!datas.length) { if (!r.dcomp) return 0; datas.push(r.dcomp); }
-  const maisAntiga = datas.sort()[0];
-  const compra = new Date(maisAntiga);
+  if (r.recebido > 0) return 0;
+  if (!r.dcomp) return 0;
+  const compra = new Date(r.dcomp);
   const hoje = new Date();
   return Math.floor((hoje - compra) / 86400000);
 }
@@ -3321,19 +3310,7 @@ function empenhoEstaPago(r) {
   const itens = (r.itens && r.itens.length) ? r.itens : (r.loteId ? [{id:'leg1'}] : []);
   if (!itens.length) return false;
   const compras = r.compras || [];
-  // FIX 1+2: dpag preenchido, rec > 0, e qtd comprada >= qtd do item
-  return itens.every(item => {
-    const comprasItem = compras.filter(c => c.itemId === item.id);
-    const qtdComprada = comprasItem.reduce((s, c) => s + (c.qtd || 0), 0);
-    const todosPagos = comprasItem.length > 0 && comprasItem.every(c => c.dpag && c.dpag !== '' && (c.rec || 0) > 0);
-    return todosPagos && qtdComprada >= (item.qtd || 1);
-  });
-}
-
-// FIX 3: Sempre recalcula lucro na exibição — nunca depende de c.luc salvo
-function calcLuc(c) {
-  if (c.lucManual !== undefined && c.lucManual !== null) return c.lucManual;
-  return (c.rec || 0) - (c.vtotal || 0) - (c.custo || 0);
+  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag));
 }
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 const fmt=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -4298,7 +4275,7 @@ function sumD(){
   const lucroRecebidoD = empsVinculados.reduce((s,e)=>s+(e.compras||[])
     .filter(c=>c.dpag && c.dpag!=='')
     .reduce((ss,c)=>{
-      const luc=calcLuc(c);
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss+luc;
     },0),0);
 
@@ -4307,7 +4284,7 @@ function sumD(){
     .reduce((s,e)=>s+(e.compras||[])
       .filter(c=>!c.dpag || c.dpag==='')
       .reduce((ss,c)=>{
-        const luc=calcLuc(c);
+        const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0),0);
 
@@ -4401,7 +4378,7 @@ function sumE(){
   const lucroEmpenhado = a.reduce((s,r)=>s+(r.compras||[])
     .filter(c=>!c.dpag || c.dpag==='')
     .reduce((ss,c)=>{
-      const luc = calcLuc(c);
+      const luc = (c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss + luc;
     },0),0);
 
@@ -4511,7 +4488,6 @@ function verificarAlertas() {
       bannerContrato.style.display = 'none';
     }
   }
-  verificarAlertaSemEmpenho();
 }
 
 function filtrarAtraso60() {
@@ -4519,85 +4495,6 @@ function filtrarAtraso60() {
   if (sel) sel.value = '60';
   filtrarEmpenhos();
   switchTab('empenhos', document.querySelectorAll('.tab-btn')[2]);
-}
-
-// ========== FIX 12: ALERTA DE DISPUTA SEM EMPENHO (parametrizável) ==========
-let _alertaSemEmpenhoConfig = JSON.parse(localStorage.getItem('alerta_sem_empenho') || 'null') || { ativo: true, prazo: 30, motivo: 'Disputa aguardando empenho há mais de {N} dias' };
-
-function verificarAlertaSemEmpenho() {
-  if (!_alertaSemEmpenhoConfig.ativo) { const b = g('alerta-sem-empenho-banner'); if(b) b.style.display='none'; return; }
-  const prazo = _alertaSemEmpenhoConfig.prazo || 30;
-  const hoje = new Date();
-  const disputasSemEmpenho = DB.disputas.filter(d => {
-    if (d.finalizada) return false;
-    const temEmpenho = DB.empenhos.some(e => e.disputaId === d.id);
-    if (temEmpenho) return false;
-    if (!d.data) return false;
-    const dias = Math.floor((hoje - new Date(d.data + 'T12:00')) / 86400000);
-    return dias >= prazo;
-  });
-  const banner = g('alerta-sem-empenho-banner');
-  const txt = g('alerta-sem-empenho-txt');
-  if (banner && txt) {
-    if (disputasSemEmpenho.length > 0) {
-      banner.style.display = 'flex';
-      const motivo = (_alertaSemEmpenhoConfig.motivo || 'Disputa aguardando empenho há mais de {N} dias').replace('{N}', prazo);
-      txt.textContent = `${disputasSemEmpenho.length} disputa(s) sem empenho: ${motivo}`;
-    } else {
-      banner.style.display = 'none';
-    }
-  }
-}
-
-function filtrarDisputasSemEmpenho() {
-  const prazo = _alertaSemEmpenhoConfig.prazo || 30;
-  const hoje = new Date();
-  // Filtra por sem empenho na tela de disputas
-  const sel = g('filtro-empenho-disputas');
-  if (sel) { sel.value = 'sem-empenho'; filtroEmpenhoDisputas = 'sem-empenho'; }
-  renderD();
-  switchTab('disputas', document.querySelectorAll('.tab-btn')[2]);
-  toast(`Mostrando disputas sem empenho há +${prazo} dias`, 'info');
-}
-
-function abrirConfigAlertaSemEmpenho() {
-  const cfg = _alertaSemEmpenhoConfig;
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML = `<div style="background:var(--bg-surface);border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
-    <h3 style="margin-bottom:20px;font-size:16px;">⚙️ Alerta — Disputas sem Empenho</h3>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;">
-        <input type="checkbox" id="cfg-sem-emp-ativo" ${cfg.ativo?'checked':''} style="width:16px;height:16px;">
-        Alerta ativo
-      </label>
-      <div>
-        <label class="fl" style="font-size:11px;">Prazo (dias sem empenho)</label>
-        <input class="fc" type="number" id="cfg-sem-emp-prazo" value="${cfg.prazo||30}" min="1" max="365" style="width:100px;">
-      </div>
-      <div>
-        <label class="fl" style="font-size:11px;">Mensagem do alerta (use {N} para o prazo)</label>
-        <input class="fc" id="cfg-sem-emp-motivo" value="${cfg.motivo||'Disputa aguardando empenho há mais de {N} dias'}">
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="this.closest('[style*=fixed]').remove()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarConfigAlertaSemEmpenho(this)">💾 Salvar</button>
-    </div>
-  </div>`;
-  document.body.appendChild(overlay);
-}
-
-function salvarConfigAlertaSemEmpenho(btn) {
-  _alertaSemEmpenhoConfig = {
-    ativo: document.getElementById('cfg-sem-emp-ativo').checked,
-    prazo: parseInt(document.getElementById('cfg-sem-emp-prazo').value) || 30,
-    motivo: document.getElementById('cfg-sem-emp-motivo').value.trim() || 'Disputa aguardando empenho há mais de {N} dias'
-  };
-  localStorage.setItem('alerta_sem_empenho', JSON.stringify(_alertaSemEmpenhoConfig));
-  btn.closest('[style*=fixed]').remove();
-  verificarAlertaSemEmpenho();
-  toast('Configuração salva!', 'success');
 }
 
 function verExcel(id, tipo) {
@@ -4745,7 +4642,7 @@ function atualizarDashboard() {
   // KPIs
   const totalRecebido = empenhosFiltrados.reduce((s,r)=>s+(r.recebido||0), 0);
   const totalLucroEmpenhos = empenhosFiltrados.reduce((s,r)=>s+(r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-    const luc = calcLuc(c);
+    const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
     return ss+luc;
   },0), 0);
   const totalEmpenhadoVal = empenhosFiltrados.reduce((s,r)=>s+(r.vem||0), 0);
@@ -4788,7 +4685,7 @@ function atualizarDashboard() {
     orgRank[d.orgao].contrato += getValorContrato(d);
     const emps = DB.empenhos.filter(e=>e.disputaId===d.id);
     orgRank[d.orgao].lucro += emps.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-      const luc=calcLuc(c);
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss+luc;
     },0),0);
   });
@@ -4891,7 +4788,7 @@ function atualizarDashboard() {
       if(!m) return;
       if(!porMes[m]) porMes[m] = { rec: 0, luc: 0 };
       porMes[m].rec += c.rec||0;
-      const luc=calcLuc(c);
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
       porMes[m].luc += luc;
     });
   });
@@ -4925,7 +4822,7 @@ function atualizarDashboard() {
   const orgaos = {};
   empenhosFiltrados.forEach(e => {
     const lucro = (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-      const luc=calcLuc(c);
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss+luc;
     },0);
     orgaos[e.orgao||'?'] = (orgaos[e.orgao||'?']||0) + lucro;
@@ -4946,7 +4843,7 @@ function atualizarDashboard() {
   const analistas = {};
   empenhosFiltrados.forEach(e => {
     const lucro = (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-      const luc=calcLuc(c);
+      const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
       return ss+luc;
     },0);
     analistas[e.analista||'?'] = (analistas[e.analista||'?']||0) + lucro;
@@ -4990,7 +4887,7 @@ function atualizarDashboard() {
   // Gráfico 6: Comparativo mês atual vs anterior
   const recMes = (m) => empenhosFiltrados.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&(c.dpag||'').substring(0,7)===m).reduce((ss,c)=>ss+(c.rec||0),0),0);
   const lucMes = (m) => empenhosFiltrados.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag&&(c.dpag||'').substring(0,7)===m).reduce((ss,c)=>{
-    const luc=calcLuc(c);
+    const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
     return ss+luc;
   },0),0);
   if(graficos.comparativo) graficos.comparativo.destroy();
@@ -5157,9 +5054,10 @@ function openModal(tab){
     lotesTemp = []; renderLotes();
     g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
   } else if(tab==='empenhos') {
-    // FIX 7: empenho só pode ser criado a partir de uma disputa
-    toast('Para criar um empenho, abra a disputa desejada e clique em "＋ Novo Empenho".', 'error');
-    return;
+    clearE();
+    lotesSelecionados = {};
+    const wrap = g('lote-selector-wrap'); if(wrap) wrap.style.display = 'none';
+    g('ttl-empenhos').textContent='Novo Empenho'; g('e-data').value=today(); populateDisputaSelect(null);
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
 }
@@ -5369,7 +5267,7 @@ function saveD(){
   const row={
     id: EID.disputas||uid(),
     data: gv('d-data'),
-    orgao: gv('d-orgao').toUpperCase().trim(),
+    orgao: gv('d-orgao').toUpperCase(),
     estado: gv('d-estado'),
     empresa: gv('d-empresa'),
     tipo: gv('d-tipo'),
@@ -6546,25 +6444,10 @@ function finalizarDisputa(id) {
 function reabrirDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  // FIX 9: conta empenhos finalizados vinculados para informar o usuário
-  const empsFinalizados = DB.empenhos.filter(e => e.disputaId === id && e.finalizado);
-  const msgExtra = empsFinalizados.length > 0
-    ? `<br><br>⚠️ <strong>${empsFinalizados.length} empenho(s) finalizado(s)</strong> vinculados também serão reabertos automaticamente.`
-    : '';
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa',
-    msg: `Reabrir a disputa <strong>${d.orgao||id}</strong>? Ela voltará para Disputas em Andamento.${msgExtra}`,
-    btnLabel:'↩️ Reabrir', btnClass:'btn-ghost',
-    onConfirm: () => {
-      d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
-      // FIX 9: reabre empenhos vinculados que foram finalizados automaticamente
-      empsFinalizados.forEach(e => {
-        e.finalizado = false; e.dataFinalizacao = null; e._manualFinalizado = false;
-      });
-      save('disputas', DB.disputas);
-      save('empenhos', DB.empenhos);
-      renderAll(); toast('Disputa e empenhos reabertos!', 'info');
-    }
-  }); return;
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+    d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
+    save('disputas', DB.disputas); renderAll(); toast('Disputa reaberta!', 'info');
+  }}); return;
 }
 
 // ===== DUPLICAR COMPRA =====
@@ -7248,7 +7131,7 @@ function renderFinalizadas() {
     const emps = DB.empenhos.filter(e => e.disputaId === r.id);
     const lucroRec = emps.reduce((s,e) =>
       s + (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=> {
-        const luc = calcLuc(c);
+        const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0), 0);
     return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
@@ -7273,7 +7156,7 @@ function sumFinalizadas(rows) {
     const emps = DB.empenhos.filter(e => e.disputaId === r.id);
     return s + emps.reduce((s2,e) =>
       s2 + (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-        const luc = calcLuc(c);
+        const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0), 0);
   }, 0);
@@ -7382,24 +7265,23 @@ function renderEmpFinalizados() {
       grupos[org].empenhos.push(r);
       grupos[org].totalVem += r.vem||0;
       grupos[org].totalLucro += (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-        const luc=calcLuc(c); return ss+luc;
+        const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
       },0);
     });
     const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
     tb.innerHTML = sorted.map(([org, g_]) => {
-    const linhasEmp = g_.empenhos.map((r, idx) => {
+      const linhasEmp = g_.empenhos.map(r => {
         const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-          const luc=calcLuc(c); return ss+luc;
+          const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
         },0);
-        const zebraBg = idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-surface-soft)';
-        return `<tr style="cursor:pointer;background:${zebraBg};" onclick="abrirPopupEmpenho('${r.id}')">
-          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;background:${zebraBg};">${r.num||'—'}</td>
-          <td style="background:${zebraBg};"></td>
-          <td style="background:${zebraBg};"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-          <td class="mono" style="color:var(--accent-primary);font-weight:700;background:${zebraBg};">${fmt(r.vem)}</td>
-          <td class="mono" style="color:var(--success);font-weight:600;background:${zebraBg};">${fmt(lucroRec)}</td>
-          <td class="mono" style="font-size:11px;color:var(--text-tertiary);background:${zebraBg};">${fmtD(r.dataFinalizacao)}</td>
-          <td onclick="event.stopPropagation()" style="background:${zebraBg};">
+        return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
+          <td></td>
+          <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+          <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+          <td class="mono" style="color:var(--success);font-weight:600;">${fmt(lucroRec)}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-tertiary);">${fmtD(r.dataFinalizacao)}</td>
+          <td onclick="event.stopPropagation()">
             <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')">🔍</button>
             <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
           </td></tr>`;
@@ -7417,7 +7299,7 @@ function renderEmpFinalizados() {
   } else {
     tb.innerHTML = rows.map(r => {
       const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-        const luc = calcLuc(c);
+        const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0);
       return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
@@ -7440,7 +7322,7 @@ function sumEmpFinalizados(rows) {
   const tv = rows.reduce((s,r) => s + (r.vem||0), 0);
   const totalComprado = rows.reduce((s,r) => s + (r.compras||[]).reduce((ss,c) => ss + (c.vtotal||0), 0), 0);
   const lucroTotal = rows.reduce((s,r) => s + (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-    const luc = calcLuc(c);
+    const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
     return ss+luc;
   },0), 0);
   const pct = totalComprado > 0 ? (lucroTotal / totalComprado * 100) : 0;
@@ -7482,42 +7364,39 @@ function exportarComprasSelecionadas(empId) {
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  // FIX 10: inclui nº empenho, órgão e data da compra na exportação
-  const cabecalho = ['Nº Empenho', 'Órgão', 'Data Compra', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
+  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
   const linhas = comprasSel.map(c => {
     const itemRef = itens.find(i => i.id === c.itemId);
     return [
-      '#' + (emp.num || '—'),
-      emp.orgao || '—',
-      c.dcompra ? c.dcompra.split('-').reverse().join('/') : '—',
       (itemRef?.descricao || '—').toUpperCase(),
       c.qtd || 0,
       c.vtotal || 0,
       c.custo || 0,
-      calcLuc(c),
+      c.luc || 0,
       c.rec || 0,
       c.plataforma || '—'
     ];
   });
 
-  // Substitui texto da plataforma pela URL
+  // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
   const linhasComLink = comprasSel.map((c, i) => {
     const row = [...linhas[i]];
-    if (c.link) row[9] = c.link;
+    if (c.link) row[6] = c.link;
     return row;
   });
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:9} }];
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:6} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink], { origin: 'A2' });
 
+  // Centralizar todas as células preenchidas
   Object.keys(ws).filter(k => !k.startsWith('!')).forEach(ref => {
     if (!ws[ref].s) ws[ref].s = {};
     ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:14},{wch:28},{wch:12},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
+  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
@@ -7936,17 +7815,6 @@ let _notifShown = new Set();
 function saveAcomp() {
   const orgao = document.getElementById('ac-orgao')?.value?.trim();
   if (!orgao) { toast('Informe o órgão!', 'error'); return; }
-  // FIX 6: Alertar se data de retorno já passou
-  const retornoVal = document.getElementById('ac-retorno')?.value;
-  if (retornoVal) {
-    const retornoDate = new Date(retornoVal);
-    if (retornoDate < new Date()) {
-      toast('⚠️ A data de retorno informada já está no passado!', 'error');
-      document.getElementById('ac-retorno').style.borderColor = 'var(--danger)';
-      // Não bloqueia — só avisa. O usuário pode salvar assim mesmo.
-      setTimeout(() => { const el = document.getElementById('ac-retorno'); if(el) el.style.borderColor = ''; }, 3000);
-    }
-  }
   const row = {
     id: EID_acomp || uid(),
     data: document.getElementById('ac-data')?.value || '',
@@ -7959,31 +7827,6 @@ function saveAcomp() {
     retorno: document.getElementById('ac-retorno')?.value || '',
     observacao: document.getElementById('ac-observacao')?.value?.toUpperCase() || '',
   };
-  // FIX 5: Se status = perdida, perguntar se deseja excluir
-  if (row.status === 'perdida') {
-    if (!DB.acomp) DB.acomp = [];
-    const idxTemp = DB.acomp.findIndex(x => x.id === row.id);
-    if (idxTemp !== -1) DB.acomp[idxTemp] = row; else DB.acomp.push(row);
-    EID_acomp = null;
-    closeModal('acomp');
-    _confirmarAcao({
-      icon: '❌',
-      titulo: 'Disputa perdida',
-      msg: `O acompanhamento <strong>${row.orgao}</strong> foi marcado como <strong>Perdida</strong>.<br><br>Deseja excluir este acompanhamento da lista?`,
-      btnLabel: '🗑️ Excluir',
-      btnClass: 'btn-danger',
-      onConfirm: () => {
-        DB.acomp = (DB.acomp||[]).filter(x => x.id !== row.id);
-        save('acomp', DB.acomp);
-        renderAcomp(); updateBadges(); atualizarPainel();
-        toast('Acompanhamento excluído.', 'info');
-      }
-    });
-    // Salva mesmo se cancelar (fica como perdida)
-    save('acomp', DB.acomp);
-    renderAcomp(); updateBadges(); atualizarPainel();
-    return;
-  }
   if (!DB.acomp) DB.acomp = [];
   const idx = DB.acomp.findIndex(x => x.id === row.id);
   if (idx !== -1) DB.acomp[idx] = row; else DB.acomp.push(row);
@@ -8071,14 +7914,14 @@ function renderAcomp() {
     const statusColors = {pendente:'var(--warning)',recurso:'var(--accent-primary)',perdida:'var(--danger)'};
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     const linkBtn = r.link ? `<a href="${r.link}" target="_blank" class="btn btn-ghost btn-sm" style="${btnStyle}" title="Abrir sistema">🔗</a>` : '';
-    return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
-      <td style="font-size:11px;${vencido?'background:rgba(239,68,68,0.07)!important;':''}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td style="${vencido?'background:rgba(239,68,68,0.07)!important;':''}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
-      <td style="${vencido?'background:rgba(239,68,68,0.07)!important;':''}"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-      <td style="font-size:11px;${vencido?'background:rgba(239,68,68,0.07)!important;':''}">${r.sistema||'—'}</td>
-      <td style="${vencido?'background:rgba(239,68,68,0.07)!important;':''}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
-      <td style="${vencido?'background:rgba(239,68,68,0.07)!important;':''}">${retStr}</td>
-      <td onclick="event.stopPropagation()" style="white-space:nowrap;${vencido?'background:rgba(239,68,68,0.07)!important;':''}">
+    return `<tr style="cursor:pointer;${vencido?'background:rgba(239,68,68,0.05);':''}" onclick="verAcomp('${r.id}')">
+      <td style="font-size:11px;">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
+      <td><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
+      <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="font-size:11px;">${r.sistema||'—'}</td>
+      <td><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
+      <td>${retStr}</td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap;">
         ${linkBtn}
         <button class="btn btn-ghost btn-sm" onclick="editAcomp('${r.id}')" title="Editar" style="${btnStyle}">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="converterEmDisputa('${r.id}')" title="Converter em Disputa Vencida" style="${btnStyle};color:var(--success);border-color:var(--success);">🏆</button>
@@ -8284,19 +8127,19 @@ function atualizarPainel() {
 
   const lucroTotal = DB.empenhos.reduce((s,e)=>{
     return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>{
-      return ss + (calcLuc(c));
+      return ss + ((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));
     },0);
   },0);
 
   const lucroEmpenhado = DB.empenhos.filter(e=>!e.finalizado).reduce((s,e)=>{
     return s + (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((ss,c)=>{
-      return ss + (calcLuc(c));
+      return ss + ((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));
     },0);
   },0);
 
   const lucroMes = DB.empenhos.reduce((s,e)=>{
     return s + (e.compras||[]).filter(c=>c.dpag&&c.dpag.startsWith(mesAtual)).reduce((ss,c)=>{
-      return ss + (calcLuc(c));
+      return ss + ((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));
     },0);
   },0);
 
@@ -8320,7 +8163,7 @@ function atualizarPainel() {
     if (!porAnalista[a]) porAnalista[a] = { disputas:0, empenhos:0, lucro:0 };
     porAnalista[a].empenhos++;
     porAnalista[a].lucro += (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((ss,c)=>{
-      return ss + (calcLuc(c));
+      return ss + ((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));
     },0);
   });
 
@@ -8466,25 +8309,24 @@ function renderEAgrupado(rows, tb) {
   const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
   tb.innerHTML = sorted.map(([org, g_]) => {
     const corDias = g_.maxDias>=90?'var(--danger)':g_.maxDias>=60?'var(--warning)':g_.maxDias>=30?'var(--text-secondary)':'var(--success)';
-    const rows_ = g_.empenhos.map((r, idx) => {
+    const rows_ = g_.empenhos.map(r => {
       const dias = diasSemPagamento(r);
       const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
       const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
       const _vlCompraR = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
       const _vlLucroR  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
       const _vlRecR    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-      const zebraBg = idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-surface-soft)';
-      return `<tr style="cursor:pointer;background:${zebraBg};" onclick="abrirPopupEmpenho('${r.id}')">
-        <td style="background:${zebraBg};"></td>
-        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;background:${zebraBg};">${r.num||'—'}</td>
-        <td style="background:${zebraBg};"></td>
-        <td style="background:${zebraBg};"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-        <td class="mono" style="color:var(--accent-primary);font-weight:700;background:${zebraBg};">${fmt(r.vem)}</td>
-        <td class="mono" style="color:var(--text-secondary);font-size:11px;background:${zebraBg};">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
-        <td class="mono" style="color:var(--success);font-size:11px;background:${zebraBg};">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
-        <td class="mono" style="color:var(--accent-primary);font-size:11px;background:${zebraBg};">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
-        <td style="background:${zebraBg};">${diasBadge}</td>
-        <td onclick="event.stopPropagation()" style="white-space:nowrap;background:${zebraBg};">
+      return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+        <td></td>
+        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
+        <td></td>
+        <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+        <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+        <td class="mono" style="color:var(--text-secondary);font-size:11px;">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
+        <td class="mono" style="color:var(--success);font-size:11px;">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
+        <td class="mono" style="color:var(--accent-primary);font-size:11px;">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
+        <td>${diasBadge}</td>
+        <td onclick="event.stopPropagation()" style="white-space:nowrap;">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
           <button class="btn btn-ghost btn-sm" onclick="editE('${r.id}')" style="${btnStyle}">✏️</button>
           <button class="btn btn-ghost btn-sm" onclick="abrirCompra('${r.id}')" style="${btnStyle};color:var(--success);border-color:var(--success);">🛒</button>
