@@ -4192,23 +4192,37 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
   atualizarVemTotal();
 }
 
+// Track which disputes have empenhos sub-rows expanded
+if (typeof _expandedDisputas === 'undefined') var _expandedDisputas = new Set();
+
+function toggleEmpenhosDisputa(disputaId, event) {
+  event && event.stopPropagation();
+  if (_expandedDisputas.has(disputaId)) {
+    _expandedDisputas.delete(disputaId);
+  } else {
+    _expandedDisputas.add(disputaId);
+  }
+  renderD();
+}
+
 function renderD(){
   const rows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
-  tb.innerHTML=rows.map(r=>{
+
+  const htmlParts = [];
+  rows.forEach((r, idx) => {
     const{luc}=dVals(r);
     const lotes = r.lotes || [];
     const totalContratado = lotes.reduce((s,l)=>s+(l.qtd||0), 0);
     const totalEnviado = lotes.reduce((s,l)=>s+calcQtdEnviada(r.id, l.id), 0);
     const pctProg = totalContratado > 0 ? Math.round(totalEnviado/totalContratado*100) : 0;
     const contrato = getValorContrato(r);
-    const lotesInfo = lotes.length
-      ? '<div style="display:flex;flex-direction:column;gap:2px;">'
-        + '<span style="font-size:11px;font-weight:600;color:var(--accent-primary);">' + lotes.length + ' lotes · ' + totalContratado + ' un.</span>'
-        + '<div style="height:4px;background:var(--bg-inset);border-radius:2px;width:80px;overflow:hidden;"><div style="height:100%;background:var(--accent-primary);border-radius:2px;width:'+pctProg+'%"></div></div>'
-        + '<span style="font-size:9px;color:var(--text-tertiary);">' + totalEnviado + '/' + totalContratado + ' enviados</span></div>'
-      : '<span style="color:var(--danger);font-size:10px;">⚠ sem itens</span>';
+
+    // ── Empenhos abertos vinculados a esta disputa ──
+    const empsAbertos = DB.empenhos.filter(e => e.disputaId === r.id && !e.finalizado);
+    const expanded = _expandedDisputas.has(r.id);
+
     // ── Alerta vencimento de contrato ──
     let contratoAlerta = '';
     let rowStyle = 'cursor:pointer;';
@@ -4227,36 +4241,114 @@ function renderD(){
       }
     }
 
-    return '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+    // ── Badge de empenhos abertos ──
+    const empBadge = empsAbertos.length > 0
+      ? '<span onclick="toggleEmpenhosDisputa(\'' + r.id + '\',event)" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
+        + (expanded ? '▲' : '▼') + ' ' + empsAbertos.length + ' emp.</span>'
+      : '';
+
+    const _lts = r.lotes||[];
+    const _vlCont     = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
+    const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
+    const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
+    const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
+    const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
+    const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
+
+    htmlParts.push(
+      '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-disputas" data-id="' + r.id + '" onchange="onRowCheck(\'disputas\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="inline-edit-cell" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
         '<span class="mono" style="font-size:11px;">' + fmtD(r.data) + '</span>' +
         '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
       '</td>' +
-      '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
+      '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + empBadge + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      (()=>{
-        const _lts = r.lotes||[];
-        const _vlCont     = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
-        const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
-        const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
-        const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
-        const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
-        const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
-        return '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
-               '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>';
-      })() +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
+      '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar" style="padding:5px 9px;font-size:15px;border-radius:8px;">✏️</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="duplicarDisputa(\'' + r.id + '\')" title="Duplicar" style="padding:5px 9px;font-size:15px;border-radius:8px;">📄</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="finalizarDisputa(\'' + r.id + '\')" title="Finalizar disputa" style="padding:5px 9px;font-size:15px;border-radius:8px;color:var(--success);border-color:var(--success);">🏁</button>' +
         '<button class="btn btn-danger btn-sm" onclick="delRow(\'disputas\',\'' + r.id + '\')" title="Excluir" style="padding:5px 9px;font-size:15px;border-radius:8px;">🗑️</button>' +
-      '</td></tr>';
-  }).join('');
+      '</td></tr>'
+    );
+
+    // ── Sub-rows: empenhos abertos desta disputa ──
+    if (expanded && empsAbertos.length > 0) {
+      // Header da seção de empenhos
+      const totalVem   = empsAbertos.reduce((s,e)=>s+(e.vem||0),0);
+      const totalComp  = empsAbertos.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.vtotal||0),0),0);
+      const totalLucro = empsAbertos.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.luc||0),0),0);
+      const totalRec   = empsAbertos.reduce((s,e)=>s+(e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((ss,c)=>ss+(c.rec||0),0),0);
+      const maxDias    = empsAbertos.reduce((max,e)=>Math.max(max,diasSemPagamento(e)),0);
+      const corDias    = maxDias>=90?'var(--danger)':maxDias>=60?'var(--warning)':maxDias>=30?'var(--text-secondary)':'var(--success)';
+
+      htmlParts.push(
+        '<tr style="background:var(--bg-inset);" onclick="event.stopPropagation()">' +
+        '<td colspan="10" style="padding:6px 12px 6px 32px;">' +
+          '<div style="display:flex;align-items:center;gap:14px;font-size:11px;font-weight:600;flex-wrap:wrap;">' +
+            '<span style="color:var(--text-tertiary);font-weight:700;">📄 EMPENHOS EM ABERTO</span>' +
+            '<span style="color:var(--text-tertiary);">' + empsAbertos.length + ' empenho(s)</span>' +
+            '<span style="color:var(--accent-primary);margin-left:auto;">Emp: ' + fmt(totalVem) + '</span>' +
+            '<span style="color:var(--text-secondary);">Compra: ' + fmt(totalComp) + '</span>' +
+            '<span style="color:var(--success);font-weight:700;">Lucro: ' + fmt(totalLucro) + '</span>' +
+            '<span style="color:var(--warning);">A receber: ' + fmt(totalRec) + '</span>' +
+            (maxDias > 0 ? '<span style="color:' + corDias + ';">Maior atraso: ' + maxDias + 'd</span>' : '') +
+          '</div>' +
+        '</td></tr>'
+      );
+
+      empsAbertos.forEach((e, eIdx) => {
+        const zebraTd = eIdx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
+        const dias = diasSemPagamento(e);
+        let diasBadge = '—';
+        if (dias > 0) {
+          const cls = dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok';
+          const icon = dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':'';
+          diasBadge = '<span class="dias-badge ' + cls + '">' + icon + dias + 'd</span>';
+        } else if (dias === 0) {
+          diasBadge = '<span class="dias-badge dias-ok">✓</span>';
+        }
+        const _vlComp = (e.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
+        const _vlLucro = (e.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+        const _vlRec   = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+        const btnS = 'padding:4px 7px;font-size:13px;border-radius:7px;';
+        const lote = e.loteId ? (r.lotes||[]).find(l=>l.id===e.loteId) : null;
+        const loteDesc = lote ? '<div style="font-size:9px;color:var(--text-tertiary);margin-top:1px;">🗂 ' + lote.descricao.substring(0,24) + (lote.descricao.length>24?'…':'') + '</div>' : '';
+        htmlParts.push(
+          '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + e.id + '\')">' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td style="padding-left:32px;' + zebraTd + '">' +
+            '<div style="display:flex;align-items:center;gap:6px;">' +
+              '<span style="font-size:10px;color:var(--text-tertiary);">└</span>' +
+              '<span class="mono" style="font-size:11px;font-weight:700;color:var(--text-primary);">' + (e.num||'—') + '</span>' +
+              (e.analista ? '<span class="badge ' + (e.analista==='Márdea'?'bp':'bb') + '" style="font-size:9px;">' + e.analista + '</span>' : '') +
+            '</div>' +
+            loteDesc +
+          '</td>' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;' + zebraTd + '">' + fmt(e.vem) + '</td>' +
+          '<td class="mono" style="color:var(--text-secondary);font-size:11px;' + zebraTd + '">' + (_vlComp>0?fmt(_vlComp):'—') + '</td>' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td class="mono" style="color:var(--success);font-size:11px;' + zebraTd + '">' + (_vlLucro>0?fmt(_vlLucro):'—') + '</td>' +
+          '<td style="' + zebraTd + '">' + diasBadge + '</td>' +
+          '<td onclick="event.stopPropagation()" style="white-space:nowrap;' + zebraTd + '">' +
+            '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Ver empenho" style="' + btnS + '">🔍</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + e.id + '\')" title="Editar" style="' + btnS + '">✏️</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="abrirCompra(\'' + e.id + '\')" title="Nova Compra" style="' + btnS + ';color:var(--success);border-color:var(--success);">🛒</button>' +
+          '</td></tr>'
+        );
+      });
+    }
+  });
+
+  tb.innerHTML = htmlParts.join('');
   sumD();
   // If in kanban view, also render kanban
   if (_viewMode === 'kanban') renderKanban();
