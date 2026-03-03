@@ -6080,6 +6080,11 @@ function abrirCalcParaLote(loteIdx) {
         // Se só tem um item, seleciona automaticamente
         calcAbrirFormItem(calcItensDisputa[0].itemId);
       }
+      // Preenche o valor de compra unitário já informado no lote
+      const vcompraInput = g('calc-form-vcompra');
+      if (vcompraInput && lote.compraPrev) {
+        vcompraInput.value = lote.compraPrev.toFixed(2);
+      }
     }, 100);
   }
 }
