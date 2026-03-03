@@ -2984,7 +2984,7 @@
     <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
     <div class="confirm-modal-actions">
       <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
-      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn" onclick="confirmDel()">🗑 Sim, excluir</button>
+      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn">🗑 Sim, excluir</button>
     </div>
   </div>
 </div>
@@ -5684,9 +5684,12 @@ function delRow(tab,id){
   const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = icon;
   const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = titulo;
   const el = g('confirm-msg'); if(el) el.innerHTML = msg;
+  // Garante que o botão aponta para confirmDel (padrão de exclusão)
+  const _btn = g('confirm-del-btn');
+  if(_btn) { _btn.textContent = '🗑 Sim, excluir'; _btn.className = 'btn btn-danger'; _btn.style.minWidth = '110px'; _btn.onclick = confirmDel; }
   g('modal-confirm').classList.add('open');
 }
-function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; }
+function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; btn && (btn.className='btn btn-danger'); btn && (btn.style.minWidth='110px'); }
 function confirmDel(){
   if(!PDel) return;
   if(PDel.tab === 'disputas') {
@@ -6710,6 +6713,7 @@ function _confirmarAcao({ icon = '⚠️', titulo = 'Confirmar', msg = '', btnLa
     btn.textContent = btnLabel;
     btn.className = 'btn ' + btnClass;
     btn.style.minWidth = '120px';
+    // Substitui completamente o handler — sem conflito com atributo onclick
     btn.onclick = () => { onConfirm(); PDel = null; closeConfirm(); };
   }
   g('modal-confirm').classList.add('open');
@@ -7952,14 +7956,26 @@ function saveAcomp() {
   const orgao = document.getElementById('ac-orgao')?.value?.trim();
   if (!orgao) { toast('Informe o órgão!', 'error'); return; }
   const retornoVal = document.getElementById('ac-retorno')?.value || '';
-  // FIX 6: avisar se data de retorno já está no passado
+  // FIX 6: avisar se data de retorno já está no passado — usa modal customizado
   if (retornoVal) {
     const retDate = new Date(retornoVal);
     if (retDate < new Date()) {
-      const ok = confirm('⚠️ A data de retorno informada já está no passado (' + retDate.toLocaleString('pt-BR') + ').\nDeseja salvar mesmo assim?');
-      if (!ok) return;
+      _confirmarAcao({
+        icon: '⚠️',
+        titulo: 'Retorno no passado',
+        msg: `A data de retorno informada já está no passado:<br><strong>${retDate.toLocaleString('pt-BR')}</strong><br><br>Deseja salvar mesmo assim?`,
+        btnLabel: '💾 Salvar mesmo assim',
+        btnClass: 'btn-ghost',
+        onConfirm: () => { _doSaveAcomp(retornoVal); }
+      });
+      return;
     }
   }
+  _doSaveAcomp(retornoVal);
+}
+
+function _doSaveAcomp(retornoVal) {
+  const orgao = document.getElementById('ac-orgao')?.value?.trim();
   const row = {
     id: EID_acomp || uid(),
     data: document.getElementById('ac-data')?.value || '',
