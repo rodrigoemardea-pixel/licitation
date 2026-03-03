@@ -4192,11 +4192,8 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
   atualizarVemTotal();
 }
 
-// Track which disputes have empenhos sub-rows expanded
-if (typeof _expandedDisputas === 'undefined') var _expandedDisputas = new Set();
-
-function toggleEmpenhosDisputa(disputaId, event) {
-  event && event.stopPropagation();
+var _expandedDisputas = new Set();
+function toggleEmpenhosDisputa(disputaId) {
   if (_expandedDisputas.has(disputaId)) {
     _expandedDisputas.delete(disputaId);
   } else {
@@ -4243,7 +4240,7 @@ function renderD(){
 
     // ── Badge de empenhos abertos ──
     const empBadge = empsAbertos.length > 0
-      ? '<span onclick="toggleEmpenhosDisputa(\'' + r.id + '\',event)" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
+      ? '<span onclick="event.stopPropagation();toggleEmpenhosDisputa(\'' + r.id + '\')" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
         + (expanded ? '▲' : '▼') + ' ' + empsAbertos.length + ' emp.</span>'
       : '';
 
