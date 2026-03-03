@@ -1688,6 +1688,10 @@
   .ocr-progress { height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; margin-top: 6px; }
   .ocr-progress-bar { height: 100%; background: var(--accent-primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
 
+
+/* Zebra recalculada para tabelas com agrupamento */
+tr.zebra-even td { background: var(--bg-surface-soft); }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -4507,7 +4511,11 @@ function verExcel(id, tipo) {
     ${rows.map((row, i) => `<tr>${row.map(c => i===0 ? `<th style="background:var(--bg-surface-soft);padding:4px 8px;border:1px solid var(--border-light);font-weight:600;">${c}</th>` : `<td style="padding:3px 8px;border:1px solid var(--border-light);">${c}</td>`).join('')}</tr>`).join('')}
   </table></div>`;
   const w = window.open('', '_blank', 'width=900,height=500');
-  w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
+  w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}
+/* Zebra recalculada para tabelas com agrupamento */
+tr.zebra-even td { background: var(--bg-surface-soft); }
+
+</style></head><body><h3>📊 ${d.filename}</h3>${html}
 <!-- POPUP DETALHES DISPUTA -->
 <div class="detail-popup-overlay" id="popup-disputa">
   <div class="detail-popup">
@@ -4607,6 +4615,18 @@ function verExcel(id, tipo) {
     </div>
   </div>
 </div>
+
+<script>
+function applyZebra(table){
+  if(!table) return;
+  const rows = Array.from(table.querySelectorAll('tbody tr'))
+    .filter(r=>!r.classList.contains('group-header') && r.offsetParent!==null);
+  rows.forEach((r,i)=>{ r.classList.remove('zebra-even'); if(i%2===1) r.classList.add('zebra-even'); });
+}
+// aplicar ao carregar e após agrupamentos
+document.addEventListener('DOMContentLoaded', ()=>{ document.querySelectorAll('table').forEach(applyZebra); });
+</script>
+
 </body></html>`);
 }
 
@@ -9248,5 +9268,17 @@ boot();
     </div>
   </div>
 </div>
+
+<script>
+function applyZebra(table){
+  if(!table) return;
+  const rows = Array.from(table.querySelectorAll('tbody tr'))
+    .filter(r=>!r.classList.contains('group-header') && r.offsetParent!==null);
+  rows.forEach((r,i)=>{ r.classList.remove('zebra-even'); if(i%2===1) r.classList.add('zebra-even'); });
+}
+// aplicar ao carregar e após agrupamentos
+document.addEventListener('DOMContentLoaded', ()=>{ document.querySelectorAll('table').forEach(applyZebra); });
+</script>
+
 </body>
 </html>
