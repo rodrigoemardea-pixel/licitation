@@ -5269,7 +5269,7 @@ function saveD(){
     contratoNome: gv('d-contrato-nome') || '',
     contratoData: gv('d-contrato-data') || '',
     contratoVencimento: gv('d-contrato-vencimento') || '',
-    lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0 })),
+    lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0, compraPrev: l.compraPrev||0, custoPrev: l.custoPrev||0 })),
     M
   };
   upsert('disputas',row);
@@ -5325,8 +5325,8 @@ function editD(id){
   // Carrega contrato
   carregarContratoDisputa(r);
 
-  // Carrega lotes (garante que todos tenham ID)
-  lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0 }));
+  // Carrega lotes (garante que todos tenham ID e preserva campos de previsão)
+  lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0, compraPrev: l.compraPrev||0, custoPrev: l.custoPrev||0 }));
   renderLotes();
   calcD();
   syncMasterCheckbox('d');
