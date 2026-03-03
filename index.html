@@ -2136,6 +2136,11 @@
           <th onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
           <th onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
           <th>Analista</th>
+          <th>💰 Vl. Contrato</th>
+          <th>🛒 Compra Prev.</th>
+          <th>⚙️ Custo Prev.</th>
+          <th>📈 Lucro Prev.</th>
+          <th>✅ Lucro Realizado</th>
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
@@ -2236,6 +2241,9 @@
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
           <th>Analista</th>
           <th onclick="sort('empenhos', 'vem')" id="sort-empenhos-vem">Val. Empenho</th>
+          <th>💰 Vl. Compra</th>
+          <th>📈 Lucro</th>
+          <th>⏳ A Receber</th>
           <th>⏱️ Dias</th>
           <th>Ações</th>
         </tr></thead>
@@ -2454,14 +2462,14 @@
         <!-- LOTES / ITENS OBRIGATÓRIO -->
         <div class="full">
           <div class="fsec">📦 Itens / Lotes da Disputa <span style="color:var(--danger);font-size:10px;">* obrigatório</span></div>
-          <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 70px 70px 90px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
+          <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
             <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Descrição</span>
             <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Qtd Cont.</span>
             <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Unit</span>
             <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Total</span>
-            <span style="font-size:9px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Enviado</span>
-            <span style="font-size:9px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Restante</span>
-            <span style="font-size:9px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;">Vl. Enviado</span>
+            <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Vl. Compra Prev.</span>
+            <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Custo Prev.</span>
+            <span style="font-size:9px;font-weight:700;color:var(--success);text-transform:uppercase;">Lucro Prev.</span>
             <span></span>
           </div>
           <div id="lotes-container"></div>
@@ -2469,6 +2477,7 @@
           <div class="lotes-totais" id="lotes-totais" style="display:none;margin-top:8px;">
             <span>Itens: <strong id="lt-count">0</strong></span>
             <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent-primary);">R$ 0,00</strong></span>
+            <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
           </div>
           <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;">⚠️ Adicione pelo menos 1 item para salvar.</div>
         </div>
@@ -3129,18 +3138,17 @@ function renderLotes() {
   const disputaId = EID.disputas;
   c.innerHTML = lotesTemp.map((l, i) => {
     const total = (l.qtd||1)*(l.vunit||0);
-    const qtdEnviada = disputaId ? calcQtdEnviada(disputaId, l.id) : 0;
-    const qtdRestante = Math.max(0, (l.qtd||0) - qtdEnviada);
-    const vlEnviado = qtdEnviada * (l.vunit||0);
-    const corRestante = qtdRestante === 0 ? 'color:var(--success);font-weight:600;' : (qtdEnviada > 0 ? 'color:var(--warning);font-weight:600;' : 'color:var(--text-secondary);');
-    return '<div style="display:grid;grid-template-columns:1fr 70px 100px 100px 70px 70px 90px 30px;gap:4px;align-items:center;margin-bottom:4px;" id="lote-row-'+i+'">' +
+    const compraPrev = l.compraPrev || 0;
+    const custoPrev  = l.custoPrev  || 0;
+    const lucPrev    = total - compraPrev - custoPrev;
+    return '<div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;align-items:center;margin-bottom:4px;" id="lote-row-'+i+'">' +
       '<input type="text" class="fc" value="'+(l.descricao||'')+'" placeholder="Ex: Armário" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].descricao=this.value">' +
       '<input type="number" class="fc" value="'+(l.qtd||1)+'" min="1" step="1" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].qtd=+this.value;atualizarLoteTotais('+i+')">' +
       '<input type="number" class="fc" value="'+(l.vunit||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].vunit=+this.value;atualizarLoteTotais('+i+')">' +
       '<input type="number" class="fc" id="lote-total-'+i+'" value="'+total.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--accent-primary);font-weight:600;">' +
-      '<div style="font-size:11px;text-align:center;color:var(--text-secondary);font-weight:600;">'+qtdEnviada+'</div>' +
-      '<div style="font-size:11px;text-align:center;'+corRestante+'" id="lote-restante-'+i+'">'+( qtdRestante===0 ? '✓' : qtdRestante)+'</div>' +
-      '<div style="font-size:11px;text-align:center;color:var(--text-secondary);">'+fmt(vlEnviado)+'</div>' +
+      '<input type="number" class="fc" value="'+(compraPrev||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].compraPrev=+this.value;atualizarLoteTotais('+i+')">' +
+      '<input type="number" class="fc" value="'+(custoPrev||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].custoPrev=+this.value;atualizarLoteTotais('+i+')">' +
+      '<input type="number" class="fc" id="lote-luc-prev-'+i+'" value="'+lucPrev.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--success);font-weight:700;">' +
       '<button class="btn-lote-del" onclick="removerLote('+i+')">✕</button>' +
     '</div>';
   }).join('');
@@ -3153,13 +3161,27 @@ function atualizarLoteTotais(i) {
   const total = (l.qtd||0) * (l.vunit||0);
   const totEl = document.getElementById('lote-total-'+i);
   if (totEl) totEl.value = total.toFixed(2);
+  // Atualiza lucro previsto automaticamente
+  const lucPrev = total - (l.compraPrev||0) - (l.custoPrev||0);
+  const lucEl = document.getElementById('lote-luc-prev-'+i);
+  if (lucEl) lucEl.value = lucPrev.toFixed(2);
   atualizarTotalContrato();
 }
 
 function atualizarTotalContrato() {
-  const total = lotesTemp.reduce((s, l) => s + (l.qtd||0)*(l.vunit||0), 0);
+  const total    = lotesTemp.reduce((s, l) => s + (l.qtd||0)*(l.vunit||0), 0);
+  const lucPrevTotal = lotesTemp.reduce((s, l) => {
+    const t = (l.qtd||0)*(l.vunit||0);
+    return s + t - (l.compraPrev||0) - (l.custoPrev||0);
+  }, 0);
   const totEl = document.getElementById('lotes-totais');
-  if (totEl) { totEl.style.display = 'flex'; document.getElementById('lt-count').textContent = lotesTemp.length; document.getElementById('lt-total').textContent = fmt(total); }
+  if (totEl) {
+    totEl.style.display = 'flex';
+    document.getElementById('lt-count').textContent = lotesTemp.length;
+    document.getElementById('lt-total').textContent = fmt(total);
+    const lpEl = document.getElementById('lt-luc-prev');
+    if (lpEl) lpEl.textContent = fmt(lucPrevTotal);
+  }
   const aviso = document.getElementById('lotes-aviso');
   if (aviso) aviso.style.display = 'none';
   sincLoteVenda(total);
@@ -3751,6 +3773,11 @@ function abrirPopupDisputa(id) {
   const lucroRealizado = emps.reduce((s,e) => {
     return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0);
   }, 0);
+  // Lucro previsto = soma de (vlTotal - compraPrev - custoPrev) de cada lote
+  const lucroPrevisto = lotes.reduce((s,l) => {
+    const total = (l.qtd||0)*(l.vunit||0);
+    return s + total - (l.compraPrev||0) - (l.custoPrev||0);
+  }, 0);
 
   const lotesHTML = lotes.length ? `
     <div class="detail-section">📦 ITENS / LOTES</div>
@@ -3846,6 +3873,7 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">LUCRO PREVISTO</div><div class="detail-field-value" style="color:var(--warning);font-weight:700;">' + fmt(lucroPrevisto) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
 
@@ -3946,6 +3974,16 @@ function abrirPopupEmpenho(id) {
           '</td>' +
           '</tr>';
       }).join('')}</tbody>
+      <tfoot>
+        <tr style="background:var(--bg-inset);font-weight:700;border-top:2px solid var(--border);">
+          <td colspan="5" style="padding:6px 8px;font-size:11px;color:var(--text-secondary);text-align:right;letter-spacing:.05em;">TOTAL</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent-primary);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--warning);" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--success);font-weight:800;" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent-primary);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
     </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
 
   // Impostos calculados a partir das compras realizadas (soma dos custos)
@@ -4127,7 +4165,7 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
 function renderD(){
   const rows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
   tb.innerHTML=rows.map(r=>{
     const{luc}=dVals(r);
     const lotes = r.lotes || [];
@@ -4167,6 +4205,20 @@ function renderD(){
       '</td>' +
       '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      (()=>{
+        const _lts = r.lotes||[];
+        const _vlCont   = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
+        const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0),0);
+        const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0),0);
+        const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
+        const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
+        const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
+        return '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
+               '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
+               '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
+               '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
+               '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>';
+      })() +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar" style="padding:5px 9px;font-size:15px;border-radius:8px;">✏️</button>' +
@@ -4254,12 +4306,18 @@ function renderE(){
     }
 
     const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
+    const _vlCompra = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
+    const _vlLucro  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+    const _vlRec    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
     return '<tr class="'+rowClass+'" style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
-      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
+      '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+      '<td class="mono" style="color:var(--text-secondary);font-size:11px;">' + (_vlCompra>0 ? fmt(_vlCompra) : '—') + '</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">' + (_vlRec>0 ? fmt(_vlRec) : '—') + '</td>' +
       '<td>' + diasBadge + '</td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
@@ -6987,6 +7045,44 @@ function _doReabrirEmpenho(id) {
 }
 function finalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  const compras = e.compras || [];
+
+  if (compras.length === 0) {
+    toast('⚠️ Cadastre ao menos uma compra antes de finalizar o empenho.', 'error');
+    return;
+  }
+
+  const semDpag     = compras.filter(c => !c.dpag || c.dpag === '');
+  const semRecebido = compras.filter(c => !c.recebido || c.recebido <= 0);
+  const problemas   = [];
+  if (semDpag.length     > 0) problemas.push(`${semDpag.length} compra(s) sem <strong>data de pagamento</strong>`);
+  if (semRecebido.length > 0) problemas.push(`${semRecebido.length} compra(s) sem <strong>valor recebido</strong>`);
+
+  if (problemas.length > 0) {
+    // Encontra a primeira compra pendente (sem dpag ou sem recebido) para abrir direto na edição
+    const primeiraPendente = compras.find(c => !c.dpag || c.dpag === '' || !c.recebido || c.recebido <= 0);
+    _confirmarAcao({
+      icon: '⚠️',
+      titulo: 'Empenho incompleto',
+      msg: `Não é possível finalizar o empenho <strong>${e.num||id}</strong>.<br><br>
+Pendências encontradas:<br>• ${problemas.join('<br>• ')}<br><br>
+Edite as compras e informe a data de pagamento e o valor recebido antes de finalizar.`,
+      btnLabel: '✏️ Editar compras',
+      btnClass: 'btn-primary',
+      onConfirm: () => {
+        fecharPopup('empenho');
+        fecharPopup('disputa');
+        if (primeiraPendente) {
+          // Abre direto na edição da compra pendente
+          abrirCompra(id, primeiraPendente.id);
+        } else {
+          abrirCompra(id);
+        }
+      }
+    });
+    return;
+  }
+
   _confirmarAcao({icon:'📦', titulo:'Finalizar empenho', msg:`Finalizar o empenho <strong>${e.num||id}</strong>?<br>Ele será movido para a aba Emp. Finalizados.`, btnLabel:'📦 Finalizar', btnClass:'btn-success', onConfirm: () => { _doFinalizarEmpenho(id); }});
 }
 
@@ -8064,10 +8160,11 @@ function renderEAgrupado(rows, tb) {
   const grupos = {};
   rows.forEach(r => {
     const org = r.orgao||'—';
-    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, maxDias:0 };
+    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, totalLucro:0, maxDias:0 };
     grupos[org].empenhos.push(r);
     grupos[org].totalVem += r.vem||0;
     grupos[org].totalRec += (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    grupos[org].totalLucro += (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
     grupos[org].maxDias = Math.max(grupos[org].maxDias, diasSemPagamento(r));
   });
   const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
@@ -8077,12 +8174,18 @@ function renderEAgrupado(rows, tb) {
       const dias = diasSemPagamento(r);
       const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
       const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
+      const _vlCompraR = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
+      const _vlLucroR  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+      const _vlRecR    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
       return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
         <td></td>
         <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
         <td></td>
         <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
         <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
+        <td class="mono" style="color:var(--text-secondary);font-size:11px;">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
+        <td class="mono" style="color:var(--success);font-size:11px;">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
+        <td class="mono" style="color:var(--accent-primary);font-size:11px;">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
         <td>${diasBadge}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap;">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
@@ -8092,11 +8195,12 @@ function renderEAgrupado(rows, tb) {
       </tr>`;
     }).join('');
     return `<tr style="background:var(--bg-inset);">
-        <td colspan="7" style="padding:8px 12px;">
-          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;">
+        <td colspan="10" style="padding:8px 12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
             <span>🏢 ${org}</span>
             <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
-            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">Emp: ${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--success);font-weight:700;">Lucro: ${fmt(g_.totalLucro)}</span>
             <span style="font-size:11px;color:var(--warning);">A receber: ${fmt(g_.totalRec)}</span>
             <span style="font-size:11px;color:${corDias};">Maior atraso: ${g_.maxDias}d</span>
           </div>
