@@ -6569,15 +6569,20 @@ function reabrirDisputa(id) {
   const msgEmps = empsFinalizados.length > 0
     ? `<br><br>⚠️ <strong>${empsFinalizados.length} empenho(s)</strong> vinculado(s) também será(ão) reaberto(s) automaticamente.`
     : '';
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  const totalCompras = empsFinalizados.reduce((s,e) => s + (e.compras||[]).filter(c => c.dpag || c.rec > 0).length, 0);
+  const msgCompras = totalCompras > 0
+    ? `<br><span style="color:var(--warning);font-size:12px;">⚠️ As datas de pagamento e valores recebidos das <strong>${totalCompras} compra(s)</strong> serão apagados para evitar refinalização automática.</span>`
+    : '';
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}${msgCompras}`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
-    // FIX 9: propaga reabertura para os empenhos vinculados
+    // Reabre empenhos e limpa dpag/rec das compras para quebrar o ciclo de auto-finalização
     empsFinalizados.forEach(e => {
       e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+      (e.compras||[]).forEach(c => { c.dpag = ''; c.rec = 0; });
     });
     save('disputas', DB.disputas);
     if (empsFinalizados.length) save('empenhos', DB.empenhos);
-    renderAll(); toast('Disputa e empenhos reabertos!', 'info');
+    renderAll(); toast('Disputa e empenhos reabertos! Datas de pagamento foram limpas.', 'info');
   }}); return;
 }
 
@@ -7312,8 +7317,10 @@ function _doFinalizarEmpenho(id) {
 function _doReabrirEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
   e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+  // Limpa dpag e rec das compras para evitar re-finalização automática imediata
+  (e.compras||[]).forEach(c => { c.dpag = ''; c.rec = 0; });
   if (e.disputaId) { const d = DB.disputas.find(x => x.id === e.disputaId); if (d && d.finalizada) { d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false; } }
-  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto!', 'info');
+  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto! Data de pagamento e valores recebidos foram limpos.', 'info');
 }
 function finalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
