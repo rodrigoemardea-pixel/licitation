@@ -7006,6 +7006,33 @@ function _doReabrirEmpenho(id) {
 }
 function finalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
+  const compras = e.compras || [];
+
+  if (compras.length === 0) {
+    toast('⚠️ Cadastre ao menos uma compra antes de finalizar o empenho.', 'error');
+    return;
+  }
+
+  const semDpag     = compras.filter(c => !c.dpag || c.dpag === '');
+  const semRecebido = compras.filter(c => !c.recebido || c.recebido <= 0);
+  const problemas   = [];
+  if (semDpag.length     > 0) problemas.push(`${semDpag.length} compra(s) sem <strong>data de pagamento</strong>`);
+  if (semRecebido.length > 0) problemas.push(`${semRecebido.length} compra(s) sem <strong>valor recebido</strong>`);
+
+  if (problemas.length > 0) {
+    _confirmarAcao({
+      icon: '⚠️',
+      titulo: 'Empenho incompleto',
+      msg: `Não é possível finalizar o empenho <strong>${e.num||id}</strong>.<br><br>
+Pendências encontradas:<br>• ${problemas.join('<br>• ')}<br><br>
+Edite as compras e informe a data de pagamento e o valor recebido antes de finalizar.`,
+      btnLabel: '✏️ Ir para compras',
+      btnClass: 'btn-primary',
+      onConfirm: () => { fecharPopup('empenho'); abrirCompra(id); }
+    });
+    return;
+  }
+
   _confirmarAcao({icon:'📦', titulo:'Finalizar empenho', msg:`Finalizar o empenho <strong>${e.num||id}</strong>?<br>Ele será movido para a aba Emp. Finalizados.`, btnLabel:'📦 Finalizar', btnClass:'btn-success', onConfirm: () => { _doFinalizarEmpenho(id); }});
 }
 
