@@ -3265,7 +3265,9 @@ function renderExcelPreview(prefix) {
 
 // Dias sem recebimento (desde dcomp)
 function diasSemPagamento(r) {
-  if (r.recebido > 0) return 0;
+  // Recebimento está dentro das compras, não no empenho diretamente
+  const temRecebimento = (r.compras||[]).some(c => c.dpag && (c.rec||0) > 0);
+  if (temRecebimento) return 0;
   if (!r.dcomp) return 0;
   const compra = new Date(r.dcomp);
   const hoje = new Date();
@@ -3307,10 +3309,11 @@ function verificarAutoFinalizarDisputa(disputaId) {
 }
 
 function empenhoEstaPago(r) {
+  // Exige que TODOS os itens tenham ao menos uma compra com dpag preenchido E rec > 0
   const itens = (r.itens && r.itens.length) ? r.itens : (r.loteId ? [{id:'leg1'}] : []);
   if (!itens.length) return false;
   const compras = r.compras || [];
-  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag));
+  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag && (c.rec||0) > 0));
 }
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 const fmt=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -4487,7 +4490,16 @@ function renderAll(){
   // Auto-finalizar empenhos pagos e disputas que atendem critérios
   DB.empenhos.forEach(e => {
     if (empenhoEstaPago(e)) {
-      if (!e.finalizado) {
+      // Auto-finalizar só se qtd enviada cobrir toda a qtd contratada
+      const disp = e.disputaId ? DB.disputas.find(d => d.id === e.disputaId) : null;
+      const itensEmp = (e.itens && e.itens.length) ? e.itens : [];
+      const qtdOk = itensEmp.length === 0 || itensEmp.every(item => {
+        const lote = disp ? (disp.lotes||[]).find(l => l.id === item.loteId) : null;
+        const qtdContratada = item.qtd || (lote ? lote.qtd : 0) || 0;
+        const qtdComprada = (e.compras||[]).filter(c => c.itemId === item.id).reduce((s,c) => s + (c.qtd||0), 0);
+        return qtdContratada === 0 || qtdComprada >= qtdContratada;
+      });
+      if (qtdOk && !e.finalizado) {
         e.finalizado = true;
         e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
       }
@@ -5333,6 +5345,24 @@ function clearD(){
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
   calcD();
 }
+function _validarLotesSaldo(disputaId) {
+  // FIX 8: impede saldo negativo nos lotes
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d) return true;
+  const problemas = [];
+  (lotesTemp||[]).forEach(l => {
+    const qtdEnviada = calcQtdEnviada(disputaId, l.id);
+    if ((l.qtd||0) < qtdEnviada) {
+      problemas.push(`Lote <strong>${l.descricao||l.id}</strong>: quantidade nova (${l.qtd}) é menor que já empenhado (${qtdEnviada} un.)`);
+    }
+  });
+  if (problemas.length) {
+    toast('⚠️ ' + problemas[0].replace(/<[^>]+>/g,'') + ' — ajuste a quantidade.', 'error');
+    return false;
+  }
+  return true;
+}
+
 function saveD(){
   // MELHORIA 12: Validação com feedback visual
   if (!validarFormDisputa()) {
@@ -5378,6 +5408,8 @@ function saveD(){
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0, compraPrev: l.compraPrev||0, custoPrev: l.custoPrev||0 })),
     M
   };
+  // FIX 8: verificar saldo negativo ao editar lotes
+  if (EID.disputas && !_validarLotesSaldo(EID.disputas)) return;
   upsert('disputas',row);
 
   // Sincroniza descrições nos empenhos e compras vinculados
@@ -6530,9 +6562,19 @@ function finalizarDisputa(id) {
 function reabrirDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  const empsFinalizados = DB.empenhos.filter(e => e.disputaId === id && e.finalizado);
+  const msgEmps = empsFinalizados.length > 0
+    ? `<br><br>⚠️ <strong>${empsFinalizados.length} empenho(s)</strong> vinculado(s) também será(ão) reaberto(s) automaticamente.`
+    : '';
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
-    save('disputas', DB.disputas); renderAll(); toast('Disputa reaberta!', 'info');
+    // FIX 9: propaga reabertura para os empenhos vinculados
+    empsFinalizados.forEach(e => {
+      e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+    });
+    save('disputas', DB.disputas);
+    if (empsFinalizados.length) save('empenhos', DB.empenhos);
+    renderAll(); toast('Disputa e empenhos reabertos!', 'info');
   }}); return;
 }
 
@@ -7452,16 +7494,21 @@ function exportarComprasSelecionadas(empId) {
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
+  // FIX 10: cabeçalho inclui dados do empenho e disputa
+  const cabecalho = ['Nº Empenho', 'Órgão', 'Data Empenho', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'Recebido (R$)', 'Dt. Pagamento', 'Plataforma'];
   const linhas = comprasSel.map(c => {
     const itemRef = itens.find(i => i.id === c.itemId);
     return [
+      emp.num || '—',
+      emp.orgao || '—',
+      fmtD(emp.data),
       (itemRef?.descricao || '—').toUpperCase(),
       c.qtd || 0,
       c.vtotal || 0,
       c.custo || 0,
       c.luc || 0,
       c.rec || 0,
+      c.dpag ? fmtD(c.dpag) : '—',
       c.plataforma || '—'
     ];
   });
@@ -7469,13 +7516,14 @@ function exportarComprasSelecionadas(empId) {
   // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
   const linhasComLink = comprasSel.map((c, i) => {
     const row = [...linhas[i]];
-    if (c.link) row[6] = c.link;
+    if (c.link) row[10] = c.link;
     return row;
   });
 
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:6} }];
+  const tituloExport = (emp.num ? 'Empenho ' + emp.num + ' · ' : '') + cidade.toUpperCase();
+  const ws = XLSX.utils.aoa_to_sheet([[tituloExport]]);
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:10} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink], { origin: 'A2' });
 
   // Centralizar todas as células preenchidas
@@ -7484,7 +7532,7 @@ function exportarComprasSelecionadas(empId) {
     ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
+  ws['!cols'] = [{wch:14},{wch:30},{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:14},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
@@ -7903,6 +7951,15 @@ let _notifShown = new Set();
 function saveAcomp() {
   const orgao = document.getElementById('ac-orgao')?.value?.trim();
   if (!orgao) { toast('Informe o órgão!', 'error'); return; }
+  const retornoVal = document.getElementById('ac-retorno')?.value || '';
+  // FIX 6: avisar se data de retorno já está no passado
+  if (retornoVal) {
+    const retDate = new Date(retornoVal);
+    if (retDate < new Date()) {
+      const ok = confirm('⚠️ A data de retorno informada já está no passado (' + retDate.toLocaleString('pt-BR') + ').\nDeseja salvar mesmo assim?');
+      if (!ok) return;
+    }
+  }
   const row = {
     id: EID_acomp || uid(),
     data: document.getElementById('ac-data')?.value || '',
@@ -7912,10 +7969,29 @@ function saveAcomp() {
     analista: document.getElementById('ac-analista')?.value || '',
     status: document.getElementById('ac-status')?.value || 'pendente',
     link: document.getElementById('ac-link')?.value || '',
-    retorno: document.getElementById('ac-retorno')?.value || '',
+    retorno: retornoVal,
     observacao: document.getElementById('ac-observacao')?.value?.toUpperCase() || '',
   };
   if (!DB.acomp) DB.acomp = [];
+  // FIX 5: Status "perdida" → confirmar exclusão imediata
+  if (row.status === 'perdida') {
+    closeModal('acomp');
+    _confirmarAcao({
+      icon: '❌',
+      titulo: 'Marcar como Perdida',
+      msg: `O acompanhamento <strong>${row.orgao}</strong> será marcado como <strong>perdida</strong> e excluído da lista.<br><br>Deseja confirmar?`,
+      btnLabel: '❌ Confirmar exclusão',
+      btnClass: 'btn-danger',
+      onConfirm: () => {
+        DB.acomp = (DB.acomp||[]).filter(x => x.id !== row.id);
+        save('acomp', DB.acomp);
+        EID_acomp = null;
+        renderAcomp(); updateBadges(); atualizarPainel();
+        toast('Acompanhamento removido (perdida).', 'info');
+      }
+    });
+    return;
+  }
   const idx = DB.acomp.findIndex(x => x.id === row.id);
   if (idx !== -1) DB.acomp[idx] = row; else DB.acomp.push(row);
   save('acomp', DB.acomp);
