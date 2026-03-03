@@ -7126,7 +7126,7 @@ function renderFinalizadas() {
     sumFinalizadas(rows);
     return;
   }
-  tb.innerHTML = rows.map(r => {
+  tb.innerHTML = rows.map((r, idx) => {
     const contrato = getValorContrato(r);
     const emps = DB.empenhos.filter(e => e.disputaId === r.id);
     const lucroRec = emps.reduce((s,e) =>
@@ -7134,7 +7134,8 @@ function renderFinalizadas() {
         const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0), 0);
-    return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+    const zebraBg = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : '';
+    return '<tr style="cursor:pointer;' + zebraBg + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td class="mono" style="font-size:11px;">' + fmtD(r.data) + '</td>' +
       '<td><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
@@ -7270,11 +7271,12 @@ function renderEmpFinalizados() {
     });
     const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
     tb.innerHTML = sorted.map(([org, g_]) => {
-      const linhasEmp = g_.empenhos.map(r => {
+      const linhasEmp = g_.empenhos.map((r, idx) => {
         const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
           const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
         },0);
-        return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+        const zebraFinBg = idx % 2 === 1 ? 'var(--bg-surface-soft)' : 'var(--bg-surface)';
+        return `<tr style="cursor:pointer;background:${zebraFinBg};" onclick="abrirPopupEmpenho('${r.id}')">
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
           <td></td>
           <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
@@ -7906,7 +7908,7 @@ function renderAcomp() {
   }
 
   const btnStyle = 'padding:5px 9px;font-size:15px;border-radius:8px;';
-  tb.innerHTML = rows.map(r => {
+  tb.innerHTML = rows.map((r, idx) => {
     const ret = r.retorno ? new Date(r.retorno) : null;
     const vencido = ret && ret < agora;
     const hoje = ret && ret.toDateString() === agora.toDateString();
@@ -7914,7 +7916,8 @@ function renderAcomp() {
     const statusColors = {pendente:'var(--warning)',recurso:'var(--accent-primary)',perdida:'var(--danger)'};
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     const linkBtn = r.link ? `<a href="${r.link}" target="_blank" class="btn btn-ghost btn-sm" style="${btnStyle}" title="Abrir sistema">🔗</a>` : '';
-    return `<tr style="cursor:pointer;${vencido?'background:rgba(239,68,68,0.05);':''}" onclick="verAcomp('${r.id}')">
+    const zebraBg = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : '');
+    return `<tr style="cursor:pointer;${zebraBg}" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
       <td><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
       <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
@@ -8309,14 +8312,15 @@ function renderEAgrupado(rows, tb) {
   const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
   tb.innerHTML = sorted.map(([org, g_]) => {
     const corDias = g_.maxDias>=90?'var(--danger)':g_.maxDias>=60?'var(--warning)':g_.maxDias>=30?'var(--text-secondary)':'var(--success)';
-    const rows_ = g_.empenhos.map(r => {
+    const rows_ = g_.empenhos.map((r, idx) => {
+      const zebraGrpBg = idx % 2 === 1 ? 'var(--bg-surface-soft)' : 'var(--bg-surface)';
       const dias = diasSemPagamento(r);
       const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
       const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
       const _vlCompraR = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
       const _vlLucroR  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
       const _vlRecR    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-      return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
+      return `<tr style="cursor:pointer;background:${zebraGrpBg};" onclick="abrirPopupEmpenho('${r.id}')">
         <td></td>
         <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
         <td></td>
