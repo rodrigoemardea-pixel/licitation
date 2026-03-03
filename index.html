@@ -5363,28 +5363,6 @@ function saveD(){
     toast('Adicione pelo menos 1 item/lote com descrição e valor', 'error');
     return;
   }
-  // FIX 8: Validar se a nova qtd de cada lote não é menor que a já empenhada
-  if (EID.disputas) {
-    const conflitos = [];
-    lotesValidos.forEach(l => {
-      const qtdEmpenhada = calcQtdEnviada(EID.disputas, l.id);
-      if (qtdEmpenhada > (l.qtd || 1)) {
-        conflitos.push(`• ${(l.descricao||'Lote').toUpperCase()}: qtd. informada ${l.qtd}, mas já há ${qtdEmpenhada} unidade(s) empenhada(s)`);
-      }
-    });
-    if (conflitos.length) {
-      toast('Não é possível reduzir a quantidade abaixo do que já foi empenhado!', 'error');
-      _confirmarAcao({
-        icon: '⚠️',
-        titulo: 'Quantidade inválida',
-        msg: `A quantidade de um ou mais lotes está abaixo do total já empenhado:<br><br>${conflitos.join('<br>')}.<br><br>Corrija as quantidades antes de salvar.`,
-        btnLabel: '✓ Entendido',
-        btnClass: 'btn-primary',
-        onConfirm: () => {}
-      });
-      return;
-    }
-  }
   const M={};
   // Calcula valor do contrato a partir dos lotes
   const valorContrato = lotesValidos.reduce((s,l)=>s+(l.qtd||1)*(l.vunit||0),0);
@@ -7581,53 +7559,36 @@ function exportarComprasDisputa(dispId) {
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  // FIX 10: Cabeçalho inclui dados do empenho/disputa para fins de conciliação financeira
-  const cabecalho = ['Nº Empenho', 'Órgão', 'Data Empenho', 'Produto', 'Quantidade', 'Dt. Compra', 'Vl. Empenho (R$)', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Recebido (R$)', 'Dt. Pagamento', 'Plataforma'];
+  // Cabeçalho sem coluna separada de link (plataforma já será o hiperlink)
+  const cabecalho = ['Nº Empenho', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
 
-  // Monta mapa de empenhos para acesso rápido
-  const empsMap = {};
-  emps.forEach(e => { empsMap[e.id] = e; });
-  // Adiciona _empData e _empVem a cada compra selecionada
-  const comprasSelComMeta = comprasSel.map(c => {
-    // Encontra o empenho de origem
-    const empOrig = emps.find(e => (e.compras||[]).some(cc => cc.id === c.id));
-    return { ...c, _empData: empOrig?.data||'', _empVem: empOrig?.vem||0 };
-  });
-
-  const linhas = comprasSelComMeta.map(c => [
+  const linhas = comprasSel.map(c => [
     '#' + c._empNum,
-    disp.orgao || '—',
-    c._empData ? fmtD(c._empData) : '—',
     c._produto,
     c.qtd || 0,
-    c.dcompra ? fmtD(c.dcompra) : '—',
-    c._empVem || 0,
     c.vtotal || 0,
     c.custo || 0,
     c.luc || 0,
     c.rec || 0,
-    c.recebido || 0,
-    c.dpag ? fmtD(c.dpag) : '—',
     c.plataforma || '—'
   ]);
 
-  const totalVtotal = comprasSelComMeta.reduce((s,c) => s + (c.vtotal||0), 0);
-  const totalCusto  = comprasSelComMeta.reduce((s,c) => s + (c.custo||0), 0);
-  const totalLuc    = comprasSelComMeta.reduce((s,c) => s + (c.luc||0), 0);
-  const totalRec    = comprasSelComMeta.reduce((s,c) => s + (c.rec||0), 0);
-  const totalReceb  = comprasSelComMeta.reduce((s,c) => s + (c.recebido||0), 0);
-  const linhaTotais = ['', 'TOTAL', '', '', comprasSelComMeta.reduce((s,c)=>s+(c.qtd||0),0), '', '', totalVtotal, totalCusto, totalLuc, totalRec, totalReceb, '', ''];
+  const totalVtotal = comprasSel.reduce((s,c) => s + (c.vtotal||0), 0);
+  const totalCusto  = comprasSel.reduce((s,c) => s + (c.custo||0), 0);
+  const totalLuc    = comprasSel.reduce((s,c) => s + (c.luc||0), 0);
+  const totalRec    = comprasSel.reduce((s,c) => s + (c.rec||0), 0);
+  const linhaTotais = ['', 'TOTAL', comprasSel.reduce((s,c)=>s+(c.qtd||0),0), totalVtotal, totalCusto, totalLuc, totalRec, ''];
 
   // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
-  const linhasComLink = comprasSelComMeta.map((c, i) => {
+  const linhasComLink = comprasSel.map((c, i) => {
     const row = [...linhas[i]];
-    if (c.link) row[13] = c.link;
+    if (c.link) row[7] = c.link;
     return row;
   });
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:13} }];
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:7} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink, [], linhaTotais], { origin: 'A2' });
 
   // Centralizar todas as células preenchidas
@@ -7636,7 +7597,7 @@ function exportarComprasDisputa(dispId) {
     ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:14},{wch:30},{wch:14},{wch:35},{wch:10},{wch:14},{wch:18},{wch:18},{wch:15},{wch:15},{wch:18},{wch:18},{wch:14},{wch:35}];
+  ws['!cols'] = [{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
