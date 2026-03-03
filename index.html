@@ -2204,7 +2204,7 @@
     </div>
     <div class="summary-row" id="sum-empenhos"></div>
     <div class="toolbar">
-      <button class="btn btn-primary" onclick="openModal('empenhos')">＋ Novo Empenho</button>
+
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
 
       
@@ -5089,13 +5089,11 @@ function delEmpenhoDisputa(id) {
 
 function novoEmpenhoDaDisputa() {
   closeModal('empenhos-disputa');
-  openModal('empenhos');
-  // Pré-seleciona a disputa no select
-  setTimeout(() => {
-    if(disputaAtiva) {
-      populateDisputaSelect(disputaAtiva);
-    }
-  }, 50);
+  if (disputaAtiva) {
+    novoEmpenhoParaDisputa(disputaAtiva);
+  } else {
+    toast('Selecione uma disputa primeiro.', 'error');
+  }
 }
 
 function populateDisputaSelect(preSelectId) {
@@ -5143,10 +5141,9 @@ function openModal(tab){
     lotesTemp = []; renderLotes();
     g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
   } else if(tab==='empenhos') {
-    clearE();
-    lotesSelecionados = {};
-    const wrap = g('lote-selector-wrap'); if(wrap) wrap.style.display = 'none';
-    g('ttl-empenhos').textContent='Novo Empenho'; g('e-data').value=today(); populateDisputaSelect(null);
+    // Empenhos só podem ser criados a partir de uma disputa
+    toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
+    return;
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
 }
@@ -5290,7 +5287,7 @@ document.addEventListener('keydown', (e) => {
     if(activeTab.textContent.includes('Disputas')) {
       openModal('disputas');
     } else if(activeTab.textContent.includes('Empenhos')) {
-      openModal('empenhos');
+      toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
     }
   }
   
