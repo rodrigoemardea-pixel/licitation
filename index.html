@@ -4320,6 +4320,11 @@ function renderD(){
         const btnS = 'padding:4px 7px;font-size:13px;border-radius:7px;';
         const lote = e.loteId ? (r.lotes||[]).find(l=>l.id===e.loteId) : null;
         const loteDesc = lote ? '<div style="font-size:9px;color:var(--text-tertiary);margin-top:1px;">🗂 ' + lote.descricao.substring(0,24) + (lote.descricao.length>24?'…':'') + '</div>' : '';
+        // Custo previsto: soma custoPrev * qtd dos itens do empenho via lotes da disputa
+        const _custoPrevEmp = (e.itens||[]).reduce((s, item) => {
+          const loteItem = (r.lotes||[]).find(l => l.id === item.loteId);
+          return s + (loteItem ? (loteItem.custoPrev||0) * (item.qtd||0) : 0);
+        }, 0);
         htmlParts.push(
           '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + e.id + '\')">' +
           '<td style="' + zebraTd + '"></td>' +
@@ -4335,7 +4340,7 @@ function renderD(){
           '<td style="' + zebraTd + '"></td>' +
           '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;' + zebraTd + '">' + fmt(e.vem) + '</td>' +
           '<td class="mono" style="color:var(--text-secondary);font-size:11px;' + zebraTd + '">' + (_vlComp>0?fmt(_vlComp):'—') + '</td>' +
-          '<td style="' + zebraTd + '"></td>' +
+          '<td class="mono" style="color:var(--warning);font-size:11px;' + zebraTd + '">' + (_custoPrevEmp>0?fmt(_custoPrevEmp):'—') + '</td>' +
           '<td class="mono" style="color:var(--success);font-size:11px;' + zebraTd + '">' + (_vlLucro>0?fmt(_vlLucro):'—') + '</td>' +
           '<td style="' + zebraTd + '">' + diasBadge + '</td>' +
           '<td onclick="event.stopPropagation()" style="white-space:nowrap;' + zebraTd + '">' +
