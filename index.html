@@ -594,6 +594,25 @@
     font-weight: 600;
   }
 
+  /* Contador de filtros ativos */
+  .active-filters-badge {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: var(--info-soft);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .active-filters-badge.visible { display: inline-flex; }
+  .active-filters-badge:hover { background: var(--accent-primary); color: white; }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -918,6 +937,28 @@
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
 
+  /* Shortcuts modal */
+  .shortcuts-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+    z-index: 99000; display: none; align-items: center; justify-content: center;
+  }
+  .shortcuts-modal.open { display: flex; }
+  .shortcuts-modal-box {
+    background: var(--bg-surface); border: 1px solid var(--border-light);
+    border-radius: 20px; padding: 28px 32px; max-width: 480px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: modalIn 0.2s ease;
+  }
+  .shortcuts-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display:flex;align-items:center;gap:8px; }
+  .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+  .shortcut-row:last-child { border-bottom: none; }
+  .shortcut-row .desc { color: var(--text-secondary); }
+  .shortcut-keys { display: flex; gap: 4px; }
+  .shortcut-keys kbd {
+    background: var(--bg-surface-soft); border: 1px solid var(--border-medium);
+    border-radius: 5px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-primary); box-shadow: 0 1px 0 var(--border-medium);
+  }
+
   /* ===== MELHORIA 8: Modal de confirmação estilizado ===== */
   .confirm-modal-overlay {
     display: none;
@@ -1236,6 +1277,65 @@
   }
   .mtg.on { background: var(--warning-soft); border-color: var(--warning); color: var(--warning); }
   .mtg .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* Search highlight */
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 16px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-light);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border-light); background: var(--bg-surface);
+    color: var(--text-secondary); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .page-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--info-soft); }
+  .page-btn.active { background: var(--accent-primary); color: white; border-color: var(--accent-primary); font-weight: 700; }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .page-info { font-size: 11px; color: var(--text-tertiary); padding: 0 8px; }
+
+  /* Copy button */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    color: var(--text-tertiary);
+    font-size: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+  }
+  td:hover .copy-btn, .copy-btn:focus { opacity: 1; }
+  .copy-btn:hover { background: var(--bg-surface-soft); color: var(--accent-primary); }
+  .copied-flash { animation: copiedFlash 0.6s ease; }
+  @keyframes copiedFlash { 0%,100%{background:none} 30%{background:rgba(5,150,105,0.2)} }
+
+  mark.search-hl {
+    background: rgba(245,158,11,0.35);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+    font-weight: 600;
+  }
+  body[data-theme="dark"] mark.search-hl {
+    background: rgba(245,158,11,0.4);
+  }
 
   /* Skeleton loader */
   .skeleton-row td {
@@ -1810,6 +1910,9 @@
   <!-- CONFIG E-MAIL -->
   <button onclick="abrirConfigEmail()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Configurar alertas por e-mail">⚙️</button>
 
+  <!-- ATALHOS -->
+  <button onclick="document.getElementById('shortcuts-modal').classList.toggle('open')" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:12px;padding:5px 10px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-weight:700;transition:all 0.15s;" title="Atalhos de teclado (?)">?</button>
+
   <!-- PUSH NOTIF -->
   <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Notificações push" style="font-size:11px;">
     🔔 <span id="push-notif-label">Push</span>
@@ -2125,6 +2228,13 @@
         </select>
       </div>
 
+      <div class="filter-group" id="fg-data-range-disputas" title="Filtrar por intervalo de datas">
+        <label>📆 De:</label>
+        <input type="date" id="filtro-data-de-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
+        <label style="margin-left:4px;">Até:</label>
+        <input type="date" id="filtro-data-ate-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
+      </div>
+
 
 
       <div class="filter-group">
@@ -2181,10 +2291,11 @@
       </div>
       
       <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar disputas..." oninput="filterTable('disputas',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">🗑 Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('disputas')">⬇ Exportar</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
     <div class="table-wrapper" id="disputas-table-view">
@@ -2202,8 +2313,22 @@
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
+        <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-disputas-row" style="display:none;">
+            <td></td><td></td>
+            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td></td>
+            <td class="money" id="tfoot-d-contrato" style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-compra" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-custo" style="color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-lucro-real" style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
+    <div id="pagination-disputas" class="pagination" style="display:none;"></div>
 
   </div>
 
@@ -2247,10 +2372,11 @@
       </div>
 
       <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="filterTable('empenhos',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">🗑 Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('empenhos')">⬇ Exportar</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
     <div class="table-wrapper">
@@ -2268,6 +2394,16 @@
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
+        <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-empenhos-row" style="display:none;">
+            <td></td><td></td>
+            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td></td>
+            <td class="money" id="tfoot-e-vem" style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-e-lucro" style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -3563,22 +3699,35 @@ function filtrarPorAnalista() {
 }
 
 // Marca filter-groups como ativos quando têm valor não-padrão
-function markActiveFilters(toolbarId) {
-  const toolbar = toolbarId ? document.getElementById(toolbarId) : document;
-  if (!toolbar) return;
-  toolbar.querySelectorAll('.filter-group').forEach(fg => {
+function markActiveFilters(scopeEl) {
+  const root = scopeEl ? (typeof scopeEl === 'string' ? document.getElementById(scopeEl) : scopeEl) : document;
+  if (!root) return;
+  root.querySelectorAll('.filter-group').forEach(fg => {
     const sel = fg.querySelector('select');
     if (!sel) return;
-    const defaultVal = sel.options[0]?.value || '';
-    if (sel.value && sel.value !== defaultVal) {
-      fg.classList.add('active');
-    } else {
-      fg.classList.remove('active');
-    }
+    const defaultVal = sel.options[0]?.value ?? '';
+    fg.classList.toggle('active', sel.value !== defaultVal);
+  });
+}
+
+function markAllActiveFilters() {
+  document.querySelectorAll('.toolbar').forEach(tb => markActiveFilters(tb));
+  // Update active filter counters
+  [['disputas','badge-filtros-disputas','cnt-filtros-disputas'],
+   ['empenhos','badge-filtros-empenhos','cnt-filtros-empenhos']].forEach(([tab, badgeId, cntId]) => {
+    const pane = document.getElementById('tab-' + tab);
+    if (!pane) return;
+    const activeCount = pane.querySelectorAll('.filter-group.active').length;
+    const badge = document.getElementById(badgeId);
+    const cnt = document.getElementById(cntId);
+    if (badge) badge.classList.toggle('visible', activeCount > 0);
+    if (cnt) cnt.textContent = activeCount;
   });
 }
 
 function filtrarDisputas() {
+  _page.disputas = 1;
+  markAllActiveFilters();
   markActiveFilters(null);
   filtroEmpenhoDisputas = g('filtro-empenho-disputas')?.value || 'todos';
   filtroEmpresaDisputas = g('filtro-empresa-disputas').value;
@@ -3594,6 +3743,7 @@ function filtrarDisputas() {
 let filtroAtrasoEmpenhos = 'todos';
 
 function filtrarEmpenhos() {
+  markAllActiveFilters();
   filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
   filtroComprasEmpenhos = g('filtro-compras-empenhos')?.value || 'todos';
   filtroAtrasoEmpenhos = g('filtro-atraso-empenhos')?.value || 'todos';
@@ -3601,6 +3751,8 @@ function filtrarEmpenhos() {
 }
 
 function limparFiltrosDisputas() {
+  _page.disputas = 1;
+  markAllActiveFilters();
   ['filtro-empenho-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas','filtro-mes-disputas'].forEach(id => {
     const el = g(id); if(el) el.selectedIndex = 0;
   });
@@ -3615,9 +3767,14 @@ function limparFiltrosDisputas() {
   g('search-disputas').value = '';
   FLT.disputas = '';
   renderD();
+  const de = document.getElementById('filtro-data-de-disputas');
+  const ate = document.getElementById('filtro-data-ate-disputas');
+  if (de) de.value = '';
+  if (ate) ate.value = '';
 }
 
 function limparFiltrosEmpenhos() {
+  markAllActiveFilters();
   g('filtro-analista-empenhos').value = 'todos';
   if(g('filtro-compras-empenhos')) g('filtro-compras-empenhos').value = 'todos';
   if(g('filtro-atraso-empenhos')) g('filtro-atraso-empenhos').value = 'todos';
@@ -3640,6 +3797,11 @@ function switchTab(tab,btn){
   g('tab-'+tab).classList.add('active');
   
   if(tab === 'disputas') {
+    // Date range filter
+    const de  = document.getElementById('filtro-data-de-disputas')?.value;
+    const ate = document.getElementById('filtro-data-ate-disputas')?.value;
+    if (de  && r.data && r.data < de)  return false;
+    if (ate && r.data && r.data > ate) return false;
     renderD();
   } else if(tab === 'empenhos') {
     renderE();
@@ -3648,8 +3810,56 @@ function switchTab(tab,btn){
   }
 }
 
+// ========== PAGINATION ==========
+const PAGE_SIZE = 50;
+let _page = { disputas: 1, empenhos: 1 };
+
+function renderPagination(tab, totalRows) {
+  const container = document.getElementById('pagination-' + tab);
+  if (!container) return;
+  const total = totalRows;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+  const cur = _page[tab];
+  let html = `<button class="page-btn" onclick="_goPage('${tab}',${cur-1})" ${cur===1?'disabled':''}>‹</button>`;
+  // Show window of pages
+  const from = Math.max(1, cur - 2);
+  const to   = Math.min(pages, cur + 2);
+  if (from > 1) html += `<button class="page-btn" onclick="_goPage('${tab}',1)">1</button>${from>2?'<span class="page-info">…</span>':''}`;
+  for (let p = from; p <= to; p++) {
+    html += `<button class="page-btn ${p===cur?'active':''}" onclick="_goPage('${tab}',${p})">${p}</button>`;
+  }
+  if (to < pages) html += `${to<pages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="_goPage('${tab}',${pages})">${pages}</button>`;
+  html += `<button class="page-btn" onclick="_goPage('${tab}',${cur+1})" ${cur===pages?'disabled':''}>›</button>`;
+  html += `<span class="page-info">${((cur-1)*PAGE_SIZE)+1}–${Math.min(cur*PAGE_SIZE,total)} de ${total}</span>`;
+  container.innerHTML = html;
+}
+
+function _goPage(tab, p) {
+  const pages = Math.ceil(_filteredCount(tab) / PAGE_SIZE);
+  _page[tab] = Math.max(1, Math.min(p, pages));
+  if (tab === 'disputas') renderD(); else renderE();
+  // Scroll table to top
+  const tw = document.querySelector(`#tab-${tab} .table-wrapper`);
+  if (tw) tw.scrollTop = 0;
+}
+
+function _filteredCount(tab) {
+  if (tab === 'disputas') return getSorted('disputas').filter(r => !r.finalizada && matches('disputas', r)).length;
+  return getSorted('empenhos').filter(r => matches('empenhos', r) && !r.finalizado).length;
+}
+
+// Reset page when filtering
+const _origFiltrarDisputas = typeof filtrarDisputas !== 'undefined' ? filtrarDisputas : null;
+
 // ========== SORT E FILTRO ==========
-let SS={disputas:{c:'data',a:false},empenhos:{c:'data',a:false}};
+// Persist sort state across tab switches
+const _savedSort = (() => { try { return JSON.parse(localStorage.getItem('_sortState') || '{}'); } catch(e) { return {}; } })();
+let SS={
+  disputas: _savedSort.disputas || {c:'data',a:false},
+  empenhos: _savedSort.empenhos || {c:'data',a:false}
+};
 let FLT={disputas:'',empenhos:''};
 
 function sort(tab,col){
@@ -3658,6 +3868,8 @@ function sort(tab,col){
   } else {
     SS[tab] = {c: col, a: false};
   }
+  // Persist sort state
+  try { localStorage.setItem('_sortState', JSON.stringify({disputas: SS.disputas, empenhos: SS.empenhos})); } catch(e){}
   
   // Atualizar indicadores visuais
   document.querySelectorAll(`#sort-${tab}-${SS[tab].c}`).forEach(el => {
@@ -3700,6 +3912,30 @@ function getSorted(tab){
 }
 
 function filterTable(tab,v){FLT[tab]=v.toLowerCase(); if(tab==='disputas') renderD(); else renderE();}
+
+// Copy to clipboard utility
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      btn.textContent = '✓';
+      btn.parentElement?.classList.add('copied-flash');
+      setTimeout(() => { btn.textContent = '⎘'; btn.parentElement?.classList.remove('copied-flash'); }, 1200);
+    }
+    toast('Copiado: ' + text, 'success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Copiado!', 'success');
+  });
+}
+
+// Highlight search term in a string
+function hl(text, query) {
+  if (!query || !text) return text || '';
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + escaped + ')', 'gi'), '<mark class="search-hl">$1</mark>');
+}
 
 function matches(tab,r){
   const q=FLT[tab];
@@ -4233,11 +4469,17 @@ function toggleEmpenhosDisputa(disputaId) {
 }
 
 function renderD(){
-  const rows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
+  const allRows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
   // Show skeleton while data is being prepared
   if (!tb) return;
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
+  if(!allRows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
+  // Reset page if out of bounds
+  const totalPages = Math.ceil(allRows.length / PAGE_SIZE);
+  if (_page.disputas > totalPages) _page.disputas = 1;
+  const start = (_page.disputas - 1) * PAGE_SIZE;
+  const rows = allRows.slice(start, start + PAGE_SIZE);
+  renderPagination('disputas', allRows.length);
 
   const htmlParts = [];
   rows.forEach((r, idx) => {
@@ -4251,6 +4493,7 @@ function renderD(){
     // ── Empenhos abertos vinculados a esta disputa ──
     const empsAbertos = DB.empenhos.filter(e => e.disputaId === r.id && !e.finalizado);
     const expanded = _expandedDisputas.has(r.id);
+    const _q = FLT['disputas'] || '';
 
     // ── Alerta vencimento de contrato ──
     let contratoAlerta = '';
@@ -4448,6 +4691,7 @@ function renderE(){
     const todoPago = empenhoEstaPago(r);
     const naoRecebido = !todoPago;
     const dias = diasSemPagamento(r);
+    const numDisplay = r.num ? `${hl(r.num, FLT['empenhos'])}<button class="copy-btn" onclick="event.stopPropagation();copyToClipboard('${r.num}',this)" title="Copiar número">⎘</button>` : '—';
     let rowClass = '', diasBadge = '';
     if (naoRecebido && dias > 0) {
       if (dias >= 90)      { rowClass = 'alerta-90'; diasBadge = '<span class="dias-badge dias-90">🔴 '+dias+'d</span>'; }
@@ -4514,6 +4758,15 @@ function sumE(){
     '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">'+fmt(totalComprado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
+
+  // Update tfoot empenhos
+  const tfRowE = document.getElementById('tfoot-empenhos-row');
+  if (tfRowE && a.length > 0) {
+    tfRowE.style.display = '';
+    const el = id => document.getElementById(id);
+    if(el('tfoot-e-vem'))   el('tfoot-e-vem').textContent   = fmt(te);
+    if(el('tfoot-e-lucro')) el('tfoot-e-lucro').textContent = fmt(lucroEmpenhado);
+  } else if (tfRowE) { tfRowE.style.display = 'none'; }
 }
 
 function renderAll(){ 
@@ -4639,6 +4892,26 @@ function verExcel(id, tipo) {
   </table></div>`;
   const w = window.open('', '_blank', 'width=900,height=500');
   w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
+<!-- SHORTCUTS MODAL -->
+<div class="shortcuts-modal" id="shortcuts-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="shortcuts-modal-box">
+    <div class="shortcuts-modal-title">⌨️ Atalhos de Teclado</div>
+    <div class="shortcut-row"><span class="desc">Abrir busca global</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Nova Disputa</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>N</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Novo Empenho</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>E</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Painel</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>1</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Dashboard</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>2</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Disputas</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>3</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Empenhos</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>4</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Alternar tema claro/escuro</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>T</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Fechar modal / popup</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Esta tela de atalhos</span><span class="shortcut-keys"><kbd>?</kbd></span></div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-ghost" onclick="document.getElementById('shortcuts-modal').classList.remove('open')">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- POPUP DETALHES DISPUTA -->
 <div class="detail-popup-overlay" id="popup-disputa">
   <div class="detail-popup">
@@ -5189,10 +5462,36 @@ function openModal(tab){
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
 }
-function closeModal(tab){ 
-  g('modal-'+tab).classList.remove('open');
+function closeModal(tab, force) { 
+  const modal = g('modal-'+tab);
+  if (!modal) return;
+  // Check for dirty fields
+  if (!force) {
+    const inputs = modal.querySelectorAll('input:not([type=checkbox]):not([type=radio]), select, textarea');
+    const hasData = [...inputs].some(el => el.value && el.value.trim() !== '' && !el.readOnly && !el.disabled && el.style.display !== 'none');
+    if (hasData && modal._isDirty) {
+      confirmar('Fechar sem salvar?', 'As alterações não salvas serão perdidas.', () => {
+        modal._isDirty = false;
+        modal.classList.remove('open');
+        _restoreTab();
+      });
+      return;
+    }
+  }
+  modal._isDirty = false;
+  modal.classList.remove('open');
   _restoreTab();
 }
+
+// Mark modal as dirty when user types
+document.addEventListener('input', e => {
+  const modal = e.target.closest('.modal-overlay');
+  if (modal) modal._isDirty = true;
+});
+document.addEventListener('change', e => {
+  const modal = e.target.closest('.modal-overlay');
+  if (modal) modal._isDirty = true;
+});
 
 function _restoreTab() {
   const algumAberto = document.querySelector('.modal-overlay.open, .detail-popup-overlay.open');
@@ -5798,6 +6097,46 @@ function exportCSV(tab){
   };
   const csv=[H[tab],...R[tab]].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})); a.download=`${tab}_${today()}.csv`; a.click(); toast('CSV exportado','success');
+}
+
+// ========== EXPORT XLSX (SheetJS) ==========
+function exportXLSX(tab) {
+  if (typeof XLSX === 'undefined') { exportCSV(tab); return; }
+  const H = {
+    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação'],
+    empenhos: ['Empenho','Data','Órgão','Analista','Produto','Plataforma','Dt.Compra','Vl.Unit','Qtd','Total Compra','Vl.Empenho','Alíquota','Imposto','Lucro','% Lucro','A Receber','Recebido','Dt.Receb','Observação']
+  };
+  const R = {
+    disputas: DB.disputas.filter(r => !r.finalizada && matches('disputas', r)).map(r => {
+      const v = dVals(r);
+      return [r.data, r.orgao, r.estado, r.empresa, r.tipo, r.rp, r.processo, r.sistema, r.analista,
+        getValorContrato(r), r.compra||0, r.custo||0, v.luc, v.pct+'%', r.situacao||'', r.observacao||''];
+    }),
+    empenhos: DB.empenhos.filter(r => matches('empenhos', r) && !r.finalizado).map(r => {
+      const v = eVals(r);
+      return [r.num, r.data, r.orgao, r.analista, r.produto, r.plataforma, r.dcomp,
+        r.vunit||0, r.qtd||0, v.tot, r.vem||0, r.aliq||0, v.imp, v.luc, v.pct+'%', v.rec, r.recebido||0, r.dreceb||'', r.observacao||''];
+    })
+  };
+
+  const ws = XLSX.utils.aoa_to_sheet([H[tab], ...R[tab]]);
+
+  // Column widths
+  const wscols = H[tab].map((h, i) => ({ wch: Math.max(h.length + 2, 12) }));
+  ws['!cols'] = wscols;
+
+  // Style header row bold (xlsx.js basic)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+    if (cell) { cell.s = { font: { bold: true }, fill: { fgColor: { rgb: 'EEF2F6' } } }; }
+  }
+
+  const wb = XLSX.utils.book_new();
+  const sheetName = tab === 'disputas' ? 'Disputas' : 'Empenhos';
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, `${sheetName}_${today()}.xlsx`);
+  toast(`✅ Excel exportado: ${R[tab].length} registros`, 'success');
 }
 
 // ========== BACKUP / RESTAURAR ==========
@@ -8103,6 +8442,7 @@ function delAcomp(id) {
 }
 
 function renderAcomp() {
+  markAllActiveFilters();
   const tb = document.getElementById('tbody-acomp'); if (!tb) return;
   const analista = document.getElementById('filtro-analista-acomp')?.value || 'todos';
   const status = document.getElementById('filtro-status-acomp')?.value || 'todos';
@@ -9284,6 +9624,19 @@ function salvarConfigEmail(btn) {
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
 // Apenas inicializa o app com dados vazios (serão carregados após login).
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if (e.key === '?' && !inInput) { e.preventDefault(); document.getElementById('shortcuts-modal')?.classList.toggle('open'); return; }
+  if (e.altKey && e.key === 'n') { e.preventDefault(); openModal('disputas'); return; }
+  if (e.altKey && e.key === 'e') { e.preventDefault(); openModal('empenhos'); return; }
+  if (e.altKey && e.key === 't') { e.preventDefault(); toggleTema(); return; }
+  if (e.altKey && e.key === '1') { e.preventDefault(); document.getElementById('tab-btn-painel')?.click(); return; }
+  if (e.altKey && e.key === '2') { e.preventDefault(); switchTab('dashboard', document.querySelectorAll('.tab-btn')[1]); atualizarDashboard(); return; }
+  if (e.altKey && e.key === '3') { e.preventDefault(); switchTab('disputas', document.querySelectorAll('.tab-btn')[3]); return; }
+  if (e.altKey && e.key === '4') { e.preventDefault(); switchTab('empenhos', document.querySelectorAll('.tab-btn')[4]); return; }
+});
+
 function boot() {
   // Show loading skeletons while Firebase connects
   ['tbody-disputas','tbody-empenhos','tbody-finalizadas','tbody-emp-finalizados'].forEach(id => {
