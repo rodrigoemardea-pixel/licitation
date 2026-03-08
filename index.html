@@ -337,43 +337,7 @@
     letter-spacing: 0.5px;
   }
 
-  /* BARRA DE STATS SECUNDÁRIA */
-  .stats-bar {
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-light);
-    padding: 5px 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    flex-wrap: nowrap;
-  }
-  .stats-bar::-webkit-scrollbar { display: none; }
-  body[data-theme="dark"] .stats-bar { background: rgba(30,41,59,0.97); }
-  .stats-bar-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-    padding: 3px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border-light);
-    background: var(--bg-surface-soft);
-    flex-shrink: 0;
-  }
-  .stats-bar-item .sb-label {
-    font-size: 10px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    font-weight: 600;
-  }
-  .stats-bar-item .sb-val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
-  }
+
 
   /* TABS */
   .tabs {
@@ -1350,14 +1314,12 @@
     .theme-selector, .analista-selector, .shortcuts-hint { display: none; }
     .content { padding: 12px 14px; }
     .toolbar { padding: 8px 12px; gap: 6px; }
-    .stats-bar { padding: 4px 14px; gap: 6px; }
     header { padding: 0 14px; gap: 8px; }
     #busca-global-input { width: 140px !important; }
   }
   @media (max-width: 480px) {
     .tabs { padding: 0 8px; }
     .tab-btn { padding: 10px 10px; font-size: 11px; }
-    .stats-bar-item { padding: 2px 8px; }
   }
 
   .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 20px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
@@ -1861,25 +1823,6 @@
   </div>
 </header>
 
-<!-- BARRA DE STATS RÁPIDOS -->
-<div class="stats-bar" id="stats-bar-global">
-  <div class="stats-bar-item">
-    <span class="sb-label">💰 A Receber</span>
-    <span class="sb-val cv-green" id="hstat-receber">—</span>
-  </div>
-  <div class="stats-bar-item">
-    <span class="sb-label">📈 Lucro Total</span>
-    <span class="sb-val cv-blue" id="hstat-lucro">—</span>
-  </div>
-  <div class="stats-bar-item">
-    <span class="sb-label">🏆 Disputas Ativas</span>
-    <span class="sb-val" style="color:var(--text-primary);" id="hstat-disputas">—</span>
-  </div>
-  <div class="stats-bar-item">
-    <span class="sb-label">📄 Emp. Pendentes</span>
-    <span class="sb-val cv-yellow" id="hstat-empenhos">—</span>
-  </div>
-</div>
 
 <div class="tabs">
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();">🏠 Painel</button>
@@ -4489,7 +4432,6 @@ function sumD(){
     <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
     <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
 
-  atualizarStatsBar();
 }
 
 function renderE(){
@@ -9355,20 +9297,6 @@ function boot() {
   inicializarApp({ disputas: [], empenhos: [], initialized: true });
 }
 
-// Atualiza barra de stats com dados em tempo real
-function atualizarStatsBar() {
-  try {
-    const disputasAtivas = (DB.disputas || []).filter(d => !d.finalizada);
-    const empPendentes = (DB.empenhos || []).filter(e => !empenhoEstaPago(e));
-    const totalReceber = empPendentes.reduce((s, e) => s + (parseFloat(e.valorReceber) || parseFloat(e.valorEmpenho) || 0), 0);
-    const totalLucro = (DB.empenhos || []).reduce((s, e) => s + (parseFloat(e.lucro) || 0), 0);
-    const el = id => document.getElementById(id);
-    if (el('hstat-receber')) el('hstat-receber').textContent = fmt ? fmt(totalReceber) : 'R$ ' + totalReceber.toFixed(2);
-    if (el('hstat-lucro')) el('hstat-lucro').textContent = fmt ? fmt(totalLucro) : 'R$ ' + totalLucro.toFixed(2);
-    if (el('hstat-disputas')) el('hstat-disputas').textContent = disputasAtivas.length;
-    if (el('hstat-empenhos')) el('hstat-empenhos').textContent = empPendentes.length;
-  } catch(e) {}
-}
 
 boot();
 
