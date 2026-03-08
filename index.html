@@ -162,24 +162,23 @@
 
   /* HEADER MODERNO */
   header {
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(226,232,240,0.6);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-light);
     padding: 0 24px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    height: 64px;
+    gap: 8px;
+    height: 58px;
     position: sticky;
     top: 0;
     z-index: 100;
     transition: background 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   body[data-theme="dark"] header {
-    background: rgba(30, 41, 59, 0.8);
-    border-bottom-color: rgba(51, 65, 85, 0.6);
+    background: var(--bg-surface);
+    border-bottom-color: var(--border-medium);
   }
 
   .logo {
@@ -456,8 +455,8 @@
     flex: 1;
     padding: 20px 24px;
     width: 100%;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1800px;
+    margin: 0 auto;
   }
 
   .tab-pane { display: none; }
@@ -615,6 +614,21 @@
   .filter-group select:hover {
     border-color: var(--accent-primary);
   }
+  
+  /* Filtro ativo - visual feedback */
+  .filter-group.active {
+    background: var(--info-soft);
+    border-color: var(--accent-primary);
+  }
+  .filter-group.active label {
+    color: var(--accent-primary);
+  }
+  .filter-group.active select {
+    background: var(--bg-surface);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
 
   .btn {
     display: inline-flex;
@@ -699,7 +713,7 @@
   /* CARDS DE RESUMO */
   .summary-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -708,9 +722,11 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
-    padding: 16px;
+    padding: 14px 16px;
     transition: all 0.2s;
     box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
   }
 
   .card:hover {
@@ -730,9 +746,10 @@
 
   .card-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.5px;
   }
 
   .cv-green { color: var(--success); }
@@ -748,8 +765,9 @@
     border-radius: var(--radius-lg);
     overflow-x: auto;
     overflow-y: auto;
-    max-height: calc(100vh - 280px);
-    box-shadow: var(--shadow-md);
+    max-height: calc(100vh - 320px);
+    min-height: 200px;
+    box-shadow: var(--shadow-sm);
     width: 100%;
     margin-bottom: 20px;
   }
@@ -821,6 +839,8 @@
 
   td.mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
   td.hi { color: var(--text-primary); font-weight: 500; }
+  td.money { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+  th.money { text-align: right; }
 
   /* Tooltip para observações */
   td.has-tooltip {
@@ -883,12 +903,13 @@
   .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
+    padding: 2px 8px;
     border-radius: 30px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
+    line-height: 1.6;
   }
 
   .bg { background: var(--success-soft); color: var(--success); border: 1px solid rgba(5,150,105,0.2); }
@@ -980,26 +1001,27 @@
     justify-content: center;
   }
 
-  /* ===== MELHORIA 9: Busca global com atalho ===== */
+  /* BUSCA GLOBAL - theme-aware */
   #busca-global-input {
     transition: width 0.25s ease, box-shadow 0.2s;
   }
   #busca-global-input:focus {
-    width: 320px !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.25) !important;
-    border-color: #3b82f6 !important;
+    width: 300px !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+    border-color: var(--border-focus) !important;
+    background: var(--bg-surface) !important;
   }
   .busca-kbd-hint {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: var(--bg-surface-soft);
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     padding: 1px 5px;
     font-size: 10px;
-    color: #94a3b8;
+    color: var(--text-placeholder);
     pointer-events: none;
     font-family: 'JetBrains Mono', monospace;
     transition: opacity 0.2s;
@@ -1251,6 +1273,38 @@
   .mtg.on { background: var(--warning-soft); border-color: var(--warning); color: var(--warning); }
   .mtg .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
+  /* Skeleton loader */
+  .skeleton-row td {
+    background: linear-gradient(90deg, var(--bg-surface-soft) 25%, var(--bg-inset) 50%, var(--bg-surface-soft) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s infinite;
+    border-radius: 4px;
+    color: transparent !important;
+    user-select: none;
+  }
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+  .loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-light);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .empty-state {
     text-align: center; padding: 40px 20px; color: var(--text-tertiary);
   }
@@ -1288,11 +1342,22 @@
   }
   @media (max-width: 900px) {
     .form-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   }
   @media (max-width: 700px) {
     .form-grid { grid-template-columns: 1fr; }
     .header-stats { display: none; }
     .theme-selector, .analista-selector, .shortcuts-hint { display: none; }
+    .content { padding: 12px 14px; }
+    .toolbar { padding: 8px 12px; gap: 6px; }
+    .stats-bar { padding: 4px 14px; gap: 6px; }
+    header { padding: 0 14px; gap: 8px; }
+    #busca-global-input { width: 140px !important; }
+  }
+  @media (max-width: 480px) {
+    .tabs { padding: 0 8px; }
+    .tab-btn { padding: 10px 10px; font-size: 11px; }
+    .stats-bar-item { padding: 2px 8px; }
   }
 
   .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 20px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
@@ -2186,11 +2251,11 @@
           <th onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
           <th onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
           <th>Analista</th>
-          <th>💰 Vl. Contrato</th>
-          <th>🛒 Compra Prev.</th>
-          <th>⚙️ Custo Prev.</th>
-          <th>📈 Lucro Prev.</th>
-          <th>✅ Lucro Realizado</th>
+          <th class="money">💰 Vl. Contrato</th>
+          <th class="money">🛒 Compra Prev.</th>
+          <th class="money">⚙️ Custo Prev.</th>
+          <th class="money">📈 Lucro Prev.</th>
+          <th class="money">✅ Lucro Realizado</th>
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
@@ -3554,7 +3619,24 @@ function filtrarPorAnalista() {
   atualizarDashboard();
 }
 
+// Marca filter-groups como ativos quando têm valor não-padrão
+function markActiveFilters(toolbarId) {
+  const toolbar = toolbarId ? document.getElementById(toolbarId) : document;
+  if (!toolbar) return;
+  toolbar.querySelectorAll('.filter-group').forEach(fg => {
+    const sel = fg.querySelector('select');
+    if (!sel) return;
+    const defaultVal = sel.options[0]?.value || '';
+    if (sel.value && sel.value !== defaultVal) {
+      fg.classList.add('active');
+    } else {
+      fg.classList.remove('active');
+    }
+  });
+}
+
 function filtrarDisputas() {
+  markActiveFilters(null);
   filtroEmpenhoDisputas = g('filtro-empenho-disputas')?.value || 'todos';
   filtroEmpresaDisputas = g('filtro-empresa-disputas').value;
   filtroTipoDisputas = g('filtro-tipo-disputas').value;
@@ -4210,6 +4292,8 @@ function toggleEmpenhosDisputa(disputaId) {
 function renderD(){
   const rows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
+  // Show skeleton while data is being prepared
+  if (!tb) return;
   if(!rows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
 
   const htmlParts = [];
@@ -9259,6 +9343,15 @@ function salvarConfigEmail(btn) {
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
 // Apenas inicializa o app com dados vazios (serão carregados após login).
 function boot() {
+  // Show loading skeletons while Firebase connects
+  ['tbody-disputas','tbody-empenhos','tbody-finalizadas','tbody-emp-finalizados'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.innerHTML = Array(4).fill(0).map(() =>
+        `<tr class="skeleton-row">${Array(8).fill('<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>').join('')}</tr>`
+      ).join('');
+    }
+  });
   inicializarApp({ disputas: [], empenhos: [], initialized: true });
 }
 
