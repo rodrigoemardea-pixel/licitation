@@ -338,70 +338,117 @@
     letter-spacing: 0.5px;
   }
 
-  /* TABS */
-  .tabs {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  /* BARRA DE STATS SECUNDÁRIA */
+  .stats-bar {
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-light);
+    padding: 5px 24px;
     display: flex;
-    padding: 0 24px;
-    gap: 4px;
-    transition: background 0.3s;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+  .stats-bar::-webkit-scrollbar { display: none; }
+  body[data-theme="dark"] .stats-bar { background: rgba(30,41,59,0.97); }
+  .stats-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-surface-soft);
+    flex-shrink: 0;
+  }
+  .stats-bar-item .sb-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+  }
+  .stats-bar-item .sb-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
   }
 
+  /* TABS */
+  .tabs {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    padding: 0 20px;
+    gap: 2px;
+    transition: background 0.3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
   body[data-theme="dark"] .tabs {
-    background: rgba(30, 41, 59, 0.7);
+    background: rgba(30, 41, 59, 0.98);
+    border-bottom-color: var(--border-medium);
   }
 
   .tab-btn {
     background: none;
     border: none;
-    color: var(--text-secondary);
-    padding: 12px 16px;
+    color: var(--text-tertiary);
+    padding: 11px 14px;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    transition: all 0.2s;
+    margin-bottom: -1px;
+    transition: all 0.15s;
     display: flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.1px;
   }
 
   .tab-btn:hover {
     color: var(--text-primary);
-    background: rgba(0,0,0,0.02);
+    background: var(--bg-surface-soft);
+    border-radius: 6px 6px 0 0;
   }
 
   body[data-theme="dark"] .tab-btn:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.06);
   }
 
   .tab-btn.active {
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
-    font-weight: 600;
+    font-weight: 700;
+    background: var(--info-soft);
+    border-radius: 6px 6px 0 0;
   }
 
   .tab-badge {
-    background: var(--bg-surface-soft);
+    background: var(--bg-inset);
     border: 1px solid var(--border-light);
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 2px 6px;
+    font-size: 9px;
+    padding: 1px 5px;
     border-radius: 30px;
-    font-weight: 500;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
   }
 
   .tab-btn.active .tab-badge {
-    background: var(--info-soft);
+    background: var(--accent-primary);
     border-color: var(--accent-primary);
-    color: var(--accent-primary);
+    color: white;
   }
 
   /* CONTEÚDO PRINCIPAL */
@@ -429,17 +476,24 @@
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
     padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+
+  .chart-card:hover {
     box-shadow: var(--shadow-md);
   }
 
   .chart-card h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
     margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .chart-card canvas {
@@ -458,21 +512,33 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
-    padding: 16px;
-    text-align: center;
+    padding: 18px 20px;
+    text-align: left;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--border-medium);
   }
 
   .stat-card .value {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     color: var(--accent-primary);
     font-family: 'JetBrains Mono', monospace;
+    line-height: 1.1;
+    margin-bottom: 4px;
   }
 
   .stat-card .label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-tertiary);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
     margin-top: 4px;
   }
 
@@ -480,14 +546,28 @@
   .toolbar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 16px;
     flex-wrap: wrap;
     background: var(--bg-surface);
-    padding: 10px 16px;
+    padding: 10px 14px;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
+  }
+
+  .toolbar .btn-primary {
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-light);
+    flex-shrink: 0;
+    margin: 0 2px;
   }
 
   .quick-entry-btn {
@@ -789,13 +869,14 @@
   }
 
   /* Destaque para empenhos não recebidos */
-  tr.nao-recebido {
-    background-color: var(--nao-recebido-bg);
+  tr.nao-recebido td {
+    background-color: var(--nao-recebido-bg) !important;
+  }
+  tr.nao-recebido td:first-child {
     border-left: 3px solid var(--nao-recebido-border);
   }
-
   tr.nao-recebido:hover td {
-    background-color: var(--nao-recebido-hover);
+    background-color: var(--nao-recebido-hover) !important;
   }
 
   /* BADGES */
@@ -837,9 +918,9 @@
     border-radius: 20px;
     width: 98%;
     max-width: 1300px;
-    max-height: 95vh;
+    max-height: 90vh;
     overflow-y: auto;
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 32px 72px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04);
     animation: modalIn 0.25s ease;
   }
 
@@ -1609,53 +1690,6 @@
     margin-top: 24px;
   }
 
-  /* ===== KANBAN ===== */
-  .kanban-view { display: none; }
-  .kanban-view.active { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; align-items: flex-start; }
-  .kanban-col {
-    flex: 0 0 300px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    box-shadow: var(--shadow-sm);
-  }
-  .kanban-col-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 10px; margin-bottom: 10px;
-    border-bottom: 2px solid var(--border-light);
-    font-size: 13px; font-weight: 700; color: var(--text-primary);
-  }
-  .kanban-count {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    padding: 2px 7px; border-radius: 20px;
-    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
-    color: var(--text-tertiary);
-  }
-  .kanban-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    cursor: grab;
-    transition: all 0.15s;
-    box-shadow: var(--shadow-sm);
-    user-select: none;
-  }
-  .kanban-card:active { cursor: grabbing; opacity: 0.8; transform: scale(0.98); }
-  .kanban-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-medium); }
-  .kanban-card.drag-over-card { border-color: var(--accent-primary); background: var(--info-soft); }
-  .kanban-col.drag-over { background: var(--info-soft); border-color: var(--accent-primary); }
-  .kanban-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
-  .kanban-card-meta { font-size: 10px; color: var(--text-tertiary); margin-bottom: 6px; }
-  .kanban-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 6px; }
-  .kanban-empty { text-align: center; padding: 24px 12px; color: var(--text-tertiary); font-size: 12px; }
-
-  /* View toggle buttons */
-  .view-toggle { display: flex; gap: 4px; background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: 8px; padding: 2px; }
-  .view-toggle-btn { background: none; border: none; border-radius: 6px; padding: 5px 10px; font-size: 13px; cursor: pointer; color: var(--text-tertiary); transition: all 0.15s; }
-  .view-toggle-btn.active { background: var(--bg-surface); color: var(--accent-primary); box-shadow: var(--shadow-sm); }
 
   /* ===== INLINE EDIT ===== */
   .inline-edit-cell { position: relative; }
@@ -1716,27 +1750,25 @@
     <div class="logo-icon" style="font-size:28px;display:flex;align-items:center;justify-content:center;">🏆</div>
     <div>
       <div class="logo-text">LicitationBiznis</div>
-      <div class="logo-sub">Porque biznis é mode os licitaxions</div>
+      <div class="logo-sub">Gestão de Licitações</div>
     </div>
   </div>
   <div class="spacer"></div>
-  
-  <!-- CONTROLES DO HEADER -->
 
-
-  <!-- TOGGLE TEMA -->
-  <button onclick="toggleTema()" id="btn-tema" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.8;" title="Alternar tema claro/escuro">🌙</button>
-
-  <!-- CONFIG E-MAIL -->
-  <button onclick="abrirConfigEmail()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.7;" title="Configurar alertas por e-mail">⚙️</button>
+  <!-- BUSCA GLOBAL -->
+  <div style="position:relative;margin-right:4px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;color:var(--text-primary);padding:6px 34px 6px 12px;font-size:12px;width:200px;outline:none;transition:all 0.2s;" autocomplete="off">
+    <span class="busca-kbd-hint">/</span>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
+  </div>
 
   <!-- SININHO DE NOTIFICAÇÕES -->
-  <div style="position:relative;margin-right:8px;">
-    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:22px;position:relative;padding:4px 8px;" title="Notificações">
+  <div style="position:relative;">
+    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;position:relative;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Notificações">
       🔔
-      <span id="notif-badge" style="display:none;position:absolute;top:0;right:2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+      <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
     </button>
-    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:460px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:40px;width:340px;max-height:460px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-weight:700;font-size:13px;color:#f1f5f9;">🔔 Notificações</div>
         <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;" title="Limpar todas">🗑 Limpar tudo</button>
@@ -1745,31 +1777,44 @@
     </div>
   </div>
 
-  <!-- BUSCA GLOBAL -->
-  <div style="position:relative;margin-right:8px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:#1e293b;border:1px solid #475569;border-radius:8px;color:#f1f5f9;padding:6px 34px 6px 12px;font-size:12px;width:200px;" autocomplete="off">
-    <span class="busca-kbd-hint">/</span>
-    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
-  </div>
+  <!-- TOGGLE TEMA -->
+  <button onclick="toggleTema()" id="btn-tema" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Alternar tema claro/escuro">🌙</button>
 
-  <!-- MELHORIA 15: Botão de Notificações Push -->
-  <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Ativar notificações push do navegador">
-    🔔 <span id="push-notif-label">Notificações</span>
+  <!-- CONFIG E-MAIL -->
+  <button onclick="abrirConfigEmail()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Configurar alertas por e-mail">⚙️</button>
+
+  <!-- PUSH NOTIF -->
+  <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Notificações push" style="font-size:11px;">
+    🔔 <span id="push-notif-label">Push</span>
   </button>
 
   <!-- USUÁRIO LOGADO -->
-  <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para trocar usuário">
+  <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para sair">
     <div class="user-avatar" id="user-avatar">?</div>
     <span id="user-nome">—</span>
     <span style="font-size:10px;opacity:0.5">↩</span>
   </div>
-
-
-
-
-
-
 </header>
+
+<!-- BARRA DE STATS RÁPIDOS -->
+<div class="stats-bar" id="stats-bar-global">
+  <div class="stats-bar-item">
+    <span class="sb-label">💰 A Receber</span>
+    <span class="sb-val cv-green" id="hstat-receber">—</span>
+  </div>
+  <div class="stats-bar-item">
+    <span class="sb-label">📈 Lucro Total</span>
+    <span class="sb-val cv-blue" id="hstat-lucro">—</span>
+  </div>
+  <div class="stats-bar-item">
+    <span class="sb-label">🏆 Disputas Ativas</span>
+    <span class="sb-val" style="color:var(--text-primary);" id="hstat-disputas">—</span>
+  </div>
+  <div class="stats-bar-item">
+    <span class="sb-label">📄 Emp. Pendentes</span>
+    <span class="sb-val cv-yellow" id="hstat-empenhos">—</span>
+  </div>
+</div>
 
 <div class="tabs">
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();">🏠 Painel</button>
@@ -2055,8 +2100,7 @@
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('disputas')">＋ Nova Disputa</button>
       <button class="btn" onclick="abrirCalculadora()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;font-weight:700;display:flex;align-items:center;gap:6px;" title="Calculadora de Custos e Lucros">🧮 Cálculo Rápido</button>
-
-      
+      <div class="toolbar-separator"></div>
       <div class="filter-group">
         <label>👤 Analista:</label>
         <select id="filtro-analista-disputas" onchange="filtrarDisputas()">
@@ -2131,10 +2175,6 @@
       <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar disputas..." oninput="filterTable('disputas',this.value)"></div>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-        <div class="view-toggle">
-          <button class="view-toggle-btn active" id="vt-lista" onclick="setViewMode('lista')" title="Visualização em tabela">☰</button>
-          <button class="view-toggle-btn" id="vt-kanban" onclick="setViewMode('kanban')" title="Visualização Kanban">⊞</button>
-        </div>
         <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">🗑 Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
         <button class="btn btn-ghost btn-sm" onclick="exportCSV('disputas')">⬇ Exportar</button>
       </div>
@@ -2157,44 +2197,6 @@
       </table>
     </div>
 
-    <!-- KANBAN BOARD -->
-    <div class="kanban-view" id="disputas-kanban-view">
-      <div class="kanban-col" id="kanban-col-em-analise" ondragover="kanbanDragOver(event,'em-analise')" ondrop="kanbanDrop(event,'em-analise')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>🔍 Em Análise</span>
-          <span class="kanban-count" id="kanban-count-em-analise">0</span>
-        </div>
-        <div id="kanban-cards-em-analise"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-participando" ondragover="kanbanDragOver(event,'participando')" ondrop="kanbanDrop(event,'participando')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>⚡ Participando</span>
-          <span class="kanban-count" id="kanban-count-participando">0</span>
-        </div>
-        <div id="kanban-cards-participando"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-aguardando-empenho" ondragover="kanbanDragOver(event,'aguardando-empenho')" ondrop="kanbanDrop(event,'aguardando-empenho')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>📄 Aguard. Empenho</span>
-          <span class="kanban-count" id="kanban-count-aguardando-empenho">0</span>
-        </div>
-        <div id="kanban-cards-aguardando-empenho"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-empenhado" ondragover="kanbanDragOver(event,'empenhado')" ondrop="kanbanDrop(event,'empenhado')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>✅ Empenhado</span>
-          <span class="kanban-count" id="kanban-count-empenhado">0</span>
-        </div>
-        <div id="kanban-cards-empenhado"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-finalizada" ondragover="kanbanDragOver(event,'finalizada')" ondrop="kanbanDrop(event,'finalizada')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>🏁 Finalizada</span>
-          <span class="kanban-count" id="kanban-count-finalizada">0</span>
-        </div>
-        <div id="kanban-cards-finalizada"></div>
-      </div>
-    </div>
   </div>
 
   <!-- EMPENHOS -->
@@ -4352,8 +4354,6 @@ function renderD(){
 
   tb.innerHTML = htmlParts.join('');
   sumD();
-  // If in kanban view, also render kanban
-  if (_viewMode === 'kanban') renderKanban();
 }
 
 function sumD(){
@@ -4404,6 +4404,8 @@ function sumD(){
     <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
     <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
     <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
+
+  atualizarStatsBar();
 }
 
 function renderE(){
@@ -9115,143 +9117,6 @@ function ocrPreencherCampos() {
   document.getElementById('e-ne-ocr-result').style.display = 'none';
 }
 
-// ========== KANBAN ==========
-let _viewMode = 'lista';
-let _kanbanDragId = null;
-
-const KANBAN_STATUSES = {
-  'em-analise':        { label: '🔍 Em Análise',        color: '#64748b' },
-  'participando':      { label: '⚡ Participando',       color: '#2563eb' },
-  'aguardando-empenho':{ label: '📄 Aguard. Empenho',   color: '#d97706' },
-  'empenhado':         { label: '✅ Empenhado',          color: '#059669' },
-  'finalizada':        { label: '🏁 Finalizada',         color: '#7c3aed' },
-};
-
-function setViewMode(mode) {
-  _viewMode = mode;
-  const tableView = document.getElementById('disputas-table-view');
-  const kanbanView = document.getElementById('disputas-kanban-view');
-  const btnLista = document.getElementById('vt-lista');
-  const btnKanban = document.getElementById('vt-kanban');
-
-  if (mode === 'kanban') {
-    if (tableView) tableView.style.display = 'none';
-    if (kanbanView) { kanbanView.style.display = 'flex'; }
-    if (btnLista) btnLista.classList.remove('active');
-    if (btnKanban) btnKanban.classList.add('active');
-    renderKanban();
-  } else {
-    if (tableView) tableView.style.display = '';
-    if (kanbanView) { kanbanView.style.display = 'none'; }
-    if (btnLista) btnLista.classList.add('active');
-    if (btnKanban) btnKanban.classList.remove('active');
-    renderD();
-  }
-}
-
-function getKanbanStatus(r) {
-  // Retorna coluna do kanban baseado no estado da disputa
-  if (r.finalizada) return 'finalizada';
-  const hasEmpenhos = DB.empenhos.some(e => e.disputaId === r.id);
-  if (hasEmpenhos) {
-    const allPago = DB.empenhos.filter(e=>e.disputaId===r.id).every(e=>empenhoEstaPago(e));
-    if (allPago) return 'finalizada';
-    return 'empenhado';
-  }
-  // Usa campo kanbanStatus se existir (para arrastar)
-  if (r.kanbanStatus && KANBAN_STATUSES[r.kanbanStatus]) return r.kanbanStatus;
-  return 'em-analise';
-}
-
-function renderKanban() {
-  const rows = getSorted('disputas').filter(r => matches('disputas', r));
-
-  Object.keys(KANBAN_STATUSES).forEach(status => {
-    const container = document.getElementById('kanban-cards-' + status);
-    const count = document.getElementById('kanban-count-' + status);
-    if (!container) return;
-
-    const cards = rows.filter(r => getKanbanStatus(r) === status);
-    if (count) count.textContent = cards.length;
-
-    if (!cards.length) {
-      container.innerHTML = '<div class="kanban-empty">Nenhuma disputa</div>';
-      return;
-    }
-
-    container.innerHTML = cards.map(r => {
-      const lotes = r.lotes || [];
-      const contrato = getValorContrato(r);
-      const hasEmps = DB.empenhos.some(e => e.disputaId === r.id);
-      return `<div class="kanban-card" draggable="true"
-        ondragstart="kanbanDragStart(event,'${r.id}')"
-        ondragend="kanbanDragEnd(event)"
-        onclick="abrirPopupDisputa('${r.id}')">
-        <div class="kanban-card-title">${r.orgao || '—'}</div>
-        <div class="kanban-card-meta">${fmtD(r.data)} · ${r.estado || '—'} · ${r.analista || '—'}</div>
-        ${lotes.length ? `<div style="font-size:10px;color:var(--text-tertiary);">${lotes.length} lote(s) · ${fmt(contrato)}</div>` : ''}
-        <div class="kanban-card-footer">
-          <span class="badge ${r.analista === 'Márdea' ? 'bp' : 'bb'}" style="font-size:9px;">${r.analista || '—'}</span>
-          <div style="display:flex;gap:4px;">
-            ${hasEmps ? `<span style="font-size:9px;color:var(--success);">📄 ${DB.empenhos.filter(e=>e.disputaId===r.id).length} emp.</span>` : ''}
-            <button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:12px;" onclick="event.stopPropagation();editD('${r.id}')">✏️</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  });
-}
-
-function kanbanDragStart(event, id) {
-  _kanbanDragId = id;
-  event.dataTransfer.effectAllowed = 'move';
-  event.target.style.opacity = '0.5';
-}
-
-function kanbanDragEnd(event) {
-  event.target.style.opacity = '';
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-}
-
-function kanbanDragOver(event, status) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-  document.getElementById('kanban-col-' + status)?.classList.add('drag-over');
-}
-
-function kanbanDragLeave(event) {
-  event.currentTarget.classList.remove('drag-over');
-}
-
-function kanbanDrop(event, newStatus) {
-  event.preventDefault();
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-  if (!_kanbanDragId) return;
-
-  const r = DB.disputas.find(x => x.id === _kanbanDragId);
-  if (!r) return;
-
-  // Não deixa mover manualmente para "empenhado" ou "finalizada" (auto-calculados)
-  if (newStatus === 'empenhado' || newStatus === 'finalizada') {
-    toast('ℹ️ Status "Empenhado" e "Finalizada" são definidos automaticamente.', 'info');
-    _kanbanDragId = null;
-    return;
-  }
-
-  r.kanbanStatus = newStatus;
-  if (newStatus === 'finalizada') {
-    r.finalizada = true;
-    r.dataFinalizacao = r.dataFinalizacao || new Date().toISOString().slice(0, 10);
-  } else {
-    r.finalizada = false;
-  }
-  upsert('disputas', r);
-  toast(`✅ Movido para "${KANBAN_STATUSES[newStatus]?.label}"`, 'success');
-  renderKanban();
-  _kanbanDragId = null;
-}
-
 // ========== INLINE EDIT ==========
 function inlineEditStatus(id, tipo) {
   const statuses = tipo === 'disputas'
@@ -9395,6 +9260,21 @@ function salvarConfigEmail(btn) {
 // Apenas inicializa o app com dados vazios (serão carregados após login).
 function boot() {
   inicializarApp({ disputas: [], empenhos: [], initialized: true });
+}
+
+// Atualiza barra de stats com dados em tempo real
+function atualizarStatsBar() {
+  try {
+    const disputasAtivas = (DB.disputas || []).filter(d => !d.finalizada);
+    const empPendentes = (DB.empenhos || []).filter(e => !empenhoEstaPago(e));
+    const totalReceber = empPendentes.reduce((s, e) => s + (parseFloat(e.valorReceber) || parseFloat(e.valorEmpenho) || 0), 0);
+    const totalLucro = (DB.empenhos || []).reduce((s, e) => s + (parseFloat(e.lucro) || 0), 0);
+    const el = id => document.getElementById(id);
+    if (el('hstat-receber')) el('hstat-receber').textContent = fmt ? fmt(totalReceber) : 'R$ ' + totalReceber.toFixed(2);
+    if (el('hstat-lucro')) el('hstat-lucro').textContent = fmt ? fmt(totalLucro) : 'R$ ' + totalLucro.toFixed(2);
+    if (el('hstat-disputas')) el('hstat-disputas').textContent = disputasAtivas.length;
+    if (el('hstat-empenhos')) el('hstat-empenhos').textContent = empPendentes.length;
+  } catch(e) {}
 }
 
 boot();
