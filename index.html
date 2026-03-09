@@ -48,8 +48,8 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #f0f3f8;
-    color: #1a2639;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -141,6 +141,12 @@
   }
 
   :root {
+    --bg-primary: #f0f3f8;
+    --bg-surface: #ffffff;
+    --bg-surface-soft: #f1f4f9;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-tertiary: #64748b;
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -940,9 +946,10 @@
   /* Shortcuts modal */
   .shortcuts-modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
-    z-index: 999999; display: none; align-items: center; justify-content: center;
+    z-index: 99999; display: none; align-items: center; justify-content: center;
+    pointer-events: none;
   }
-  .shortcuts-modal.open { display: flex; }
+  .shortcuts-modal.open { display: flex; pointer-events: all; }
   .shortcuts-modal-box {
     background: var(--bg-surface); border: 1px solid var(--border-light);
     border-radius: 20px; padding: 28px 32px; max-width: 480px; width: 90%;
@@ -1498,7 +1505,7 @@
   .dias-ok { background: var(--success-soft); color: var(--success); }
   .dias-30 { background: var(--warning-soft); color: var(--warning); }
   .dias-60 { background: rgba(220,38,38,0.12); color: var(--danger); }
-  .dias-90 { background: rgba(139,0,0,0.18); color: #b91c1c; font-size: 11px; animation: piscar 1.5s infinite; }
+  .dias-90 { background: var(--danger-soft); color: var(--danger); font-size: 11px; font-weight: 700; animation: piscar 1.5s infinite; }
   @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
   .alerta-banner {
@@ -5403,7 +5410,7 @@ function delEmpenhoDisputa(id) {
 }
 
 function novoEmpenhoDaDisputa() {
-  closeModal('empenhos-disputa');
+  closeModal('empenhos-disputa', true);
   if (disputaAtiva) {
     novoEmpenhoParaDisputa(disputaAtiva);
   } else {
@@ -5773,7 +5780,7 @@ function saveD(){
   } else {
     toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
   }
-  closeModal('disputas'); renderAll();
+  closeModal('disputas', true); renderAll();
 }
 function editD(id){
   const r=DB.disputas.find(x=>x.id===id); if(!r) return;
@@ -5905,7 +5912,7 @@ function saveE(){
   upsert('empenhos',row);
   const _isNew = !EID.empenhos;
   toast(_isNew ? 'EMPENHO SALVO' : 'EMPENHO ATUALIZADO', 'success');
-  closeModal('empenhos');
+  closeModal('empenhos', true);
   renderAll();
   // Após salvar, abre o popup de detalhe do empenho
   setTimeout(() => abrirPopupEmpenho(row.id), 150);
@@ -6407,7 +6414,7 @@ function saveCompra() {
 
   // Fecha modal ANTES de salvar (evita race condition com onSnapshot do Firebase)
   const _empId = compraEmpenhoId;
-  closeModal('compra');
+  closeModal('compra', true);
   save('empenhos', DB.empenhos);
   toast(compraEditId ? 'COMPRA ATUALIZADA ✓' : 'COMPRA SALVA ✓', 'success');
   renderAll();
@@ -6497,10 +6504,10 @@ function calcSelecionarDisputa(id) {
   const badge = g('calc-empresa-badge');
   if (d.empresa === 'Hamate') {
     badge.textContent = 'Hamate';
-    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:#7c3aed20;color:#7c3aed;font-weight:700;';
+    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--purple-soft);color:var(--purple);font-weight:700;';
   } else {
     badge.textContent = 'Gadita';
-    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:#2563eb20;color:#2563eb;font-weight:700;';
+    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--info-soft);color:var(--accent-primary);font-weight:700;';
   }
 
   g('calc-tipo-gadita').style.display = d.empresa === 'Gadita' ? '' : 'none';
@@ -6630,7 +6637,7 @@ function calcUsarCusto() {
   if (inputEl) inputEl.value = custoUnit.toFixed(2);
 
   // Fecha calculadora e limpa estado
-  closeModal('calc');
+  closeModal('calc', true);
   _calcRetornarLoteIdx = null;
   g('calc-retornar-wrap').style.display = 'none';
   toast('Custo previsto preenchido: ' + fmt(totalCusto) + ' (total) · ' + fmt(custoUnit) + '/un', 'success');
@@ -7550,6 +7557,17 @@ function toggleNotificacoes() {
     // Esconde badge ao abrir
     const badge = g('notif-badge');
     if (badge) badge.style.display = 'none';
+    // Fecha ao clicar fora
+    setTimeout(() => {
+      function fecharFora(ev) {
+        const container = p.closest('[style*="position:relative"]') || p.parentElement;
+        if (!container.contains(ev.target)) {
+          p.style.display = 'none';
+          document.removeEventListener('click', fecharFora, true);
+        }
+      }
+      document.addEventListener('click', fecharFora, true);
+    }, 0);
   } else {
     p.style.display = 'none';
   }
@@ -8367,7 +8385,7 @@ function _doSaveAcomp(retornoVal) {
   if (!DB.acomp) DB.acomp = [];
   // FIX 5: Status "perdida" → confirmar exclusão imediata
   if (row.status === 'perdida') {
-    closeModal('acomp');
+    closeModal('acomp', true);
     _confirmarAcao({
       icon: '❌',
       titulo: 'Marcar como Perdida',
@@ -8389,7 +8407,7 @@ function _doSaveAcomp(retornoVal) {
   save('acomp', DB.acomp);
   toast(EID_acomp ? 'Acompanhamento atualizado!' : 'Acompanhamento salvo!', 'success');
   EID_acomp = null;
-  closeModal('acomp');
+  closeModal('acomp', true);
   renderAcomp();
   // E-mail gerenciado exclusivamente pelo checarRetornos (2min antes)
   updateBadges();
