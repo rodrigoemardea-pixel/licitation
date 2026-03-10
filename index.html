@@ -2429,21 +2429,9 @@
         </select>
       </div>
       <div class="filter-group">
-        <label>📅 Mês Pagamento:</label>
+        <label>📅 Mês/Ano Pagamento:</label>
         <select id="filtro-mes-pag-emp-fin" onchange="renderEmpFinalizados()">
           <option value="todos">Todos</option>
-          <option value="01">Janeiro</option>
-          <option value="02">Fevereiro</option>
-          <option value="03">Março</option>
-          <option value="04">Abril</option>
-          <option value="05">Maio</option>
-          <option value="06">Junho</option>
-          <option value="07">Julho</option>
-          <option value="08">Agosto</option>
-          <option value="09">Setembro</option>
-          <option value="10">Outubro</option>
-          <option value="11">Novembro</option>
-          <option value="12">Dezembro</option>
         </select>
       </div>
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
@@ -2480,21 +2468,9 @@
         </select>
       </div>
       <div class="filter-group">
-        <label>📅 Mês Finalização:</label>
+        <label>📅 Mês/Ano Finalização:</label>
         <select id="filtro-mes-finalizadas" onchange="renderFinalizadas()">
           <option value="todos">Todos</option>
-          <option value="01">Janeiro</option>
-          <option value="02">Fevereiro</option>
-          <option value="03">Março</option>
-          <option value="04">Abril</option>
-          <option value="05">Maio</option>
-          <option value="06">Junho</option>
-          <option value="07">Julho</option>
-          <option value="08">Agosto</option>
-          <option value="09">Setembro</option>
-          <option value="10">Outubro</option>
-          <option value="11">Novembro</option>
-          <option value="12">Dezembro</option>
         </select>
       </div>
     </div>
@@ -7681,9 +7657,45 @@ function popularFiltroMes() {
 }
 let filtroMesDisputas = 'todos';
 
+// ===== FILTRO MÊS/ANO PAGAMENTO — EMP. FINALIZADOS =====
+function popularFiltroMesPagEmpFin() {
+  const sel = g('filtro-mes-pag-emp-fin');
+  if (!sel) return;
+  const cur = sel.value;
+  const meses = new Set();
+  DB.empenhos.forEach(e => {
+    if (!e.finalizado) return;
+    (e.compras||[]).forEach(c => { if (c.dpag) meses.add(c.dpag.slice(0,7)); });
+  });
+  const sorted = [...meses].sort().reverse();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    sorted.map(m => {
+      const [y, mo] = m.split('-');
+      const nome = new Date(y, parseInt(mo)-1).toLocaleString('pt-BR',{month:'long',year:'numeric'});
+      return `<option value="${m}"${cur===m?' selected':''}>${nome.charAt(0).toUpperCase()+nome.slice(1)}</option>`;
+    }).join('');
+}
+
+// ===== FILTRO MÊS/ANO FINALIZAÇÃO — DISPUTAS FINALIZADAS =====
+function popularFiltroMesFinalizadas() {
+  const sel = g('filtro-mes-finalizadas');
+  if (!sel) return;
+  const cur = sel.value;
+  const meses = new Set();
+  DB.disputas.forEach(d => { if (d.finalizada && d.dataFinalizacao) meses.add(d.dataFinalizacao.slice(0,7)); });
+  const sorted = [...meses].sort().reverse();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    sorted.map(m => {
+      const [y, mo] = m.split('-');
+      const nome = new Date(y, parseInt(mo)-1).toLocaleString('pt-BR',{month:'long',year:'numeric'});
+      return `<option value="${m}"${cur===m?' selected':''}>${nome.charAt(0).toUpperCase()+nome.slice(1)}</option>`;
+    }).join('');
+}
+
 
 
 function renderFinalizadas() {
+  popularFiltroMesFinalizadas();
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
   const analistaFin = g('filtro-analista-finalizadas')?.value || 'todos';
   const mesFin = g('filtro-mes-finalizadas')?.value || 'todos';
@@ -7691,8 +7703,8 @@ function renderFinalizadas() {
     if (!d.finalizada) return false;
     if (analistaFin !== 'todos' && d.analista !== analistaFin) return false;
     if (mesFin !== 'todos') {
-      const mesData = (d.dataFinalizacao||'').substring(5,7);
-      if (mesData !== mesFin) return false;
+      const anoMes = (d.dataFinalizacao||'').substring(0,7);
+      if (anoMes !== mesFin) return false;
     }
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) || (d.processo||'').toLowerCase().includes(q) || (d.estado||'').toLowerCase().includes(q);
@@ -7821,6 +7833,7 @@ function toggleAgrupamentoFin() {
 }
 
 function renderEmpFinalizados() {
+  popularFiltroMesPagEmpFin();
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
   const analista = g('filtro-analista-emp-fin')?.value || 'todos';
   const mesPag = g('filtro-mes-pag-emp-fin')?.value || 'todos';
@@ -7836,8 +7849,8 @@ function renderEmpFinalizados() {
     if (analista !== 'todos' && e.analista !== analista) return false;
     if (mesPag !== 'todos') {
       const dp = getDataPagamento(e);
-      const mes = dp.substring(5,7);
-      if (mes !== mesPag) return false;
+      const anoMes = dp.substring(0,7);
+      if (anoMes !== mesPag) return false;
     }
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
