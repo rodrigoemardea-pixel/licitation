@@ -2428,6 +2428,24 @@
           <option value="Rodrigo">Rodrigo</option>
         </select>
       </div>
+      <div class="filter-group">
+        <label>📅 Mês Pagamento:</label>
+        <select id="filtro-mes-pag-emp-fin" onchange="renderEmpFinalizados()">
+          <option value="todos">Todos</option>
+          <option value="01">Janeiro</option>
+          <option value="02">Fevereiro</option>
+          <option value="03">Março</option>
+          <option value="04">Abril</option>
+          <option value="05">Maio</option>
+          <option value="06">Junho</option>
+          <option value="07">Julho</option>
+          <option value="08">Agosto</option>
+          <option value="09">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
     </div>
     <div class="table-wrapper">
@@ -2439,7 +2457,7 @@
             <th>Analista</th>
             <th>Val. Empenho</th>
             <th>Lucro Recebido</th>
-            <th>Finalizado em</th>
+            <th>Dt. Pagamento</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -2453,7 +2471,34 @@
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="renderFinalizadas()"></div>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Mês Finalização:</label>
+        <select id="filtro-mes-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+          <option value="01">Janeiro</option>
+          <option value="02">Fevereiro</option>
+          <option value="03">Março</option>
+          <option value="04">Abril</option>
+          <option value="05">Maio</option>
+          <option value="06">Junho</option>
+          <option value="07">Julho</option>
+          <option value="08">Agosto</option>
+          <option value="09">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
     </div>
+    <div class="table-wrapper">
     <table class="data-table">
       <thead>
         <tr>
@@ -2469,6 +2514,7 @@
       </thead>
       <tbody id="tbody-finalizadas"></tbody>
     </table>
+    </div>
   </div>
 
 </div>
@@ -7639,8 +7685,15 @@ let filtroMesDisputas = 'todos';
 
 function renderFinalizadas() {
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
+  const analistaFin = g('filtro-analista-finalizadas')?.value || 'todos';
+  const mesFin = g('filtro-mes-finalizadas')?.value || 'todos';
   const rows = DB.disputas.filter(d => {
     if (!d.finalizada) return false;
+    if (analistaFin !== 'todos' && d.analista !== analistaFin) return false;
+    if (mesFin !== 'todos') {
+      const mesData = (d.dataFinalizacao||'').substring(5,7);
+      if (mesData !== mesFin) return false;
+    }
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) || (d.processo||'').toLowerCase().includes(q) || (d.estado||'').toLowerCase().includes(q);
   }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
@@ -7770,12 +7823,25 @@ function toggleAgrupamentoFin() {
 function renderEmpFinalizados() {
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
   const analista = g('filtro-analista-emp-fin')?.value || 'todos';
+  const mesPag = g('filtro-mes-pag-emp-fin')?.value || 'todos';
+
+  // Helper: retorna a data de pagamento mais recente das compras do empenho
+  function getDataPagamento(e) {
+    const datas = (e.compras||[]).map(c => c.dpag||'').filter(d => d !== '').sort();
+    return datas.length ? datas[datas.length - 1] : '';
+  }
+
   const rows = DB.empenhos.filter(e => {
     if (!e.finalizado) return false;
     if (analista !== 'todos' && e.analista !== analista) return false;
+    if (mesPag !== 'todos') {
+      const dp = getDataPagamento(e);
+      const mes = dp.substring(5,7);
+      if (mes !== mesPag) return false;
+    }
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
-  }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
+  }).sort((a,b) => (getDataPagamento(b)||'').localeCompare(getDataPagamento(a)||''));
 
   const tb = g('tbody-emp-finalizados');
   if (!tb) return;
@@ -7802,6 +7868,8 @@ function renderEmpFinalizados() {
         const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
           const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
         },0);
+        const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
+        const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
         const zebraFinTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
         return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
@@ -7809,7 +7877,7 @@ function renderEmpFinalizados() {
           <td style="${zebraFinTd}"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
           <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraFinTd}">${fmt(r.vem)}</td>
           <td class="mono" style="color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
-          <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(r.dataFinalizacao)}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
           <td onclick="event.stopPropagation()" style="${zebraFinTd}">
             <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')">🔍</button>
             <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
@@ -7831,13 +7899,15 @@ function renderEmpFinalizados() {
         const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0);
+      const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
+      const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
       return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
         '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
         '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
         '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
         '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
-        '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
+        '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
         '<td onclick="event.stopPropagation()">' +
           '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
           '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
