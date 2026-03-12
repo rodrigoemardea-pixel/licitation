@@ -2406,16 +2406,12 @@
         <tbody id="tbody-empenhos"></tbody>
         <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
           <tr id="tfoot-empenhos-row" style="display:none;">
-            <td></td>
-            <td></td>
-            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
-            <td></td>
-            <td class="money" id="tfoot-e-vem"      style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:'JetBrains Mono',monospace;"></td>
-            <td></td>
-            <td></td>
+            <td colspan="4" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td class="money" id="tfoot-e-vem"      style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td colspan="2"></td>
           </tr>
         </tfoot>
       </table>
@@ -4357,10 +4353,10 @@ function abrirPopupDisputa(id) {
           return (e.compras||[]).some(c => c.itemId === itemEmp.id && c.dpag);
         });
         const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
-        const semEmpenho = empsLote.length === 0;
-        const rowClick = semEmpenho ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
+        const temSaldo = (l.qtdRestante || 0) > 0;
+        const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (semEmpenho ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
           '<td class="mono" style="color:var(--accent-primary);font-weight:600;">' + l.qtdEnviada + '</td>' +
@@ -5016,10 +5012,9 @@ function sumE(){
     '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
 
   // "A receber": empenhos ainda não pagos
+  // "A receber" = soma do campo rec das compras ainda não pagas
   const aReceber = a.reduce((s,r) =>
-    s + (r.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) =>
-      ss + ((c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0))
-    , 0)
+    s + (r.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0)
   , 0);
 
   // Adiciona card "A Receber"
