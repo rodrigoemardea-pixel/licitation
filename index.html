@@ -3238,8 +3238,9 @@ const ADMIN_EMAILS = new Set([
 // ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
 // Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
 const EMAIL_TO_ANALISTA = {
-  'kricia@hamate.com':   'Krícia',   // ← ajuste os e-mails reais
-  'rodrigo@suaempresa.com':  'Rodrigo',  // ← ajuste os e-mails reais
+  'mardea@hamate.com:   'Márdea',   // ← ajuste os e-mails reais
+  'rodrigo@hamate.com':  'Rodrigo',  // ← ajuste os e-mails reais
+  'kricia@hamate.com':  'Krícia',  // ← ajuste os e-mails reais
 };
 
 let isAdmin = false;
@@ -4175,16 +4176,10 @@ const mTag=r=>Object.keys(r.M||{}).length?`<span class="badge by" style="font-si
 function duplicarDisputa(id){
   const original = DB.disputas.find(x => x.id === id);
   if (!original) return;
-  
   const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid();
-  copia.compra = 0;
-  copia.venda = 0;
-  copia.aliq = 0.145;
-  copia.M = {};
-  
-  DB.disputas.push(copia);
-  save('disputas', DB.disputas);
+  copia.id = uid(); copia.compra = 0; copia.venda = 0; copia.aliq = 0.145; copia.M = {};
+  _fullDB.disputas.push(copia);
+  save('disputas', _fullDB.disputas);
   toast('Disputa duplicada com sucesso!', 'success');
   renderAll();
 }
@@ -4192,20 +4187,11 @@ function duplicarDisputa(id){
 function duplicarEmpenho(id){
   const original = DB.empenhos.find(x => x.id === id);
   if (!original) return;
-  
   const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid();
-  copia.vunit = 0;
-  copia.qtd = 1;
-  copia.vem = 0;
-  copia.aliq = 0.13;
-  copia.recebido = 0;
-  copia.dreceb = '';
-  copia.disputaId = null;
-  copia.M = {};
-  
-  DB.empenhos.push(copia);
-  save('empenhos', DB.empenhos);
+  copia.id = uid(); copia.vunit = 0; copia.qtd = 1; copia.vem = 0;
+  copia.aliq = 0.13; copia.recebido = 0; copia.dreceb = ''; copia.disputaId = null; copia.M = {};
+  _fullDB.empenhos.push(copia);
+  save('empenhos', _fullDB.empenhos);
   toast('Empenho duplicado com sucesso!', 'success');
   renderAll();
 }
@@ -5580,8 +5566,8 @@ function verEmpenhosDisputa(disputaId) {
 }
 
 function delEmpenhoDisputa(id) {
-  DB.empenhos = DB.empenhos.filter(r => r.id !== id);
-  save('empenhos', DB.empenhos);
+  _fullDB.empenhos = _fullDB.empenhos.filter(r => r.id !== id);
+  save('empenhos', _fullDB.empenhos);
   toast('Empenho excluído', 'info');
   renderAll();
   if(disputaAtiva) verEmpenhosDisputa(disputaAtiva);
@@ -5792,8 +5778,8 @@ function wizardFinish() {
       observacao: '',
       M: {}
     };
-    DB.disputas.push(novaDisputa);
-    save('disputas', DB.disputas);
+    _fullDB.disputas.push(novaDisputa);
+    save('disputas', _fullDB.disputas);
     toast('Disputa criada com sucesso!', 'success');
   } else {
     const novoEmpenho = {
@@ -5801,7 +5787,7 @@ function wizardFinish() {
       num: wizardData.processo || '',
       data: today(),
       orgao: wizardData.orgao || '',
-      analista: 'Márdea',
+      analista: analistaDoUsuario || 'Márdea',
       produto: '',
       plataforma: '',
       dcomp: today(),
@@ -5814,8 +5800,8 @@ function wizardFinish() {
       observacao: '',
       M: {}
     };
-    DB.empenhos.push(novoEmpenho);
-    save('empenhos', DB.empenhos);
+    _fullDB.empenhos.push(novoEmpenho);
+    save('empenhos', _fullDB.empenhos);
     toast('Empenho criado com sucesso!', 'success');
   }
   
@@ -5973,8 +5959,8 @@ function saveD(){
 
   // Se veio de conversão de acompanhamento, remove o acomp
   if (_acompConvertendoId && !EID.disputas) {
-    DB.acomp = (DB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
-    save('acomp', DB.acomp);
+    _fullDB.acomp = (_fullDB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
+    save('acomp', _fullDB.acomp);
     _acompConvertendoId = null;
     toast('Disputa criada e acompanhamento removido da lista!', 'success');
   } else {
@@ -6192,7 +6178,14 @@ function editE(id){
 }
 
 // ========== CRUD ==========
-function upsert(tab,row){ const idx=DB[tab].findIndex(r=>r.id===row.id); if(idx!==-1) DB[tab][idx]=row; else DB[tab].push(row); save(tab,DB[tab]); }
+function upsert(tab, row) {
+  const arr = _fullDB[tab] || [];
+  const idx = arr.findIndex(r => r.id === row.id);
+  if (idx !== -1) arr[idx] = row;
+  else arr.push(row);
+  _fullDB[tab] = arr;
+  save(tab, arr);
+}
 let PDel=null;
 function delRow(tab,id){
   PDel={tab,id};
@@ -6236,12 +6229,11 @@ function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open');
 function confirmDel(){
   if(!PDel) return;
   if(PDel.tab === 'disputas') {
-    // Exclui em cascata: empenhos e compras vinculados
-    DB.empenhos = DB.empenhos.filter(e => e.disputaId !== PDel.id);
-    save('empenhos', DB.empenhos);
+    _fullDB.empenhos = _fullDB.empenhos.filter(e => e.disputaId !== PDel.id);
+    save('empenhos', _fullDB.empenhos);
   }
-  DB[PDel.tab] = DB[PDel.tab].filter(r=>r.id!==PDel.id);
-  save(PDel.tab, DB[PDel.tab]);
+  _fullDB[PDel.tab] = _fullDB[PDel.tab].filter(r => r.id !== PDel.id);
+  save(PDel.tab, _fullDB[PDel.tab]);
   closeConfirm();
   renderAll();
   toast('Excluído com sucesso','info');
@@ -6282,11 +6274,11 @@ function deletarSelecionados(tab) {
   if(btn) {
     btn.onclick = () => {
       if (tab === 'disputas') {
-        DB.empenhos = DB.empenhos.filter(e => !ids.includes(e.disputaId));
-        save('empenhos', DB.empenhos);
+        _fullDB.empenhos = _fullDB.empenhos.filter(e => !ids.includes(e.disputaId));
+        save('empenhos', _fullDB.empenhos);
       }
-      DB[tab] = DB[tab].filter(r => !ids.includes(r.id));
-      save(tab, DB[tab]);
+      _fullDB[tab] = _fullDB[tab].filter(r => !ids.includes(r.id));
+      save(tab, _fullDB[tab]);
       renderAll();
       const chkAll = g('chk-all-' + tab);
       if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
@@ -7690,9 +7682,9 @@ function salvarTarefa() {
     concluida: false,
     criadaEm: new Date().toISOString()
   };
-  if (!DB.tarefas) DB.tarefas = [];
-  DB.tarefas.push(nova);
-  save('tarefas', DB.tarefas);
+  if (!_fullDB.tarefas) _fullDB.tarefas = [];
+  _fullDB.tarefas.push(nova);
+  save('tarefas', _fullDB.tarefas);
   document.getElementById('tarefa-input-desc').value = '';
   document.getElementById('tarefa-input-prazo').value = '';
   renderTarefas();
@@ -7700,10 +7692,10 @@ function salvarTarefa() {
 }
 
 function toggleTarefa(id) {
-  const t = (DB.tarefas||[]).find(x => x.id === id);
+  const t = (_fullDB.tarefas||[]).find(x => x.id === id);
   if (!t) return;
   t.concluida = !t.concluida;
-  save('tarefas', DB.tarefas);
+  save('tarefas', _fullDB.tarefas);
   renderTarefas();
 }
 
@@ -7714,8 +7706,8 @@ function excluirTarefa(id) {
   const el = g('confirm-msg'); if(el) el.innerHTML = 'Tem certeza que deseja excluir esta tarefa?';
   const btn = g('confirm-del-btn');
   if(btn) btn.onclick = () => {
-    DB.tarefas = (DB.tarefas||[]).filter(x => x.id !== id);
-    save('tarefas', DB.tarefas);
+    _fullDB.tarefas = (_fullDB.tarefas||[]).filter(x => x.id !== id);
+    save('tarefas', _fullDB.tarefas);
     renderTarefas();
     toast('Tarefa excluída', 'info');
     PDel = null; closeConfirm();
@@ -8650,7 +8642,7 @@ function _doSaveAcomp(retornoVal) {
     retorno: retornoVal,
     observacao: document.getElementById('ac-observacao')?.value?.toUpperCase() || '',
   };
-  if (!DB.acomp) DB.acomp = [];
+  if (!_fullDB.acomp) _fullDB.acomp = [];
   // FIX 5: Status "perdida" → confirmar exclusão imediata
   if (row.status === 'perdida') {
     closeModal('acomp', true);
@@ -8661,8 +8653,8 @@ function _doSaveAcomp(retornoVal) {
       btnLabel: '❌ Confirmar exclusão',
       btnClass: 'btn-danger',
       onConfirm: () => {
-        DB.acomp = (DB.acomp||[]).filter(x => x.id !== row.id);
-        save('acomp', DB.acomp);
+        _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== row.id);
+        save('acomp', _fullDB.acomp);
         EID_acomp = null;
         renderAcomp(); updateBadges(); atualizarPainel();
         toast('Acompanhamento removido (perdida).', 'info');
@@ -8670,9 +8662,9 @@ function _doSaveAcomp(retornoVal) {
     });
     return;
   }
-  const idx = DB.acomp.findIndex(x => x.id === row.id);
-  if (idx !== -1) DB.acomp[idx] = row; else DB.acomp.push(row);
-  save('acomp', DB.acomp);
+  const idx = _fullDB.acomp.findIndex(x => x.id === row.id);
+  if (idx !== -1) _fullDB.acomp[idx] = row; else _fullDB.acomp.push(row);
+  save('acomp', _fullDB.acomp);
   toast(EID_acomp ? 'Acompanhamento atualizado!' : 'Acompanhamento salvo!', 'success');
   EID_acomp = null;
   closeModal('acomp', true);
@@ -8718,8 +8710,8 @@ function delAcomp(id) {
   const el = g('confirm-msg'); if(el) el.innerHTML = `Tem certeza que deseja excluir o acompanhamento <strong>${a?.orgao||'?'}</strong>?<br><br>Esta ação não pode ser desfeita.`;
   const btn = g('confirm-del-btn');
   if(btn) btn.onclick = () => {
-    DB.acomp = (DB.acomp||[]).filter(x => x.id !== id);
-    save('acomp', DB.acomp);
+    _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== id);
+    save('acomp', _fullDB.acomp);
     renderAcomp(); updateBadges(); atualizarPainel();
     toast('Excluído!', 'success');
     PDel = null; closeConfirm();
