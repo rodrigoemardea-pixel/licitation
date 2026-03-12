@@ -2687,8 +2687,11 @@
         <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
-        <!-- Analista virá automaticamente da disputa selecionada -->
-        <input type="hidden" id="e-analista">
+        <!-- Analista: visível para admin, preenchido automaticamente para analistas comuns -->
+        <div class="fg" id="fg-e-analista">
+          <label class="fl">👤 Analista</label>
+          <select class="fc" id="e-analista"><option value="">Selecione</option></select>
+        </div>
 
         <!-- ÓRGÃO = DISPUTA (campo único) -->
         <div class="fg full">
@@ -3336,6 +3339,9 @@ function aplicarPermissoes() {
       const fg = el.closest('.filter-group');
       if (fg) fg.style.display = 'none';
     });
+    // Oculta campo analista no form de empenho (não-admin sempre usa o próprio nome)
+    const fgEAn = g('fg-e-analista');
+    if (fgEAn) fgEAn.style.display = 'none';
     // Oculta filtros de analista nas telas de finalizados (não faz sentido para analista comum)
     const fgEmpFin = g('fg-analista-emp-fin');
     const fgFin    = g('fg-analista-finalizadas');
@@ -3365,6 +3371,9 @@ function aplicarPermissoes() {
       const fg = el.closest('.filter-group');
       if (fg) fg.style.display = '';
     });
+    // Restaura campo analista no form de empenho para admin
+    const fgEAnA = g('fg-e-analista');
+    if (fgEAnA) fgEAnA.style.display = '';
     // Restaura filtros de analista em finalizadas para admin
     const fgEmpFinA = g('fg-analista-emp-fin');
     const fgFinA    = g('fg-analista-finalizadas');
@@ -3490,7 +3499,9 @@ function _badgeClass(nome) {
 function setAnalistaSelect(selectId, nome) {
   const sel = document.getElementById(selectId);
   if (!sel || !nome) return;
-  // Verifica se a opção já existe
+  // Se for input (hidden ou text), apenas seta o valor diretamente
+  if (sel.tagName !== 'SELECT') { sel.value = nome; return; }
+  // Se for select, garante que a opção existe antes de selecionar
   const jaExiste = [...sel.options].some(o => o.value === nome || o.text === nome);
   if (!jaExiste) {
     const opt = document.createElement('option');
