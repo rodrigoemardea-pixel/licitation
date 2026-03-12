@@ -3195,21 +3195,22 @@ function sanitizeForFirestore(obj) {
 
 const save = (k, v) => {
   if (!fbAuth.currentUser) return;
-  DB[k] = v;
+  // DB[k] = v usa o setter do objeto DB → grava em _fullDB[k] = v
+  // MAS para analistas comuns, v contém APENAS os registros deles.
+  // Precisamos mesclar com os registros dos outros antes de gravar no Firestore.
   _ignorarProximoSnapshot = true;
   clearTimeout(_salvarTimeout);
   _salvarTimeout = setTimeout(() => { _ignorarProximoSnapshot = false; }, 3000);
 
   let vToSave;
-  // Analistas comuns: mescla os dados deles com os de outros analistas antes de salvar.
-  // Sem isso, salvar sobrescreveria (e apagaria) os dados dos demais analistas.
   if (!isAdmin && (k === 'disputas' || k === 'empenhos' || k === 'acomp')) {
-    const outrosAnalistas = (_fullDB[k] || []).filter(r => r.analista !== analistaDoUsuario);
-    vToSave = [...outrosAnalistas, ...v];
-    _fullDB[k] = vToSave; // mantém _fullDB em sincronia
+    // Preserva os registros dos outros analistas no _fullDB
+    const outros = (_fullDB[k] || []).filter(r => r.analista !== analistaDoUsuario);
+    vToSave = [...outros, ...v];
+    _fullDB[k] = vToSave; // sincroniza _fullDB com o conjunto completo
   } else {
     vToSave = v;
-    if (k in _fullDB) _fullDB[k] = v;
+    _fullDB[k] = v;
   }
 
   const vClean = sanitizeForFirestore(vToSave);
@@ -3231,14 +3232,15 @@ let usuarioLogado = null;
 // ▶ ADMINISTRADORES: colocar aqui os e-mails que podem ver TODOS os dados.
 const ADMIN_EMAILS = new Set([
   'rodrigoemardea@gmail.com',   // ← substitua pelos e-mails reais dos administradores
-  // 'gerente@suaempresa.com',
+
 ]);
 
 // ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
 // Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
 const EMAIL_TO_ANALISTA = {
-  'kricia@hamate.com':   'Krícia',   // ← ajuste os e-mails reais
-  };
+  'kricia_hamate@gmail.com':   'Krícia',   // ← ajuste os e-mails reais
+  
+};
 
 let isAdmin = false;
 let analistaDoUsuario = null;
@@ -3347,32 +3349,15 @@ fbAuth.onAuthStateChanged(user => {
       }
       if (doc.exists) {
         const data = doc.data();
-        // Salva os dados COMPLETOS separadamente (necessário para o save com merge)
+        // Popula _fullDB com todos os dados. Os getters de DB filtram automaticamente.
         _fullDB.disputas    = data.disputas    || [];
         _fullDB.empenhos    = data.empenhos    || [];
         _fullDB.acomp       = data.acomp       || [];
         _fullDB.comentarios = data.comentarios || [];
         _fullDB.tarefas     = data.tarefas     || [];
-
-        if (isAdmin) {
-          // Admin vê tudo
-          DB.disputas    = _fullDB.disputas;
-          DB.empenhos    = _fullDB.empenhos;
-          DB.acomp       = _fullDB.acomp;
-          DB.comentarios = _fullDB.comentarios;
-          DB.tarefas     = _fullDB.tarefas;
-        } else {
-          // Analista comum: DB só contém seus próprios registros
-          DB.disputas    = _fullDB.disputas.filter(r => r.analista === analistaDoUsuario);
-          DB.empenhos    = _fullDB.empenhos.filter(r => r.analista === analistaDoUsuario);
-          DB.acomp       = _fullDB.acomp.filter(r => r.analista === analistaDoUsuario);
-          DB.comentarios = _fullDB.comentarios;  // comentários não têm analista
-          DB.tarefas     = _fullDB.tarefas;      // tarefas não têm analista
-        }
       } else {
         _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
-        DB.disputas = [];
-        DB.empenhos = [];
+        _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
       renderAll();
       atualizarPainel();
@@ -3404,8 +3389,8 @@ fbAuth.onAuthStateChanged(user => {
     isAdmin = false;
     analistaDoUsuario = null;
     filtroAnalista = 'todos';
-    DB.disputas = []; DB.empenhos = []; DB.acomp = [];
     _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
+    _fullDB.comentarios = []; _fullDB.tarefas = [];
     if (_notifTimer) { clearInterval(_notifTimer); _notifTimer = null; }
     _notifShown = new Set();
     document.getElementById('login-screen').classList.add('open');
@@ -3614,10 +3599,27 @@ const parseAliq = (v) => {
   return parseFloat(v.replace(',', '.')) / 100;
 };
 
-let DB={disputas:[],empenhos:[],acomp:[]};
-// _fullDB guarda os dados COMPLETOS do Firestore (todos analistas).
-// Só o admin usa DB === _fullDB. Analistas comuns têm DB filtrado.
-let _fullDB={disputas:[],empenhos:[],acomp:[],comentarios:[],tarefas:[]};
+// ─── Repositório completo (todos os analistas) ───────────────────────────────
+let _fullDB = { disputas:[], empenhos:[], acomp:[], comentarios:[], tarefas:[] };
+
+// ─── DB: proxy com getters — SEMPRE retorna os dados filtrados para o usuário ─
+// Quando isAdmin=true  → retorna tudo.
+// Quando isAdmin=false → retorna só os registros cujo analista === analistaDoUsuario.
+// Assim, NENHUMA função de renderização precisa ser alterada.
+const DB = {
+  get disputas()    { return isAdmin ? _fullDB.disputas    : _fullDB.disputas.filter(r => r.analista === analistaDoUsuario); },
+  get empenhos()    { return isAdmin ? _fullDB.empenhos    : _fullDB.empenhos.filter(r => r.analista === analistaDoUsuario); },
+  get acomp()       { return isAdmin ? _fullDB.acomp       : _fullDB.acomp.filter(r => r.analista === analistaDoUsuario); },
+  get comentarios() { return _fullDB.comentarios; },
+  get tarefas()     { return _fullDB.tarefas; },
+  // Setters: usados por código legado que faz DB[k] = array.
+  set disputas(v)    { _fullDB.disputas    = v; },
+  set empenhos(v)    { _fullDB.empenhos    = v; },
+  set acomp(v)       { _fullDB.acomp       = v; },
+  set comentarios(v) { _fullDB.comentarios = v; },
+  set tarefas(v)     { _fullDB.tarefas     = v; },
+};
+
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
