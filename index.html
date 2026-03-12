@@ -3199,7 +3199,20 @@ const save = (k, v) => {
   _ignorarProximoSnapshot = true;
   clearTimeout(_salvarTimeout);
   _salvarTimeout = setTimeout(() => { _ignorarProximoSnapshot = false; }, 3000);
-  const vClean = sanitizeForFirestore(v);
+
+  let vToSave;
+  // Analistas comuns: mescla os dados deles com os de outros analistas antes de salvar.
+  // Sem isso, salvar sobrescreveria (e apagaria) os dados dos demais analistas.
+  if (!isAdmin && (k === 'disputas' || k === 'empenhos' || k === 'acomp')) {
+    const outrosAnalistas = (_fullDB[k] || []).filter(r => r.analista !== analistaDoUsuario);
+    vToSave = [...outrosAnalistas, ...v];
+    _fullDB[k] = vToSave; // mantém _fullDB em sincronia
+  } else {
+    vToSave = v;
+    if (k in _fullDB) _fullDB[k] = v;
+  }
+
+  const vClean = sanitizeForFirestore(vToSave);
   fbDB.collection('dados').doc('principal').set(
     { [k]: vClean },
     { merge: true }
@@ -3224,9 +3237,8 @@ const ADMIN_EMAILS = new Set([
 // ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
 // Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
 const EMAIL_TO_ANALISTA = {
-  'kricia_analista@gmail.com':   'Krícia',   // ← ajuste os e-mails reais
-  
-};
+  'kricia@hamate.com':   'Krícia',   // ← ajuste os e-mails reais
+  };
 
 let isAdmin = false;
 let analistaDoUsuario = null;
@@ -3262,18 +3274,22 @@ function aplicarPermissoes() {
   const badgeEl = g('user-role-badge');
 
   if (!isAdmin) {
-    // — Usuário comum: bloqueia filtros de analista e força para o seu nome —
+    // — Usuário comum: oculta / bloqueia todos os filtros de analista —
     selectIds.forEach(id => {
       const el = g(id);
       if (!el) return;
-      el.value = analistaDoUsuario;
+      // Força o valor e desabilita para que o usuário não possa mudar
+      el.value    = analistaDoUsuario;
       el.disabled = true;
-      el.title = 'Você só pode visualizar seus próprios dados';
-      el.style.opacity = '0.65';
+      el.title    = 'Você só pode visualizar seus próprios dados';
+      el.style.opacity = '0.6';
       el.style.cursor  = 'not-allowed';
+      // Esconde também o filter-group pai para ficar mais limpo
+      const fg = el.closest('.filter-group');
+      if (fg) fg.style.display = 'none';
     });
-    // Sincroniza as variáveis globais de filtro
-    filtroAnalista = analistaDoUsuario;
+    // Garante variáveis globais também bloqueadas
+    filtroAnalista         = analistaDoUsuario;
     filtroAnalistaDisputas = analistaDoUsuario;
     filtroAnalistaEmpenhos = analistaDoUsuario;
     // Badge no header
@@ -3281,25 +3297,27 @@ function aplicarPermissoes() {
       badgeEl.textContent = '🔒 ' + analistaDoUsuario;
       badgeEl.title = 'Você está visualizando apenas seus próprios registros';
       badgeEl.style.background = 'var(--info-soft)';
-      badgeEl.style.color = 'var(--accent-primary)';
-      badgeEl.style.border = '1px solid var(--accent-primary)';
+      badgeEl.style.color      = 'var(--accent-primary)';
+      badgeEl.style.border     = '1px solid var(--accent-primary)';
     }
   } else {
-    // — Administrador: libera todos os filtros —
+    // — Administrador: garante que tudo está habilitado —
     selectIds.forEach(id => {
       const el = g(id);
       if (!el) return;
-      el.disabled = false;
-      el.title = '';
+      el.disabled      = false;
+      el.title         = '';
       el.style.opacity = '';
       el.style.cursor  = '';
+      const fg = el.closest('.filter-group');
+      if (fg) fg.style.display = '';
     });
     if (badgeEl) {
       badgeEl.textContent = '👑 Admin';
-      badgeEl.title = 'Administrador — acesso total a todos os dados';
+      badgeEl.title       = 'Administrador — acesso total a todos os dados';
       badgeEl.style.background = 'var(--purple-soft)';
-      badgeEl.style.color = 'var(--purple)';
-      badgeEl.style.border = '1px solid var(--purple)';
+      badgeEl.style.color      = 'var(--purple)';
+      badgeEl.style.border     = '1px solid var(--purple)';
     }
   }
 }
@@ -3329,12 +3347,30 @@ fbAuth.onAuthStateChanged(user => {
       }
       if (doc.exists) {
         const data = doc.data();
-        DB.disputas = data.disputas || [];
-        DB.empenhos = data.empenhos || [];
-        DB.acomp = data.acomp || [];
-        DB.comentarios = data.comentarios || [];
-        DB.tarefas = data.tarefas || [];
+        // Salva os dados COMPLETOS separadamente (necessário para o save com merge)
+        _fullDB.disputas    = data.disputas    || [];
+        _fullDB.empenhos    = data.empenhos    || [];
+        _fullDB.acomp       = data.acomp       || [];
+        _fullDB.comentarios = data.comentarios || [];
+        _fullDB.tarefas     = data.tarefas     || [];
+
+        if (isAdmin) {
+          // Admin vê tudo
+          DB.disputas    = _fullDB.disputas;
+          DB.empenhos    = _fullDB.empenhos;
+          DB.acomp       = _fullDB.acomp;
+          DB.comentarios = _fullDB.comentarios;
+          DB.tarefas     = _fullDB.tarefas;
+        } else {
+          // Analista comum: DB só contém seus próprios registros
+          DB.disputas    = _fullDB.disputas.filter(r => r.analista === analistaDoUsuario);
+          DB.empenhos    = _fullDB.empenhos.filter(r => r.analista === analistaDoUsuario);
+          DB.acomp       = _fullDB.acomp.filter(r => r.analista === analistaDoUsuario);
+          DB.comentarios = _fullDB.comentarios;  // comentários não têm analista
+          DB.tarefas     = _fullDB.tarefas;      // tarefas não têm analista
+        }
       } else {
+        _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
         DB.disputas = [];
         DB.empenhos = [];
       }
@@ -3368,9 +3404,8 @@ fbAuth.onAuthStateChanged(user => {
     isAdmin = false;
     analistaDoUsuario = null;
     filtroAnalista = 'todos';
-    DB.disputas = [];
-    DB.empenhos = [];
-    DB.acomp = [];
+    DB.disputas = []; DB.empenhos = []; DB.acomp = [];
+    _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
     if (_notifTimer) { clearInterval(_notifTimer); _notifTimer = null; }
     _notifShown = new Set();
     document.getElementById('login-screen').classList.add('open');
@@ -3580,6 +3615,9 @@ const parseAliq = (v) => {
 };
 
 let DB={disputas:[],empenhos:[],acomp:[]};
+// _fullDB guarda os dados COMPLETOS do Firestore (todos analistas).
+// Só o admin usa DB === _fullDB. Analistas comuns têm DB filtrado.
+let _fullDB={disputas:[],empenhos:[],acomp:[],comentarios:[],tarefas:[]};
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
