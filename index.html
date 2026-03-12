@@ -773,7 +773,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
-    table-layout: auto;
+    table-layout: fixed;
     min-width: 100%;
   }
 
@@ -2310,6 +2310,18 @@
     </div>
     <div class="table-wrapper" id="disputas-table-view">
       <table>
+        <colgroup>
+          <col style="width:36px">
+          <col style="width:90px">
+          <col style="width:auto">
+          <col style="width:90px">
+          <col style="width:110px">
+          <col style="width:110px">
+          <col style="width:100px">
+          <col style="width:100px">
+          <col style="width:120px">
+          <col style="width:180px">
+        </colgroup>
         <thead><tr>
           <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
           <th onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
@@ -3258,6 +3270,63 @@ function fazerLogout() {
 }
 
 // ===== CONTROLE DE PERMISSÕES =====
+// Popula todos os selects de filtro de analista com os nomes reais existentes nos dados.
+// Chamada sempre que _fullDB é atualizado (onSnapshot).
+function atualizarFiltrosAnalista() {
+  // Coleta nomes únicos de todos os arrays que têm campo analista
+  const nomes = new Set();
+  (_fullDB.disputas || []).forEach(r => r.analista && nomes.add(r.analista));
+  (_fullDB.empenhos || []).forEach(r => r.analista && nomes.add(r.analista));
+  (_fullDB.acomp    || []).forEach(r => r.analista && nomes.add(r.analista));
+  const sorted = [...nomes].sort();
+
+  // IDs dos selects que precisam de opções dinâmicas
+  const filterIds = [
+    'filtro-analista-disputas',
+    'filtro-analista-empenhos',
+    'filtro-analista-acomp',
+    'filtro-analista-finalizadas',
+    'filtro-analista-emp-fin',
+    'dash-filtro-analista',
+    'tarefa-input-resp',
+  ];
+
+  filterIds.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    const isTarefa = id === 'tarefa-input-resp';
+    // Mantém só a primeira opção fixa ("Todos" ou "Qualquer um")
+    while (sel.options.length > 1) sel.remove(1);
+    sorted.forEach(nome => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+    // Restaura seleção anterior se ainda válida
+    if (current && [...sel.options].some(o => o.value === current)) {
+      sel.value = current;
+    }
+  });
+
+  // Também atualiza selects de criação/edição (d-analista, ac-analista)
+  const formIds = ['d-analista', 'ac-analista'];
+  formIds.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    while (sel.options.length > 1) sel.remove(1);
+    sorted.forEach(nome => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+    if (current && [...sel.options].some(o => o.value === current)) sel.value = current;
+  });
+}
+
 function aplicarPermissoes() {
   const selectIds = [
     'filtro-analista',
@@ -3366,6 +3435,7 @@ fbAuth.onAuthStateChanged(user => {
         _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
         _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
+      atualizarFiltrosAnalista();
       renderAll();
       atualizarPainel();
       aplicarPermissoes();
@@ -3409,6 +3479,18 @@ fbAuth.onAuthStateChanged(user => {
     if(btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 });
+
+// Atribui uma classe de badge consistente por nome de analista
+const _badgeColors = {};
+const _badgePalette = ['bp','bb','bg','bv','bo'];
+function _badgeClass(nome) {
+  if (!nome) return 'bb';
+  if (!_badgeColors[nome]) {
+    const usados = Object.keys(_badgeColors).length;
+    _badgeColors[nome] = _badgePalette[usados % _badgePalette.length];
+  }
+  return _badgeColors[nome];
+}
 
 // ===== HELPER: garante que a opção do analista existe no select e a seleciona =====
 function setAnalistaSelect(selectId, nome) {
@@ -4711,7 +4793,7 @@ function renderD(){
         '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
       '</td>' +
       '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + empBadge + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
       '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
@@ -4778,7 +4860,7 @@ function renderD(){
             '<div style="display:flex;align-items:center;gap:6px;">' +
               '<span style="font-size:10px;color:var(--text-tertiary);">└</span>' +
               '<span class="mono" style="font-size:11px;font-weight:700;color:var(--text-primary);">' + (e.num||'—') + '</span>' +
-              (e.analista ? '<span class="badge ' + (e.analista==='Márdea'?'bp':'bb') + '" style="font-size:9px;">' + e.analista + '</span>' : '') +
+              (e.analista ? '<span class="badge ' + (_badgeClass(e.analista)) + '" style="font-size:9px;">' + e.analista + '</span>' : '') +
             '</div>' +
             loteDesc +
           '</td>' +
@@ -4895,7 +4977,7 @@ function renderE(){
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
       '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
       '<td class="mono" style="color:var(--text-secondary);font-size:11px;">' + (_vlCompra>0 ? fmt(_vlCompra) : '—') + '</td>' +
       '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
@@ -5253,7 +5335,7 @@ function atualizarDashboard() {
     const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
     return `<tr><td style="padding:7px 8px;font-weight:600;font-family:'JetBrains Mono',monospace;">${r.num||'—'}</td>
       <td style="padding:7px 8px;">${r.orgao||'—'}</td>
-      <td style="padding:7px 8px;"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="padding:7px 8px;"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);">${fmt(r.vem)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${dias}d</td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente há mais de 30 dias</td></tr>';
@@ -5310,7 +5392,7 @@ function atualizarDashboard() {
     `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${e.id}')">
       <td style="padding:7px 8px;font-weight:600;font-family:monospace;">${e.num||'—'}</td>
       <td style="padding:7px 8px;">${(e.orgao||'—').substring(0,30)}</td>
-      <td style="padding:7px 8px;"><span class="badge ${e.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${e.analista||'—'}</span></td>
+      <td style="padding:7px 8px;"><span class="badge ${_badgeClass(e.analista)}" style="font-size:10px;">${e.analista||'—'}</span></td>
       <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(aReceber)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;">${dias}d</td>
       <td style="padding:7px 8px;text-align:center;"><span style="background:${cor};color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;">${faixa}</span></td>
@@ -7910,7 +7992,7 @@ function renderFinalizadas() {
     return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td class="mono" style="font-size:11px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
       '<td style="' + zebraTd + '"><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
-      '<td style="' + zebraTd + '"><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'#2563eb20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'#2563eb') + ';">' + (r.empresa||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:600;' + zebraTd + '">' + fmt(contrato) + '</td>' +
       '<td class="mono" style="color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
@@ -8069,7 +8151,7 @@ function renderEmpFinalizados() {
         return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
           <td style="${zebraFinTd}"></td>
-          <td style="${zebraFinTd}"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+          <td style="${zebraFinTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
           <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraFinTd}">${fmt(r.vem)}</td>
           <td class="mono" style="color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
           <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
@@ -8099,7 +8181,7 @@ function renderEmpFinalizados() {
       return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
         '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
-        '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+        '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
         '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
         '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
         '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
@@ -8759,7 +8841,7 @@ function renderAcomp() {
     return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
       <td style="${zebraTd}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
-      <td style="${zebraTd}"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
       <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
       <td style="${zebraTd}">${retStr}</td>
@@ -9075,7 +9157,7 @@ function atualizarPainel() {
         ${Object.entries(porAnalista).map(([nome, dados]) => `
           <div style="margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-              <span class="badge ${nome==='Márdea'?'bp':'bb'}" style="font-size:11px;">${nome}</span>
+              <span class="badge ${_badgeClass(nome)}" style="font-size:11px;">${nome}</span>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
               <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
@@ -9163,7 +9245,7 @@ function renderEAgrupado(rows, tb) {
         <td style="${zebraGrpTd}"></td>
         <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;${zebraGrpTd}">${r.num||'—'}</td>
         <td style="${zebraGrpTd}"></td>
-        <td style="${zebraGrpTd}"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+        <td style="${zebraGrpTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
         <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraGrpTd}">${fmt(r.vem)}</td>
         <td class="mono" style="color:var(--text-secondary);font-size:11px;${zebraGrpTd}">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
         <td class="mono" style="color:var(--success);font-size:11px;${zebraGrpTd}">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
