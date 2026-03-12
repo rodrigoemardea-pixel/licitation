@@ -1925,6 +1925,9 @@
     🔔 <span id="push-notif-label">Push</span>
   </button>
 
+  <!-- BADGE DE PERMISSÃO (admin / usuário restrito) -->
+  <div id="user-role-badge" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;"></div>
+
   <!-- USUÁRIO LOGADO -->
   <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para sair">
     <div class="user-avatar" id="user-avatar">?</div>
@@ -3211,6 +3214,23 @@ const load = k => []; // não usado mais (dados vêm do Firestore)
 // ===== USUÁRIO LOGADO =====
 let usuarioLogado = null;
 
+// ===== CONFIGURAÇÕES DE PERMISSÃO =====
+// ▶ ADMINISTRADORES: colocar aqui os e-mails que podem ver TODOS os dados.
+const ADMIN_EMAILS = new Set([
+  'rodrigoemardea@gmail.com',   // ← substitua pelos e-mails reais dos administradores
+  // 'gerente@suaempresa.com',
+]);
+
+// ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
+// Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
+const EMAIL_TO_ANALISTA = {
+  'kricia_analista@gmail.com':   'Krícia',   // ← ajuste os e-mails reais
+  
+};
+
+let isAdmin = false;
+let analistaDoUsuario = null;
+
 function fazerLogin() {
   const email = (document.getElementById('login-email')?.value || '').trim();
   const senha = (document.getElementById('login-senha')?.value || '');
@@ -3230,6 +3250,60 @@ function fazerLogout() {
   fbAuth.signOut();
 }
 
+// ===== CONTROLE DE PERMISSÕES =====
+function aplicarPermissoes() {
+  const selectIds = [
+    'filtro-analista',
+    'filtro-analista-disputas',
+    'filtro-analista-empenhos',
+    'filtro-analista-acomp',
+    'dash-filtro-analista',
+  ];
+  const badgeEl = g('user-role-badge');
+
+  if (!isAdmin) {
+    // — Usuário comum: bloqueia filtros de analista e força para o seu nome —
+    selectIds.forEach(id => {
+      const el = g(id);
+      if (!el) return;
+      el.value = analistaDoUsuario;
+      el.disabled = true;
+      el.title = 'Você só pode visualizar seus próprios dados';
+      el.style.opacity = '0.65';
+      el.style.cursor  = 'not-allowed';
+    });
+    // Sincroniza as variáveis globais de filtro
+    filtroAnalista = analistaDoUsuario;
+    filtroAnalistaDisputas = analistaDoUsuario;
+    filtroAnalistaEmpenhos = analistaDoUsuario;
+    // Badge no header
+    if (badgeEl) {
+      badgeEl.textContent = '🔒 ' + analistaDoUsuario;
+      badgeEl.title = 'Você está visualizando apenas seus próprios registros';
+      badgeEl.style.background = 'var(--info-soft)';
+      badgeEl.style.color = 'var(--accent-primary)';
+      badgeEl.style.border = '1px solid var(--accent-primary)';
+    }
+  } else {
+    // — Administrador: libera todos os filtros —
+    selectIds.forEach(id => {
+      const el = g(id);
+      if (!el) return;
+      el.disabled = false;
+      el.title = '';
+      el.style.opacity = '';
+      el.style.cursor  = '';
+    });
+    if (badgeEl) {
+      badgeEl.textContent = '👑 Admin';
+      badgeEl.title = 'Administrador — acesso total a todos os dados';
+      badgeEl.style.background = 'var(--purple-soft)';
+      badgeEl.style.color = 'var(--purple)';
+      badgeEl.style.border = '1px solid var(--purple)';
+    }
+  }
+}
+
 // Quando o estado de autenticação muda (login/logout)
 fbAuth.onAuthStateChanged(user => {
   if (user) {
@@ -3241,8 +3315,11 @@ fbAuth.onAuthStateChanged(user => {
     document.getElementById('user-nome').textContent = nomeFormatado;
     document.getElementById('user-avatar').textContent = nomeFormatado.charAt(0).toUpperCase();
     usuarioLogado = nomeFormatado;
-    // Sem filtro automático por analista — exibe todos os dados
-    filtroAnalista = 'todos';
+    // Permissões: verifica se é admin ou usuário comum
+    isAdmin = ADMIN_EMAILS.has(user.email);
+    analistaDoUsuario = EMAIL_TO_ANALISTA[user.email] || nomeFormatado;
+    // Admins veem tudo; usuários comuns só veem seus próprios registros
+    filtroAnalista = isAdmin ? 'todos' : analistaDoUsuario;
     // Carrega dados do Firestore em tempo real
     fbDB.collection('dados').doc('principal').onSnapshot(doc => {
       // Ignora snapshots disparados pela própria gravação local
@@ -3263,6 +3340,7 @@ fbAuth.onAuthStateChanged(user => {
       }
       renderAll();
       atualizarPainel();
+      aplicarPermissoes();
       // Dispara alertas de e-mail ao carregar
       setTimeout(enviarAlertasEmail, 3000);
       // Inicia notificações na primeira carga
@@ -3287,6 +3365,8 @@ fbAuth.onAuthStateChanged(user => {
   } else {
     // Usuário saiu — mostra tela de login
     usuarioLogado = null;
+    isAdmin = false;
+    analistaDoUsuario = null;
     filtroAnalista = 'todos';
     DB.disputas = [];
     DB.empenhos = [];
@@ -3722,6 +3802,13 @@ let filtroComprasEmpenhos = 'todos';
 
 // ========== FUNÇÕES DE FILTRO ==========
 function filtrarPorAnalista() {
+  // Não-admins não podem mudar o filtro de analista
+  if (!isAdmin) {
+    filtroAnalista = analistaDoUsuario;
+    const el = g('filtro-analista');
+    if (el) el.value = analistaDoUsuario;
+    return;
+  }
   filtroAnalista = g('filtro-analista').value;
   renderAll();
   atualizarDashboard();
@@ -3764,7 +3851,14 @@ function filtrarDisputas() {
   filtroRpDisputas = g('filtro-rp-disputas').value;
   filtroSistemaDisputas = g('filtro-sistema-disputas').value;
   filtroEstadoDisputas = g('filtro-estado-disputas').value;
-  filtroAnalistaDisputas = g('filtro-analista-disputas')?.value || 'todos';
+  // Não-admins: sempre força o filtro de analista para o seu nome
+  if (!isAdmin) {
+    filtroAnalistaDisputas = analistaDoUsuario;
+    filtroAnalista = analistaDoUsuario;
+    const el = g('filtro-analista-disputas'); if (el) el.value = analistaDoUsuario;
+  } else {
+    filtroAnalistaDisputas = g('filtro-analista-disputas')?.value || 'todos';
+  }
   filtroMesDisputas = g('filtro-mes-disputas')?.value || 'todos';
   renderD();
 }
@@ -3773,7 +3867,13 @@ let filtroAtrasoEmpenhos = 'todos';
 
 function filtrarEmpenhos() {
   markAllActiveFilters();
-  filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
+  // Não-admins: sempre força o filtro de analista para o seu nome
+  if (!isAdmin) {
+    filtroAnalistaEmpenhos = analistaDoUsuario;
+    const el = g('filtro-analista-empenhos'); if (el) el.value = analistaDoUsuario;
+  } else {
+    filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
+  }
   filtroComprasEmpenhos = g('filtro-compras-empenhos')?.value || 'todos';
   filtroAtrasoEmpenhos = g('filtro-atraso-empenhos')?.value || 'todos';
   renderE();
@@ -5485,6 +5585,11 @@ function openModal(tab){
     clearD();
     lotesTemp = []; renderLotes();
     g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
+    // Pré-preenche analista para usuários não-admin
+    if (!isAdmin && analistaDoUsuario) {
+      const sel = g('d-analista');
+      if (sel) { sel.value = analistaDoUsuario; sel.disabled = true; }
+    }
   } else if(tab==='empenhos') {
     // Empenhos só podem ser criados a partir de uma disputa
     toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
@@ -5549,6 +5654,11 @@ function novoEmpenhoParaDisputa(disputaId) {
   g('ttl-empenhos').textContent = 'Novo Empenho';
   g('e-data').value = today();
   populateDisputaSelect(disputaId);
+  // Pré-preenche analista para usuários não-admin
+  if (!isAdmin && analistaDoUsuario) {
+    const sel = g('e-analista');
+    if (sel) { sel.value = analistaDoUsuario; sel.disabled = true; }
+  }
   g('modal-empenhos').classList.add('open');
 }
 
@@ -5811,6 +5921,9 @@ function editD(id){
   g('d-data').value=r.data||''; g('d-orgao').value=r.orgao||''; g('d-estado').value=r.estado||'';
   g('d-empresa').value=r.empresa||''; g('d-tipo').value=r.tipo||''; g('d-rp').value=r.rp||'';
   g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||''; g('d-analista').value=r.analista||'';
+  // Para não-admins, bloqueia troca de analista
+  const _dAnSel = g('d-analista');
+  if (_dAnSel) _dAnSel.disabled = !isAdmin;
 
   g('d-observacao').value=r.observacao||'';
 
@@ -5944,7 +6057,10 @@ function editE(id){
   const r=DB.empenhos.find(x=>x.id===id); if(!r) return;
   EID.empenhos=id; clearE();
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
-  g('e-analista').value=r.analista||'Márdea'; 
+  g('e-analista').value=r.analista||'Márdea';
+  // Para não-admins, bloqueia troca de analista
+  const _eAnSel = g('e-analista');
+  if (_eAnSel) _eAnSel.disabled = !isAdmin;
   g('e-observacao').value=r.observacao||'';
 
   // Carrega NE
