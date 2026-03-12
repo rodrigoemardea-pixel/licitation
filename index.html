@@ -926,9 +926,9 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: 20px;
-    width: 98%;
-    max-width: 1300px;
-    max-height: 90vh;
+    width: 99%;
+    max-width: 1500px;
+    max-height: 96vh;
     overflow-y: auto;
     box-shadow: 0 32px 72px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04);
     animation: modalIn 0.25s ease;
@@ -1441,26 +1441,26 @@
   .detail-popup-overlay.open { display: flex; }
   .detail-popup {
     background: var(--bg-surface); border-radius: 20px;
-    padding: 28px; max-width: 1100px; width: 97%;
-    max-height: 95vh; overflow-y: auto;
+    padding: 24px 28px 20px; max-width: 1400px; width: 98%;
+    max-height: 92vh; overflow-y: auto;
     box-shadow: 0 25px 60px rgba(0,0,0,0.35);
     border: 1px solid var(--border-light);
   }
   .detail-popup-header {
     display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px; gap: 12px;
+    margin-bottom: 14px; gap: 12px;
   }
   .detail-popup-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
   .detail-popup-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
   .detail-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-tertiary); padding: 4px; line-height: 1; }
   .detail-close:hover { color: var(--danger); }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
   .detail-field { }
   .detail-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-bottom: 3px; }
   .detail-field-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .detail-section { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.8px; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; margin: 16px 0 12px; }
-  .detail-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+  .detail-section { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.8px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; margin: 12px 0 8px; }
+  .detail-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
   .lotes-status-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .lotes-status-table th { background: var(--bg-surface-soft); padding: 7px 10px; text-align: left; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); border-bottom: 2px solid var(--border-light); }
   .lotes-status-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
@@ -3220,18 +3220,14 @@ let usuarioLogado = null;
 // ===== CONFIGURAÇÕES DE PERMISSÃO =====
 // ▶ ADMINISTRADORES: colocar aqui os e-mails que podem ver TODOS os dados.
 const ADMIN_EMAILS = new Set([
-  'rodrigoemardea@gmail.com',   // ← substitua pelos e-mails reais dos administradores
-  // 'gerente@suaempresa.com',
+  'rodrigoemardea@gmail.com',  // Admin geral
 ]);
 
 // ▶ MAPEAMENTO e-mail → nome do analista (EXATAMENTE igual ao cadastrado nos registros).
-// ⚠️ IMPORTANTE: o nome aqui deve ser IDÊNTICO ao campo "analista" nos dados salvos.
-//    Inclua acentos se os dados foram salvos com acentos (ex: 'Márdea', 'Krícia').
-// Usuários que NÃO estão aqui e NÃO são admin verão uma tela de aviso.
 const EMAIL_TO_ANALISTA = {
-  'mardea@hamate.com':   'Márdea',   // ← ajuste os e-mails reais
-  'rodrigo@hamate.com':  'Rodrigo',  // ← ajuste os e-mails reais
-  // 'kricia@hamate.com': 'Krícia',  // ← exemplo com acento
+  'mardea@hamate.com':   'Márdea',
+  'rodrigo@hamate.com':  'Rodrigo',
+  'kricia@hamate.com':   'Krícia',
 };
 
 let isAdmin = false;
