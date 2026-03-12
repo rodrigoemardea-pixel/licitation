@@ -3195,24 +3195,14 @@ function sanitizeForFirestore(obj) {
 
 const save = (k, v) => {
   if (!fbAuth.currentUser) return;
-  // DB[k] = v usa o setter do objeto DB → grava em _fullDB[k] = v
-  // MAS para analistas comuns, v contém APENAS os registros deles.
-  // Precisamos mesclar com os registros dos outros antes de gravar no Firestore.
+  // _fullDB é SEMPRE a fonte completa (todos os analistas).
+  // Toda escrita já foi feita em _fullDB antes de chamar save().
+  // Basta gravar _fullDB[k] no Firestore diretamente.
   _ignorarProximoSnapshot = true;
   clearTimeout(_salvarTimeout);
   _salvarTimeout = setTimeout(() => { _ignorarProximoSnapshot = false; }, 3000);
 
-  let vToSave;
-  if (!isAdmin && (k === 'disputas' || k === 'empenhos' || k === 'acomp')) {
-    // Preserva os registros dos outros analistas no _fullDB
-    const outros = (_fullDB[k] || []).filter(r => r.analista !== analistaDoUsuario);
-    vToSave = [...outros, ...v];
-    _fullDB[k] = vToSave; // sincroniza _fullDB com o conjunto completo
-  } else {
-    vToSave = v;
-    _fullDB[k] = v;
-  }
-
+  const vToSave = (k in _fullDB) ? _fullDB[k] : v;
   const vClean = sanitizeForFirestore(vToSave);
   fbDB.collection('dados').doc('principal').set(
     { [k]: vClean },
@@ -3235,12 +3225,14 @@ const ADMIN_EMAILS = new Set([
   // 'gerente@suaempresa.com',
 ]);
 
-// ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
-// Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
+// ▶ MAPEAMENTO e-mail → nome do analista (EXATAMENTE igual ao cadastrado nos registros).
+// ⚠️ IMPORTANTE: o nome aqui deve ser IDÊNTICO ao campo "analista" nos dados salvos.
+//    Inclua acentos se os dados foram salvos com acentos (ex: 'Márdea', 'Krícia').
+// Usuários que NÃO estão aqui e NÃO são admin verão uma tela de aviso.
 const EMAIL_TO_ANALISTA = {
-  'mardea@hamate.com:   'Márdea',   // ← ajuste os e-mails reais
+  'mardea@hamate.com':   'Márdea',   // ← ajuste os e-mails reais
   'rodrigo@hamate.com':  'Rodrigo',  // ← ajuste os e-mails reais
-  'kricia@hamate.com':  'Krícia',  // ← ajuste os e-mails reais
+  // 'kricia@hamate.com': 'Krícia',  // ← exemplo com acento
 };
 
 let isAdmin = false;
@@ -3338,7 +3330,21 @@ fbAuth.onAuthStateChanged(user => {
     usuarioLogado = nomeFormatado;
     // Permissões: verifica se é admin ou usuário comum
     isAdmin = ADMIN_EMAILS.has(user.email);
-    analistaDoUsuario = EMAIL_TO_ANALISTA[user.email] || nomeFormatado;
+    // Usa o nome do mapeamento (com acentos corretos).
+    // Fallback: se o e-mail não está no mapa e não é admin, avisa o usuário.
+    if (isAdmin) {
+      analistaDoUsuario = EMAIL_TO_ANALISTA[user.email] || nomeFormatado;
+    } else if (EMAIL_TO_ANALISTA[user.email]) {
+      analistaDoUsuario = EMAIL_TO_ANALISTA[user.email];
+    } else {
+      // E-mail não mapeado e não é admin: exibe aviso claro
+      analistaDoUsuario = nomeFormatado;
+      console.warn(`⚠️ E-mail "${user.email}" não encontrado em EMAIL_TO_ANALISTA. ` +
+        `Adicione uma entrada como: '${user.email}': 'Nome Com Acento'`);
+      setTimeout(() => toast(
+        `⚠️ Seu e-mail não está configurado no sistema. Contate o administrador.`, 'error'
+      ), 1500);
+    }
     // Admins veem tudo; usuários comuns só veem seus próprios registros
     filtroAnalista = isAdmin ? 'todos' : analistaDoUsuario;
     // Carrega dados do Firestore em tempo real
