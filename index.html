@@ -2409,9 +2409,11 @@
             <td></td><td></td>
             <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
             <td></td>
-            <td class="money" id="tfoot-e-vem" style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-e-lucro" style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
-            <td></td>
+            <td class="money" id="tfoot-e-vem"      style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:'JetBrains Mono',monospace;"></td>
+            <td></td><td></td>
           </tr>
         </tfoot>
       </table>
@@ -2423,12 +2425,10 @@
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
-      <div class="filter-group">
+      <div class="filter-group" id="fg-analista-emp-fin">
         <label>👤 Analista:</label>
         <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
           <option value="todos">Todos</option>
-          <option value="Márdea">Márdea</option>
-          <option value="Rodrigo">Rodrigo</option>
         </select>
       </div>
       <div class="filter-group">
@@ -2462,12 +2462,10 @@
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="renderFinalizadas()"></div>
-      <div class="filter-group">
+      <div class="filter-group" id="fg-analista-finalizadas">
         <label>👤 Analista:</label>
         <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
           <option value="todos">Todos</option>
-          <option value="Márdea">Márdea</option>
-          <option value="Rodrigo">Rodrigo</option>
         </select>
       </div>
       <div class="filter-group">
@@ -3340,6 +3338,11 @@ function aplicarPermissoes() {
       const fg = el.closest('.filter-group');
       if (fg) fg.style.display = 'none';
     });
+    // Oculta filtros de analista nas telas de finalizados (não faz sentido para analista comum)
+    const fgEmpFin = g('fg-analista-emp-fin');
+    const fgFin    = g('fg-analista-finalizadas');
+    if (fgEmpFin) fgEmpFin.style.display = 'none';
+    if (fgFin)    fgFin.style.display    = 'none';
     // Garante variáveis globais também bloqueadas
     filtroAnalista         = analistaDoUsuario;
     filtroAnalistaDisputas = analistaDoUsuario;
@@ -3364,6 +3367,11 @@ function aplicarPermissoes() {
       const fg = el.closest('.filter-group');
       if (fg) fg.style.display = '';
     });
+    // Restaura filtros de analista em finalizadas para admin
+    const fgEmpFinA = g('fg-analista-emp-fin');
+    const fgFinA    = g('fg-analista-finalizadas');
+    if (fgEmpFinA) fgEmpFinA.style.display = '';
+    if (fgFinA)    fgFinA.style.display    = '';
     if (badgeEl) {
       badgeEl.textContent = '👑 Admin';
       badgeEl.title       = 'Administrador — acesso total a todos os dados';
@@ -5005,13 +5013,26 @@ function sumE(){
     '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
 
+  // "A receber": empenhos ainda não pagos
+  const aReceber = a.reduce((s,r) =>
+    s + (r.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) =>
+      ss + ((c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0))
+    , 0)
+  , 0);
+
+  // Adiciona card "A Receber"
+  g('sum-empenhos').innerHTML +=
+    '<div class="card" style="border-left:3px solid var(--purple);"><div class="card-label">⏳ A Receber</div><div class="card-value" style="color:var(--purple);">'+fmt(aReceber)+'</div></div>';
+
   // Update tfoot empenhos
   const tfRowE = document.getElementById('tfoot-empenhos-row');
   if (tfRowE && a.length > 0) {
     tfRowE.style.display = '';
     const el = id => document.getElementById(id);
-    if(el('tfoot-e-vem'))   el('tfoot-e-vem').textContent   = fmt(te);
-    if(el('tfoot-e-lucro')) el('tfoot-e-lucro').textContent = fmt(lucroEmpenhado);
+    if(el('tfoot-e-vem'))      el('tfoot-e-vem').textContent      = fmt(te);
+    if(el('tfoot-e-compra'))   el('tfoot-e-compra').textContent   = fmt(totalComprado);
+    if(el('tfoot-e-lucro'))    el('tfoot-e-lucro').textContent    = fmt(lucroEmpenhado);
+    if(el('tfoot-e-areceber')) el('tfoot-e-areceber').textContent = fmt(aReceber);
   } else if (tfRowE) { tfRowE.style.display = 'none'; }
 }
 
