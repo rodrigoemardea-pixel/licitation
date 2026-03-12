@@ -3232,14 +3232,14 @@ let usuarioLogado = null;
 // ▶ ADMINISTRADORES: colocar aqui os e-mails que podem ver TODOS os dados.
 const ADMIN_EMAILS = new Set([
   'rodrigoemardea@gmail.com',   // ← substitua pelos e-mails reais dos administradores
-
+  // 'gerente@suaempresa.com',
 ]);
 
 // ▶ MAPEAMENTO e-mail → nome do analista (igual ao cadastrado nos registros).
 // Usuários que NÃO estão aqui como admin verão apenas os registros do seu analista.
 const EMAIL_TO_ANALISTA = {
-  'kricia_hamate@gmail.com':   'Krícia',   // ← ajuste os e-mails reais
-  
+  'kricia@hamate.com':   'Márdea',   // ← ajuste os e-mails reais
+  'rodrigo@suaempresa.com':  'Rodrigo',  // ← ajuste os e-mails reais
 };
 
 let isAdmin = false;
@@ -3402,6 +3402,21 @@ fbAuth.onAuthStateChanged(user => {
     if(btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 });
+
+// ===== HELPER: garante que a opção do analista existe no select e a seleciona =====
+function setAnalistaSelect(selectId, nome) {
+  const sel = document.getElementById(selectId);
+  if (!sel || !nome) return;
+  // Verifica se a opção já existe
+  const jaExiste = [...sel.options].some(o => o.value === nome || o.text === nome);
+  if (!jaExiste) {
+    const opt = document.createElement('option');
+    opt.value = nome;
+    opt.textContent = nome;
+    sel.appendChild(opt);
+  }
+  sel.value = nome;
+}
 
 // ===== LOTES =====
 let lotesTemp = [];
@@ -5619,19 +5634,29 @@ function populateDisputaSelect(preSelectId) {
 let EID={};
 let _acompConvertendoId = null;
 function openModal(tab){
-  if (tab === 'acomp') { clearAcomp(); document.getElementById('modal-acomp').classList.add('open'); return; }
+  if (tab === 'acomp') {
+    clearAcomp();
+    // Pré-preenche e bloqueia analista para não-admins
+    if (!isAdmin && analistaDoUsuario) {
+      setAnalistaSelect('ac-analista', analistaDoUsuario);
+      const sel = g('ac-analista');
+      if (sel) sel.disabled = true;
+    }
+    document.getElementById('modal-acomp').classList.add('open');
+    return;
+  }
   EID[tab]=null;
   if(tab==='disputas'){
     clearD();
     lotesTemp = []; renderLotes();
     g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
-    // Pré-preenche analista para usuários não-admin
+    // Pré-preenche e bloqueia analista para não-admins
     if (!isAdmin && analistaDoUsuario) {
+      setAnalistaSelect('d-analista', analistaDoUsuario);
       const sel = g('d-analista');
-      if (sel) { sel.value = analistaDoUsuario; sel.disabled = true; }
+      if (sel) sel.disabled = true;
     }
   } else if(tab==='empenhos') {
-    // Empenhos só podem ser criados a partir de uma disputa
     toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
     return;
   }
@@ -5696,8 +5721,9 @@ function novoEmpenhoParaDisputa(disputaId) {
   populateDisputaSelect(disputaId);
   // Pré-preenche analista para usuários não-admin
   if (!isAdmin && analistaDoUsuario) {
+    setAnalistaSelect('e-analista', analistaDoUsuario);
     const sel = g('e-analista');
-    if (sel) { sel.value = analistaDoUsuario; sel.disabled = true; }
+    if (sel) sel.disabled = true;
   }
   g('modal-empenhos').classList.add('open');
 }
@@ -5851,7 +5877,8 @@ function clearD(){
   const cp = g('d-contrato-preview'); if(cp) { cp.style.display='none'; }
   const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
   const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
-  g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
+  g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet';
+  setAnalistaSelect('d-analista', analistaDoUsuario || 'Márdea');
   calcD();
 }
 function _validarLotesSaldo(disputaId) {
@@ -5960,7 +5987,8 @@ function editD(id){
   EID.disputas=id; clearD();
   g('d-data').value=r.data||''; g('d-orgao').value=r.orgao||''; g('d-estado').value=r.estado||'';
   g('d-empresa').value=r.empresa||''; g('d-tipo').value=r.tipo||''; g('d-rp').value=r.rp||'';
-  g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||''; g('d-analista').value=r.analista||'';
+  g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||'';
+  setAnalistaSelect('d-analista', r.analista || analistaDoUsuario);
   // Para não-admins, bloqueia troca de analista
   const _dAnSel = g('d-analista');
   if (_dAnSel) _dAnSel.disabled = !isAdmin;
@@ -6097,7 +6125,7 @@ function editE(id){
   const r=DB.empenhos.find(x=>x.id===id); if(!r) return;
   EID.empenhos=id; clearE();
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
-  g('e-analista').value=r.analista||'Márdea';
+  setAnalistaSelect('e-analista', r.analista || analistaDoUsuario);
   // Para não-admins, bloqueia troca de analista
   const _eAnSel = g('e-analista');
   if (_eAnSel) _eAnSel.disabled = !isAdmin;
@@ -8659,7 +8687,7 @@ function clearAcomp() {
   ['ac-data','ac-orgao','ac-estado','ac-sistema','ac-analista','ac-status','ac-link','ac-retorno','ac-observacao'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('ac-analista').value = 'Márdea';
+  setAnalistaSelect('ac-analista', analistaDoUsuario || 'Márdea');
   document.getElementById('ac-status').value = 'pendente';
   document.getElementById('ac-sistema').value = 'Licitanet';
   document.getElementById('ttl-acomp').textContent = 'Novo Acompanhamento';
@@ -8673,7 +8701,7 @@ function editAcomp(id) {
   document.getElementById('ac-orgao').value = r.orgao || '';
   document.getElementById('ac-estado').value = r.estado || '';
   document.getElementById('ac-sistema').value = r.sistema || '';
-  document.getElementById('ac-analista').value = r.analista || '';
+  setAnalistaSelect('ac-analista', r.analista || analistaDoUsuario || '');
   document.getElementById('ac-status').value = r.status || 'pendente';
   document.getElementById('ac-link').value = r.link || '';
   document.getElementById('ac-retorno').value = r.retorno || '';
