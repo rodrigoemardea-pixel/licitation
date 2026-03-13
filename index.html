@@ -48,8 +48,8 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #f0f3f8;
-    color: #1a2639;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -141,6 +141,12 @@
   }
 
   :root {
+    --bg-primary: #f0f3f8;
+    --bg-surface: #ffffff;
+    --bg-surface-soft: #f1f4f9;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-tertiary: #64748b;
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -162,24 +168,23 @@
 
   /* HEADER MODERNO */
   header {
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(226,232,240,0.6);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-light);
     padding: 0 24px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    height: 64px;
+    gap: 8px;
+    height: 58px;
     position: sticky;
     top: 0;
     z-index: 100;
     transition: background 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   body[data-theme="dark"] header {
-    background: rgba(30, 41, 59, 0.8);
-    border-bottom-color: rgba(51, 65, 85, 0.6);
+    background: var(--bg-surface);
+    border-bottom-color: var(--border-medium);
   }
 
   .logo {
@@ -338,70 +343,81 @@
     letter-spacing: 0.5px;
   }
 
+
+
   /* TABS */
   .tabs {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-light);
     display: flex;
-    padding: 0 24px;
-    gap: 4px;
+    padding: 0 20px;
+    gap: 2px;
     transition: background 0.3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
+  .tabs::-webkit-scrollbar { display: none; }
 
   body[data-theme="dark"] .tabs {
-    background: rgba(30, 41, 59, 0.7);
+    background: rgba(30, 41, 59, 0.98);
+    border-bottom-color: var(--border-medium);
   }
 
   .tab-btn {
     background: none;
     border: none;
-    color: var(--text-secondary);
-    padding: 12px 16px;
+    color: var(--text-tertiary);
+    padding: 11px 14px;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    transition: all 0.2s;
+    margin-bottom: -1px;
+    transition: all 0.15s;
     display: flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.1px;
   }
 
   .tab-btn:hover {
     color: var(--text-primary);
-    background: rgba(0,0,0,0.02);
+    background: var(--bg-surface-soft);
+    border-radius: 6px 6px 0 0;
   }
 
   body[data-theme="dark"] .tab-btn:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.06);
   }
 
   .tab-btn.active {
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
-    font-weight: 600;
+    font-weight: 700;
+    background: var(--info-soft);
+    border-radius: 6px 6px 0 0;
   }
 
   .tab-badge {
-    background: var(--bg-surface-soft);
+    background: var(--bg-inset);
     border: 1px solid var(--border-light);
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 2px 6px;
+    font-size: 9px;
+    padding: 1px 5px;
     border-radius: 30px;
-    font-weight: 500;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
   }
 
   .tab-btn.active .tab-badge {
-    background: var(--info-soft);
+    background: var(--accent-primary);
     border-color: var(--accent-primary);
-    color: var(--accent-primary);
+    color: white;
   }
 
   /* CONTEÚDO PRINCIPAL */
@@ -409,8 +425,8 @@
     flex: 1;
     padding: 20px 24px;
     width: 100%;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1800px;
+    margin: 0 auto;
   }
 
   .tab-pane { display: none; }
@@ -429,17 +445,24 @@
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
     padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+
+  .chart-card:hover {
     box-shadow: var(--shadow-md);
   }
 
   .chart-card h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
     margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .chart-card canvas {
@@ -458,21 +481,33 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
-    padding: 16px;
-    text-align: center;
+    padding: 18px 20px;
+    text-align: left;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--border-medium);
   }
 
   .stat-card .value {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     color: var(--accent-primary);
     font-family: 'JetBrains Mono', monospace;
+    line-height: 1.1;
+    margin-bottom: 4px;
   }
 
   .stat-card .label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-tertiary);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
     margin-top: 4px;
   }
 
@@ -480,14 +515,28 @@
   .toolbar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 16px;
     flex-wrap: wrap;
     background: var(--bg-surface);
-    padding: 10px 16px;
+    padding: 10px 14px;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
+  }
+
+  .toolbar .btn-primary {
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-light);
+    flex-shrink: 0;
+    margin: 0 2px;
   }
 
   .quick-entry-btn {
@@ -535,6 +584,40 @@
   .filter-group select:hover {
     border-color: var(--accent-primary);
   }
+  
+  /* Filtro ativo - visual feedback */
+  .filter-group.active {
+    background: var(--info-soft);
+    border-color: var(--accent-primary);
+  }
+  .filter-group.active label {
+    color: var(--accent-primary);
+  }
+  .filter-group.active select {
+    background: var(--bg-surface);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  /* Contador de filtros ativos */
+  .active-filters-badge {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: var(--info-soft);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .active-filters-badge.visible { display: inline-flex; }
+  .active-filters-badge:hover { background: var(--accent-primary); color: white; }
 
   .btn {
     display: inline-flex;
@@ -619,7 +702,7 @@
   /* CARDS DE RESUMO */
   .summary-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -628,9 +711,11 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
-    padding: 16px;
+    padding: 14px 16px;
     transition: all 0.2s;
     box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
   }
 
   .card:hover {
@@ -650,9 +735,10 @@
 
   .card-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.5px;
   }
 
   .cv-green { color: var(--success); }
@@ -668,8 +754,9 @@
     border-radius: var(--radius-lg);
     overflow-x: auto;
     overflow-y: auto;
-    max-height: calc(100vh - 280px);
-    box-shadow: var(--shadow-md);
+    max-height: calc(100vh - 320px);
+    min-height: 200px;
+    box-shadow: var(--shadow-sm);
     width: 100%;
     margin-bottom: 20px;
   }
@@ -741,6 +828,8 @@
 
   td.mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
   td.hi { color: var(--text-primary); font-weight: 500; }
+  td.money { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+  th.money { text-align: right; }
 
   /* Tooltip para observações */
   td.has-tooltip {
@@ -789,25 +878,27 @@
   }
 
   /* Destaque para empenhos não recebidos */
-  tr.nao-recebido {
-    background-color: var(--nao-recebido-bg);
+  tr.nao-recebido td {
+    background-color: var(--nao-recebido-bg) !important;
+  }
+  tr.nao-recebido td:first-child {
     border-left: 3px solid var(--nao-recebido-border);
   }
-
   tr.nao-recebido:hover td {
-    background-color: var(--nao-recebido-hover);
+    background-color: var(--nao-recebido-hover) !important;
   }
 
   /* BADGES */
   .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
+    padding: 2px 8px;
     border-radius: 30px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
+    line-height: 1.6;
   }
 
   .bg { background: var(--success-soft); color: var(--success); border: 1px solid rgba(5,150,105,0.2); }
@@ -835,11 +926,11 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
     border-radius: 20px;
-    width: 98%;
-    max-width: 1300px;
-    max-height: 95vh;
+    width: 99%;
+    max-width: 1500px;
+    max-height: 96vh;
     overflow-y: auto;
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 32px 72px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04);
     animation: modalIn 0.25s ease;
   }
 
@@ -850,6 +941,29 @@
   @keyframes modalIn {
     from { opacity: 0; transform: scale(0.95) translateY(-10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* Shortcuts modal */
+  .shortcuts-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+    z-index: 99999; display: none; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .shortcuts-modal.open { display: flex; pointer-events: all; }
+  .shortcuts-modal-box {
+    background: var(--bg-surface); border: 1px solid var(--border-light);
+    border-radius: 20px; padding: 28px 32px; max-width: 480px; width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: modalIn 0.2s ease;
+  }
+  .shortcuts-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display:flex;align-items:center;gap:8px; }
+  .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+  .shortcut-row:last-child { border-bottom: none; }
+  .shortcut-row .desc { color: var(--text-secondary); }
+  .shortcut-keys { display: flex; gap: 4px; }
+  .shortcut-keys kbd {
+    background: var(--bg-surface-soft); border: 1px solid var(--border-medium);
+    border-radius: 5px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-primary); box-shadow: 0 1px 0 var(--border-medium);
   }
 
   /* ===== MELHORIA 8: Modal de confirmação estilizado ===== */
@@ -899,26 +1013,27 @@
     justify-content: center;
   }
 
-  /* ===== MELHORIA 9: Busca global com atalho ===== */
+  /* BUSCA GLOBAL - theme-aware */
   #busca-global-input {
     transition: width 0.25s ease, box-shadow 0.2s;
   }
   #busca-global-input:focus {
-    width: 320px !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.25) !important;
-    border-color: #3b82f6 !important;
+    width: 300px !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+    border-color: var(--border-focus) !important;
+    background: var(--bg-surface) !important;
   }
   .busca-kbd-hint {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: var(--bg-surface-soft);
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     padding: 1px 5px;
     font-size: 10px;
-    color: #94a3b8;
+    color: var(--text-placeholder);
     pointer-events: none;
     font-family: 'JetBrains Mono', monospace;
     transition: opacity 0.2s;
@@ -1170,6 +1285,97 @@
   .mtg.on { background: var(--warning-soft); border-color: var(--warning); color: var(--warning); }
   .mtg .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
+  /* Search highlight */
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 16px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-light);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border-light); background: var(--bg-surface);
+    color: var(--text-secondary); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .page-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--info-soft); }
+  .page-btn.active { background: var(--accent-primary); color: white; border-color: var(--accent-primary); font-weight: 700; }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .page-info { font-size: 11px; color: var(--text-tertiary); padding: 0 8px; }
+
+  /* Copy button */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    color: var(--text-tertiary);
+    font-size: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+  }
+  td:hover .copy-btn, .copy-btn:focus { opacity: 1; }
+  .copy-btn:hover { background: var(--bg-surface-soft); color: var(--accent-primary); }
+  .copied-flash { animation: copiedFlash 0.6s ease; }
+  @keyframes copiedFlash { 0%,100%{background:none} 30%{background:rgba(5,150,105,0.2)} }
+
+  mark.search-hl {
+    background: rgba(245,158,11,0.35);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+    font-weight: 600;
+  }
+  body[data-theme="dark"] mark.search-hl {
+    background: rgba(245,158,11,0.4);
+  }
+
+  /* Skeleton loader */
+  .skeleton-row td {
+    background: linear-gradient(90deg, var(--bg-surface-soft) 25%, var(--bg-inset) 50%, var(--bg-surface-soft) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s infinite;
+    border-radius: 4px;
+    color: transparent !important;
+    user-select: none;
+  }
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+  .loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-light);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .empty-state {
     text-align: center; padding: 40px 20px; color: var(--text-tertiary);
   }
@@ -1207,11 +1413,20 @@
   }
   @media (max-width: 900px) {
     .form-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   }
   @media (max-width: 700px) {
     .form-grid { grid-template-columns: 1fr; }
     .header-stats { display: none; }
     .theme-selector, .analista-selector, .shortcuts-hint { display: none; }
+    .content { padding: 12px 14px; }
+    .toolbar { padding: 8px 12px; gap: 6px; }
+    header { padding: 0 14px; gap: 8px; }
+    #busca-global-input { width: 140px !important; }
+  }
+  @media (max-width: 480px) {
+    .tabs { padding: 0 8px; }
+    .tab-btn { padding: 10px 10px; font-size: 11px; }
   }
 
   .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 20px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
@@ -1226,26 +1441,26 @@
   .detail-popup-overlay.open { display: flex; }
   .detail-popup {
     background: var(--bg-surface); border-radius: 20px;
-    padding: 28px; max-width: 1100px; width: 97%;
-    max-height: 95vh; overflow-y: auto;
+    padding: 24px 28px 20px; max-width: 1400px; width: 98%;
+    max-height: 92vh; overflow-y: auto;
     box-shadow: 0 25px 60px rgba(0,0,0,0.35);
     border: 1px solid var(--border-light);
   }
   .detail-popup-header {
     display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px; gap: 12px;
+    margin-bottom: 14px; gap: 12px;
   }
   .detail-popup-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
   .detail-popup-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
   .detail-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-tertiary); padding: 4px; line-height: 1; }
   .detail-close:hover { color: var(--danger); }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
   .detail-field { }
   .detail-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-bottom: 3px; }
   .detail-field-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .detail-section { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.8px; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; margin: 16px 0 12px; }
-  .detail-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+  .detail-section { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.8px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; margin: 12px 0 8px; }
+  .detail-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
   .lotes-status-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .lotes-status-table th { background: var(--bg-surface-soft); padding: 7px 10px; text-align: left; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); border-bottom: 2px solid var(--border-light); }
   .lotes-status-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
@@ -1290,7 +1505,7 @@
   .dias-ok { background: var(--success-soft); color: var(--success); }
   .dias-30 { background: var(--warning-soft); color: var(--warning); }
   .dias-60 { background: rgba(220,38,38,0.12); color: var(--danger); }
-  .dias-90 { background: rgba(139,0,0,0.18); color: #b91c1c; font-size: 11px; animation: piscar 1.5s infinite; }
+  .dias-90 { background: var(--danger-soft); color: var(--danger); font-size: 11px; font-weight: 700; animation: piscar 1.5s infinite; }
   @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
   .alerta-banner {
@@ -1609,53 +1824,6 @@
     margin-top: 24px;
   }
 
-  /* ===== KANBAN ===== */
-  .kanban-view { display: none; }
-  .kanban-view.active { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; align-items: flex-start; }
-  .kanban-col {
-    flex: 0 0 300px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    box-shadow: var(--shadow-sm);
-  }
-  .kanban-col-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 10px; margin-bottom: 10px;
-    border-bottom: 2px solid var(--border-light);
-    font-size: 13px; font-weight: 700; color: var(--text-primary);
-  }
-  .kanban-count {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    padding: 2px 7px; border-radius: 20px;
-    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
-    color: var(--text-tertiary);
-  }
-  .kanban-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    cursor: grab;
-    transition: all 0.15s;
-    box-shadow: var(--shadow-sm);
-    user-select: none;
-  }
-  .kanban-card:active { cursor: grabbing; opacity: 0.8; transform: scale(0.98); }
-  .kanban-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-medium); }
-  .kanban-card.drag-over-card { border-color: var(--accent-primary); background: var(--info-soft); }
-  .kanban-col.drag-over { background: var(--info-soft); border-color: var(--accent-primary); }
-  .kanban-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
-  .kanban-card-meta { font-size: 10px; color: var(--text-tertiary); margin-bottom: 6px; }
-  .kanban-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 6px; }
-  .kanban-empty { text-align: center; padding: 24px 12px; color: var(--text-tertiary); font-size: 12px; }
-
-  /* View toggle buttons */
-  .view-toggle { display: flex; gap: 4px; background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: 8px; padding: 2px; }
-  .view-toggle-btn { background: none; border: none; border-radius: 6px; padding: 5px 10px; font-size: 13px; cursor: pointer; color: var(--text-tertiary); transition: all 0.15s; }
-  .view-toggle-btn.active { background: var(--bg-surface); color: var(--accent-primary); box-shadow: var(--shadow-sm); }
 
   /* ===== INLINE EDIT ===== */
   .inline-edit-cell { position: relative; }
@@ -1716,60 +1884,58 @@
     <div class="logo-icon" style="font-size:28px;display:flex;align-items:center;justify-content:center;">🏆</div>
     <div>
       <div class="logo-text">LicitationBiznis</div>
-      <div class="logo-sub">Porque biznis é mode os licitaxions</div>
+      <div class="logo-sub">Gestão de Licitações</div>
     </div>
   </div>
   <div class="spacer"></div>
-  
-  <!-- CONTROLES DO HEADER -->
 
-
-  <!-- TOGGLE TEMA -->
-  <button onclick="toggleTema()" id="btn-tema" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.8;" title="Alternar tema claro/escuro">🌙</button>
-
-  <!-- CONFIG E-MAIL -->
-  <button onclick="abrirConfigEmail()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;opacity:0.7;" title="Configurar alertas por e-mail">⚙️</button>
+  <!-- BUSCA GLOBAL -->
+  <div style="position:relative;margin-right:4px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;color:var(--text-primary);padding:6px 34px 6px 12px;font-size:12px;width:200px;outline:none;transition:all 0.2s;" autocomplete="off">
+    <span class="busca-kbd-hint">/</span>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
+  </div>
 
   <!-- SININHO DE NOTIFICAÇÕES -->
-  <div style="position:relative;margin-right:8px;">
-    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:22px;position:relative;padding:4px 8px;" title="Notificações">
+  <div style="position:relative;">
+    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;position:relative;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Notificações">
       🔔
-      <span id="notif-badge" style="display:none;position:absolute;top:0;right:2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+      <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
     </button>
-    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:340px;max-height:460px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:40px;width:340px;max-height:460px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-weight:700;font-size:13px;color:#f1f5f9;">🔔 Notificações</div>
-        <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;" title="Limpar todas">🗑 Limpar tudo</button>
+        <div style="font-weight:700;font-size:13px;color:var(--text-primary);">🔔 Notificações</div>
+        <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">🗑 Limpar tudo</button>
       </div>
-      <div id="notif-list"><div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div></div>
+      <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
     </div>
   </div>
 
-  <!-- BUSCA GLOBAL -->
-  <div style="position:relative;margin-right:8px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca global..." oninput="buscaGlobal(this.value)" style="background:#1e293b;border:1px solid #475569;border-radius:8px;color:#f1f5f9;padding:6px 34px 6px 12px;font-size:12px;width:200px;" autocomplete="off">
-    <span class="busca-kbd-hint">/</span>
-    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
-  </div>
+  <!-- TOGGLE TEMA -->
+  <button onclick="toggleTema()" id="btn-tema" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Alternar tema claro/escuro">🌙</button>
 
-  <!-- MELHORIA 15: Botão de Notificações Push -->
-  <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Ativar notificações push do navegador">
-    🔔 <span id="push-notif-label">Notificações</span>
+  <!-- CONFIG E-MAIL -->
+  <button onclick="abrirConfigEmail()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Configurar alertas por e-mail">⚙️</button>
+
+  <!-- ATALHOS -->
+  <button onclick="document.getElementById('shortcuts-modal').classList.toggle('open')" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:12px;padding:5px 10px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-weight:700;transition:all 0.15s;" title="Atalhos de teclado (?)">?</button>
+
+  <!-- PUSH NOTIF -->
+  <button id="btn-push-notif" class="push-notif-btn" onclick="togglePushNotificacoes()" title="Notificações push" style="font-size:11px;">
+    🔔 <span id="push-notif-label">Push</span>
   </button>
 
+  <!-- BADGE DE PERMISSÃO (admin / usuário restrito) -->
+  <div id="user-role-badge" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;"></div>
+
   <!-- USUÁRIO LOGADO -->
-  <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para trocar usuário">
+  <div class="user-chip" id="user-chip" onclick="fazerLogout()" title="Clique para sair">
     <div class="user-avatar" id="user-avatar">?</div>
     <span id="user-nome">—</span>
     <span style="font-size:10px;opacity:0.5">↩</span>
   </div>
-
-
-
-
-
-
 </header>
+
 
 <div class="tabs">
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();">🏠 Painel</button>
@@ -2055,8 +2221,7 @@
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('disputas')">＋ Nova Disputa</button>
       <button class="btn" onclick="abrirCalculadora()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;font-weight:700;display:flex;align-items:center;gap:6px;" title="Calculadora de Custos e Lucros">🧮 Cálculo Rápido</button>
-
-      
+      <div class="toolbar-separator"></div>
       <div class="filter-group">
         <label>👤 Analista:</label>
         <select id="filtro-analista-disputas" onchange="filtrarDisputas()">
@@ -2071,6 +2236,13 @@
         <select id="filtro-mes-disputas" onchange="filtrarDisputas()">
           <option value="todos">Todos</option>
         </select>
+      </div>
+
+      <div class="filter-group" id="fg-data-range-disputas" title="Filtrar por intervalo de datas">
+        <label>📆 De:</label>
+        <input type="date" id="filtro-data-de-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
+        <label style="margin-left:4px;">Até:</label>
+        <input type="date" id="filtro-data-ate-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
       </div>
 
 
@@ -2129,72 +2301,45 @@
       </div>
       
       <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar disputas..." oninput="filterTable('disputas',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-        <div class="view-toggle">
-          <button class="view-toggle-btn active" id="vt-lista" onclick="setViewMode('lista')" title="Visualização em tabela">☰</button>
-          <button class="view-toggle-btn" id="vt-kanban" onclick="setViewMode('kanban')" title="Visualização Kanban">⊞</button>
-        </div>
         <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">🗑 Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('disputas')">⬇ Exportar</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
     <div class="table-wrapper" id="disputas-table-view">
       <table>
         <thead><tr>
-          <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
-          <th onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
-          <th onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
-          <th>Analista</th>
-          <th>💰 Vl. Contrato</th>
-          <th>🛒 Compra Prev.</th>
-          <th>⚙️ Custo Prev.</th>
-          <th>📈 Lucro Prev.</th>
-          <th>✅ Lucro Realizado</th>
-          <th>Ações</th>
+          <th style="width:36px;min-width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
+          <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
+          <th style="min-width:80px;width:80px;">Analista</th>
+          <th class="money" style="min-width:105px;width:105px;">💰 Vl. Contrato</th>
+          <th class="money" style="min-width:105px;width:105px;">🛒 Compra Prev.</th>
+          <th class="money" style="min-width:95px;width:95px;">⚙️ Custo Prev.</th>
+          <th class="money" style="min-width:95px;width:95px;">📈 Lucro Prev.</th>
+          <th class="money" style="min-width:115px;width:115px;">✅ Lucro Realizado</th>
+          <th style="min-width:170px;width:170px;">Ações</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
+        <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-disputas-row" style="display:none;">
+            <td></td><td></td>
+            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td></td>
+            <td class="money" id="tfoot-d-contrato" style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-compra" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-custo" style="color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-lucro-real" style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
+    <div id="pagination-disputas" class="pagination" style="display:none;"></div>
 
-    <!-- KANBAN BOARD -->
-    <div class="kanban-view" id="disputas-kanban-view">
-      <div class="kanban-col" id="kanban-col-em-analise" ondragover="kanbanDragOver(event,'em-analise')" ondrop="kanbanDrop(event,'em-analise')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>🔍 Em Análise</span>
-          <span class="kanban-count" id="kanban-count-em-analise">0</span>
-        </div>
-        <div id="kanban-cards-em-analise"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-participando" ondragover="kanbanDragOver(event,'participando')" ondrop="kanbanDrop(event,'participando')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>⚡ Participando</span>
-          <span class="kanban-count" id="kanban-count-participando">0</span>
-        </div>
-        <div id="kanban-cards-participando"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-aguardando-empenho" ondragover="kanbanDragOver(event,'aguardando-empenho')" ondrop="kanbanDrop(event,'aguardando-empenho')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>📄 Aguard. Empenho</span>
-          <span class="kanban-count" id="kanban-count-aguardando-empenho">0</span>
-        </div>
-        <div id="kanban-cards-aguardando-empenho"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-empenhado" ondragover="kanbanDragOver(event,'empenhado')" ondrop="kanbanDrop(event,'empenhado')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>✅ Empenhado</span>
-          <span class="kanban-count" id="kanban-count-empenhado">0</span>
-        </div>
-        <div id="kanban-cards-empenhado"></div>
-      </div>
-      <div class="kanban-col" id="kanban-col-finalizada" ondragover="kanbanDragOver(event,'finalizada')" ondrop="kanbanDrop(event,'finalizada')" ondragleave="kanbanDragLeave(event)">
-        <div class="kanban-col-header">
-          <span>🏁 Finalizada</span>
-          <span class="kanban-count" id="kanban-count-finalizada">0</span>
-        </div>
-        <div id="kanban-cards-finalizada"></div>
-      </div>
-    </div>
   </div>
 
   <!-- EMPENHOS -->
@@ -2204,7 +2349,7 @@
     </div>
     <div class="summary-row" id="sum-empenhos"></div>
     <div class="toolbar">
-      <button class="btn btn-primary" onclick="openModal('empenhos')">＋ Novo Empenho</button>
+
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
 
       
@@ -2237,10 +2382,11 @@
       </div>
 
       <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="filterTable('empenhos',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">🗑 Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV('empenhos')">⬇ Exportar</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
     <div class="table-wrapper">
@@ -2258,6 +2404,16 @@
           <th>Ações</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
+        <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-empenhos-row" style="display:none;">
+            <td colspan="4" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td class="money" id="tfoot-e-vem"      style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -2267,12 +2423,16 @@
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
-      <div class="filter-group">
+      <div class="filter-group" id="fg-analista-emp-fin">
         <label>👤 Analista:</label>
         <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
           <option value="todos">Todos</option>
-          <option value="Márdea">Márdea</option>
-          <option value="Rodrigo">Rodrigo</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Mês/Ano Pagamento:</label>
+        <select id="filtro-mes-pag-emp-fin" onchange="renderEmpFinalizados()">
+          <option value="todos">Todos</option>
         </select>
       </div>
       <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
@@ -2286,7 +2446,7 @@
             <th>Analista</th>
             <th>Val. Empenho</th>
             <th>Lucro Recebido</th>
-            <th>Finalizado em</th>
+            <th>Dt. Pagamento</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -2300,7 +2460,20 @@
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="renderFinalizadas()"></div>
+      <div class="filter-group" id="fg-analista-finalizadas">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Mês/Ano Finalização:</label>
+        <select id="filtro-mes-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
     </div>
+    <div class="table-wrapper">
     <table class="data-table">
       <thead>
         <tr>
@@ -2316,6 +2489,7 @@
       </thead>
       <tbody id="tbody-finalizadas"></tbody>
     </table>
+    </div>
   </div>
 
 </div>
@@ -2513,8 +2687,11 @@
         <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
-        <!-- Analista virá automaticamente da disputa selecionada -->
-        <input type="hidden" id="e-analista">
+        <!-- Analista: visível para admin, preenchido automaticamente para analistas comuns -->
+        <div class="fg" id="fg-e-analista">
+          <label class="fl">👤 Analista</label>
+          <select class="fc" id="e-analista"><option value="">Selecione</option></select>
+        </div>
 
         <!-- ÓRGÃO = DISPUTA (campo único) -->
         <div class="fg full">
@@ -2917,7 +3094,7 @@
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Estado</div>
                   <div id="calc-estado-display" style="font-size:22px;font-weight:900;color:var(--accent-primary);"></div>
                 </div>
-                <div style="text-align:center;padding:10px;background:#fff3cd30;border:1px solid var(--border-light);border-radius:8px;">
+                <div style="text-align:center;padding:10px;background:var(--warning-soft);border:1px solid var(--border-light);border-radius:8px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">ICMS</div>
                   <div id="calc-icms-display" style="font-size:22px;font-weight:900;color:var(--warning);"></div>
                 </div>
@@ -2938,19 +3115,19 @@
             <div id="calc-resultado-wrap" style="display:none;background:linear-gradient(135deg,var(--success-soft),rgba(16,185,129,0.05));border:2px solid var(--success);border-radius:14px;padding:16px;flex:1;">
               <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--success);margin-bottom:12px;letter-spacing:1px;">📊 Resultado Total</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.5);border-radius:10px;">
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Val. Empenho</div>
                   <div id="calc-res-vem" style="font-size:17px;font-weight:800;color:var(--accent-primary);font-family:'JetBrains Mono',monospace;">—</div>
                 </div>
-                <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.5);border-radius:10px;">
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Custo Total</div>
                   <div id="calc-res-custo" style="font-size:17px;font-weight:800;color:var(--warning);font-family:'JetBrains Mono',monospace;">—</div>
                 </div>
-                <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.5);border-radius:10px;">
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Lucro</div>
                   <div id="calc-res-lucro" style="font-size:17px;font-weight:800;color:var(--success);font-family:'JetBrains Mono',monospace;">—</div>
                 </div>
-                <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.5);border-radius:10px;">
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">% Margem</div>
                   <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:'JetBrains Mono',monospace;">—</div>
                 </div>
@@ -2984,7 +3161,7 @@
     <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
     <div class="confirm-modal-actions">
       <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
-      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn" onclick="confirmDel()">🗑 Sim, excluir</button>
+      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn">🗑 Sim, excluir</button>
     </div>
   </div>
 </div>
@@ -3017,11 +3194,15 @@ function sanitizeForFirestore(obj) {
 
 const save = (k, v) => {
   if (!fbAuth.currentUser) return;
-  DB[k] = v;
+  // _fullDB é SEMPRE a fonte completa (todos os analistas).
+  // Toda escrita já foi feita em _fullDB antes de chamar save().
+  // Basta gravar _fullDB[k] no Firestore diretamente.
   _ignorarProximoSnapshot = true;
   clearTimeout(_salvarTimeout);
   _salvarTimeout = setTimeout(() => { _ignorarProximoSnapshot = false; }, 3000);
-  const vClean = sanitizeForFirestore(v);
+
+  const vToSave = (k in _fullDB) ? _fullDB[k] : v;
+  const vClean = sanitizeForFirestore(vToSave);
   fbDB.collection('dados').doc('principal').set(
     { [k]: vClean },
     { merge: true }
@@ -3035,6 +3216,22 @@ const load = k => []; // não usado mais (dados vêm do Firestore)
 
 // ===== USUÁRIO LOGADO =====
 let usuarioLogado = null;
+
+// ===== CONFIGURAÇÕES DE PERMISSÃO =====
+// ▶ ADMINISTRADORES: colocar aqui os e-mails que podem ver TODOS os dados.
+const ADMIN_EMAILS = new Set([
+  'rodrigoemardea@gmail.com',  // Admin geral
+]);
+
+// ▶ MAPEAMENTO e-mail → nome do analista (EXATAMENTE igual ao cadastrado nos registros).
+const EMAIL_TO_ANALISTA = {
+  'mardea@hamate.com':   'Márdea',
+  'rodrigo@hamate.com':  'Rodrigo',
+  'kricia@hamate.com':   'Krícia',
+};
+
+let isAdmin = false;
+let analistaDoUsuario = null;
 
 function fazerLogin() {
   const email = (document.getElementById('login-email')?.value || '').trim();
@@ -3055,6 +3252,139 @@ function fazerLogout() {
   fbAuth.signOut();
 }
 
+// ===== CONTROLE DE PERMISSÕES =====
+// Popula todos os selects de filtro de analista com os nomes reais existentes nos dados.
+// Chamada sempre que _fullDB é atualizado (onSnapshot).
+function atualizarFiltrosAnalista() {
+  // Coleta nomes únicos de todos os arrays que têm campo analista
+  const nomes = new Set();
+  (_fullDB.disputas || []).forEach(r => r.analista && nomes.add(r.analista));
+  (_fullDB.empenhos || []).forEach(r => r.analista && nomes.add(r.analista));
+  (_fullDB.acomp    || []).forEach(r => r.analista && nomes.add(r.analista));
+  const sorted = [...nomes].sort();
+
+  // IDs dos selects que precisam de opções dinâmicas
+  const filterIds = [
+    'filtro-analista-disputas',
+    'filtro-analista-empenhos',
+    'filtro-analista-acomp',
+    'filtro-analista-finalizadas',
+    'filtro-analista-emp-fin',
+    'dash-filtro-analista',
+    'tarefa-input-resp',
+  ];
+
+  filterIds.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    const isTarefa = id === 'tarefa-input-resp';
+    // Mantém só a primeira opção fixa ("Todos" ou "Qualquer um")
+    while (sel.options.length > 1) sel.remove(1);
+    sorted.forEach(nome => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+    // Restaura seleção anterior se ainda válida
+    if (current && [...sel.options].some(o => o.value === current)) {
+      sel.value = current;
+    }
+  });
+
+  // Também atualiza selects de criação/edição (d-analista, ac-analista)
+  const formIds = ['d-analista', 'ac-analista'];
+  formIds.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    while (sel.options.length > 1) sel.remove(1);
+    sorted.forEach(nome => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+    if (current && [...sel.options].some(o => o.value === current)) sel.value = current;
+  });
+}
+
+function aplicarPermissoes() {
+  const selectIds = [
+    'filtro-analista',
+    'filtro-analista-disputas',
+    'filtro-analista-empenhos',
+    'filtro-analista-acomp',
+    'dash-filtro-analista',
+  ];
+  const badgeEl = g('user-role-badge');
+
+  if (!isAdmin) {
+    // — Usuário comum: oculta / bloqueia todos os filtros de analista —
+    selectIds.forEach(id => {
+      const el = g(id);
+      if (!el) return;
+      // Força o valor e desabilita para que o usuário não possa mudar
+      el.value    = analistaDoUsuario;
+      el.disabled = true;
+      el.title    = 'Você só pode visualizar seus próprios dados';
+      el.style.opacity = '0.6';
+      el.style.cursor  = 'not-allowed';
+      // Esconde também o filter-group pai para ficar mais limpo
+      const fg = el.closest('.filter-group');
+      if (fg) fg.style.display = 'none';
+    });
+    // Oculta campo analista no form de empenho (não-admin sempre usa o próprio nome)
+    const fgEAn = g('fg-e-analista');
+    if (fgEAn) fgEAn.style.display = 'none';
+    // Oculta filtros de analista nas telas de finalizados (não faz sentido para analista comum)
+    const fgEmpFin = g('fg-analista-emp-fin');
+    const fgFin    = g('fg-analista-finalizadas');
+    if (fgEmpFin) fgEmpFin.style.display = 'none';
+    if (fgFin)    fgFin.style.display    = 'none';
+    // Garante variáveis globais também bloqueadas
+    filtroAnalista         = analistaDoUsuario;
+    filtroAnalistaDisputas = analistaDoUsuario;
+    filtroAnalistaEmpenhos = analistaDoUsuario;
+    // Badge no header
+    if (badgeEl) {
+      badgeEl.textContent = '🔒 ' + analistaDoUsuario;
+      badgeEl.title = 'Você está visualizando apenas seus próprios registros';
+      badgeEl.style.background = 'var(--info-soft)';
+      badgeEl.style.color      = 'var(--accent-primary)';
+      badgeEl.style.border     = '1px solid var(--accent-primary)';
+    }
+  } else {
+    // — Administrador: garante que tudo está habilitado —
+    selectIds.forEach(id => {
+      const el = g(id);
+      if (!el) return;
+      el.disabled      = false;
+      el.title         = '';
+      el.style.opacity = '';
+      el.style.cursor  = '';
+      const fg = el.closest('.filter-group');
+      if (fg) fg.style.display = '';
+    });
+    // Restaura campo analista no form de empenho para admin
+    const fgEAnA = g('fg-e-analista');
+    if (fgEAnA) fgEAnA.style.display = '';
+    // Restaura filtros de analista em finalizadas para admin
+    const fgEmpFinA = g('fg-analista-emp-fin');
+    const fgFinA    = g('fg-analista-finalizadas');
+    if (fgEmpFinA) fgEmpFinA.style.display = '';
+    if (fgFinA)    fgFinA.style.display    = '';
+    if (badgeEl) {
+      badgeEl.textContent = '👑 Admin';
+      badgeEl.title       = 'Administrador — acesso total a todos os dados';
+      badgeEl.style.background = 'var(--purple-soft)';
+      badgeEl.style.color      = 'var(--purple)';
+      badgeEl.style.border     = '1px solid var(--purple)';
+    }
+  }
+}
+
 // Quando o estado de autenticação muda (login/logout)
 fbAuth.onAuthStateChanged(user => {
   if (user) {
@@ -3066,8 +3396,25 @@ fbAuth.onAuthStateChanged(user => {
     document.getElementById('user-nome').textContent = nomeFormatado;
     document.getElementById('user-avatar').textContent = nomeFormatado.charAt(0).toUpperCase();
     usuarioLogado = nomeFormatado;
-    // Sem filtro automático por analista — exibe todos os dados
-    filtroAnalista = 'todos';
+    // Permissões: verifica se é admin ou usuário comum
+    isAdmin = ADMIN_EMAILS.has(user.email);
+    // Usa o nome do mapeamento (com acentos corretos).
+    // Fallback: se o e-mail não está no mapa e não é admin, avisa o usuário.
+    if (isAdmin) {
+      analistaDoUsuario = EMAIL_TO_ANALISTA[user.email] || nomeFormatado;
+    } else if (EMAIL_TO_ANALISTA[user.email]) {
+      analistaDoUsuario = EMAIL_TO_ANALISTA[user.email];
+    } else {
+      // E-mail não mapeado e não é admin: exibe aviso claro
+      analistaDoUsuario = nomeFormatado;
+      console.warn(`⚠️ E-mail "${user.email}" não encontrado em EMAIL_TO_ANALISTA. ` +
+        `Adicione uma entrada como: '${user.email}': 'Nome Com Acento'`);
+      setTimeout(() => toast(
+        `⚠️ Seu e-mail não está configurado no sistema. Contate o administrador.`, 'error'
+      ), 1500);
+    }
+    // Admins veem tudo; usuários comuns só veem seus próprios registros
+    filtroAnalista = isAdmin ? 'todos' : analistaDoUsuario;
     // Carrega dados do Firestore em tempo real
     fbDB.collection('dados').doc('principal').onSnapshot(doc => {
       // Ignora snapshots disparados pela própria gravação local
@@ -3077,17 +3424,20 @@ fbAuth.onAuthStateChanged(user => {
       }
       if (doc.exists) {
         const data = doc.data();
-        DB.disputas = data.disputas || [];
-        DB.empenhos = data.empenhos || [];
-        DB.acomp = data.acomp || [];
-        DB.comentarios = data.comentarios || [];
-        DB.tarefas = data.tarefas || [];
+        // Popula _fullDB com todos os dados. Os getters de DB filtram automaticamente.
+        _fullDB.disputas    = data.disputas    || [];
+        _fullDB.empenhos    = data.empenhos    || [];
+        _fullDB.acomp       = data.acomp       || [];
+        _fullDB.comentarios = data.comentarios || [];
+        _fullDB.tarefas     = data.tarefas     || [];
       } else {
-        DB.disputas = [];
-        DB.empenhos = [];
+        _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
+        _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
+      atualizarFiltrosAnalista();
       renderAll();
       atualizarPainel();
+      aplicarPermissoes();
       // Dispara alertas de e-mail ao carregar
       setTimeout(enviarAlertasEmail, 3000);
       // Inicia notificações na primeira carga
@@ -3112,10 +3462,11 @@ fbAuth.onAuthStateChanged(user => {
   } else {
     // Usuário saiu — mostra tela de login
     usuarioLogado = null;
+    isAdmin = false;
+    analistaDoUsuario = null;
     filtroAnalista = 'todos';
-    DB.disputas = [];
-    DB.empenhos = [];
-    DB.acomp = [];
+    _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
+    _fullDB.comentarios = []; _fullDB.tarefas = [];
     if (_notifTimer) { clearInterval(_notifTimer); _notifTimer = null; }
     _notifShown = new Set();
     document.getElementById('login-screen').classList.add('open');
@@ -3127,6 +3478,35 @@ fbAuth.onAuthStateChanged(user => {
     if(btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 });
+
+// Atribui uma classe de badge consistente por nome de analista
+const _badgeColors = {};
+const _badgePalette = ['bp','bb','bg','bv','bo'];
+function _badgeClass(nome) {
+  if (!nome) return 'bb';
+  if (!_badgeColors[nome]) {
+    const usados = Object.keys(_badgeColors).length;
+    _badgeColors[nome] = _badgePalette[usados % _badgePalette.length];
+  }
+  return _badgeColors[nome];
+}
+
+// ===== HELPER: garante que a opção do analista existe no select e a seleciona =====
+function setAnalistaSelect(selectId, nome) {
+  const sel = document.getElementById(selectId);
+  if (!sel || !nome) return;
+  // Se for input (hidden ou text), apenas seta o valor diretamente
+  if (sel.tagName !== 'SELECT') { sel.value = nome; return; }
+  // Se for select, garante que a opção existe antes de selecionar
+  const jaExiste = [...sel.options].some(o => o.value === nome || o.text === nome);
+  if (!jaExiste) {
+    const opt = document.createElement('option');
+    opt.value = nome;
+    opt.textContent = nome;
+    sel.appendChild(opt);
+  }
+  sel.value = nome;
+}
 
 // ===== LOTES =====
 let lotesTemp = [];
@@ -3265,7 +3645,9 @@ function renderExcelPreview(prefix) {
 
 // Dias sem recebimento (desde dcomp)
 function diasSemPagamento(r) {
-  if (r.recebido > 0) return 0;
+  // Recebimento está dentro das compras, não no empenho diretamente
+  const temRecebimento = (r.compras||[]).some(c => c.dpag && (c.rec||0) > 0);
+  if (temRecebimento) return 0;
   if (!r.dcomp) return 0;
   const compra = new Date(r.dcomp);
   const hoje = new Date();
@@ -3307,10 +3689,11 @@ function verificarAutoFinalizarDisputa(disputaId) {
 }
 
 function empenhoEstaPago(r) {
+  // Exige que TODOS os itens tenham ao menos uma compra com dpag preenchido E rec > 0
   const itens = (r.itens && r.itens.length) ? r.itens : (r.loteId ? [{id:'leg1'}] : []);
   if (!itens.length) return false;
   const compras = r.compras || [];
-  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag));
+  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag && (c.rec||0) > 0));
 }
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 const fmt=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -3321,7 +3704,27 @@ const parseAliq = (v) => {
   return parseFloat(v.replace(',', '.')) / 100;
 };
 
-let DB={disputas:[],empenhos:[],acomp:[]};
+// ─── Repositório completo (todos os analistas) ───────────────────────────────
+let _fullDB = { disputas:[], empenhos:[], acomp:[], comentarios:[], tarefas:[] };
+
+// ─── DB: proxy com getters — SEMPRE retorna os dados filtrados para o usuário ─
+// Quando isAdmin=true  → retorna tudo.
+// Quando isAdmin=false → retorna só os registros cujo analista === analistaDoUsuario.
+// Assim, NENHUMA função de renderização precisa ser alterada.
+const DB = {
+  get disputas()    { return isAdmin ? _fullDB.disputas    : _fullDB.disputas.filter(r => r.analista === analistaDoUsuario); },
+  get empenhos()    { return isAdmin ? _fullDB.empenhos    : _fullDB.empenhos.filter(r => r.analista === analistaDoUsuario); },
+  get acomp()       { return isAdmin ? _fullDB.acomp       : _fullDB.acomp.filter(r => r.analista === analistaDoUsuario); },
+  get comentarios() { return _fullDB.comentarios; },
+  get tarefas()     { return _fullDB.tarefas; },
+  // Setters: usados por código legado que faz DB[k] = array.
+  set disputas(v)    { _fullDB.disputas    = v; },
+  set empenhos(v)    { _fullDB.empenhos    = v; },
+  set acomp(v)       { _fullDB.acomp       = v; },
+  set comentarios(v) { _fullDB.comentarios = v; },
+  set tarefas(v)     { _fullDB.tarefas     = v; },
+};
+
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
@@ -3544,19 +3947,63 @@ let filtroComprasEmpenhos = 'todos';
 
 // ========== FUNÇÕES DE FILTRO ==========
 function filtrarPorAnalista() {
+  // Não-admins não podem mudar o filtro de analista
+  if (!isAdmin) {
+    filtroAnalista = analistaDoUsuario;
+    const el = g('filtro-analista');
+    if (el) el.value = analistaDoUsuario;
+    return;
+  }
   filtroAnalista = g('filtro-analista').value;
   renderAll();
   atualizarDashboard();
 }
 
+// Marca filter-groups como ativos quando têm valor não-padrão
+function markActiveFilters(scopeEl) {
+  const root = scopeEl ? (typeof scopeEl === 'string' ? document.getElementById(scopeEl) : scopeEl) : document;
+  if (!root) return;
+  root.querySelectorAll('.filter-group').forEach(fg => {
+    const sel = fg.querySelector('select');
+    if (!sel) return;
+    const defaultVal = sel.options[0]?.value ?? '';
+    fg.classList.toggle('active', sel.value !== defaultVal);
+  });
+}
+
+function markAllActiveFilters() {
+  document.querySelectorAll('.toolbar').forEach(tb => markActiveFilters(tb));
+  // Update active filter counters
+  [['disputas','badge-filtros-disputas','cnt-filtros-disputas'],
+   ['empenhos','badge-filtros-empenhos','cnt-filtros-empenhos']].forEach(([tab, badgeId, cntId]) => {
+    const pane = document.getElementById('tab-' + tab);
+    if (!pane) return;
+    const activeCount = pane.querySelectorAll('.filter-group.active').length;
+    const badge = document.getElementById(badgeId);
+    const cnt = document.getElementById(cntId);
+    if (badge) badge.classList.toggle('visible', activeCount > 0);
+    if (cnt) cnt.textContent = activeCount;
+  });
+}
+
 function filtrarDisputas() {
+  _page.disputas = 1;
+  markAllActiveFilters();
+  markActiveFilters(null);
   filtroEmpenhoDisputas = g('filtro-empenho-disputas')?.value || 'todos';
   filtroEmpresaDisputas = g('filtro-empresa-disputas').value;
   filtroTipoDisputas = g('filtro-tipo-disputas').value;
   filtroRpDisputas = g('filtro-rp-disputas').value;
   filtroSistemaDisputas = g('filtro-sistema-disputas').value;
   filtroEstadoDisputas = g('filtro-estado-disputas').value;
-  filtroAnalistaDisputas = g('filtro-analista-disputas')?.value || 'todos';
+  // Não-admins: sempre força o filtro de analista para o seu nome
+  if (!isAdmin) {
+    filtroAnalistaDisputas = analistaDoUsuario;
+    filtroAnalista = analistaDoUsuario;
+    const el = g('filtro-analista-disputas'); if (el) el.value = analistaDoUsuario;
+  } else {
+    filtroAnalistaDisputas = g('filtro-analista-disputas')?.value || 'todos';
+  }
   filtroMesDisputas = g('filtro-mes-disputas')?.value || 'todos';
   renderD();
 }
@@ -3564,13 +4011,22 @@ function filtrarDisputas() {
 let filtroAtrasoEmpenhos = 'todos';
 
 function filtrarEmpenhos() {
-  filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
+  markAllActiveFilters();
+  // Não-admins: sempre força o filtro de analista para o seu nome
+  if (!isAdmin) {
+    filtroAnalistaEmpenhos = analistaDoUsuario;
+    const el = g('filtro-analista-empenhos'); if (el) el.value = analistaDoUsuario;
+  } else {
+    filtroAnalistaEmpenhos = g('filtro-analista-empenhos').value;
+  }
   filtroComprasEmpenhos = g('filtro-compras-empenhos')?.value || 'todos';
   filtroAtrasoEmpenhos = g('filtro-atraso-empenhos')?.value || 'todos';
   renderE();
 }
 
 function limparFiltrosDisputas() {
+  _page.disputas = 1;
+  markAllActiveFilters();
   ['filtro-empenho-disputas','filtro-empresa-disputas','filtro-tipo-disputas','filtro-rp-disputas','filtro-sistema-disputas','filtro-estado-disputas','filtro-analista-disputas','filtro-mes-disputas'].forEach(id => {
     const el = g(id); if(el) el.selectedIndex = 0;
   });
@@ -3585,9 +4041,14 @@ function limparFiltrosDisputas() {
   g('search-disputas').value = '';
   FLT.disputas = '';
   renderD();
+  const de = document.getElementById('filtro-data-de-disputas');
+  const ate = document.getElementById('filtro-data-ate-disputas');
+  if (de) de.value = '';
+  if (ate) ate.value = '';
 }
 
 function limparFiltrosEmpenhos() {
+  markAllActiveFilters();
   g('filtro-analista-empenhos').value = 'todos';
   if(g('filtro-compras-empenhos')) g('filtro-compras-empenhos').value = 'todos';
   if(g('filtro-atraso-empenhos')) g('filtro-atraso-empenhos').value = 'todos';
@@ -3610,6 +4071,11 @@ function switchTab(tab,btn){
   g('tab-'+tab).classList.add('active');
   
   if(tab === 'disputas') {
+    // Date range filter
+    const de  = document.getElementById('filtro-data-de-disputas')?.value;
+    const ate = document.getElementById('filtro-data-ate-disputas')?.value;
+    if (de  && r.data && r.data < de)  return false;
+    if (ate && r.data && r.data > ate) return false;
     renderD();
   } else if(tab === 'empenhos') {
     renderE();
@@ -3618,8 +4084,56 @@ function switchTab(tab,btn){
   }
 }
 
+// ========== PAGINATION ==========
+const PAGE_SIZE = 50;
+let _page = { disputas: 1, empenhos: 1 };
+
+function renderPagination(tab, totalRows) {
+  const container = document.getElementById('pagination-' + tab);
+  if (!container) return;
+  const total = totalRows;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+  const cur = _page[tab];
+  let html = `<button class="page-btn" onclick="_goPage('${tab}',${cur-1})" ${cur===1?'disabled':''}>‹</button>`;
+  // Show window of pages
+  const from = Math.max(1, cur - 2);
+  const to   = Math.min(pages, cur + 2);
+  if (from > 1) html += `<button class="page-btn" onclick="_goPage('${tab}',1)">1</button>${from>2?'<span class="page-info">…</span>':''}`;
+  for (let p = from; p <= to; p++) {
+    html += `<button class="page-btn ${p===cur?'active':''}" onclick="_goPage('${tab}',${p})">${p}</button>`;
+  }
+  if (to < pages) html += `${to<pages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="_goPage('${tab}',${pages})">${pages}</button>`;
+  html += `<button class="page-btn" onclick="_goPage('${tab}',${cur+1})" ${cur===pages?'disabled':''}>›</button>`;
+  html += `<span class="page-info">${((cur-1)*PAGE_SIZE)+1}–${Math.min(cur*PAGE_SIZE,total)} de ${total}</span>`;
+  container.innerHTML = html;
+}
+
+function _goPage(tab, p) {
+  const pages = Math.ceil(_filteredCount(tab) / PAGE_SIZE);
+  _page[tab] = Math.max(1, Math.min(p, pages));
+  if (tab === 'disputas') renderD(); else renderE();
+  // Scroll table to top
+  const tw = document.querySelector(`#tab-${tab} .table-wrapper`);
+  if (tw) tw.scrollTop = 0;
+}
+
+function _filteredCount(tab) {
+  if (tab === 'disputas') return getSorted('disputas').filter(r => !r.finalizada && matches('disputas', r)).length;
+  return getSorted('empenhos').filter(r => matches('empenhos', r) && !r.finalizado).length;
+}
+
+// Reset page when filtering
+const _origFiltrarDisputas = typeof filtrarDisputas !== 'undefined' ? filtrarDisputas : null;
+
 // ========== SORT E FILTRO ==========
-let SS={disputas:{c:'data',a:false},empenhos:{c:'data',a:false}};
+// Persist sort state across tab switches
+const _savedSort = (() => { try { return JSON.parse(localStorage.getItem('_sortState') || '{}'); } catch(e) { return {}; } })();
+let SS={
+  disputas: _savedSort.disputas || {c:'data',a:false},
+  empenhos: _savedSort.empenhos || {c:'data',a:false}
+};
 let FLT={disputas:'',empenhos:''};
 
 function sort(tab,col){
@@ -3628,6 +4142,8 @@ function sort(tab,col){
   } else {
     SS[tab] = {c: col, a: false};
   }
+  // Persist sort state
+  try { localStorage.setItem('_sortState', JSON.stringify({disputas: SS.disputas, empenhos: SS.empenhos})); } catch(e){}
   
   // Atualizar indicadores visuais
   document.querySelectorAll(`#sort-${tab}-${SS[tab].c}`).forEach(el => {
@@ -3670,6 +4186,30 @@ function getSorted(tab){
 }
 
 function filterTable(tab,v){FLT[tab]=v.toLowerCase(); if(tab==='disputas') renderD(); else renderE();}
+
+// Copy to clipboard utility
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      btn.textContent = '✓';
+      btn.parentElement?.classList.add('copied-flash');
+      setTimeout(() => { btn.textContent = '⎘'; btn.parentElement?.classList.remove('copied-flash'); }, 1200);
+    }
+    toast('Copiado: ' + text, 'success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Copiado!', 'success');
+  });
+}
+
+// Highlight search term in a string
+function hl(text, query) {
+  if (!query || !text) return text || '';
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + escaped + ')', 'gi'), '<mark class="search-hl">$1</mark>');
+}
 
 function matches(tab,r){
   const q=FLT[tab];
@@ -3725,16 +4265,10 @@ const mTag=r=>Object.keys(r.M||{}).length?`<span class="badge by" style="font-si
 function duplicarDisputa(id){
   const original = DB.disputas.find(x => x.id === id);
   if (!original) return;
-  
   const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid();
-  copia.compra = 0;
-  copia.venda = 0;
-  copia.aliq = 0.145;
-  copia.M = {};
-  
-  DB.disputas.push(copia);
-  save('disputas', DB.disputas);
+  copia.id = uid(); copia.compra = 0; copia.venda = 0; copia.aliq = 0.145; copia.M = {};
+  _fullDB.disputas.push(copia);
+  save('disputas', _fullDB.disputas);
   toast('Disputa duplicada com sucesso!', 'success');
   renderAll();
 }
@@ -3742,20 +4276,11 @@ function duplicarDisputa(id){
 function duplicarEmpenho(id){
   const original = DB.empenhos.find(x => x.id === id);
   if (!original) return;
-  
   const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid();
-  copia.vunit = 0;
-  copia.qtd = 1;
-  copia.vem = 0;
-  copia.aliq = 0.13;
-  copia.recebido = 0;
-  copia.dreceb = '';
-  copia.disputaId = null;
-  copia.M = {};
-  
-  DB.empenhos.push(copia);
-  save('empenhos', DB.empenhos);
+  copia.id = uid(); copia.vunit = 0; copia.qtd = 1; copia.vem = 0;
+  copia.aliq = 0.13; copia.recebido = 0; copia.dreceb = ''; copia.disputaId = null; copia.M = {};
+  _fullDB.empenhos.push(copia);
+  save('empenhos', _fullDB.empenhos);
   toast('Empenho duplicado com sucesso!', 'success');
   renderAll();
 }
@@ -3835,10 +4360,10 @@ function abrirPopupDisputa(id) {
           return (e.compras||[]).some(c => c.itemId === itemEmp.id && c.dpag);
         });
         const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
-        const semEmpenho = empsLote.length === 0;
-        const rowClick = semEmpenho ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
+        const temSaldo = (l.qtdRestante || 0) > 0;
+        const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (semEmpenho ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
           '<td class="mono" style="color:var(--accent-primary);font-weight:600;">' + l.qtdEnviada + '</td>' +
@@ -3850,58 +4375,6 @@ function abrirPopupDisputa(id) {
           '</tr>';
       }).join('')}</tbody>
     </table>` : '<p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Nenhum item cadastrado.</p>';
-
-  // ===== EMPENHOS VINCULADOS À DISPUTA =====
-  const empsHTML = emps.length ? (() => {
-    const rows = emps.map(e => {
-      const pago = empenhoEstaPago(e);
-      const totalLuc = (e.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
-      const statusBadge = pago
-        ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--success-soft);color:var(--success);">✅ FINALIZADO</span>'
-        : '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--warning-soft);color:var(--warning);">⏳ PENDENTE</span>';
-      const itensList = (e.itens||[]).map(i => {
-        const lote = (r.lotes||[]).find(l=>l.id===i.loteId);
-        return (lote ? lote.descricao : i.descricao||'—').toUpperCase();
-      }).join(', ') || (e.produto||'—').toUpperCase();
-      const dias = diasSemPagamento(e);
-      const diasBadge = !pago && dias > 0
-        ? `<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}" style="font-size:9px;">${dias}d</span>`
-        : '';
-      return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${e.id}')">
-        <td style="font-size:12px;font-weight:700;color:var(--accent-primary);">#${e.num||'—'}</td>
-        <td style="font-size:11px;color:var(--text-secondary);">${fmtD(e.data)||'—'}</td>
-        <td style="font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${itensList}">${itensList}</td>
-        <td style="font-size:12px;font-weight:700;color:var(--accent-primary);">${fmt(e.vem||0)}</td>
-        <td style="font-size:11px;color:var(--success);font-weight:600;">${totalLuc>0?fmt(totalLuc):'—'}</td>
-        <td>${statusBadge} ${diasBadge}</td>
-        <td onclick="event.stopPropagation()" style="white-space:nowrap;text-align:right;">
-          <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${e.id}')" style="padding:4px 8px;font-size:13px;" title="Ver detalhes">🔍</button>
-          <button class="btn btn-ghost btn-sm" onclick="editE('${e.id}')" style="padding:4px 8px;font-size:13px;" title="Editar">✏️</button>
-          <button class="btn btn-ghost btn-sm" onclick="delRow('empenhos','${e.id}')" style="padding:4px 8px;font-size:13px;color:var(--danger);border-color:var(--danger);" title="Excluir">🗑</button>
-        </td>
-      </tr>`;
-    }).join('');
-    const totalValor = emps.reduce((s,e)=>s+(e.vem||0),0);
-    const totalLucroGeral = emps.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.luc||0),0),0);
-    const empsPagos = emps.filter(e=>empenhoEstaPago(e)).length;
-    return `
-    <div class="detail-section" style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;">
-      <span>📋 EMPENHOS VINCULADOS <span style="font-size:11px;color:var(--text-tertiary);">(${emps.length})</span></span>
-      <span style="font-size:11px;color:var(--text-tertiary);">${empsPagos} finalizado(s) · ${emps.length-empsPagos} pendente(s)</span>
-    </div>
-    <table class="lotes-status-table" style="margin-top:6px;">
-      <thead><tr>
-        <th>Nº Empenho</th><th>Data</th><th>Itens</th><th>Valor Emp.</th><th>Lucro</th><th>Status</th><th style="text-align:right;">Ações</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr style="background:var(--bg-inset);">
-        <td colspan="3" style="font-weight:700;font-size:12px;padding:6px 10px;">TOTAIS</td>
-        <td style="font-weight:700;font-size:12px;color:var(--accent-primary);">${fmt(totalValor)}</td>
-        <td style="font-weight:700;font-size:12px;color:var(--success);">${totalLucroGeral>0?fmt(totalLucroGeral):'—'}</td>
-        <td colspan="2"></td>
-      </tr></tfoot>
-    </table>`;
-  })() : '';
 
   // Todas as compras de todos os empenhos desta disputa
   const todasCompras = [];
@@ -3965,7 +4438,6 @@ function abrirPopupDisputa(id) {
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
-    empsHTML +
     comprasDisputaHTML +
     renderComentarios('disputa', id);
 
@@ -4245,23 +4717,43 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
   atualizarVemTotal();
 }
 
+var _expandedDisputas = new Set();
+function toggleEmpenhosDisputa(disputaId) {
+  if (_expandedDisputas.has(disputaId)) {
+    _expandedDisputas.delete(disputaId);
+  } else {
+    _expandedDisputas.add(disputaId);
+  }
+  renderD();
+}
+
 function renderD(){
-  const rows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
+  const allRows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); return; }
-  tb.innerHTML=rows.map(r=>{
+  // Show skeleton while data is being prepared
+  if (!tb) return;
+  if(!allRows.length){ tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="icon">🏆</div><p>Nenhuma disputa encontrada</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
+  // Reset page if out of bounds
+  const totalPages = Math.ceil(allRows.length / PAGE_SIZE);
+  if (_page.disputas > totalPages) _page.disputas = 1;
+  const start = (_page.disputas - 1) * PAGE_SIZE;
+  const rows = allRows.slice(start, start + PAGE_SIZE);
+  renderPagination('disputas', allRows.length);
+
+  const htmlParts = [];
+  rows.forEach((r, idx) => {
     const{luc}=dVals(r);
     const lotes = r.lotes || [];
     const totalContratado = lotes.reduce((s,l)=>s+(l.qtd||0), 0);
     const totalEnviado = lotes.reduce((s,l)=>s+calcQtdEnviada(r.id, l.id), 0);
     const pctProg = totalContratado > 0 ? Math.round(totalEnviado/totalContratado*100) : 0;
     const contrato = getValorContrato(r);
-    const lotesInfo = lotes.length
-      ? '<div style="display:flex;flex-direction:column;gap:2px;">'
-        + '<span style="font-size:11px;font-weight:600;color:var(--accent-primary);">' + lotes.length + ' lotes · ' + totalContratado + ' un.</span>'
-        + '<div style="height:4px;background:var(--bg-inset);border-radius:2px;width:80px;overflow:hidden;"><div style="height:100%;background:var(--accent-primary);border-radius:2px;width:'+pctProg+'%"></div></div>'
-        + '<span style="font-size:9px;color:var(--text-tertiary);">' + totalEnviado + '/' + totalContratado + ' enviados</span></div>'
-      : '<span style="color:var(--danger);font-size:10px;">⚠ sem itens</span>';
+
+    // ── Empenhos abertos vinculados a esta disputa ──
+    const empsAbertos = DB.empenhos.filter(e => e.disputaId === r.id && !e.finalizado);
+    const expanded = _expandedDisputas.has(r.id);
+    const _q = FLT['disputas'] || '';
+
     // ── Alerta vencimento de contrato ──
     let contratoAlerta = '';
     let rowStyle = 'cursor:pointer;';
@@ -4272,47 +4764,125 @@ function renderD(){
         const diasVenc = Math.floor((vencDate - new Date()) / 86400000);
         if (diasVenc < 0) {
           rowStyle = 'cursor:pointer;border-left:4px solid var(--danger);background:rgba(239,68,68,0.04);';
-          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">🔴 CONTRATO VENCIDO</span>';
+          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--danger-soft);color:var(--danger);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">🔴 CONTRATO VENCIDO</span>';
         } else if (diasVenc <= 15) {
           rowStyle = 'cursor:pointer;border-left:4px solid var(--warning);background:rgba(245,158,11,0.05);';
-          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:#fef3c7;color:#d97706;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">⚠️ Vence em ' + diasVenc + 'd</span>';
+          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--warning-soft);color:var(--warning);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">⚠️ Vence em ' + diasVenc + 'd</span>';
         }
       }
     }
 
-    return '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+    // ── Badge de empenhos abertos ──
+    const empBadge = empsAbertos.length > 0
+      ? '<span onclick="event.stopPropagation();toggleEmpenhosDisputa(\'' + r.id + '\')" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
+        + (expanded ? '▲' : '▼') + ' ' + empsAbertos.length + ' emp.</span>'
+      : '';
+
+    const _lts = r.lotes||[];
+    const _vlCont     = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
+    const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
+    const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
+    const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
+    const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
+    const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
+
+    htmlParts.push(
+      '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-disputas" data-id="' + r.id + '" onchange="onRowCheck(\'disputas\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="inline-edit-cell" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
         '<span class="mono" style="font-size:11px;">' + fmtD(r.data) + '</span>' +
         '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
       '</td>' +
-      '<td><div style="font-weight:600;font-size:13px;line-height:1.3;">' + (r.orgao||'—') + contratoAlerta + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      (()=>{
-        const _lts = r.lotes||[];
-        const _vlCont     = _lts.reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
-        const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
-        const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
-        const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
-        const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
-        const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
-        return '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
-               '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
-               '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>';
-      })() +
+      '<td style="max-width:250px;"><div style="font-weight:600;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (r.orgao||'') + '">' + (r.orgao||'—') + contratoAlerta + empBadge + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
+      '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
+      '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar" style="padding:5px 9px;font-size:15px;border-radius:8px;">✏️</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="duplicarDisputa(\'' + r.id + '\')" title="Duplicar" style="padding:5px 9px;font-size:15px;border-radius:8px;">📄</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="finalizarDisputa(\'' + r.id + '\')" title="Finalizar disputa" style="padding:5px 9px;font-size:15px;border-radius:8px;color:var(--success);border-color:var(--success);">🏁</button>' +
         '<button class="btn btn-danger btn-sm" onclick="delRow(\'disputas\',\'' + r.id + '\')" title="Excluir" style="padding:5px 9px;font-size:15px;border-radius:8px;">🗑️</button>' +
-      '</td></tr>';
-  }).join('');
+      '</td></tr>'
+    );
+
+    // ── Sub-rows: empenhos abertos desta disputa ──
+    if (expanded && empsAbertos.length > 0) {
+      // Header da seção de empenhos
+      const totalVem   = empsAbertos.reduce((s,e)=>s+(e.vem||0),0);
+      const totalComp  = empsAbertos.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.vtotal||0),0),0);
+      const totalLucro = empsAbertos.reduce((s,e)=>s+(e.compras||[]).reduce((ss,c)=>ss+(c.luc||0),0),0);
+      const totalRec   = empsAbertos.reduce((s,e)=>s+(e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((ss,c)=>ss+(c.rec||0),0),0);
+      const maxDias    = empsAbertos.reduce((max,e)=>Math.max(max,diasSemPagamento(e)),0);
+      const corDias    = maxDias>=90?'var(--danger)':maxDias>=60?'var(--warning)':maxDias>=30?'var(--text-secondary)':'var(--success)';
+
+      htmlParts.push(
+        '<tr style="background:var(--bg-inset);" onclick="event.stopPropagation()">' +
+        '<td colspan="10" style="padding:6px 12px 6px 32px;">' +
+          '<div style="display:flex;align-items:center;gap:14px;font-size:11px;font-weight:600;flex-wrap:wrap;">' +
+            '<span style="color:var(--text-tertiary);font-weight:700;">📄 EMPENHOS EM ABERTO</span>' +
+            '<span style="color:var(--text-tertiary);">' + empsAbertos.length + ' empenho(s)</span>' +
+            '<span style="color:var(--accent-primary);margin-left:auto;">Emp: ' + fmt(totalVem) + '</span>' +
+            '<span style="color:var(--text-secondary);">Compra: ' + fmt(totalComp) + '</span>' +
+            '<span style="color:var(--success);font-weight:700;">Lucro: ' + fmt(totalLucro) + '</span>' +
+            '<span style="color:var(--warning);">A receber: ' + fmt(totalRec) + '</span>' +
+            (maxDias > 0 ? '<span style="color:' + corDias + ';">Maior atraso: ' + maxDias + 'd</span>' : '') +
+          '</div>' +
+        '</td></tr>'
+      );
+
+      empsAbertos.forEach((e, eIdx) => {
+        const zebraTd = eIdx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
+        const dias = diasSemPagamento(e);
+        let diasBadge = '—';
+        if (dias > 0) {
+          const cls = dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok';
+          const icon = dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':'';
+          diasBadge = '<span class="dias-badge ' + cls + '">' + icon + dias + 'd</span>';
+        } else if (dias === 0) {
+          diasBadge = '<span class="dias-badge dias-ok">✓</span>';
+        }
+        const _vlComp = (e.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
+        const _vlLucro = (e.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
+        const _vlRec   = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+        const btnS = 'padding:4px 7px;font-size:13px;border-radius:7px;';
+        const lote = e.loteId ? (r.lotes||[]).find(l=>l.id===e.loteId) : null;
+        const loteDesc = lote ? '<div style="font-size:9px;color:var(--text-tertiary);margin-top:1px;">🗂 ' + lote.descricao.substring(0,24) + (lote.descricao.length>24?'…':'') + '</div>' : '';
+        // Custo real: soma de custo das compras realizadas
+        const _custoReal = (e.compras||[]).reduce((s,c)=>s+(c.custo||0),0);
+        htmlParts.push(
+          '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + e.id + '\')">' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td style="padding-left:32px;' + zebraTd + '">' +
+            '<div style="display:flex;align-items:center;gap:6px;">' +
+              '<span style="font-size:10px;color:var(--text-tertiary);">└</span>' +
+              '<span class="mono" style="font-size:11px;font-weight:700;color:var(--text-primary);">' + (e.num||'—') + '</span>' +
+              (e.analista ? '<span class="badge ' + (_badgeClass(e.analista)) + '" style="font-size:9px;">' + e.analista + '</span>' : '') +
+            '</div>' +
+            loteDesc +
+          '</td>' +
+          '<td style="' + zebraTd + '"></td>' +
+          '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;' + zebraTd + '">' + fmt(e.vem) + '</td>' +
+          '<td class="mono" style="color:var(--text-secondary);font-size:11px;' + zebraTd + '">' + (_vlComp>0?fmt(_vlComp):'—') + '</td>' +
+          '<td class="mono" style="color:var(--warning);font-size:11px;' + zebraTd + '">' + (_custoReal>0?fmt(_custoReal):'—') + '</td>' +
+          '<td class="mono" style="color:var(--success);font-size:11px;' + zebraTd + '">' + (_vlLucro>0?fmt(_vlLucro):'—') + '</td>' +
+          '<td style="' + zebraTd + '">' + diasBadge + '</td>' +
+          '<td onclick="event.stopPropagation()" style="white-space:nowrap;' + zebraTd + '">' +
+            '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Ver empenho" style="' + btnS + '">🔍</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + e.id + '\')" title="Editar" style="' + btnS + '">✏️</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="abrirCompra(\'' + e.id + '\')" title="Nova Compra" style="' + btnS + ';color:var(--success);border-color:var(--success);">🛒</button>' +
+          '</td></tr>'
+        );
+      });
+    }
+  });
+
+  tb.innerHTML = htmlParts.join('');
   sumD();
-  // If in kanban view, also render kanban
-  if (_viewMode === 'kanban') renderKanban();
 }
 
 function sumD(){
@@ -4363,6 +4933,7 @@ function sumD(){
     <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
     <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
     <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
+
 }
 
 function renderE(){
@@ -4379,6 +4950,7 @@ function renderE(){
     const todoPago = empenhoEstaPago(r);
     const naoRecebido = !todoPago;
     const dias = diasSemPagamento(r);
+    const numDisplay = r.num ? `${hl(r.num, FLT['empenhos'])}<button class="copy-btn" onclick="event.stopPropagation();copyToClipboard('${r.num}',this)" title="Copiar número">⎘</button>` : '—';
     let rowClass = '', diasBadge = '';
     if (naoRecebido && dias > 0) {
       if (dias >= 90)      { rowClass = 'alerta-90'; diasBadge = '<span class="dias-badge dias-90">🔴 '+dias+'d</span>'; }
@@ -4406,7 +4978,7 @@ function renderE(){
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
       '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
       '<td class="mono" style="color:var(--text-secondary);font-size:11px;">' + (_vlCompra>0 ? fmt(_vlCompra) : '—') + '</td>' +
       '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
@@ -4445,13 +5017,43 @@ function sumE(){
     '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">'+fmt(totalComprado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>'+
     '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
+
+  // "A receber": empenhos ainda não pagos
+  // "A receber" = soma do campo rec das compras ainda não pagas
+  const aReceber = a.reduce((s,r) =>
+    s + (r.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0)
+  , 0);
+
+  // Adiciona card "A Receber"
+  g('sum-empenhos').innerHTML +=
+    '<div class="card" style="border-left:3px solid var(--purple);"><div class="card-label">⏳ A Receber</div><div class="card-value" style="color:var(--purple);">'+fmt(aReceber)+'</div></div>';
+
+  // Update tfoot empenhos
+  const tfRowE = document.getElementById('tfoot-empenhos-row');
+  if (tfRowE && a.length > 0) {
+    tfRowE.style.display = '';
+    const el = id => document.getElementById(id);
+    if(el('tfoot-e-vem'))      el('tfoot-e-vem').textContent      = fmt(te);
+    if(el('tfoot-e-compra'))   el('tfoot-e-compra').textContent   = fmt(totalComprado);
+    if(el('tfoot-e-lucro'))    el('tfoot-e-lucro').textContent    = fmt(lucroEmpenhado);
+    if(el('tfoot-e-areceber')) el('tfoot-e-areceber').textContent = fmt(aReceber);
+  } else if (tfRowE) { tfRowE.style.display = 'none'; }
 }
 
 function renderAll(){ 
   // Auto-finalizar empenhos pagos e disputas que atendem critérios
   DB.empenhos.forEach(e => {
     if (empenhoEstaPago(e)) {
-      if (!e.finalizado) {
+      // Auto-finalizar só se qtd enviada cobrir toda a qtd contratada
+      const disp = e.disputaId ? DB.disputas.find(d => d.id === e.disputaId) : null;
+      const itensEmp = (e.itens && e.itens.length) ? e.itens : [];
+      const qtdOk = itensEmp.length === 0 || itensEmp.every(item => {
+        const lote = disp ? (disp.lotes||[]).find(l => l.id === item.loteId) : null;
+        const qtdContratada = item.qtd || (lote ? lote.qtd : 0) || 0;
+        const qtdComprada = (e.compras||[]).filter(c => c.itemId === item.id).reduce((s,c) => s + (c.qtd||0), 0);
+        return qtdContratada === 0 || qtdComprada >= qtdContratada;
+      });
+      if (qtdOk && !e.finalizado) {
         e.finalizado = true;
         e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
       }
@@ -4561,6 +5163,27 @@ function verExcel(id, tipo) {
   </table></div>`;
   const w = window.open('', '_blank', 'width=900,height=500');
   w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
+<!-- SHORTCUTS MODAL -->
+<div class="shortcuts-modal" id="shortcuts-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="shortcuts-modal-box">
+    <div class="shortcuts-modal-title">⌨️ Atalhos de Teclado</div>
+    <div class="shortcut-row"><span class="desc">Abrir busca global</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Nova Disputa</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>N</kbd></span></div>
+	<div class="shortcut-row"><span class="desc">Novo Acompanhamento</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>A</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Novo Empenho</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>E</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Painel</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>1</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Dashboard</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>2</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Disputas</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>3</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Ir para Empenhos</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>4</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Alternar tema claro/escuro</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>T</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Fechar modal / popup</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Esta tela de atalhos</span><span class="shortcut-keys"><kbd>?</kbd></span></div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-ghost" onclick="document.getElementById('shortcuts-modal').classList.remove('open')">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- POPUP DETALHES DISPUTA -->
 <div class="detail-popup-overlay" id="popup-disputa">
   <div class="detail-popup">
@@ -4725,7 +5348,7 @@ function atualizarDashboard() {
     const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
     return `<tr><td style="padding:7px 8px;font-weight:600;font-family:'JetBrains Mono',monospace;">${r.num||'—'}</td>
       <td style="padding:7px 8px;">${r.orgao||'—'}</td>
-      <td style="padding:7px 8px;"><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="padding:7px 8px;"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);">${fmt(r.vem)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${dias}d</td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente há mais de 30 dias</td></tr>';
@@ -4782,7 +5405,7 @@ function atualizarDashboard() {
     `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${e.id}')">
       <td style="padding:7px 8px;font-weight:600;font-family:monospace;">${e.num||'—'}</td>
       <td style="padding:7px 8px;">${(e.orgao||'—').substring(0,30)}</td>
-      <td style="padding:7px 8px;"><span class="badge ${e.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${e.analista||'—'}</span></td>
+      <td style="padding:7px 8px;"><span class="badge ${_badgeClass(e.analista)}" style="font-size:10px;">${e.analista||'—'}</span></td>
       <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(aReceber)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;">${dias}d</td>
       <td style="padding:7px 8px;text-align:center;"><span style="background:${cor};color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;">${faixa}</span></td>
@@ -5044,22 +5667,20 @@ function verEmpenhosDisputa(disputaId) {
 }
 
 function delEmpenhoDisputa(id) {
-  DB.empenhos = DB.empenhos.filter(r => r.id !== id);
-  save('empenhos', DB.empenhos);
+  _fullDB.empenhos = _fullDB.empenhos.filter(r => r.id !== id);
+  save('empenhos', _fullDB.empenhos);
   toast('Empenho excluído', 'info');
   renderAll();
   if(disputaAtiva) verEmpenhosDisputa(disputaAtiva);
 }
 
 function novoEmpenhoDaDisputa() {
-  closeModal('empenhos-disputa');
-  openModal('empenhos');
-  // Pré-seleciona a disputa no select
-  setTimeout(() => {
-    if(disputaAtiva) {
-      populateDisputaSelect(disputaAtiva);
-    }
-  }, 50);
+  closeModal('empenhos-disputa', true);
+  if (disputaAtiva) {
+    novoEmpenhoParaDisputa(disputaAtiva);
+  } else {
+    toast('Selecione uma disputa primeiro.', 'error');
+  }
 }
 
 function populateDisputaSelect(preSelectId) {
@@ -5100,24 +5721,64 @@ function populateDisputaSelect(preSelectId) {
 let EID={};
 let _acompConvertendoId = null;
 function openModal(tab){
-  if (tab === 'acomp') { clearAcomp(); document.getElementById('modal-acomp').classList.add('open'); return; }
+  if (tab === 'acomp') {
+    clearAcomp();
+    // Pré-preenche e bloqueia analista para não-admins
+    if (!isAdmin && analistaDoUsuario) {
+      setAnalistaSelect('ac-analista', analistaDoUsuario);
+      const sel = g('ac-analista');
+      if (sel) sel.disabled = true;
+    }
+    document.getElementById('modal-acomp').classList.add('open');
+    return;
+  }
   EID[tab]=null;
   if(tab==='disputas'){
     clearD();
     lotesTemp = []; renderLotes();
     g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
+    // Pré-preenche e bloqueia analista para não-admins
+    if (!isAdmin && analistaDoUsuario) {
+      setAnalistaSelect('d-analista', analistaDoUsuario);
+      const sel = g('d-analista');
+      if (sel) sel.disabled = true;
+    }
   } else if(tab==='empenhos') {
-    clearE();
-    lotesSelecionados = {};
-    const wrap = g('lote-selector-wrap'); if(wrap) wrap.style.display = 'none';
-    g('ttl-empenhos').textContent='Novo Empenho'; g('e-data').value=today(); populateDisputaSelect(null);
+    toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
+    return;
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
 }
-function closeModal(tab){ 
-  g('modal-'+tab).classList.remove('open');
+function closeModal(tab, force) { 
+  const modal = g('modal-'+tab);
+  if (!modal) return;
+  // Check for dirty fields
+  if (!force) {
+    const inputs = modal.querySelectorAll('input:not([type=checkbox]):not([type=radio]), select, textarea');
+    const hasData = [...inputs].some(el => el.value && el.value.trim() !== '' && !el.readOnly && !el.disabled && el.style.display !== 'none');
+    if (hasData && modal._isDirty) {
+      confirmar('Fechar sem salvar?', 'As alterações não salvas serão perdidas.', () => {
+        modal._isDirty = false;
+        modal.classList.remove('open');
+        _restoreTab();
+      });
+      return;
+    }
+  }
+  modal._isDirty = false;
+  modal.classList.remove('open');
   _restoreTab();
 }
+
+// Mark modal as dirty when user types
+document.addEventListener('input', e => {
+  const modal = e.target.closest('.modal-overlay');
+  if (modal) modal._isDirty = true;
+});
+document.addEventListener('change', e => {
+  const modal = e.target.closest('.modal-overlay');
+  if (modal) modal._isDirty = true;
+});
 
 function _restoreTab() {
   const algumAberto = document.querySelector('.modal-overlay.open, .detail-popup-overlay.open');
@@ -5145,6 +5806,12 @@ function novoEmpenhoParaDisputa(disputaId) {
   g('ttl-empenhos').textContent = 'Novo Empenho';
   g('e-data').value = today();
   populateDisputaSelect(disputaId);
+  // Pré-preenche analista para usuários não-admin
+  if (!isAdmin && analistaDoUsuario) {
+    setAnalistaSelect('e-analista', analistaDoUsuario);
+    const sel = g('e-analista');
+    if (sel) sel.disabled = true;
+  }
   g('modal-empenhos').classList.add('open');
 }
 
@@ -5212,8 +5879,8 @@ function wizardFinish() {
       observacao: '',
       M: {}
     };
-    DB.disputas.push(novaDisputa);
-    save('disputas', DB.disputas);
+    _fullDB.disputas.push(novaDisputa);
+    save('disputas', _fullDB.disputas);
     toast('Disputa criada com sucesso!', 'success');
   } else {
     const novoEmpenho = {
@@ -5221,7 +5888,7 @@ function wizardFinish() {
       num: wizardData.processo || '',
       data: today(),
       orgao: wizardData.orgao || '',
-      analista: 'Márdea',
+      analista: analistaDoUsuario || 'Márdea',
       produto: '',
       plataforma: '',
       dcomp: today(),
@@ -5234,8 +5901,8 @@ function wizardFinish() {
       observacao: '',
       M: {}
     };
-    DB.empenhos.push(novoEmpenho);
-    save('empenhos', DB.empenhos);
+    _fullDB.empenhos.push(novoEmpenho);
+    save('empenhos', _fullDB.empenhos);
     toast('Empenho criado com sucesso!', 'success');
   }
   
@@ -5254,7 +5921,7 @@ document.addEventListener('keydown', (e) => {
     if(activeTab.textContent.includes('Disputas')) {
       openModal('disputas');
     } else if(activeTab.textContent.includes('Empenhos')) {
-      openModal('empenhos');
+      toast('Para criar um empenho, abra uma disputa e clique em "＋ Novo Empenho".', 'info');
     }
   }
   
@@ -5297,9 +5964,28 @@ function clearD(){
   const cp = g('d-contrato-preview'); if(cp) { cp.style.display='none'; }
   const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
   const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
-  g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet'; g('d-analista').value='Márdea';
+  g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet';
+  setAnalistaSelect('d-analista', analistaDoUsuario || 'Márdea');
   calcD();
 }
+function _validarLotesSaldo(disputaId) {
+  // FIX 8: impede saldo negativo nos lotes
+  const d = DB.disputas.find(x => x.id === disputaId);
+  if (!d) return true;
+  const problemas = [];
+  (lotesTemp||[]).forEach(l => {
+    const qtdEnviada = calcQtdEnviada(disputaId, l.id);
+    if ((l.qtd||0) < qtdEnviada) {
+      problemas.push(`Lote <strong>${l.descricao||l.id}</strong>: quantidade nova (${l.qtd}) é menor que já empenhado (${qtdEnviada} un.)`);
+    }
+  });
+  if (problemas.length) {
+    toast('⚠️ ' + problemas[0].replace(/<[^>]+>/g,'') + ' — ajuste a quantidade.', 'error');
+    return false;
+  }
+  return true;
+}
+
 function saveD(){
   // MELHORIA 12: Validação com feedback visual
   if (!validarFormDisputa()) {
@@ -5345,6 +6031,8 @@ function saveD(){
     lotes: lotesValidos.map(l => ({ id: l.id || uid(), descricao: (l.descricao||'').toUpperCase(), qtd: l.qtd||1, vunit: l.vunit||0, compraPrev: l.compraPrev||0, custoPrev: l.custoPrev||0 })),
     M
   };
+  // FIX 8: verificar saldo negativo ao editar lotes
+  if (EID.disputas && !_validarLotesSaldo(EID.disputas)) return;
   upsert('disputas',row);
 
   // Sincroniza descrições nos empenhos e compras vinculados
@@ -5372,21 +6060,25 @@ function saveD(){
 
   // Se veio de conversão de acompanhamento, remove o acomp
   if (_acompConvertendoId && !EID.disputas) {
-    DB.acomp = (DB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
-    save('acomp', DB.acomp);
+    _fullDB.acomp = (_fullDB.acomp||[]).filter(a => a.id !== _acompConvertendoId);
+    save('acomp', _fullDB.acomp);
     _acompConvertendoId = null;
     toast('Disputa criada e acompanhamento removido da lista!', 'success');
   } else {
     toast(EID.disputas?'Disputa atualizada':'Disputa salva','success');
   }
-  closeModal('disputas'); renderAll();
+  closeModal('disputas', true); renderAll();
 }
 function editD(id){
   const r=DB.disputas.find(x=>x.id===id); if(!r) return;
   EID.disputas=id; clearD();
   g('d-data').value=r.data||''; g('d-orgao').value=r.orgao||''; g('d-estado').value=r.estado||'';
   g('d-empresa').value=r.empresa||''; g('d-tipo').value=r.tipo||''; g('d-rp').value=r.rp||'';
-  g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||''; g('d-analista').value=r.analista||'';
+  g('d-processo').value=r.processo||''; g('d-sistema').value=r.sistema||'';
+  setAnalistaSelect('d-analista', r.analista || analistaDoUsuario);
+  // Para não-admins, bloqueia troca de analista
+  const _dAnSel = g('d-analista');
+  if (_dAnSel) _dAnSel.disabled = !isAdmin;
 
   g('d-observacao').value=r.observacao||'';
 
@@ -5414,7 +6106,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const _anEl=g('e-analista'); if(_anEl) _anEl.value=''; const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -5511,7 +6203,7 @@ function saveE(){
   upsert('empenhos',row);
   const _isNew = !EID.empenhos;
   toast(_isNew ? 'EMPENHO SALVO' : 'EMPENHO ATUALIZADO', 'success');
-  closeModal('empenhos');
+  closeModal('empenhos', true);
   renderAll();
   // Após salvar, abre o popup de detalhe do empenho
   setTimeout(() => abrirPopupEmpenho(row.id), 150);
@@ -5520,7 +6212,10 @@ function editE(id){
   const r=DB.empenhos.find(x=>x.id===id); if(!r) return;
   EID.empenhos=id; clearE();
   g('e-num').value=r.num||''; g('e-data').value=r.data||'';
-  g('e-analista').value=r.analista||'Márdea'; 
+  setAnalistaSelect('e-analista', r.analista || analistaDoUsuario);
+  // Para não-admins, bloqueia troca de analista
+  const _eAnSel = g('e-analista');
+  if (_eAnSel) _eAnSel.disabled = !isAdmin;
   g('e-observacao').value=r.observacao||'';
 
   // Carrega NE
@@ -5584,7 +6279,14 @@ function editE(id){
 }
 
 // ========== CRUD ==========
-function upsert(tab,row){ const idx=DB[tab].findIndex(r=>r.id===row.id); if(idx!==-1) DB[tab][idx]=row; else DB[tab].push(row); save(tab,DB[tab]); }
+function upsert(tab, row) {
+  const arr = _fullDB[tab] || [];
+  const idx = arr.findIndex(r => r.id === row.id);
+  if (idx !== -1) arr[idx] = row;
+  else arr.push(row);
+  _fullDB[tab] = arr;
+  save(tab, arr);
+}
 let PDel=null;
 function delRow(tab,id){
   PDel={tab,id};
@@ -5619,18 +6321,20 @@ function delRow(tab,id){
   const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = icon;
   const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = titulo;
   const el = g('confirm-msg'); if(el) el.innerHTML = msg;
+  // Garante que o botão aponta para confirmDel (padrão de exclusão)
+  const _btn = g('confirm-del-btn');
+  if(_btn) { _btn.textContent = '🗑 Sim, excluir'; _btn.className = 'btn btn-danger'; _btn.style.minWidth = '110px'; _btn.onclick = confirmDel; }
   g('modal-confirm').classList.add('open');
 }
-function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; }
+function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; btn && (btn.className='btn btn-danger'); btn && (btn.style.minWidth='110px'); }
 function confirmDel(){
   if(!PDel) return;
   if(PDel.tab === 'disputas') {
-    // Exclui em cascata: empenhos e compras vinculados
-    DB.empenhos = DB.empenhos.filter(e => e.disputaId !== PDel.id);
-    save('empenhos', DB.empenhos);
+    _fullDB.empenhos = _fullDB.empenhos.filter(e => e.disputaId !== PDel.id);
+    save('empenhos', _fullDB.empenhos);
   }
-  DB[PDel.tab] = DB[PDel.tab].filter(r=>r.id!==PDel.id);
-  save(PDel.tab, DB[PDel.tab]);
+  _fullDB[PDel.tab] = _fullDB[PDel.tab].filter(r => r.id !== PDel.id);
+  save(PDel.tab, _fullDB[PDel.tab]);
   closeConfirm();
   renderAll();
   toast('Excluído com sucesso','info');
@@ -5671,11 +6375,11 @@ function deletarSelecionados(tab) {
   if(btn) {
     btn.onclick = () => {
       if (tab === 'disputas') {
-        DB.empenhos = DB.empenhos.filter(e => !ids.includes(e.disputaId));
-        save('empenhos', DB.empenhos);
+        _fullDB.empenhos = _fullDB.empenhos.filter(e => !ids.includes(e.disputaId));
+        save('empenhos', _fullDB.empenhos);
       }
-      DB[tab] = DB[tab].filter(r => !ids.includes(r.id));
-      save(tab, DB[tab]);
+      _fullDB[tab] = _fullDB[tab].filter(r => !ids.includes(r.id));
+      save(tab, _fullDB[tab]);
       renderAll();
       const chkAll = g('chk-all-' + tab);
       if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
@@ -5700,6 +6404,46 @@ function exportCSV(tab){
   };
   const csv=[H[tab],...R[tab]].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})); a.download=`${tab}_${today()}.csv`; a.click(); toast('CSV exportado','success');
+}
+
+// ========== EXPORT XLSX (SheetJS) ==========
+function exportXLSX(tab) {
+  if (typeof XLSX === 'undefined') { exportCSV(tab); return; }
+  const H = {
+    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação'],
+    empenhos: ['Empenho','Data','Órgão','Analista','Produto','Plataforma','Dt.Compra','Vl.Unit','Qtd','Total Compra','Vl.Empenho','Alíquota','Imposto','Lucro','% Lucro','A Receber','Recebido','Dt.Receb','Observação']
+  };
+  const R = {
+    disputas: DB.disputas.filter(r => !r.finalizada && matches('disputas', r)).map(r => {
+      const v = dVals(r);
+      return [r.data, r.orgao, r.estado, r.empresa, r.tipo, r.rp, r.processo, r.sistema, r.analista,
+        getValorContrato(r), r.compra||0, r.custo||0, v.luc, v.pct+'%', r.situacao||'', r.observacao||''];
+    }),
+    empenhos: DB.empenhos.filter(r => matches('empenhos', r) && !r.finalizado).map(r => {
+      const v = eVals(r);
+      return [r.num, r.data, r.orgao, r.analista, r.produto, r.plataforma, r.dcomp,
+        r.vunit||0, r.qtd||0, v.tot, r.vem||0, r.aliq||0, v.imp, v.luc, v.pct+'%', v.rec, r.recebido||0, r.dreceb||'', r.observacao||''];
+    })
+  };
+
+  const ws = XLSX.utils.aoa_to_sheet([H[tab], ...R[tab]]);
+
+  // Column widths
+  const wscols = H[tab].map((h, i) => ({ wch: Math.max(h.length + 2, 12) }));
+  ws['!cols'] = wscols;
+
+  // Style header row bold (xlsx.js basic)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+    if (cell) { cell.s = { font: { bold: true }, fill: { fgColor: { rgb: 'EEF2F6' } } }; }
+  }
+
+  const wb = XLSX.utils.book_new();
+  const sheetName = tab === 'disputas' ? 'Disputas' : 'Empenhos';
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, `${sheetName}_${today()}.xlsx`);
+  toast(`✅ Excel exportado: ${R[tab].length} registros`, 'success');
 }
 
 // ========== BACKUP / RESTAURAR ==========
@@ -5970,7 +6714,7 @@ function saveCompra() {
 
   // Fecha modal ANTES de salvar (evita race condition com onSnapshot do Firebase)
   const _empId = compraEmpenhoId;
-  closeModal('compra');
+  closeModal('compra', true);
   save('empenhos', DB.empenhos);
   toast(compraEditId ? 'COMPRA ATUALIZADA ✓' : 'COMPRA SALVA ✓', 'success');
   renderAll();
@@ -6060,10 +6804,10 @@ function calcSelecionarDisputa(id) {
   const badge = g('calc-empresa-badge');
   if (d.empresa === 'Hamate') {
     badge.textContent = 'Hamate';
-    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:#7c3aed20;color:#7c3aed;font-weight:700;';
+    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--purple-soft);color:var(--purple);font-weight:700;';
   } else {
     badge.textContent = 'Gadita';
-    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:#2563eb20;color:#2563eb;font-weight:700;';
+    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--info-soft);color:var(--accent-primary);font-weight:700;';
   }
 
   g('calc-tipo-gadita').style.display = d.empresa === 'Gadita' ? '' : 'none';
@@ -6193,7 +6937,7 @@ function calcUsarCusto() {
   if (inputEl) inputEl.value = custoUnit.toFixed(2);
 
   // Fecha calculadora e limpa estado
-  closeModal('calc');
+  closeModal('calc', true);
   _calcRetornarLoteIdx = null;
   g('calc-retornar-wrap').style.display = 'none';
   toast('Custo previsto preenchido: ' + fmt(totalCusto) + ' (total) · ' + fmt(custoUnit) + '/un', 'success');
@@ -6497,9 +7241,24 @@ function finalizarDisputa(id) {
 function reabrirDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  const empsFinalizados = DB.empenhos.filter(e => e.disputaId === id && e.finalizado);
+  const msgEmps = empsFinalizados.length > 0
+    ? `<br><br>⚠️ <strong>${empsFinalizados.length} empenho(s)</strong> vinculado(s) também será(ão) reaberto(s) automaticamente.`
+    : '';
+  const totalCompras = empsFinalizados.reduce((s,e) => s + (e.compras||[]).filter(c => c.dpag || c.rec > 0).length, 0);
+  const msgCompras = totalCompras > 0
+    ? `<br><span style="color:var(--warning);font-size:12px;">⚠️ As datas de pagamento das <strong>${totalCompras} compra(s)</strong> serão apagadas para evitar refinalização automática. Valores a receber são preservados.</span>`
+    : '';
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}${msgCompras}`, btnLabel:'↩️ Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
-    save('disputas', DB.disputas); renderAll(); toast('Disputa reaberta!', 'info');
+    // Reabre empenhos e limpa dpag/rec das compras para quebrar o ciclo de auto-finalização
+    empsFinalizados.forEach(e => {
+      e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+      (e.compras||[]).forEach(c => { c.dpag = ''; }); // Limpa apenas dpag; rec preservado
+    });
+    save('disputas', DB.disputas);
+    if (empsFinalizados.length) save('empenhos', DB.empenhos);
+    renderAll(); toast('Disputa e empenhos reabertos! Datas de pagamento limpas, valores preservados.', 'info');
   }}); return;
 }
 
@@ -6598,17 +7357,17 @@ function buscaGlobal(q) {
   });
 
   if (!resultados.length) {
-    panel.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:8px;">Nenhum resultado para "' + q + '"</div>';
+    panel.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum resultado para "' + q + '"</div>';
   } else {
     panel.innerHTML = resultados.slice(0, 15).map(r =>
-      `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">
+      `<div onclick="${r.onclick}" style="padding:8px;cursor:pointer;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;" onmouseover="this.style.background='var(--bg-surface-soft)'" onmouseout="this.style.background=''">
         <div style="min-width:0;flex:1;">
-          <div style="font-size:10px;color:#94a3b8;">${r.tipo}</div>
-          <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.label}</div>
+          <div style="font-size:10px;color:var(--text-tertiary);">${r.tipo}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.label}</div>
         </div>
-        <div style="font-size:11px;color:#60a5fa;white-space:nowrap;margin-left:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
+        <div style="font-size:11px;color:var(--accent-secondary);white-space:nowrap;margin-left:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
       </div>`
-    ).join('') + (resultados.length > 15 ? `<div style="color:#94a3b8;font-size:11px;padding:6px 8px;text-align:center;">+${resultados.length-15} resultado(s) — refine a busca</div>` : '');
+    ).join('') + (resultados.length > 15 ? `<div style="color:var(--text-tertiary);font-size:11px;padding:6px 8px;text-align:center;">+${resultados.length-15} resultado(s) — refine a busca</div>` : '');
   }
   panel.style.display = 'block';
 }
@@ -6635,6 +7394,7 @@ function _confirmarAcao({ icon = '⚠️', titulo = 'Confirmar', msg = '', btnLa
     btn.textContent = btnLabel;
     btn.className = 'btn ' + btnClass;
     btn.style.minWidth = '120px';
+    // Substitui completamente o handler — sem conflito com atributo onclick
     btn.onclick = () => { onConfirm(); PDel = null; closeConfirm(); };
   }
   g('modal-confirm').classList.add('open');
@@ -7023,9 +7783,9 @@ function salvarTarefa() {
     concluida: false,
     criadaEm: new Date().toISOString()
   };
-  if (!DB.tarefas) DB.tarefas = [];
-  DB.tarefas.push(nova);
-  save('tarefas', DB.tarefas);
+  if (!_fullDB.tarefas) _fullDB.tarefas = [];
+  _fullDB.tarefas.push(nova);
+  save('tarefas', _fullDB.tarefas);
   document.getElementById('tarefa-input-desc').value = '';
   document.getElementById('tarefa-input-prazo').value = '';
   renderTarefas();
@@ -7033,10 +7793,10 @@ function salvarTarefa() {
 }
 
 function toggleTarefa(id) {
-  const t = (DB.tarefas||[]).find(x => x.id === id);
+  const t = (_fullDB.tarefas||[]).find(x => x.id === id);
   if (!t) return;
   t.concluida = !t.concluida;
-  save('tarefas', DB.tarefas);
+  save('tarefas', _fullDB.tarefas);
   renderTarefas();
 }
 
@@ -7047,8 +7807,8 @@ function excluirTarefa(id) {
   const el = g('confirm-msg'); if(el) el.innerHTML = 'Tem certeza que deseja excluir esta tarefa?';
   const btn = g('confirm-del-btn');
   if(btn) btn.onclick = () => {
-    DB.tarefas = (DB.tarefas||[]).filter(x => x.id !== id);
-    save('tarefas', DB.tarefas);
+    _fullDB.tarefas = (_fullDB.tarefas||[]).filter(x => x.id !== id);
+    save('tarefas', _fullDB.tarefas);
     renderTarefas();
     toast('Tarefa excluída', 'info');
     PDel = null; closeConfirm();
@@ -7079,7 +7839,7 @@ function limparTodasNotificacoes() {
   const badge = g('notif-badge');
   if (badge) badge.style.display = 'none';
   const list = g('notif-list');
-  if (list) list.innerHTML = '<div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div>';
+  if (list) list.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
 }
 
 function dispensarNotificacao(chave) {
@@ -7097,6 +7857,17 @@ function toggleNotificacoes() {
     // Esconde badge ao abrir
     const badge = g('notif-badge');
     if (badge) badge.style.display = 'none';
+    // Fecha ao clicar fora
+    setTimeout(() => {
+      function fecharFora(ev) {
+        const container = p.closest('[style*="position:relative"]') || p.parentElement;
+        if (!container.contains(ev.target)) {
+          p.style.display = 'none';
+          document.removeEventListener('click', fecharFora, true);
+        }
+      }
+      document.addEventListener('click', fecharFora, true);
+    }, 0);
   } else {
     p.style.display = 'none';
   }
@@ -7138,12 +7909,12 @@ function atualizarNotificacoes() {
   if (list) {
     list.innerHTML = alertas.length
       ? alertas.map(a => `
-        <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;margin-bottom:4px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);">
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;margin-bottom:4px;border-left:3px solid var(--warning);background:var(--warning-soft);">
           <span style="font-size:16px;flex-shrink:0;cursor:pointer;" onclick="${a.onclick}">${a.icon}</span>
-          <span style="font-size:12px;line-height:1.5;color:#f1f5f9;flex:1;cursor:pointer;" onclick="${a.onclick}">${a.msg}</span>
-          <button onclick="dispensarNotificacao('${a.chave}')" title="Dispensar" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:14px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'">✕</button>
+          <span style="font-size:12px;line-height:1.5;color:var(--text-primary);flex:1;cursor:pointer;" onclick="${a.onclick}">${a.msg}</span>
+          <button onclick="dispensarNotificacao('${a.chave}')" title="Dispensar" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:14px;padding:0 2px;flex-shrink:0;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-tertiary)'">✕</button>
         </div>`).join('')
-      : '<div style="color:#94a3b8;font-size:12px;">Sem alertas no momento ✅</div>';
+      : '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
   }
 }
 
@@ -7163,12 +7934,55 @@ function popularFiltroMes() {
 }
 let filtroMesDisputas = 'todos';
 
+// ===== FILTRO MÊS/ANO PAGAMENTO — EMP. FINALIZADOS =====
+function popularFiltroMesPagEmpFin() {
+  const sel = g('filtro-mes-pag-emp-fin');
+  if (!sel) return;
+  const cur = sel.value;
+  const meses = new Set();
+  DB.empenhos.forEach(e => {
+    if (!e.finalizado) return;
+    (e.compras||[]).forEach(c => { if (c.dpag) meses.add(c.dpag.slice(0,7)); });
+  });
+  const sorted = [...meses].sort().reverse();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    sorted.map(m => {
+      const [y, mo] = m.split('-');
+      const nome = new Date(y, parseInt(mo)-1).toLocaleString('pt-BR',{month:'long',year:'numeric'});
+      return `<option value="${m}"${cur===m?' selected':''}>${nome.charAt(0).toUpperCase()+nome.slice(1)}</option>`;
+    }).join('');
+}
+
+// ===== FILTRO MÊS/ANO FINALIZAÇÃO — DISPUTAS FINALIZADAS =====
+function popularFiltroMesFinalizadas() {
+  const sel = g('filtro-mes-finalizadas');
+  if (!sel) return;
+  const cur = sel.value;
+  const meses = new Set();
+  DB.disputas.forEach(d => { if (d.finalizada && d.dataFinalizacao) meses.add(d.dataFinalizacao.slice(0,7)); });
+  const sorted = [...meses].sort().reverse();
+  sel.innerHTML = '<option value="todos">Todos</option>' +
+    sorted.map(m => {
+      const [y, mo] = m.split('-');
+      const nome = new Date(y, parseInt(mo)-1).toLocaleString('pt-BR',{month:'long',year:'numeric'});
+      return `<option value="${m}"${cur===m?' selected':''}>${nome.charAt(0).toUpperCase()+nome.slice(1)}</option>`;
+    }).join('');
+}
+
 
 
 function renderFinalizadas() {
+  popularFiltroMesFinalizadas();
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
+  const analistaFin = g('filtro-analista-finalizadas')?.value || 'todos';
+  const mesFin = g('filtro-mes-finalizadas')?.value || 'todos';
   const rows = DB.disputas.filter(d => {
     if (!d.finalizada) return false;
+    if (analistaFin !== 'todos' && d.analista !== analistaFin) return false;
+    if (mesFin !== 'todos') {
+      const anoMes = (d.dataFinalizacao||'').substring(0,7);
+      if (anoMes !== mesFin) return false;
+    }
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) || (d.processo||'').toLowerCase().includes(q) || (d.estado||'').toLowerCase().includes(q);
   }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
@@ -7179,7 +7993,7 @@ function renderFinalizadas() {
     sumFinalizadas(rows);
     return;
   }
-  tb.innerHTML = rows.map(r => {
+  tb.innerHTML = rows.map((r, idx) => {
     const contrato = getValorContrato(r);
     const emps = DB.empenhos.filter(e => e.disputaId === r.id);
     const lucroRec = emps.reduce((s,e) =>
@@ -7187,15 +8001,16 @@ function renderFinalizadas() {
         const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0), 0);
+    const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
     return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
-      '<td class="mono" style="font-size:11px;">' + fmtD(r.data) + '</td>' +
-      '<td><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
-      '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'#2563eb20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'#2563eb') + ';">' + (r.empresa||'—') + '</span></td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:600;">' + fmt(contrato) + '</td>' +
-      '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
-      '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
-      '<td onclick="event.stopPropagation()">' +
+      '<td class="mono" style="font-size:11px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
+      '<td style="' + zebraTd + '"><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
+      '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'#2563eb20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'#2563eb') + ';">' + (r.empresa||'—') + '</span></td>' +
+      '<td class="mono" style="color:var(--accent-primary);font-weight:600;' + zebraTd + '">' + fmt(contrato) + '</td>' +
+      '<td class="mono" style="color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
+      '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
+      '<td style="' + zebraTd + '" onclick="event.stopPropagation()">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="reabrirDisputa(\'' + r.id + '\')" title="Reabrir disputa" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
       '</td></tr>';
@@ -7232,8 +8047,10 @@ function _doFinalizarEmpenho(id) {
 function _doReabrirEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
   e.finalizado = false; e._manualFinalizado = false; e.dataFinalizacao = null;
+  // Limpa apenas dpag para evitar re-finalização automática; rec preservado
+  (e.compras||[]).forEach(c => { c.dpag = ''; });
   if (e.disputaId) { const d = DB.disputas.find(x => x.id === e.disputaId); if (d && d.finalizada) { d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false; } }
-  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto!', 'info');
+  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto! Data de pagamento limpa, valores preservados.', 'info');
 }
 function finalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
@@ -7293,14 +8110,28 @@ function toggleAgrupamentoFin() {
 }
 
 function renderEmpFinalizados() {
+  popularFiltroMesPagEmpFin();
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
   const analista = g('filtro-analista-emp-fin')?.value || 'todos';
+  const mesPag = g('filtro-mes-pag-emp-fin')?.value || 'todos';
+
+  // Helper: retorna a data de pagamento mais recente das compras do empenho
+  function getDataPagamento(e) {
+    const datas = (e.compras||[]).map(c => c.dpag||'').filter(d => d !== '').sort();
+    return datas.length ? datas[datas.length - 1] : '';
+  }
+
   const rows = DB.empenhos.filter(e => {
     if (!e.finalizado) return false;
     if (analista !== 'todos' && e.analista !== analista) return false;
+    if (mesPag !== 'todos') {
+      const dp = getDataPagamento(e);
+      const anoMes = dp.substring(0,7);
+      if (anoMes !== mesPag) return false;
+    }
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
-  }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
+  }).sort((a,b) => (getDataPagamento(b)||'').localeCompare(getDataPagamento(a)||''));
 
   const tb = g('tbody-emp-finalizados');
   if (!tb) return;
@@ -7323,21 +8154,23 @@ function renderEmpFinalizados() {
     });
     const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
     tb.innerHTML = sorted.map(([org, g_]) => {
-      const linhasEmp = g_.empenhos.map(r => {
+      const linhasEmp = g_.empenhos.map((r, idx) => {
         const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
           const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
         },0);
-        return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
-          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
-          <td></td>
-          <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-          <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
-          <td class="mono" style="color:var(--success);font-weight:600;">${fmt(lucroRec)}</td>
-          <td class="mono" style="font-size:11px;color:var(--text-tertiary);">${fmtD(r.dataFinalizacao)}</td>
-          <td onclick="event.stopPropagation()">
+        const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
+        const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
+        const zebraFinTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
+        return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
+          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
+          <td style="${zebraFinTd}"></td>
+          <td style="${zebraFinTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
+          <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraFinTd}">${fmt(r.vem)}</td>
+          <td class="mono" style="color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
+          <td onclick="event.stopPropagation()" style="${zebraFinTd}">
             <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')">🔍</button>
             <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>
-            <button class="btn btn-ghost btn-sm" onclick="delRow('empenhos','${r.id}')" style="color:var(--danger);border-color:var(--danger);" title="Excluir empenho">🗑</button>
           </td></tr>`;
       }).join('');
       return `<tr style="background:var(--bg-inset);">
@@ -7356,13 +8189,15 @@ function renderEmpFinalizados() {
         const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
         return ss+luc;
       },0);
+      const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
+      const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
       return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
         '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
-        '<td><span class="badge ' + (r.analista==='Márdea'?'bp':'bb') + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+        '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
         '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
         '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
-        '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(r.dataFinalizacao) + '</td>' +
+        '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
         '<td onclick="event.stopPropagation()">' +
           '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
           '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">↩️ Reabrir</button>' +
@@ -7418,16 +8253,21 @@ function exportarComprasSelecionadas(empId) {
   const hoje = new Date().toISOString().slice(0,10);
   const nomeArquivo = cidade + ' - ' + hoje + '.xlsx';
 
-  const cabecalho = ['Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'A Receber (R$)', 'Plataforma'];
+  // FIX 10: cabeçalho inclui dados do empenho e disputa
+  const cabecalho = ['Nº Empenho', 'Órgão', 'Data Empenho', 'Produto', 'Quantidade', 'Valor Compra (R$)', 'Custo (R$)', 'Lucro (R$)', 'Recebido (R$)', 'Dt. Pagamento', 'Plataforma'];
   const linhas = comprasSel.map(c => {
     const itemRef = itens.find(i => i.id === c.itemId);
     return [
+      emp.num || '—',
+      emp.orgao || '—',
+      fmtD(emp.data),
       (itemRef?.descricao || '—').toUpperCase(),
       c.qtd || 0,
       c.vtotal || 0,
       c.custo || 0,
       c.luc || 0,
       c.rec || 0,
+      c.dpag ? fmtD(c.dpag) : '—',
       c.plataforma || '—'
     ];
   });
@@ -7435,13 +8275,14 @@ function exportarComprasSelecionadas(empId) {
   // Substitui texto da plataforma pela URL (Excel reconhece como hiperlink azul/sublinhado)
   const linhasComLink = comprasSel.map((c, i) => {
     const row = [...linhas[i]];
-    if (c.link) row[6] = c.link;
+    if (c.link) row[10] = c.link;
     return row;
   });
 
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([[cidade.toUpperCase()]]);
-  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:6} }];
+  const tituloExport = (emp.num ? 'Empenho ' + emp.num + ' · ' : '') + cidade.toUpperCase();
+  const ws = XLSX.utils.aoa_to_sheet([[tituloExport]]);
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:10} }];
   XLSX.utils.sheet_add_aoa(ws, [[], cabecalho, ...linhasComLink], { origin: 'A2' });
 
   // Centralizar todas as células preenchidas
@@ -7450,7 +8291,7 @@ function exportarComprasSelecionadas(empId) {
     ws[ref].s.alignment = { horizontal: 'center', vertical: 'center' };
   });
 
-  ws['!cols'] = [{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:35}];
+  ws['!cols'] = [{wch:14},{wch:30},{wch:14},{wch:35},{wch:12},{wch:18},{wch:15},{wch:15},{wch:18},{wch:14},{wch:35}];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Compras');
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
@@ -7846,17 +8687,12 @@ function novoEmpenhoComItem(disputaId, loteId) {
   g('e-data').value = today();
   populateDisputaSelect(disputaId);
   g('modal-empenhos').classList.add('open');
-  // Após o modal abrir, seleciona o lote automaticamente e garante analista preenchido
+  // Após o modal abrir, seleciona o lote automaticamente
   setTimeout(() => {
-    // FIX: garante e-analista preenchido mesmo se populateDisputaSelect teve timing issue
-    const analistaEl = g('e-analista');
-    if (analistaEl && !analistaEl.value) {
-      const disp = DB.disputas.find(d => d.id === disputaId);
-      if (disp && disp.analista) analistaEl.value = disp.analista;
-    }
     const card = g('lcard-' + loteId);
     if (card && !card.classList.contains('sem-saldo')) {
       if (!card.classList.contains('selected')) toggleLoteCard(card);
+      // Define quantidade máxima
       const maxQtd = +card.dataset.maxqtd || 1;
       const qtdInput = g('lqtd-' + loteId);
       if (qtdInput) { qtdInput.value = maxQtd; atualizarVemPorLoteEl(qtdInput); }
@@ -7874,6 +8710,27 @@ let _notifShown = new Set();
 function saveAcomp() {
   const orgao = document.getElementById('ac-orgao')?.value?.trim();
   if (!orgao) { toast('Informe o órgão!', 'error'); return; }
+  const retornoVal = document.getElementById('ac-retorno')?.value || '';
+  // FIX 6: avisar se data de retorno já está no passado — usa modal customizado
+  if (retornoVal) {
+    const retDate = new Date(retornoVal);
+    if (retDate < new Date()) {
+      _confirmarAcao({
+        icon: '⚠️',
+        titulo: 'Retorno no passado',
+        msg: `A data de retorno informada já está no passado:<br><strong>${retDate.toLocaleString('pt-BR')}</strong><br><br>Deseja salvar mesmo assim?`,
+        btnLabel: '💾 Salvar mesmo assim',
+        btnClass: 'btn-ghost',
+        onConfirm: () => { _doSaveAcomp(retornoVal); }
+      });
+      return;
+    }
+  }
+  _doSaveAcomp(retornoVal);
+}
+
+function _doSaveAcomp(retornoVal) {
+  const orgao = document.getElementById('ac-orgao')?.value?.trim();
   const row = {
     id: EID_acomp || uid(),
     data: document.getElementById('ac-data')?.value || '',
@@ -7883,16 +8740,35 @@ function saveAcomp() {
     analista: document.getElementById('ac-analista')?.value || '',
     status: document.getElementById('ac-status')?.value || 'pendente',
     link: document.getElementById('ac-link')?.value || '',
-    retorno: document.getElementById('ac-retorno')?.value || '',
+    retorno: retornoVal,
     observacao: document.getElementById('ac-observacao')?.value?.toUpperCase() || '',
   };
-  if (!DB.acomp) DB.acomp = [];
-  const idx = DB.acomp.findIndex(x => x.id === row.id);
-  if (idx !== -1) DB.acomp[idx] = row; else DB.acomp.push(row);
-  save('acomp', DB.acomp);
+  if (!_fullDB.acomp) _fullDB.acomp = [];
+  // FIX 5: Status "perdida" → confirmar exclusão imediata
+  if (row.status === 'perdida') {
+    closeModal('acomp', true);
+    _confirmarAcao({
+      icon: '❌',
+      titulo: 'Marcar como Perdida',
+      msg: `O acompanhamento <strong>${row.orgao}</strong> será marcado como <strong>perdida</strong> e excluído da lista.<br><br>Deseja confirmar?`,
+      btnLabel: '❌ Confirmar exclusão',
+      btnClass: 'btn-danger',
+      onConfirm: () => {
+        _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== row.id);
+        save('acomp', _fullDB.acomp);
+        EID_acomp = null;
+        renderAcomp(); updateBadges(); atualizarPainel();
+        toast('Acompanhamento removido (perdida).', 'info');
+      }
+    });
+    return;
+  }
+  const idx = _fullDB.acomp.findIndex(x => x.id === row.id);
+  if (idx !== -1) _fullDB.acomp[idx] = row; else _fullDB.acomp.push(row);
+  save('acomp', _fullDB.acomp);
   toast(EID_acomp ? 'Acompanhamento atualizado!' : 'Acompanhamento salvo!', 'success');
   EID_acomp = null;
-  closeModal('acomp');
+  closeModal('acomp', true);
   renderAcomp();
   // E-mail gerenciado exclusivamente pelo checarRetornos (2min antes)
   updateBadges();
@@ -7904,7 +8780,7 @@ function clearAcomp() {
   ['ac-data','ac-orgao','ac-estado','ac-sistema','ac-analista','ac-status','ac-link','ac-retorno','ac-observacao'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('ac-analista').value = 'Márdea';
+  setAnalistaSelect('ac-analista', analistaDoUsuario || 'Márdea');
   document.getElementById('ac-status').value = 'pendente';
   document.getElementById('ac-sistema').value = 'Licitanet';
   document.getElementById('ttl-acomp').textContent = 'Novo Acompanhamento';
@@ -7918,7 +8794,7 @@ function editAcomp(id) {
   document.getElementById('ac-orgao').value = r.orgao || '';
   document.getElementById('ac-estado').value = r.estado || '';
   document.getElementById('ac-sistema').value = r.sistema || '';
-  document.getElementById('ac-analista').value = r.analista || '';
+  setAnalistaSelect('ac-analista', r.analista || analistaDoUsuario || '');
   document.getElementById('ac-status').value = r.status || 'pendente';
   document.getElementById('ac-link').value = r.link || '';
   document.getElementById('ac-retorno').value = r.retorno || '';
@@ -7935,8 +8811,8 @@ function delAcomp(id) {
   const el = g('confirm-msg'); if(el) el.innerHTML = `Tem certeza que deseja excluir o acompanhamento <strong>${a?.orgao||'?'}</strong>?<br><br>Esta ação não pode ser desfeita.`;
   const btn = g('confirm-del-btn');
   if(btn) btn.onclick = () => {
-    DB.acomp = (DB.acomp||[]).filter(x => x.id !== id);
-    save('acomp', DB.acomp);
+    _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== id);
+    save('acomp', _fullDB.acomp);
     renderAcomp(); updateBadges(); atualizarPainel();
     toast('Excluído!', 'success');
     PDel = null; closeConfirm();
@@ -7945,6 +8821,7 @@ function delAcomp(id) {
 }
 
 function renderAcomp() {
+  markAllActiveFilters();
   const tb = document.getElementById('tbody-acomp'); if (!tb) return;
   const analista = document.getElementById('filtro-analista-acomp')?.value || 'todos';
   const status = document.getElementById('filtro-status-acomp')?.value || 'todos';
@@ -7965,7 +8842,7 @@ function renderAcomp() {
   }
 
   const btnStyle = 'padding:5px 9px;font-size:15px;border-radius:8px;';
-  tb.innerHTML = rows.map(r => {
+  tb.innerHTML = rows.map((r, idx) => {
     const ret = r.retorno ? new Date(r.retorno) : null;
     const vencido = ret && ret < agora;
     const hoje = ret && ret.toDateString() === agora.toDateString();
@@ -7973,14 +8850,15 @@ function renderAcomp() {
     const statusColors = {pendente:'var(--warning)',recurso:'var(--accent-primary)',perdida:'var(--danger)'};
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     const linkBtn = r.link ? `<a href="${r.link}" target="_blank" class="btn btn-ghost btn-sm" style="${btnStyle}" title="Abrir sistema">🔗</a>` : '';
-    return `<tr style="cursor:pointer;${vencido?'background:rgba(239,68,68,0.05);':''}" onclick="verAcomp('${r.id}')">
-      <td style="font-size:11px;">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
-      <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-      <td style="font-size:11px;">${r.sistema||'—'}</td>
-      <td><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
-      <td>${retStr}</td>
-      <td onclick="event.stopPropagation()" style="white-space:nowrap;">
+    const zebraTd = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);');
+    return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
+      <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
+      <td style="${zebraTd}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
+      <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
+      <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
+      <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
+      <td style="${zebraTd}">${retStr}</td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraTd}">
         ${linkBtn}
         <button class="btn btn-ghost btn-sm" onclick="editAcomp('${r.id}')" title="Editar" style="${btnStyle}">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="converterEmDisputa('${r.id}')" title="Converter em Disputa Vencida" style="${btnStyle};color:var(--success);border-color:var(--success);">🏆</button>
@@ -8292,7 +9170,7 @@ function atualizarPainel() {
         ${Object.entries(porAnalista).map(([nome, dados]) => `
           <div style="margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-              <span class="badge ${nome==='Márdea'?'bp':'bb'}" style="font-size:11px;">${nome}</span>
+              <span class="badge ${_badgeClass(nome)}" style="font-size:11px;">${nome}</span>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
               <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
@@ -8368,28 +9246,28 @@ function renderEAgrupado(rows, tb) {
   const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
   tb.innerHTML = sorted.map(([org, g_]) => {
     const corDias = g_.maxDias>=90?'var(--danger)':g_.maxDias>=60?'var(--warning)':g_.maxDias>=30?'var(--text-secondary)':'var(--success)';
-    const rows_ = g_.empenhos.map(r => {
+    const rows_ = g_.empenhos.map((r, idx) => {
+      const zebraGrpTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
       const dias = diasSemPagamento(r);
       const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
       const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
       const _vlCompraR = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
       const _vlLucroR  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
       const _vlRecR    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-      return `<tr style="cursor:pointer;background:var(--bg-surface-soft);" onclick="abrirPopupEmpenho('${r.id}')">
-        <td></td>
-        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;">${r.num||'—'}</td>
-        <td></td>
-        <td><span class="badge ${r.analista==='Márdea'?'bp':'bb'}" style="font-size:10px;">${r.analista||'—'}</span></td>
-        <td class="mono" style="color:var(--accent-primary);font-weight:700;">${fmt(r.vem)}</td>
-        <td class="mono" style="color:var(--text-secondary);font-size:11px;">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
-        <td class="mono" style="color:var(--success);font-size:11px;">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
-        <td class="mono" style="color:var(--accent-primary);font-size:11px;">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
-        <td>${diasBadge}</td>
-        <td onclick="event.stopPropagation()" style="white-space:nowrap;">
+      return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
+        <td style="${zebraGrpTd}"></td>
+        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;${zebraGrpTd}">${r.num||'—'}</td>
+        <td style="${zebraGrpTd}"></td>
+        <td style="${zebraGrpTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
+        <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraGrpTd}">${fmt(r.vem)}</td>
+        <td class="mono" style="color:var(--text-secondary);font-size:11px;${zebraGrpTd}">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
+        <td class="mono" style="color:var(--success);font-size:11px;${zebraGrpTd}">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
+        <td class="mono" style="color:var(--accent-primary);font-size:11px;${zebraGrpTd}">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
+        <td style="${zebraGrpTd}">${diasBadge}</td>
+        <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraGrpTd}">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
           <button class="btn btn-ghost btn-sm" onclick="editE('${r.id}')" style="${btnStyle}">✏️</button>
           <button class="btn btn-ghost btn-sm" onclick="abrirCompra('${r.id}')" style="${btnStyle};color:var(--success);border-color:var(--success);">🛒</button>
-          <button class="btn btn-ghost btn-sm" onclick="delRow('empenhos','${r.id}')" style="${btnStyle};color:var(--danger);border-color:var(--danger);" title="Excluir empenho">🗑</button>
         </td>
       </tr>`;
     }).join('');
@@ -8984,143 +9862,6 @@ function ocrPreencherCampos() {
   document.getElementById('e-ne-ocr-result').style.display = 'none';
 }
 
-// ========== KANBAN ==========
-let _viewMode = 'lista';
-let _kanbanDragId = null;
-
-const KANBAN_STATUSES = {
-  'em-analise':        { label: '🔍 Em Análise',        color: '#64748b' },
-  'participando':      { label: '⚡ Participando',       color: '#2563eb' },
-  'aguardando-empenho':{ label: '📄 Aguard. Empenho',   color: '#d97706' },
-  'empenhado':         { label: '✅ Empenhado',          color: '#059669' },
-  'finalizada':        { label: '🏁 Finalizada',         color: '#7c3aed' },
-};
-
-function setViewMode(mode) {
-  _viewMode = mode;
-  const tableView = document.getElementById('disputas-table-view');
-  const kanbanView = document.getElementById('disputas-kanban-view');
-  const btnLista = document.getElementById('vt-lista');
-  const btnKanban = document.getElementById('vt-kanban');
-
-  if (mode === 'kanban') {
-    if (tableView) tableView.style.display = 'none';
-    if (kanbanView) { kanbanView.style.display = 'flex'; }
-    if (btnLista) btnLista.classList.remove('active');
-    if (btnKanban) btnKanban.classList.add('active');
-    renderKanban();
-  } else {
-    if (tableView) tableView.style.display = '';
-    if (kanbanView) { kanbanView.style.display = 'none'; }
-    if (btnLista) btnLista.classList.add('active');
-    if (btnKanban) btnKanban.classList.remove('active');
-    renderD();
-  }
-}
-
-function getKanbanStatus(r) {
-  // Retorna coluna do kanban baseado no estado da disputa
-  if (r.finalizada) return 'finalizada';
-  const hasEmpenhos = DB.empenhos.some(e => e.disputaId === r.id);
-  if (hasEmpenhos) {
-    const allPago = DB.empenhos.filter(e=>e.disputaId===r.id).every(e=>empenhoEstaPago(e));
-    if (allPago) return 'finalizada';
-    return 'empenhado';
-  }
-  // Usa campo kanbanStatus se existir (para arrastar)
-  if (r.kanbanStatus && KANBAN_STATUSES[r.kanbanStatus]) return r.kanbanStatus;
-  return 'em-analise';
-}
-
-function renderKanban() {
-  const rows = getSorted('disputas').filter(r => matches('disputas', r));
-
-  Object.keys(KANBAN_STATUSES).forEach(status => {
-    const container = document.getElementById('kanban-cards-' + status);
-    const count = document.getElementById('kanban-count-' + status);
-    if (!container) return;
-
-    const cards = rows.filter(r => getKanbanStatus(r) === status);
-    if (count) count.textContent = cards.length;
-
-    if (!cards.length) {
-      container.innerHTML = '<div class="kanban-empty">Nenhuma disputa</div>';
-      return;
-    }
-
-    container.innerHTML = cards.map(r => {
-      const lotes = r.lotes || [];
-      const contrato = getValorContrato(r);
-      const hasEmps = DB.empenhos.some(e => e.disputaId === r.id);
-      return `<div class="kanban-card" draggable="true"
-        ondragstart="kanbanDragStart(event,'${r.id}')"
-        ondragend="kanbanDragEnd(event)"
-        onclick="abrirPopupDisputa('${r.id}')">
-        <div class="kanban-card-title">${r.orgao || '—'}</div>
-        <div class="kanban-card-meta">${fmtD(r.data)} · ${r.estado || '—'} · ${r.analista || '—'}</div>
-        ${lotes.length ? `<div style="font-size:10px;color:var(--text-tertiary);">${lotes.length} lote(s) · ${fmt(contrato)}</div>` : ''}
-        <div class="kanban-card-footer">
-          <span class="badge ${r.analista === 'Márdea' ? 'bp' : 'bb'}" style="font-size:9px;">${r.analista || '—'}</span>
-          <div style="display:flex;gap:4px;">
-            ${hasEmps ? `<span style="font-size:9px;color:var(--success);">📄 ${DB.empenhos.filter(e=>e.disputaId===r.id).length} emp.</span>` : ''}
-            <button class="btn btn-ghost btn-sm" style="padding:3px 7px;font-size:12px;" onclick="event.stopPropagation();editD('${r.id}')">✏️</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  });
-}
-
-function kanbanDragStart(event, id) {
-  _kanbanDragId = id;
-  event.dataTransfer.effectAllowed = 'move';
-  event.target.style.opacity = '0.5';
-}
-
-function kanbanDragEnd(event) {
-  event.target.style.opacity = '';
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-}
-
-function kanbanDragOver(event, status) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-  document.getElementById('kanban-col-' + status)?.classList.add('drag-over');
-}
-
-function kanbanDragLeave(event) {
-  event.currentTarget.classList.remove('drag-over');
-}
-
-function kanbanDrop(event, newStatus) {
-  event.preventDefault();
-  document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-  if (!_kanbanDragId) return;
-
-  const r = DB.disputas.find(x => x.id === _kanbanDragId);
-  if (!r) return;
-
-  // Não deixa mover manualmente para "empenhado" ou "finalizada" (auto-calculados)
-  if (newStatus === 'empenhado' || newStatus === 'finalizada') {
-    toast('ℹ️ Status "Empenhado" e "Finalizada" são definidos automaticamente.', 'info');
-    _kanbanDragId = null;
-    return;
-  }
-
-  r.kanbanStatus = newStatus;
-  if (newStatus === 'finalizada') {
-    r.finalizada = true;
-    r.dataFinalizacao = r.dataFinalizacao || new Date().toISOString().slice(0, 10);
-  } else {
-    r.finalizada = false;
-  }
-  upsert('disputas', r);
-  toast(`✅ Movido para "${KANBAN_STATUSES[newStatus]?.label}"`, 'success');
-  renderKanban();
-  _kanbanDragId = null;
-}
-
 // ========== INLINE EDIT ==========
 function inlineEditStatus(id, tipo) {
   const statuses = tipo === 'disputas'
@@ -9262,9 +10003,32 @@ function salvarConfigEmail(btn) {
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
 // Apenas inicializa o app com dados vazios (serão carregados após login).
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  if (e.key === '?' && !inInput) { e.preventDefault(); document.getElementById('shortcuts-modal')?.classList.toggle('open'); return; }
+  if (e.altKey && e.key === 'n') { e.preventDefault(); openModal('disputas'); return; }
+  if (e.altKey && e.key === 'e') { e.preventDefault(); openModal('empenhos'); return; }
+  if (e.altKey && e.key === 't') { e.preventDefault(); toggleTema(); return; }
+  if (e.altKey && e.key === '1') { e.preventDefault(); document.getElementById('tab-btn-painel')?.click(); return; }
+  if (e.altKey && e.key === '2') { e.preventDefault(); switchTab('dashboard', document.querySelectorAll('.tab-btn')[1]); atualizarDashboard(); return; }
+  if (e.altKey && e.key === '3') { e.preventDefault(); switchTab('disputas', document.querySelectorAll('.tab-btn')[3]); return; }
+  if (e.altKey && e.key === '4') { e.preventDefault(); switchTab('empenhos', document.querySelectorAll('.tab-btn')[4]); return; }
+});
+
 function boot() {
+  // Show loading skeletons while Firebase connects
+  ['tbody-disputas','tbody-empenhos','tbody-finalizadas','tbody-emp-finalizados'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.innerHTML = Array(4).fill(0).map(() =>
+        `<tr class="skeleton-row">${Array(8).fill('<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>').join('')}</tr>`
+      ).join('');
+    }
+  });
   inicializarApp({ disputas: [], empenhos: [], initialized: true });
 }
+
 
 boot();
 
