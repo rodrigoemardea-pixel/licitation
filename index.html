@@ -8551,13 +8551,13 @@ function atualizarPainel() {
             const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
             const ico = dias>=90?'🔴':dias>=60?'🟠':'🟡';
             const aRec = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-            return \`<tr onclick="abrirPopupEmpenho('\${e.id}')" style="cursor:pointer;border-bottom:1px solid var(--border-light);">
-              <td style="padding:7px 8px;font-weight:600;font-family:var(--font-mono);">\${e.num?'#'+e.num:'—'}</td>
-              <td style="padding:7px 8px;">\${e.orgao||'—'}</td>
-              <td style="padding:7px 8px;"><span class="badge \${_badgeClass(e.analista)}" style="font-size:10px;">\${e.analista||'—'}</span></td>
-              <td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);">\${fmt(aRec)}</td>
-              <td style="padding:7px 8px;text-align:center;font-weight:700;color:\${cor};">\${ico} \${dias}d</td>
-            </tr>\`;
+            return '<tr onclick="abrirPopupEmpenho(\'' + e.id + '\')" style="cursor:pointer;border-bottom:1px solid var(--border-light);">'
+              + '<td style="padding:7px 8px;font-weight:600;font-family:var(--font-mono);">' + (e.num?'#'+e.num:'—') + '</td>'
+              + '<td style="padding:7px 8px;">' + (e.orgao||'—') + '</td>'
+              + '<td style="padding:7px 8px;"><span class="badge ' + _badgeClass(e.analista) + '" style="font-size:10px;">' + (e.analista||'—') + '</span></td>'
+              + '<td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);">' + fmt(aRec) + '</td>'
+              + '<td style="padding:7px 8px;text-align:center;font-weight:700;color:' + cor + ';">' + ico + ' ' + dias + 'd</td>'
+              + '</tr>';
           }).join('')}
         </tbody>
       </table></div>` : ''}
