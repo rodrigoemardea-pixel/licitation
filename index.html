@@ -2449,9 +2449,14 @@
 
       <!-- PASSO 1: Seleção da disputa -->
       <div id="calc-passo1">
-        <div class="fsec" style="margin-bottom:12px;">Selecione a Disputa Vencida</div>
-        <input type="text" id="calc-busca-disputa" class="fc" placeholder="Pesquisar por órgão, processo..." oninput="calcFiltrarDisputas()" style="margin-bottom:10px;">
-        <div id="calc-lista-disputas" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-primary);">Selecione o Contrato Ativo</div>
+            <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px;">Apenas contratos em andamento são exibidos</div>
+          </div>
+        </div>
+        <input type="text" id="calc-busca-disputa" class="fc" placeholder="🔍 Pesquisar por órgão, processo, produto..." oninput="calcFiltrarDisputas()" style="margin-bottom:12px;">
+        <div id="calc-lista-disputas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;max-height:calc(100vh - 280px);overflow-y:auto;padding-right:2px;"></div>
       </div>
 
       <!-- PASSO 2: Calculadora -->
@@ -6273,27 +6278,41 @@ function abrirCalculadora() {
 function calcFiltrarDisputas() {
   const q = (g('calc-busca-disputa').value || '').toLowerCase();
   const lista = g('calc-lista-disputas');
+  // Only show active (non-finalized) contracts
   const disputas = DB.disputas.filter(d => {
+    if (d.finalizada) return false;
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) ||
            (d.processo||'').toLowerCase().includes(q) ||
-           (d.estado||'').toLowerCase().includes(q);
+           (d.estado||'').toLowerCase().includes(q) ||
+           (d.produto||'').toLowerCase().includes(q);
   });
   if (!disputas.length) {
-    lista.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:13px;">Nenhuma disputa encontrada</div>';
+    lista.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:13px;">Nenhum contrato ativo encontrado</div>';
     return;
   }
   lista.innerHTML = disputas.map(d => {
-    const empCount = DB.empenhos.filter(e => e.disputaId === d.id).length;
+    const empCount = DB.empenhos.filter(e => e.disputaId === d.id && !e.finalizado).length;
+    const lotes = d.lotes || [];
+    const vlContrato = lotes.reduce((s,l) => s + (l.qtd||0)*(l.vunit||0), 0);
+    const compraPrev = lotes.reduce((s,l) => s + (l.compraPrev||0)*(l.qtd||0), 0);
+    const lucroPrev = vlContrato - compraPrev - lotes.reduce((s,l) => s + (l.custoPrev||0)*(l.qtd||0), 0);
     const cor = d.empresa === 'Hamate' ? '#7c3aed' : 'var(--accent)';
-    return `<div onclick="calcSelecionarDisputa('${d.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:2px solid var(--border-light);border-radius:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='${cor}'" onmouseout="this.style.borderColor='var(--border-light)'">
-      <div>
-        <div style="font-weight:700;font-size:13px;">${d.orgao} · ${d.estado}</div>
-        <div style="font-size:11px;color:var(--text-secondary);">${d.processo||'—'} · ${d.tipo||''}</div>
+    const totalItens = lotes.length;
+    return `<div onclick="calcSelecionarDisputa('${d.id}')" style="border:2px solid var(--border-light);border-radius:12px;cursor:pointer;transition:all .15s;overflow:hidden;" onmouseover="this.style.borderColor='${cor}';this.style.boxShadow='0 2px 12px ${cor}22'" onmouseout="this.style.borderColor='var(--border-light)';this.style.boxShadow='none'">
+      <div style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="min-width:0;flex:1;">
+          <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.orgao}</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">${d.estado||'—'} · ${d.processo||'—'} · ${d.tipo||''}</div>
+        </div>
+        <span style="font-size:11px;padding:2px 10px;border-radius:12px;background:${cor}18;color:${cor};font-weight:700;flex-shrink:0;">${d.empresa}</span>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <span style="font-size:11px;padding:2px 8px;border-radius:12px;background:${cor}20;color:${cor};font-weight:700;">${d.empresa}</span>
-        <span style="font-size:10px;color:var(--text-tertiary);">${empCount} empenho(s)</span>
+      <div style="padding:8px 14px 12px;display:flex;gap:16px;background:var(--bg-surface-soft);border-top:1px solid var(--border-light);font-size:11px;flex-wrap:wrap;">
+        <span style="color:var(--text-tertiary);">📦 <strong style="color:var(--text-primary);">${totalItens}</strong> iten(s)</span>
+        <span style="color:var(--text-tertiary);">💰 <strong style="color:var(--accent);">${fmt(vlContrato)}</strong></span>
+        <span style="color:var(--text-tertiary);">🛒 <strong style="color:var(--warning);">${fmt(compraPrev)}</strong> prev.</span>
+        <span style="color:var(--text-tertiary);">📈 <strong style="color:var(--success);">${fmt(lucroPrev)}</strong> lucro prev.</span>
+        <span style="color:var(--text-tertiary);">📄 <strong style="color:var(--text-secondary);">${empCount}</strong> empenho(s) aberto(s)</span>
       </div>
     </div>`;
   }).join('');
@@ -9382,21 +9401,27 @@ function carregarArquivosEmpenho(r) {
 // ========== DROPDOWN DE AÇÕES ==========
 function openActionMenu(event, btn) {
   event.stopPropagation();
-  closeActionMenus();
   const menu = btn.nextElementSibling;
   if (!menu) return;
+  
+  // Toggle: if already open, close it
+  if (menu.style.display === 'block') {
+    menu.style.display = 'none';
+    return;
+  }
+  
+  // Close any other open menu first
+  closeActionMenus();
   
   // Position the menu relative to the viewport
   const rect = btn.getBoundingClientRect();
   menu.style.display = 'block';
   
-  // Calculate position
   const menuW = 180;
   const menuH = menu.scrollHeight || 200;
   let left = rect.right - menuW;
   let top = rect.bottom + 4;
   
-  // Keep inside viewport
   if (left < 8) left = 8;
   if (top + menuH > window.innerHeight - 8) top = rect.top - menuH - 4;
   
