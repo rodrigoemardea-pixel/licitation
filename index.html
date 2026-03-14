@@ -1021,7 +1021,13 @@
     border-radius: 3px;
   }
   .col-eye:hover { opacity: 1; color: var(--accent); }
-  .col-hidden { display: none !important; }
+  .col-restore {
+    opacity: 1 !important; color: var(--danger) !important;
+    width: 20px; height: 20px; border-radius: 4px;
+    background: var(--danger-soft); display: flex;
+    align-items: center; justify-content: center;
+  }
+  .col-restore:hover { background: var(--danger); color: #fff !important; }
   th:has(.col-eye:hover) { background: var(--accent-muted) !important; }
 
   .fsec {
@@ -9441,69 +9447,77 @@ function toggleCol(table, colKey) {
 }
 
 function applyHiddenCols() {
-  // Disputas
-  const dCols = { analista: 3, contrato: 4, compra: 5, custo: 6, lucroprev: 7, lucroreal: 8 };
-  const eCols = { analista: 3, vlcompra: 5, lucro: 6, areceber: 7, dias: 8 };
-  
-  const tbD = document.querySelector('#tbody-disputas');
-  const tbE = document.querySelector('#tbody-empenhos');
-  
-  // Apply to thead
-  Object.entries(dCols).forEach(([col, idx]) => {
-    const hidden = _hiddenCols['disputas_' + col];
-    const ths = document.querySelectorAll('#disputas-table-view thead th');
-    if (ths[idx]) {
-      ths[idx].style.display = hidden ? 'none' : '';
-      const eye = ths[idx].querySelector('.col-eye');
-      if (eye) eye.style.opacity = hidden ? '1' : '';
-      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
-      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
+  // col definitions: { key: [thSelector, colIndex] }
+  const tables = [
+    {
+      cols: { analista: 3, contrato: 4, compra: 5, custo: 6, lucroprev: 7, lucroreal: 8 },
+      prefix: 'disputas',
+      thSel: '#disputas-table-view thead th',
+      tbSel: '#tbody-disputas',
+      tfSel: '#tfoot-disputas-row'
+    },
+    {
+      cols: { analista: 3, vlcompra: 5, lucro: 6, areceber: 7, dias: 8 },
+      prefix: 'empenhos',
+      thSel: '#tab-empenhos .table-wrapper thead th',
+      tbSel: '#tbody-empenhos',
+      tfSel: null
+    },
+    {
+      cols: { analista: 2, sistema: 3 },
+      prefix: 'acomp',
+      thSel: '#tab-acompanhamentos .table-wrapper thead th',
+      tbSel: '#tbody-acomp',
+      tfSel: null
     }
-    // Apply to tbody
-    if (tbD) tbD.querySelectorAll('tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
-    });
-    // Apply to tfoot
-    const tfRow = document.querySelector('#tfoot-disputas-row');
-    if (tfRow) {
-      const tds = tfRow.querySelectorAll('td');
-      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
-    }
-  });
-  
-  Object.entries(eCols).forEach(([col, idx]) => {
-    const hidden = _hiddenCols['empenhos_' + col];
-    const ths = document.querySelectorAll('#tab-empenhos .table-wrapper thead th');
-    if (ths[idx]) {
-      ths[idx].style.display = hidden ? 'none' : '';
-      const eye = ths[idx].querySelector('.col-eye');
-      if (eye) eye.style.opacity = hidden ? '1' : '';
-      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
-      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
-    }
-    if (tbE) tbE.querySelectorAll('tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
-    });
-  });
+  ];
 
-  // Acompanhamentos columns: analista=2, sistema=3
-  const aCols = { analista: 2, sistema: 3 };
-  const tbA = document.querySelector('#tbody-acomp');
-  Object.entries(aCols).forEach(([col, idx]) => {
-    const hidden = _hiddenCols['acomp_' + col];
-    const ths = document.querySelectorAll('#tab-acompanhamentos .table-wrapper thead th');
-    if (ths[idx]) {
-      ths[idx].style.display = hidden ? 'none' : '';
-      const eye = ths[idx].querySelector('.col-eye');
-      if (eye) eye.style.opacity = hidden ? '1' : '';
-      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
-      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
-    }
-    if (tbA) tbA.querySelectorAll('tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
+  tables.forEach(({ cols, prefix, thSel, tbSel, tfSel }) => {
+    const ths = document.querySelectorAll(thSel);
+    const tb = document.querySelector(tbSel);
+    const tf = tfSel ? document.querySelector(tfSel) : null;
+
+    Object.entries(cols).forEach(([col, idx]) => {
+      const hidden = !!_hiddenCols[prefix + '_' + col];
+      const th = ths[idx];
+      if (!th) return;
+
+      if (hidden) {
+        // Collapse th to just show the eye icon (so user can restore)
+        th.dataset.origText = th.dataset.origText || (th.innerText || '');
+        th.innerHTML = '<span class="col-eye col-restore" onclick="event.stopPropagation();toggleCol(\'' + prefix + '\',\'' + col + '\')" title="Mostrar coluna ' + (th.dataset.origText||col) + '">👁️</span>';
+        th.style.cssText = 'width:24px;min-width:24px;padding:4px;text-align:center;background:var(--danger-soft);cursor:pointer;';
+        th.onclick = (e) => { e.stopPropagation(); toggleCol(prefix, col); };
+      } else {
+        // Restore th — rebuild eye span inside original content
+        if (th.dataset.origText) {
+          // Restore original innerHTML with eye
+          const origLabel = th.dataset.origText;
+          const eyeSpan = '<span class="col-eye" onclick="event.stopPropagation();toggleCol(\'' + prefix + '\',\'' + col + '\')" title="Ocultar coluna">👁️</span>';
+          th.innerHTML = origLabel + eyeSpan;
+          th.style.cssText = '';
+          th.onclick = null;
+          delete th.dataset.origText;
+        } else {
+          // Just reset eye appearance
+          const eye = th.querySelector('.col-eye');
+          if (eye) { eye.style.opacity = ''; eye.style.color = ''; eye.title = 'Ocultar coluna'; eye.classList.remove('col-restore'); }
+          th.style.cssText = '';
+          th.onclick = null;
+        }
+      }
+
+      // Toggle td cells in tbody
+      if (tb) tb.querySelectorAll('tr').forEach(tr => {
+        const td = tr.querySelectorAll('td')[idx];
+        if (td) td.style.display = hidden ? 'none' : '';
+      });
+
+      // Toggle tfoot cells
+      if (tf) {
+        const td = tf.querySelectorAll('td')[idx];
+        if (td) td.style.display = hidden ? 'none' : '';
+      }
     });
   });
 }
