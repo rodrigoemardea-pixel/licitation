@@ -1025,6 +1025,18 @@
   .lote-saldo-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
   .lote-saldo-ok { background: var(--success-soft); color: var(--success); }
   .lote-saldo-zero { background: var(--bg-surface-soft); color: var(--text-tertiary); }
+  .lote-qtd-input-wrap { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .lote-qtd-input-wrap label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); white-space: nowrap; }
+  .lote-qtd-input-wrap input[type=number] {
+    width: 72px; padding: 5px 8px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--accent); border-radius: var(--radius-sm);
+    background: var(--bg-surface); color: var(--accent);
+    font-family: var(--font-mono); outline: none; transition: box-shadow 0.15s;
+    text-align: center;
+  }
+  .lote-qtd-input-wrap input[type=number]:focus { box-shadow: 0 0 0 3px var(--accent-ring); }
+  .lote-qtd-input-wrap input[type=number]::-webkit-inner-spin-button,
+  .lote-qtd-input-wrap input[type=number]::-webkit-outer-spin-button { opacity: 1; }
 
   /* estado badge */
   .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 100px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
@@ -3935,16 +3947,20 @@ function onDisputaSelecionada(disputaId) {
   if(container) container.innerHTML = lotes.map(l => {
     const semSaldo = l.qtdRestante <= 0;
     const dataAttrs = semSaldo ? '' : `data-lid="${l.id}" data-maxqtd="${l.qtdRestante}" data-vunit="${l.vunit}" onclick="toggleLoteCard(this)"`;
-    return `<div class="lote-selector-card${semSaldo?' sem-saldo':''}" id="lcard-${l.id}" ${dataAttrs}>`
-      + `<input type="checkbox" name="lote-check" ${semSaldo?'disabled':''} style="margin:0;">`
-      + `<div><div style="font-weight:700;font-size:13px;">${(l.descricao||'—').toUpperCase()}</div>`
-      + `<div style="font-size:11px;color:var(--text-tertiary)">Vl.Unit: ${fmt(l.vunit)} · Contratado: ${l.qtd||0} · Enviado: ${l.qtdEnviada}</div></div>`
-      + `<span class="lote-saldo-badge ${semSaldo?'lote-saldo-zero':'lote-saldo-ok'}">${semSaldo?'✓ Completo':l.qtdRestante+' restantes'}</span>`
-      + `<div class="lote-qtd-input-wrap" id="lqtd-wrap-${l.id}" style="display:none;">`
-      + `<label style="font-size:11px;color:var(--text-tertiary);">Qtd:</label>`
-      + `<input type="number" min="1" max="${l.qtdRestante}" value="${l.qtdRestante}" id="lqtd-${l.id}" onclick="event.stopPropagation()" data-lid="${l.id}" data-vunit="${l.vunit}" data-maxqtd="${l.qtdRestante}" oninput="atualizarVemPorLoteEl(this)">`
+    return `<div class="lote-selector-card${semSaldo?' sem-saldo':''}" id="lcard-${l.id}" ${dataAttrs} style="display:flex;flex-direction:column;gap:4px;">`
+      + `<div style="display:flex;align-items:flex-start;gap:8px;">`
+      + `<input type="checkbox" name="lote-check" ${semSaldo?'disabled':''} style="margin:3px 0 0;flex-shrink:0;">`
+      + `<div style="flex:1;min-width:0;">`
+      + `<div style="font-weight:700;font-size:12px;line-height:1.3;">${(l.descricao||'—').toUpperCase()}</div>`
+      + `<div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">Vl.Unit: ${fmt(l.vunit)} · Contratado: ${l.qtd||0} · Enviado: ${l.qtdEnviada}</div>`
       + `</div>`
-      + `<div style="font-size:11px;font-weight:700;color:var(--accent);min-width:80px;text-align:right;" id="lval-${l.id}"></div>`
+      + `<span class="lote-saldo-badge ${semSaldo?'lote-saldo-zero':'lote-saldo-ok'}" style="flex-shrink:0;">${semSaldo?'✓ Completo':l.qtdRestante+' restantes'}</span>`
+      + `</div>`
+      + `<div class="lote-qtd-input-wrap" id="lqtd-wrap-${l.id}" style="display:none;">`
+      + `<label>Qtd:</label>`
+      + `<input type="number" min="1" max="${l.qtdRestante}" value="${l.qtdRestante}" id="lqtd-${l.id}" onclick="event.stopPropagation()" data-lid="${l.id}" data-vunit="${l.vunit}" data-maxqtd="${l.qtdRestante}" oninput="atualizarVemPorLoteEl(this)">`
+      + `<div style="font-size:12px;font-weight:700;color:var(--accent);" id="lval-${l.id}"></div>`
+      + `</div>`
       + `</div>`;
   }).join('');
   const tvWrap = g('lote-valor-total-wrap'); if(tvWrap) tvWrap.style.display = 'none';
@@ -8411,6 +8427,13 @@ function atualizarPainel() {
   const ultimasDisputas = [...DB.disputas].sort((a,b)=>(b.data||'').localeCompare(a.data||'')).slice(0,3);
   const ultimosEmpenhos = [...DB.empenhos].filter(e=>!e.finalizado).sort((a,b)=>(b.data||'').localeCompare(a.data||'')).slice(0,3);
 
+  // Empenhos em atraso por faixa
+  const empPendentes = DB.empenhos.filter(e => !empenhoEstaPago(e) && !e.finalizado);
+  const emp30 = empPendentes.filter(e => { const d = diasSemPagamento(e); return d >= 30 && d < 60; });
+  const emp60 = empPendentes.filter(e => { const d = diasSemPagamento(e); return d >= 60 && d < 90; });
+  const emp90 = empPendentes.filter(e => diasSemPagamento(e) >= 90);
+  const empAtrasados = [...emp30, ...emp60, ...emp90].sort((a,b) => diasSemPagamento(b) - diasSemPagamento(a)).slice(0, 8);
+
   el.innerHTML = `
     <div style="padding:4px 0 16px;">
       <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">👋 Olá, ${usuarioLogado||'usuário'}!</div>
@@ -8492,6 +8515,53 @@ function atualizarPainel() {
           </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Sem dados</div>'}
       </div>
     </div>
+
+    <!-- Empenhos em Atraso -->
+    ${(emp30.length || emp60.length || emp90.length) ? `
+    <div class="card" style="margin-bottom:24px;border-left:4px solid var(--danger);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <div style="font-size:13px;font-weight:700;">⏳ Empenhos Pendentes com Atraso</div>
+        <button onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" class="btn btn-ghost btn-sm" style="font-size:11px;margin-left:auto;">Ver todos</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:var(--warning-soft);border:1px solid var(--warning);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--warning);">${emp30.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🟡 30–60 dias</div>
+        </div>
+        <div style="background:var(--danger-soft);border:1px solid var(--danger);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--danger);">${emp60.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🟠 60–90 dias</div>
+        </div>
+        <div style="background:var(--danger-soft);border:2px solid var(--danger);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--danger);">${emp90.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🔴 +90 dias</div>
+        </div>
+      </div>
+      ${empAtrasados.length ? `<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <thead><tr style="background:var(--bg-surface-soft);">
+          <th style="padding:7px 8px;text-align:left;">Empenho</th>
+          <th style="padding:7px 8px;text-align:left;">Órgão</th>
+          <th style="padding:7px 8px;text-align:left;">Analista</th>
+          <th style="padding:7px 8px;text-align:right;">A Receber</th>
+          <th style="padding:7px 8px;text-align:center;">Dias</th>
+        </tr></thead>
+        <tbody>
+          ${empAtrasados.map(e => {
+            const dias = diasSemPagamento(e);
+            const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
+            const ico = dias>=90?'🔴':dias>=60?'🟠':'🟡';
+            const aRec = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+            return \`<tr onclick="abrirPopupEmpenho('\${e.id}')" style="cursor:pointer;border-bottom:1px solid var(--border-light);">
+              <td style="padding:7px 8px;font-weight:600;font-family:var(--font-mono);">\${e.num?'#'+e.num:'—'}</td>
+              <td style="padding:7px 8px;">\${e.orgao||'—'}</td>
+              <td style="padding:7px 8px;"><span class="badge \${_badgeClass(e.analista)}" style="font-size:10px;">\${e.analista||'—'}</span></td>
+              <td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);">\${fmt(aRec)}</td>
+              <td style="padding:7px 8px;text-align:center;font-weight:700;color:\${cor};">\${ico} \${dias}d</td>
+            </tr>\`;
+          }).join('')}
+        </tbody>
+      </table></div>` : ''}
+    </div>` : ''}
 
     <!-- Atividades recentes -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
