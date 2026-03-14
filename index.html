@@ -32,7 +32,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LicitationBiznis · Gestão de Licitações</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- Tesseract.js para OCR -->
@@ -40,387 +40,327 @@
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ─────────────────────────────────────────────
+     TEMA CLARO
+  ───────────────────────────────────────────── */
+  body[data-theme="light"] {
+    --bg-app:        #f4f5f7;
+    --bg-surface:    #ffffff;
+    --bg-surface-hover: #f7f8fa;
+    --bg-surface-soft:  #f0f1f4;
+    --bg-inset:      #e8eaed;
+    --bg-sidebar:    #ffffff;
+
+    --border-light:  #e3e5e8;
+    --border-medium: #c8ccd2;
+    --border-focus:  #0066ff;
+
+    --text-primary:   #0d0f12;
+    --text-secondary: #3d4350;
+    --text-tertiary:  #737b8c;
+    --text-placeholder: #a0a7b5;
+
+    --accent:        #0066ff;
+    --accent-hover:  #0052cc;
+    --accent-muted:  rgba(0, 102, 255, 0.08);
+    --accent-ring:   rgba(0, 102, 255, 0.18);
+
+    --success:       #059669;
+    --success-soft:  rgba(5,150,105,0.09);
+    --warning:       #c2720a;
+    --warning-soft:  rgba(194,114,10,0.09);
+    --danger:        #d42b2b;
+    --danger-soft:   rgba(212,43,43,0.09);
+    --purple:        #6b3fa0;
+    --purple-soft:   rgba(107,63,160,0.09);
+
+    --info:          #0066ff;
+    --info-soft:     rgba(0,102,255,0.08);
+
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04);
+    --shadow-xl: 0 24px 64px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+
+    --chart-1: #0066ff; --chart-2: #6b3fa0; --chart-3: #059669;
+    --chart-4: #c2720a; --chart-5: #d42b2b;
+    --sort-asc: #0066ff; --sort-desc: #d42b2b;
+
+    --nao-recebido-bg: #fffbeb;
+    --nao-recebido-border: #fbbf24;
+    --nao-recebido-hover: #fef3c7;
   }
 
+  /* ─────────────────────────────────────────────
+     TEMA ESCURO
+  ───────────────────────────────────────────── */
+  body[data-theme="dark"] {
+    --bg-app:        #0a0b0d;
+    --bg-surface:    #111316;
+    --bg-surface-hover: #181b1f;
+    --bg-surface-soft:  #1c1f24;
+    --bg-inset:      #0a0b0d;
+    --bg-sidebar:    #0f1114;
+
+    --border-light:  #1e2128;
+    --border-medium: #2a2e38;
+    --border-focus:  #4d94ff;
+
+    --text-primary:   #eef0f3;
+    --text-secondary: #b0b8c8;
+    --text-tertiary:  #6b7485;
+    --text-placeholder: #414859;
+
+    --accent:        #4d94ff;
+    --accent-hover:  #3380ff;
+    --accent-muted:  rgba(77,148,255,0.1);
+    --accent-ring:   rgba(77,148,255,0.2);
+
+    --success:       #10b981;
+    --success-soft:  rgba(16,185,129,0.12);
+    --warning:       #f59e0b;
+    --warning-soft:  rgba(245,158,11,0.12);
+    --danger:        #f04040;
+    --danger-soft:   rgba(240,64,64,0.12);
+    --purple:        #a78bfa;
+    --purple-soft:   rgba(167,139,250,0.12);
+
+    --info:          #4d94ff;
+    --info-soft:     rgba(77,148,255,0.1);
+
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-xl: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05);
+
+    --chart-1: #4d94ff; --chart-2: #a78bfa; --chart-3: #10b981;
+    --chart-4: #f59e0b; --chart-5: #f04040;
+    --sort-asc: #4d94ff; --sort-desc: #f04040;
+
+    --nao-recebido-bg: #2d2005;
+    --nao-recebido-border: #92400e;
+    --nao-recebido-hover: #3d2e08;
+  }
+
+  /* ─────────────────────────────────────────────
+     ROOT TOKENS (sem tema, sempre aplicados)
+  ───────────────────────────────────────────── */
+  :root {
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Fira Code', monospace;
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+
+    /* fallbacks */
+    --bg-app: #f4f5f7;
+    --bg-surface: #ffffff;
+    --bg-surface-soft: #f0f1f4;
+    --text-primary: #0d0f12;
+    --text-secondary: #3d4350;
+    --text-tertiary: #737b8c;
+    --accent: #0066ff;
+    --border-light: #e3e5e8;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  /* ─────────────────────────────────────────────
+     BASE
+  ───────────────────────────────────────────── */
   body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-primary);
+    font-family: var(--font-sans);
+    background: var(--bg-app);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.3s, color 0.3s;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.2s, color 0.2s;
   }
 
-  /* Variáveis - TEMA CLARO (padrão) */
-  body[data-theme="light"] {
-    --bg-primary: #f0f3f8;
-    --bg-surface: #ffffff;
-    --bg-surface-hover: #f8fafd;
-    --bg-surface-soft: #f1f4f9;
-    --bg-inset: #eef2f6;
-    
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-focus: #3b82f6;
-    
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-tertiary: #64748b;
-    --text-placeholder: #94a3b8;
-    
-    --accent-primary: #2563eb;
-    --accent-secondary: #3b82f6;
-    --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-    
-    --success: #059669;
-    --success-soft: rgba(5, 150, 105, 0.1);
-    --warning: #d97706;
-    --warning-soft: rgba(217, 119, 6, 0.1);
-    --danger: #dc2626;
-    --danger-soft: rgba(220, 38, 38, 0.1);
-    --info: #2563eb;
-    --info-soft: rgba(37, 99, 235, 0.1);
-    --purple: #7c3aed;
-    --purple-soft: rgba(124, 58, 237, 0.1);
-    
-    --chart-1: #2563eb;
-    --chart-2: #7c3aed;
-    --chart-3: #059669;
-    --chart-4: #d97706;
-    --chart-5: #dc2626;
-    
-    --sort-asc: #2563eb;
-    --sort-desc: #dc2626;
-  }
-
-  /* Variáveis - TEMA ESCURO */
-  body[data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-surface-hover: #2d3a4f;
-    --bg-surface-soft: #334155;
-    --bg-inset: #0f172a;
-    
-    --border-light: #334155;
-    --border-medium: #475569;
-    --border-focus: #60a5fa;
-    
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --text-placeholder: #64748b;
-    
-    --accent-primary: #3b82f6;
-    --accent-secondary: #60a5fa;
-    --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    
-    --success: #10b981;
-    --success-soft: rgba(16, 185, 129, 0.15);
-    --warning: #f59e0b;
-    --warning-soft: rgba(245, 158, 11, 0.15);
-    --danger: #ef4444;
-    --danger-soft: rgba(239, 68, 68, 0.15);
-    --info: #3b82f6;
-    --info-soft: rgba(59, 130, 246, 0.15);
-    --purple: #8b5cf6;
-    --purple-soft: rgba(139, 92, 246, 0.15);
-    
-    --chart-1: #3b82f6;
-    --chart-2: #8b5cf6;
-    --chart-3: #10b981;
-    --chart-4: #f59e0b;
-    --chart-5: #ef4444;
-    
-    --sort-asc: #3b82f6;
-    --sort-desc: #ef4444;
-  }
-
-  :root {
-    --bg-primary: #f0f3f8;
-    --bg-surface: #ffffff;
-    --bg-surface-soft: #f1f4f9;
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-tertiary: #64748b;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
-    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.01);
-    
-    --nao-recebido-bg: #fff3cd;
-    --nao-recebido-border: #ffc107;
-    --nao-recebido-hover: #ffe69c;
-  }
-
-  body[data-theme="dark"] .nao-recebido {
-    --nao-recebido-bg: #5f4c1a;
-    --nao-recebido-border: #f59e0b;
-    --nao-recebido-hover: #7a601f;
-  }
-
-  /* HEADER MODERNO */
+  /* ─────────────────────────────────────────────
+     HEADER
+  ───────────────────────────────────────────── */
   header {
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border-light);
-    padding: 0 24px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    height: 58px;
+    gap: 6px;
+    height: 52px;
     position: sticky;
     top: 0;
-    z-index: 100;
-    transition: background 0.3s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    z-index: 200;
+    box-shadow: var(--shadow-xs);
+    transition: background 0.2s;
   }
 
-  body[data-theme="dark"] header {
-    background: var(--bg-surface);
-    border-bottom-color: var(--border-medium);
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
 
   .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: var(--accent-gradient);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: white;
-    box-shadow: 0 6px 12px -6px rgba(37,99,235,0.4);
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
   }
 
   .logo-text {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
-    letter-spacing: -0.3px;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
   }
 
   .logo-sub {
     font-size: 10px;
     color: var(--text-tertiary);
-    letter-spacing: 0.3px;
-    margin-top: 2px;
+    letter-spacing: 0.1px;
+    margin-top: 1px;
   }
 
   .spacer { flex: 1; }
 
-  /* SELETOR DE TEMA */
-  .theme-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-surface-soft);
-    padding: 4px 12px;
-    border-radius: 30px;
-    border: 1px solid var(--border-light);
-  }
-  
-  .theme-selector label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
+  /* header icon buttons */
+  .hbtn {
+    width: 32px; height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
     color: var(--text-tertiary);
+    transition: all 0.15s;
+    font-size: 14px;
+    flex-shrink: 0;
   }
-  
-  .theme-selector select {
-    background: var(--bg-surface);
+  .hbtn:hover { background: var(--bg-surface-soft); border-color: var(--border-light); color: var(--text-primary); }
+
+  /* user chip */
+  .user-chip {
+    display: flex; align-items: center; gap: 7px;
+    padding: 4px 10px 4px 4px;
+    background: var(--bg-surface-soft);
     border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 4px 24px 4px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s;
     font-size: 12px;
     font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
+    color: var(--text-secondary);
+    white-space: nowrap;
   }
-  
-  .theme-selector select:hover {
-    border-color: var(--accent-primary);
-  }
+  .user-chip:hover { border-color: var(--border-medium); color: var(--text-primary); }
 
-  /* SELETOR DE ANALISTA */
-  .analista-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-surface-soft);
-    padding: 4px 12px;
-    border-radius: 30px;
-    border: 1px solid var(--border-light);
-  }
-  
-  .analista-selector label {
+  .user-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
     text-transform: uppercase;
-    color: var(--text-tertiary);
-  }
-  
-  .analista-selector select {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 4px 24px 4px 10px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-  }
-  
-  .analista-selector select:hover {
-    border-color: var(--accent-primary);
   }
 
-  /* DICA DE ATALHOS */
-  .shortcuts-hint {
+  /* user-role-badge */
+  #user-role-badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 100px; white-space: nowrap; }
+
+  /* push notif btn */
+  .push-notif-btn {
+    height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 0 10px;
     font-size: 11px;
     color: var(--text-tertiary);
-    background: var(--bg-surface-soft);
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border-light);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.15s;
+    font-family: var(--font-sans);
   }
-  
-  .shortcuts-hint kbd {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    margin: 0 2px;
-  }
+  .push-notif-btn:hover { background: var(--bg-surface-soft); border-color: var(--border-light); color: var(--text-primary); }
+  .push-notif-btn.active { background: var(--success-soft); border-color: var(--success); color: var(--success); }
 
-  .header-stats {
-    display: flex;
-    gap: 24px;
-  }
-
-  .hstat {
-    text-align: right;
-  }
-
-  .hstat-val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--success);
-  }
-
-  .hstat-label {
-    font-size: 10px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-
-
-  /* TABS */
+  /* ─────────────────────────────────────────────
+     NAVIGATION TABS
+  ───────────────────────────────────────────── */
   .tabs {
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border-light);
     display: flex;
     padding: 0 20px;
-    gap: 2px;
-    transition: background 0.3s;
+    gap: 0;
     overflow-x: auto;
     scrollbar-width: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   .tabs::-webkit-scrollbar { display: none; }
-
-  body[data-theme="dark"] .tabs {
-    background: rgba(30, 41, 59, 0.98);
-    border-bottom-color: var(--border-medium);
-  }
 
   .tab-btn {
     background: none;
     border: none;
+    border-bottom: 2px solid transparent;
     color: var(--text-tertiary);
-    padding: 11px 14px;
-    font-family: 'Inter', sans-serif;
+    padding: 0 14px;
+    height: 42px;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
     margin-bottom: -1px;
-    transition: all 0.15s;
+    transition: color 0.15s, border-color 0.15s;
     display: flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
-    letter-spacing: -0.1px;
+    position: relative;
   }
 
-  .tab-btn:hover {
-    color: var(--text-primary);
-    background: var(--bg-surface-soft);
-    border-radius: 6px 6px 0 0;
-  }
-
-  body[data-theme="dark"] .tab-btn:hover {
-    background: rgba(255,255,255,0.06);
-  }
+  .tab-btn:hover { color: var(--text-primary); }
 
   .tab-btn.active {
-    color: var(--accent-primary);
-    border-bottom-color: var(--accent-primary);
-    font-weight: 700;
-    background: var(--info-soft);
-    border-radius: 6px 6px 0 0;
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
   }
 
   .tab-badge {
-    background: var(--bg-inset);
+    background: var(--bg-surface-soft);
     border: 1px solid var(--border-light);
     color: var(--text-tertiary);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 9px;
     padding: 1px 5px;
-    border-radius: 30px;
-    font-weight: 700;
-    min-width: 18px;
+    border-radius: 100px;
+    font-weight: 500;
+    min-width: 16px;
     text-align: center;
+    line-height: 1.6;
   }
 
   .tab-btn.active .tab-badge {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    color: white;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
   }
 
-  /* CONTEÚDO PRINCIPAL */
+  /* ─────────────────────────────────────────────
+     CONTENT AREA
+  ───────────────────────────────────────────── */
   .content {
     flex: 1;
     padding: 20px 24px;
@@ -432,1526 +372,782 @@
   .tab-pane { display: none; }
   .tab-pane.active { display: block; }
 
-  /* DASHBOARD */
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  .chart-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s;
-  }
-
-  .chart-card:hover {
-    box-shadow: var(--shadow-md);
-  }
-
-  .chart-card h3 {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .chart-card canvas {
-    width: 100% !important;
-    height: 250px !important;
-  }
-
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-top: 20px;
-  }
-
-  .stat-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 18px 20px;
-    text-align: left;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .stat-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-    border-color: var(--border-medium);
-  }
-
-  .stat-card .value {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--accent-primary);
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.1;
-    margin-bottom: 4px;
-  }
-
-  .stat-card .label {
-    font-size: 10px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    margin-top: 4px;
-  }
-
-  /* TOOLBAR COMPACTA */
+  /* ─────────────────────────────────────────────
+     TOOLBAR
+  ───────────────────────────────────────────── */
   .toolbar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 14px;
     flex-wrap: wrap;
     background: var(--bg-surface);
-    padding: 10px 14px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    padding: 8px 12px;
+    border-radius: var(--radius-xl);
     border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-xs);
   }
 
-  .toolbar .btn-primary {
-    padding: 7px 16px;
-    font-size: 12px;
-    font-weight: 600;
-  }
+  .toolbar .btn-primary { padding: 6px 14px; font-size: 12px; }
 
   .toolbar-separator {
-    width: 1px;
-    height: 20px;
+    width: 1px; height: 18px;
     background: var(--border-light);
-    flex-shrink: 0;
-    margin: 0 2px;
+    flex-shrink: 0; margin: 0 2px;
   }
 
-  .quick-entry-btn {
-    background: var(--success-soft);
-    color: var(--success);
-    border: 1px solid var(--success);
-  }
-  .quick-entry-btn:hover {
-    background: var(--success);
-    color: white;
-  }
-
+  /* filter group */
   .filter-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 6px;
     background: var(--bg-surface-soft);
-    padding: 4px 10px;
-    border-radius: 30px;
+    padding: 3px 10px;
+    border-radius: 100px;
     border: 1px solid var(--border-light);
   }
-  
+
   .filter-group label {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.3px;
     color: var(--text-tertiary);
   }
-  
+
   .filter-group select {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 4px 24px 4px 8px;
+    background: none;
+    border: none;
     font-size: 11px;
     color: var(--text-primary);
     cursor: pointer;
     outline: none;
+    font-family: var(--font-sans);
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    padding-right: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23737b8c' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 6px center;
-  }
-  
-  .filter-group select:hover {
-    border-color: var(--accent-primary);
-  }
-  
-  /* Filtro ativo - visual feedback */
-  .filter-group.active {
-    background: var(--info-soft);
-    border-color: var(--accent-primary);
-  }
-  .filter-group.active label {
-    color: var(--accent-primary);
-  }
-  .filter-group.active select {
-    background: var(--bg-surface);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    font-weight: 600;
+    background-position: right 0 center;
   }
 
-  /* Contador de filtros ativos */
+  .filter-group.active { background: var(--accent-muted); border-color: var(--accent); }
+  .filter-group.active label { color: var(--accent); }
+  .filter-group.active select { color: var(--accent); font-weight: 600; }
+
+  /* active-filters-badge */
   .active-filters-badge {
-    display: none;
-    align-items: center;
-    gap: 4px;
-    background: var(--info-soft);
-    color: var(--accent-primary);
-    border: 1px solid var(--accent-primary);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+    display: none; align-items: center; gap: 4px;
+    background: var(--accent-muted); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 100px;
+    padding: 3px 10px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .active-filters-badge.visible { display: inline-flex; }
-  .active-filters-badge:hover { background: var(--accent-primary); color: white; }
+  .active-filters-badge:hover { background: var(--accent); color: #fff; }
 
+  /* ─────────────────────────────────────────────
+     BUTTONS
+  ───────────────────────────────────────────── */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 6px 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 5px; padding: 6px 13px;
     border-radius: var(--radius-md);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s ease;
-    letter-spacing: -0.2px;
+    font-family: var(--font-sans);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: none;
+    transition: all 0.13s;
+    letter-spacing: -0.1px;
+    white-space: nowrap;
   }
 
   .btn-primary {
-    background: var(--accent-primary);
-    color: white;
-    box-shadow: 0 2px 4px rgba(37,99,235,0.2);
+    background: var(--accent); color: #fff;
+    box-shadow: 0 1px 3px rgba(0,102,255,0.3);
   }
-  .btn-primary:hover { background: var(--accent-secondary); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(37,99,235,0.3); }
+  .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 2px 8px rgba(0,102,255,0.35); }
 
   .btn-ghost {
-    background: var(--bg-surface);
-    color: var(--text-secondary);
+    background: var(--bg-surface); color: var(--text-secondary);
     border: 1px solid var(--border-light);
   }
-  .btn-ghost:hover { background: var(--bg-surface-hover); border-color: var(--border-medium); color: var(--text-primary); }
+  .btn-ghost:hover { background: var(--bg-surface-soft); border-color: var(--border-medium); color: var(--text-primary); }
+
+  .btn-success {
+    background: var(--success); color: #fff;
+    box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+  }
+  .btn-success:hover { filter: brightness(1.08); }
 
   .btn-danger {
-    background: var(--danger-soft);
-    color: var(--danger);
-    border: 1px solid rgba(220,38,38,0.2);
+    background: var(--danger-soft); color: var(--danger);
+    border: 1px solid rgba(212,43,43,0.2);
   }
-  .btn-danger:hover { background: rgba(220,38,38,0.15); }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
 
-  .btn-sm {
-    padding: 4px 8px;
-    font-size: 11px;
-    gap: 4px;
-  }
+  .btn-sm { padding: 3px 8px; font-size: 11px; gap: 3px; }
 
-  .search-box {
-    flex: 1;
-    min-width: 240px;
-    max-width: 320px;
-    position: relative;
+  /* quick-entry */
+  .quick-entry-btn {
+    background: var(--success-soft); color: var(--success);
+    border: 1px solid var(--success);
   }
+  .quick-entry-btn:hover { background: var(--success); color: #fff; }
+
+  /* ─────────────────────────────────────────────
+     SEARCH
+  ───────────────────────────────────────────── */
+  .search-box { flex: 1; min-width: 200px; max-width: 280px; position: relative; }
 
   .search-box input {
     width: 100%;
-    background: var(--bg-surface);
+    background: var(--bg-surface-soft);
     border: 1px solid var(--border-light);
-    border-radius: 30px;
+    border-radius: 100px;
     color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px;
-    padding: 8px 14px 8px 38px;
+    padding: 6px 32px 6px 30px;
     outline: none;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
+    transition: all 0.18s;
   }
-
   .search-box input:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    background: var(--bg-surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
   }
-
   .search-box::before {
-    content: '🔍';
-    position: absolute;
-    left: 14px;
-    top: 50%;
+    content: '';
+    position: absolute; left: 11px; top: 50%;
     transform: translateY(-50%);
-    font-size: 13px;
+    width: 13px; height: 13px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23737b8c' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-size: contain;
     pointer-events: none;
-    opacity: 0.6;
   }
 
-  /* CARDS DE RESUMO */
+  .busca-kbd-hint {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 1px 5px; font-size: 10px; color: var(--text-placeholder);
+    pointer-events: none; font-family: var(--font-mono);
+  }
+  #busca-global-input:focus + .busca-kbd-hint { opacity: 0; }
+  #busca-global-input { transition: width 0.2s, box-shadow 0.15s; }
+  #busca-global-input:focus { width: 280px !important; }
+
+  /* ─────────────────────────────────────────────
+     SUMMARY CARDS
+  ───────────────────────────────────────────── */
   .summary-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
   }
 
   .card {
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     padding: 14px 16px;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
+    transition: box-shadow 0.15s, transform 0.15s;
+    position: relative; overflow: hidden;
   }
-
-  .card:hover {
-    border-color: var(--border-medium);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-  }
+  .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
   .card-label {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    margin-bottom: 6px;
-    font-weight: 600;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 5px;
   }
 
   .card-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
+    font-family: var(--font-mono);
+    font-size: 17px; font-weight: 500;
+    line-height: 1.2; letter-spacing: -0.5px;
   }
 
   .cv-green { color: var(--success); }
   .cv-yellow { color: var(--warning); }
   .cv-red { color: var(--danger); }
-  .cv-blue { color: var(--accent-primary); }
+  .cv-blue { color: var(--accent); }
   .cv-purple { color: var(--purple); }
 
-  /* TABELA */
+  /* ─────────────────────────────────────────────
+     TABLE
+  ───────────────────────────────────────────── */
   .table-wrapper {
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: calc(100vh - 320px);
-    min-height: 200px;
-    box-shadow: var(--shadow-sm);
-    width: 100%;
-    margin-bottom: 20px;
+    border-radius: var(--radius-xl);
+    overflow-x: auto; overflow-y: auto;
+    max-height: calc(100vh - 310px);
+    min-height: 180px;
+    width: 100%; margin-bottom: 16px;
   }
+
   .table-wrapper table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: sticky; top: 0; z-index: 10;
     background: var(--bg-surface);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08), 0 1px 0 var(--border-light);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 1px 0 var(--border-light);
   }
 
   table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    table-layout: auto;
-    min-width: 100%;
+    width: 100%; border-collapse: collapse;
+    font-size: 12px; table-layout: auto;
   }
 
-  thead {
-    background: var(--bg-surface-soft);
-    border-bottom: 1px solid var(--border-light);
-  }
+  thead { background: var(--bg-surface); }
 
   th {
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--text-tertiary);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    transition: color 0.2s;
+    padding: 10px 8px;
+    text-align: left; font-size: 10px;
+    font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.4px; color: var(--text-tertiary);
+    white-space: nowrap; cursor: pointer; user-select: none;
+    transition: color 0.15s;
   }
-
-  th:hover {
-    color: var(--text-primary);
-    background: var(--bg-surface-hover);
-  }
-
-  th.sort-asc::after {
-    content: ' ↑';
-    color: var(--sort-asc);
-    font-weight: bold;
-  }
-
-  th.sort-desc::after {
-    content: ' ↓';
-    color: var(--sort-desc);
-    font-weight: bold;
-  }
+  th:hover { color: var(--text-primary); }
+  th.sort-asc::after { content: ' ↑'; color: var(--accent); font-weight: 700; }
+  th.sort-desc::after { content: ' ↓'; color: var(--danger); font-weight: 700; }
 
   td {
-    padding: 10px 8px;
+    padding: 9px 8px;
     border-bottom: 1px solid var(--border-light);
-    vertical-align: middle;
-    color: var(--text-secondary);
+    vertical-align: middle; color: var(--text-secondary);
     white-space: nowrap;
   }
 
   tr:last-child td { border-bottom: none; }
-  tbody tr:nth-child(even) td { background: var(--bg-surface-soft); }
-  tr:hover td { background: var(--bg-surface-hover) !important; color: var(--text-primary); }
+  tbody tr:nth-child(even) td { background: rgba(0,0,0,0.012); }
+  body[data-theme="dark"] tbody tr:nth-child(even) td { background: rgba(255,255,255,0.018); }
+  tr:hover td { background: var(--bg-surface-soft) !important; color: var(--text-primary); }
 
-  td.mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  td.mono { font-family: var(--font-mono); font-size: 11px; }
   td.hi { color: var(--text-primary); font-weight: 500; }
-  td.money { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+  td.money { font-family: var(--font-mono); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
   th.money { text-align: right; }
 
-  /* Tooltip para observações */
-  td.has-tooltip {
-    position: relative;
-    cursor: help;
-    border-bottom: 1px dashed var(--text-tertiary);
-  }
-
+  /* tooltip */
+  td.has-tooltip { position: relative; cursor: help; text-decoration: underline dotted var(--text-tertiary); }
   .tooltip-content {
-    visibility: hidden;
-    position: absolute;
-    z-index: 1000;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    visibility: hidden; position: absolute; z-index: 1000;
+    bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
     background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 11px;
-    color: var(--text-primary);
-    white-space: normal;
-    max-width: 250px;
-    word-wrap: break-word;
-    box-shadow: var(--shadow-lg);
-    margin-bottom: 8px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: 7px 11px; font-size: 11px; color: var(--text-primary);
+    white-space: normal; max-width: 240px; word-wrap: break-word;
+    box-shadow: var(--shadow-lg); pointer-events: none;
+    opacity: 0; transition: opacity 0.15s;
   }
+  td.has-tooltip:hover .tooltip-content { visibility: visible; opacity: 1; }
 
-  .tooltip-content::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: var(--border-light) transparent transparent transparent;
-  }
+  /* nao-recebido */
+  tr.nao-recebido td { background-color: var(--nao-recebido-bg) !important; }
+  tr.nao-recebido td:first-child { border-left: 3px solid var(--nao-recebido-border); }
+  tr.nao-recebido:hover td { background-color: var(--nao-recebido-hover) !important; }
 
-  td.has-tooltip:hover .tooltip-content {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  /* Destaque para empenhos não recebidos */
-  tr.nao-recebido td {
-    background-color: var(--nao-recebido-bg) !important;
-  }
-  tr.nao-recebido td:first-child {
-    border-left: 3px solid var(--nao-recebido-border);
-  }
-  tr.nao-recebido:hover td {
-    background-color: var(--nao-recebido-hover) !important;
-  }
-
-  /* BADGES */
+  /* ─────────────────────────────────────────────
+     BADGES
+  ───────────────────────────────────────────── */
   .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 30px;
-    font-size: 10px;
-    font-weight: 700;
-    white-space: nowrap;
-    letter-spacing: 0.1px;
-    line-height: 1.6;
+    display: inline-flex; align-items: center;
+    padding: 2px 7px; border-radius: 100px;
+    font-size: 10px; font-weight: 600;
+    white-space: nowrap; line-height: 1.6;
   }
 
-  .bg { background: var(--success-soft); color: var(--success); border: 1px solid rgba(5,150,105,0.2); }
-  .bb { background: var(--info-soft); color: var(--accent-primary); border: 1px solid rgba(37,99,235,0.2); }
-  .by { background: var(--warning-soft); color: var(--warning); border: 1px solid rgba(217,119,6,0.2); }
-  .br { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(220,38,38,0.2); }
-  .bp { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(124,58,237,0.2); }
+  .bg { background: var(--success-soft); color: var(--success); border: 1px solid rgba(5,150,105,0.18); }
+  .bb { background: var(--info-soft); color: var(--accent); border: 1px solid rgba(0,102,255,0.18); }
+  .by { background: var(--warning-soft); color: var(--warning); border: 1px solid rgba(194,114,10,0.18); }
+  .br { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(212,43,43,0.18); }
+  .bp { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(107,63,160,0.18); }
   .bx { background: var(--bg-surface-soft); color: var(--text-secondary); border: 1px solid var(--border-light); }
 
-  /* MODAL */
+  /* ─────────────────────────────────────────────
+     DASHBOARD
+  ───────────────────────────────────────────── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px; margin-bottom: 16px;
+  }
+
+  .chart-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 18px 20px;
+    transition: box-shadow 0.15s;
+  }
+  .chart-card:hover { box-shadow: var(--shadow-md); }
+
+  .chart-card h3 {
+    font-size: 10px; font-weight: 600;
+    color: var(--text-tertiary); margin-bottom: 14px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .chart-card canvas { width: 100% !important; height: 240px !important; }
+
+  .chart-card-hero { grid-column: 1 / -1; }
+  .chart-card-hero canvas { height: 270px !important; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-top: 16px;
+  }
+
+  .stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 16px 18px;
+    transition: all 0.15s;
+  }
+  .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .stat-card .value {
+    font-size: 22px; font-weight: 500; color: var(--accent);
+    font-family: var(--font-mono); line-height: 1.1; margin-bottom: 3px;
+  }
+  .stat-card .label {
+    font-size: 10px; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+  }
+
+  /* dash KPIs */
+  .dash-kpi-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 14px; }
+  .dash-kpi {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 13px 15px;
+  }
+  .dash-kpi .val { font-size: 18px; font-weight: 500; font-family: var(--font-mono); color: var(--accent); }
+  .dash-kpi .lbl { font-size: 9px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .dash-kpi .sub { font-size: 10px; margin-top: 3px; }
+  .sub-up { color: var(--success); }
+  .sub-dn { color: var(--danger); }
+  @media (max-width: 1100px) { .dash-kpi-row { grid-template-columns: repeat(3,1fr); } }
+
+  /* ─────────────────────────────────────────────
+     MODAL
+  ───────────────────────────────────────────── */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    z-index: 2000; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
 
   .modal {
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
-    border-radius: 20px;
-    width: 99%;
-    max-width: 1500px;
-    max-height: 96vh;
+    border-radius: var(--radius-2xl);
+    width: 99%; max-width: 1500px; max-height: 96vh;
     overflow-y: auto;
-    box-shadow: 0 32px 72px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04);
-    animation: modalIn 0.25s ease;
+    box-shadow: var(--shadow-xl);
+    animation: modalIn 0.2s ease;
   }
 
+  @keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(-8px); } to { opacity:1; transform:scale(1) translateY(0); } }
   @keyframes slideInRight { from { transform:translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
-  @keyframes scaleIn { from { transform:scale(0.7); opacity:0; } to { transform:scale(1); opacity:1; } }
-  @keyframes fadeInOverlay { from { opacity:0; } to { opacity:1; } }
-  @keyframes bellShake { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-20deg)} 40%{transform:rotate(20deg)} 60%{transform:rotate(-10deg)} 80%{transform:rotate(10deg)} }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
+  @keyframes bellShake { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-18deg)} 40%{transform:rotate(18deg)} 60%{transform:rotate(-9deg)} 80%{transform:rotate(9deg)} }
 
-  /* Shortcuts modal */
   .shortcuts-modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
-    z-index: 99999; display: none; align-items: center; justify-content: center;
-    pointer-events: none;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    z-index: 99999; display: none; align-items: center; justify-content: center; pointer-events: none;
   }
   .shortcuts-modal.open { display: flex; pointer-events: all; }
   .shortcuts-modal-box {
     background: var(--bg-surface); border: 1px solid var(--border-light);
-    border-radius: 20px; padding: 28px 32px; max-width: 480px; width: 90%;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: modalIn 0.2s ease;
+    border-radius: var(--radius-2xl); padding: 26px 30px; max-width: 460px; width: 90%;
+    box-shadow: var(--shadow-xl); animation: modalIn 0.18s ease;
   }
-  .shortcuts-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display:flex;align-items:center;gap:8px; }
-  .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+  .shortcuts-modal-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; display:flex; align-items:center; gap:8px; }
+  .shortcut-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--border-light); font-size: 12px;
+  }
   .shortcut-row:last-child { border-bottom: none; }
   .shortcut-row .desc { color: var(--text-secondary); }
   .shortcut-keys { display: flex; gap: 4px; }
   .shortcut-keys kbd {
     background: var(--bg-surface-soft); border: 1px solid var(--border-medium);
-    border-radius: 5px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-primary); box-shadow: 0 1px 0 var(--border-medium);
+    border-radius: var(--radius-sm); padding: 2px 7px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-primary);
   }
 
-  /* ===== MELHORIA 8: Modal de confirmação estilizado ===== */
+  /* confirm modal */
   .confirm-modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 99000;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    z-index: 99000; align-items: center; justify-content: center;
   }
   .confirm-modal-overlay.open { display: flex; }
   .confirm-modal-box {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 32px 28px 24px;
-    max-width: 420px;
-    width: 90%;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
-    animation: modalIn 0.2s ease;
-    text-align: center;
+    background: var(--bg-surface); border: 1px solid var(--border-light);
+    border-radius: var(--radius-2xl); padding: 30px 26px 22px;
+    max-width: 400px; width: 90%; box-shadow: var(--shadow-xl);
+    animation: modalIn 0.18s ease; text-align: center;
   }
-  .confirm-modal-icon {
-    font-size: 44px;
-    margin-bottom: 12px;
-    display: block;
-  }
-  .confirm-modal-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 10px;
-  }
-  .confirm-modal-msg {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 24px;
-  }
-  .confirm-modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  /* BUSCA GLOBAL - theme-aware */
-  #busca-global-input {
-    transition: width 0.25s ease, box-shadow 0.2s;
-  }
-  #busca-global-input:focus {
-    width: 300px !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
-    border-color: var(--border-focus) !important;
-    background: var(--bg-surface) !important;
-  }
-  .busca-kbd-hint {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--bg-surface-soft);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-size: 10px;
-    color: var(--text-placeholder);
-    pointer-events: none;
-    font-family: 'JetBrains Mono', monospace;
-    transition: opacity 0.2s;
-  }
-  #busca-global-input:focus + .busca-kbd-hint { opacity: 0; }
-
-  /* ===== MELHORIA 12: Validação de formulário ===== */
-  .fc.field-error {
-    border-color: var(--danger) !important;
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.15) !important;
-    animation: shakeField 0.35s ease;
-  }
-  @keyframes shakeField {
-    0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 60%{transform:translateX(5px)} 80%{transform:translateX(-3px)}
-  }
-  .field-error-msg {
-    font-size: 10px;
-    color: var(--danger);
-    margin-top: 3px;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
-
-  /* ===== MELHORIA 15: Banner de status offline/online ===== */
-  #offline-banner {
-    display: none;
-    position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1e293b;
-    color: #f1f5f9;
-    border: 1px solid #475569;
-    border-radius: 30px;
-    padding: 8px 20px;
-    font-size: 12px;
-    font-weight: 600;
-    z-index: 99999;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    gap: 8px;
-    align-items: center;
-    animation: slideUpBanner 0.3s ease;
-  }
-  @keyframes slideUpBanner {
-    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
-    to { transform: translateX(-50%) translateY(0); opacity: 1; }
-  }
-  #offline-banner.show { display: flex; }
-
-  /* ===== MELHORIA 15: Notificações push aprimoradas ===== */
-  .push-notif-btn {
-    background: var(--bg-surface-soft);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 11px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.2s;
-  }
-  .push-notif-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-  .push-notif-btn.active { background: var(--success-soft); border-color: var(--success); color: var(--success); }
+  .confirm-modal-icon { font-size: 38px; margin-bottom: 10px; display: block; }
+  .confirm-modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+  .confirm-modal-msg { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+  .confirm-modal-actions { display: flex; gap: 8px; justify-content: center; }
 
   .modal-header {
-    padding: 18px 24px 14px;
+    padding: 16px 22px 13px;
     border-bottom: 1px solid var(--border-light);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--bg-surface); z-index: 10;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   }
 
   .modal-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+    color: var(--text-primary);
   }
 
   .modal-close {
-    background: var(--bg-surface-soft);
-    border: 1px solid var(--border-light);
-    color: var(--text-secondary);
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    width: 28px; height: 28px;
+    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
+    color: var(--text-tertiary); border-radius: var(--radius-md);
+    cursor: pointer; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
   }
-  .modal-close:hover { color: var(--danger); border-color: var(--danger); }
+  .modal-close:hover { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
 
-  .modal-body { padding: 20px 24px; }
+  .modal-body { padding: 18px 22px; }
   .modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border-light);
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    padding: 14px 22px; border-top: 1px solid var(--border-light);
+    display: flex; justify-content: flex-end; gap: 10px;
     background: var(--bg-surface-soft);
-    border-radius: 0 0 20px 20px;
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
   }
 
-  /* FORMULÁRIO */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
+  /* ─────────────────────────────────────────────
+     FORM
+  ───────────────────────────────────────────── */
+  .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .form-grid .full { grid-column: 1 / -1; }
   .form-grid .half { grid-column: span 2; }
 
-  .fg {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+  .fg { display: flex; flex-direction: column; gap: 3px; }
 
   .fl {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.3px; color: var(--text-tertiary);
+    display: flex; align-items: center; justify-content: space-between;
   }
 
-  /* CAIXA ALTA EM TODOS OS CAMPOS */
-  input[type="text"].fc,
-  input[type="text"].fc-aliq,
-  textarea.fc,
+  /* uppercase on text inputs */
+  input[type="text"].fc, textarea.fc,
   .fc[type="text"],
   input.fc:not([type="date"]):not([type="number"]):not([type="url"]):not([type="email"]) {
     text-transform: uppercase;
   }
-  textarea.fc {
-    text-transform: uppercase;
-  }
+  textarea.fc { text-transform: uppercase; }
 
   .fc {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    padding: 8px 12px;
-    outline: none;
-    transition: all 0.2s;
-    width: 100%;
-  }
-
-  .fc:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-  }
-
-  textarea.fc {
-    resize: vertical;
-    min-height: 80px;
-  }
-
-  select.fc {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 12px;
-  }
-
-  .fc-aliq {
-    background: var(--bg-surface);
-    border: 1px solid var(--warning);
-    border-radius: 8px;
-    color: var(--warning);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    padding: 8px 12px;
-    outline: none;
-    width: 100%;
-    font-weight: 500;
-  }
-  .fc-aliq:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-
-  .fc-auto { 
-    background: var(--bg-surface-soft); 
-    color: var(--success); 
-    border: 1px dashed var(--success); 
-    cursor: not-allowed; 
-    padding: 8px 12px; 
-    border-radius: 8px; 
-    width: 100%; 
-    font-size: 12px; 
-    display: block;
-  }
-  
-  .fc-manual { 
-    border: 1px solid var(--warning); 
-    background: var(--warning-soft); 
-    color: var(--warning); 
-    padding: 8px 12px; 
-    border-radius: 8px; 
-    width: 100%; 
-    font-size: 12px; 
-    display: none;
-  }
-
-  /* SWITCH */
-  .master-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 10px 14px;
     background: var(--bg-surface-soft);
     border: 1px solid var(--border-light);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 12px; padding: 7px 11px;
+    outline: none; transition: all 0.15s; width: 100%;
   }
-  .sw { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
-  .sw input { opacity: 0; width: 0; height: 0; }
-  .sw-sl {
-    position: absolute; cursor: pointer; inset: 0;
-    background: var(--border-light);
-    border-radius: 30px;
-    transition: 0.2s;
-  }
-  .sw-sl:before {
-    content: ''; position: absolute; width: 16px; height: 16px; left: 2px; top: 2px;
-    background: white; border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  input:checked + .sw-sl { background: var(--warning); }
-  input:checked + .sw-sl:before { transform: translateX(16px); background: white; }
+  .fc:focus { background: var(--bg-surface); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+  .fc:disabled { opacity: 0.5; cursor: not-allowed; }
+  textarea.fc { resize: vertical; min-height: 70px; }
 
-  .mtg {
-    display: inline-flex; align-items: center; gap: 3px; font-size: 8px; font-weight: 700;
-    padding: 2px 6px; border-radius: 30px; border: 1px solid var(--border-light);
-    color: var(--text-tertiary); background: white; cursor: pointer; text-transform: uppercase;
-  }
-  .mtg.on { background: var(--warning-soft); border-color: var(--warning); color: var(--warning); }
-  .mtg .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .fc.field-error { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(212,43,43,0.15) !important; animation: shakeField 0.3s; }
+  @keyframes shakeField { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 60%{transform:translateX(4px)} 80%{transform:translateX(-2px)} }
+  .field-error-msg { font-size: 10px; color: var(--danger); margin-top: 2px; display:flex; align-items:center; gap:3px; }
 
-  /* Search highlight */
-  /* Pagination */
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px 16px;
-    background: var(--bg-surface);
-    border-top: 1px solid var(--border-light);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    flex-wrap: wrap;
-  }
-  .page-btn {
-    min-width: 32px; height: 32px; border-radius: 8px;
-    border: 1px solid var(--border-light); background: var(--bg-surface);
-    color: var(--text-secondary); font-size: 12px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .page-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--info-soft); }
-  .page-btn.active { background: var(--accent-primary); color: white; border-color: var(--accent-primary); font-weight: 700; }
-  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .page-info { font-size: 11px; color: var(--text-tertiary); padding: 0 8px; }
-
-  /* Copy button */
-  .copy-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.15s;
-    color: var(--text-tertiary);
-    font-size: 11px;
-    vertical-align: middle;
-    margin-left: 3px;
-  }
-  td:hover .copy-btn, .copy-btn:focus { opacity: 1; }
-  .copy-btn:hover { background: var(--bg-surface-soft); color: var(--accent-primary); }
-  .copied-flash { animation: copiedFlash 0.6s ease; }
-  @keyframes copiedFlash { 0%,100%{background:none} 30%{background:rgba(5,150,105,0.2)} }
-
-  mark.search-hl {
-    background: rgba(245,158,11,0.35);
-    color: inherit;
-    border-radius: 2px;
-    padding: 0 1px;
-    font-weight: 600;
-  }
-  body[data-theme="dark"] mark.search-hl {
-    background: rgba(245,158,11,0.4);
+  .fsec {
+    font-size: 12px; font-weight: 600; color: var(--text-primary);
+    margin: 12px 0 7px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-light);
   }
 
-  /* Skeleton loader */
-  .skeleton-row td {
-    background: linear-gradient(90deg, var(--bg-surface-soft) 25%, var(--bg-inset) 50%, var(--bg-surface-soft) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-shimmer 1.4s infinite;
-    border-radius: 4px;
-    color: transparent !important;
-    user-select: none;
+  /* collapsible sections */
+  .fsec-collapsible {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+    font-size: 12px; font-weight: 600; color: var(--text-primary);
+    margin: 12px 0 7px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-light);
+    transition: color 0.15s;
   }
-  @keyframes skeleton-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  .loading-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 28px;
-    color: var(--text-tertiary);
-    font-size: 13px;
-  }
-  .loading-spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--border-light);
-    border-top-color: var(--accent-primary);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .fsec-collapsible:hover { color: var(--accent); }
+  .fsec-collapsible .fsec-arrow { transition: transform 0.2s; font-size: 9px; color: var(--text-tertiary); }
+  .fsec-collapsible.collapsed .fsec-arrow { transform: rotate(-90deg); }
+  .fsec-content { overflow: hidden; transition: max-height 0.22s ease, opacity 0.18s; max-height: 2000px; opacity: 1; }
+  .fsec-content.collapsed { max-height: 0; opacity: 0; pointer-events: none; }
 
-  .empty-state {
-    text-align: center; padding: 40px 20px; color: var(--text-tertiary);
+  /* ─────────────────────────────────────────────
+     DETAIL POPUP
+  ───────────────────────────────────────────── */
+  .detail-popup-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    z-index: 8000; align-items: center; justify-content: center;
   }
-  .empty-state .icon { font-size: 40px; margin-bottom: 10px; opacity: 0.6; }
+  .detail-popup-overlay.open { display: flex; }
 
-  .toast-container {
-    position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-    display: flex; flex-direction: column; gap: 8px;
+  .detail-popup {
+    background: var(--bg-surface); border-radius: var(--radius-2xl);
+    padding: 22px 26px 18px; max-width: 1400px; width: 98%;
+    max-height: 92vh; overflow-y: auto;
+    box-shadow: var(--shadow-xl); border: 1px solid var(--border-light);
+    animation: modalIn 0.2s ease;
   }
+
+  .detail-popup-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 12px; gap: 10px;
+  }
+  .detail-popup-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .detail-popup-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+  .detail-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-tertiary); padding: 3px; line-height: 1; }
+  .detail-close:hover { color: var(--danger); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 10px; }
+  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-bottom: 10px; }
+  .detail-field-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-bottom: 2px; }
+  .detail-field-value { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .detail-section { font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 6px; padding-bottom: 3px; border-bottom: 1px solid var(--border-light); }
+  .detail-actions { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+  /* ─────────────────────────────────────────────
+     MISC COMPONENTS
+  ───────────────────────────────────────────── */
+
+  /* toasts */
   .toast {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 12px;
-    color: var(--text-primary);
+    position: fixed; bottom: 20px; right: 20px; z-index: 99999;
+    background: var(--bg-surface); border: 1px solid var(--border-medium);
+    border-radius: var(--radius-xl);
+    padding: 11px 16px; font-size: 13px; font-weight: 500;
     box-shadow: var(--shadow-lg);
-    animation: tIn 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 220px;
+    animation: toastIn 0.22s ease;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 340px;
   }
-  .toast.success { border-left: 4px solid var(--success); }
-  .toast.info { border-left: 4px solid var(--accent-primary); }
+  .toast.success { border-left: 3px solid var(--success); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.warning { border-left: 3px solid var(--warning); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-  @keyframes tIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
+  /* skeleton */
+  .skeleton-row td { background: linear-gradient(90deg, var(--bg-surface-soft) 25%, var(--bg-surface) 50%, var(--bg-surface-soft) 75%) !important; background-size: 200% 100% !important; animation: shimmer 1.4s infinite; border-bottom: 1px solid var(--border-light); }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* tfoot */
+  tfoot td { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-primary) !important; border-top: 2px solid var(--border-medium) !important; background: var(--bg-surface-soft) !important; padding: 9px 8px; white-space: nowrap; }
+
+  /* inline edit */
+  .inline-edit-cell { position: relative; }
+  .inline-edit-cell:hover .inline-edit-trigger { opacity: 1; }
+  .inline-edit-trigger { opacity: 0; transition: opacity 0.15s; cursor: pointer; font-size: 10px; color: var(--accent); margin-left: 4px; }
+  .inline-edit-input { font-size: 11px; padding: 3px 6px; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-primary); outline: none; width: 100%; box-shadow: 0 0 0 2px var(--accent-ring); }
+  .inline-edit-select { font-size: 11px; padding: 3px 22px 3px 6px; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-primary); outline: none; box-shadow: 0 0 0 2px var(--accent-ring); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%230066ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 5px center; }
+
+  /* file upload */
+  .file-upload-zone {
+    border: 1px dashed var(--border-medium); border-radius: var(--radius-md);
+    padding: 12px; text-align: center; cursor: pointer; transition: all 0.15s;
+    color: var(--text-tertiary); font-size: 12px; position: relative; overflow: hidden;
+  }
+  .file-upload-zone:hover, .file-upload-zone.dragover { border-color: var(--accent); background: var(--accent-muted); color: var(--accent); }
+  .file-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .file-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-muted); color: var(--accent); border: 1px solid rgba(0,102,255,0.2); border-radius: 100px; padding: 3px 10px; font-size: 10px; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-badge-remove { cursor: pointer; color: var(--danger); font-size: 11px; margin-left: 4px; flex-shrink: 0; }
+  .ocr-result-box { background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 7px 11px; font-size: 11px; color: var(--text-secondary); max-height: 90px; overflow-y: auto; white-space: pre-wrap; }
+  .ocr-progress { height: 3px; background: var(--border-light); border-radius: 2px; overflow: hidden; margin-top: 5px; }
+  .ocr-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; width: 0%; }
+
+  /* wizard */
+  .wizard-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px); z-index: 3000; align-items: center; justify-content: center; }
+  .wizard-overlay.open { display: flex; }
+  .wizard { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-2xl); width: 90%; max-width: 480px; padding: 22px; box-shadow: var(--shadow-xl); animation: modalIn 0.2s ease; }
+  .wizard h2 { font-size: 18px; margin-bottom: 18px; color: var(--text-primary); font-weight: 700; }
+  .wizard-step { margin-bottom: 18px; }
+  .wizard-step label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-tertiary); margin-bottom: 5px; }
+  .wizard-step input, .wizard-step select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-xl); background: var(--bg-surface-soft); color: var(--text-primary); font-size: 13px; outline: none; font-family: var(--font-sans); }
+  .wizard-step input:focus, .wizard-step select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+  .wizard-progress { display: flex; gap: 6px; margin: 18px 0; }
+  .wizard-progress .step { flex: 1; height: 3px; background: var(--border-light); border-radius: 2px; }
+  .wizard-progress .step.active { background: var(--accent); }
+  .wizard-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+
+  /* modal emp disp */
+  .modal-emp-disp { max-width: 900px; width: 96%; }
+  .emp-disp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .emp-disp-table th { background: var(--bg-surface-soft); color: var(--text-tertiary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-light); }
+  .emp-disp-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); color: var(--text-secondary); }
+  .emp-disp-table tr:hover td { background: var(--bg-surface-soft); }
+  .emp-disp-table tr.pago td { opacity: 0.6; }
+  .emp-disp-empty { text-align: center; padding: 28px; color: var(--text-tertiary); font-size: 12px; }
+
+  .vinculo-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; padding: 2px 6px; border-radius: 100px; background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(107,63,160,0.2); font-weight: 600; cursor: pointer; white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
+  .vinculo-badge:hover { background: var(--purple); color: #fff; }
+
+  .status-pago { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--success-soft); color: var(--success); border: 1px solid rgba(5,150,105,0.2); }
+  .status-pendente { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--warning-soft); color: var(--warning); border: 1px solid rgba(194,114,10,0.2); }
+
+  .disp-info-banner { background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 9px 13px; margin-bottom: 12px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; }
+  .disp-info-banner span { color: var(--text-tertiary); }
+  .disp-info-banner strong { color: var(--text-primary); margin-left: 4px; }
+
+  /* compras */
+  .compra-item-card { border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 11px; margin-bottom: 9px; background: var(--bg-surface-soft); }
+  .compra-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; padding-bottom: 7px; border-bottom: 1px solid var(--border-light); }
+  .compra-item-title { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .compra-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 9px; }
+  .compra-status-pago { color: var(--success); font-weight: 700; font-size: 11px; }
+  .compra-status-pendente { color: var(--warning); font-weight: 700; font-size: 11px; }
+  .btn-add-compra { background: var(--success-soft); color: var(--success); border: 1px dashed var(--success); border-radius: var(--radius-md); padding: 7px 14px; cursor: pointer; font-size: 12px; font-weight: 600; width: 100%; margin-top: 7px; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: var(--font-sans); }
+  .btn-add-compra:hover { background: var(--success); color: #fff; }
+  .compra-lote-select { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 10px; }
+  .compra-lote-btn { border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 8px 9px; cursor: pointer; font-size: 11px; text-align: center; transition: all 0.13s; background: var(--bg-surface); }
+  .compra-lote-btn:hover { border-color: var(--accent); }
+  .compra-lote-btn.selected { border-color: var(--accent); background: var(--accent-muted); }
+  .compra-lote-btn.sem-saldo { opacity: 0.4; cursor: not-allowed; }
+
+  /* saldo badges */
+  .saldo-ok { color: var(--success); font-weight: 700; }
+  .saldo-zero { color: var(--text-tertiary); }
+  .saldo-parcial { color: var(--warning); font-weight: 700; }
+  .lote-selector-card { border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 8px 10px; cursor: pointer; transition: all 0.13s; background: var(--bg-surface); }
+  .lote-selector-card:hover:not(.sem-saldo) { border-color: var(--accent); background: var(--accent-muted); }
+  .lote-selector-card.selected { border-color: var(--accent); background: var(--accent-muted); }
+  .lote-selector-card.sem-saldo { opacity: 0.4; cursor: not-allowed; }
+  .lote-saldo-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
+  .lote-saldo-ok { background: var(--success-soft); color: var(--success); }
+  .lote-saldo-zero { background: var(--bg-surface-soft); color: var(--text-tertiary); }
+
+  /* estado badge */
+  .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 100px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
+
+  /* offline banner */
+  #offline-banner {
+    display: none; position: fixed; bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface); border: 1px solid var(--border-medium);
+    border-radius: 100px; padding: 7px 18px; font-size: 12px; font-weight: 600;
+    z-index: 99999; box-shadow: var(--shadow-lg);
+    gap: 7px; align-items: center; animation: slideUpBanner 0.25s ease;
+    color: var(--text-primary);
+  }
+  @keyframes slideUpBanner { from { transform:translateX(-50%) translateY(16px); opacity:0; } to { transform:translateX(-50%) translateY(0); opacity:1; } }
+  #offline-banner.show { display: flex; }
+
+  /* alerts */
+  #alerta-empenhos-banner, #alerta-contratos-banner {
+    border-radius: var(--radius-xl); padding: 10px 14px; margin-bottom: 12px;
+    display: none; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid;
   }
 
+  /* busca global */
+  #busca-global-result { border-radius: var(--radius-xl); }
 
-  /* Zebra striping nas tabelas */
-  tbody tr:nth-child(even) td {
-    background: var(--bg-surface-soft);
-  }
-  tbody tr.nao-recebido:nth-child(even) td {
-    background: var(--nao-recebido-hover);
-  }
+  /* lote selector card in empenho modal */
+  .lote-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
 
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-placeholder); }
 
-  /* Dashboard — hierarquia visual: gráfico principal maior */
-  .chart-card-hero {
-    grid-column: 1 / -1;
-  }
-  .chart-card-hero canvas {
-    height: 300px !important;
-  }
-  .chart-card-hero h3 {
-    font-size: 13px !important;
-  }
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  /* responsive */
   @media (max-width: 1100px) {
     .form-grid { grid-template-columns: repeat(3, 1fr); }
     .dashboard-grid { grid-template-columns: 1fr; }
+    .dash-kpi-row { grid-template-columns: repeat(3,1fr); }
   }
   @media (max-width: 900px) {
     .form-grid { grid-template-columns: repeat(2, 1fr); }
-    .summary-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .summary-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
   }
   @media (max-width: 700px) {
     .form-grid { grid-template-columns: 1fr; }
     .header-stats { display: none; }
-    .theme-selector, .analista-selector, .shortcuts-hint { display: none; }
-    .content { padding: 12px 14px; }
-    .toolbar { padding: 8px 12px; gap: 6px; }
-    header { padding: 0 14px; gap: 8px; }
-    #busca-global-input { width: 140px !important; }
+    .content { padding: 12px 12px; }
+    .toolbar { padding: 7px 10px; gap: 5px; }
+    header { padding: 0 12px; gap: 5px; }
+    #busca-global-input { width: 130px !important; }
   }
   @media (max-width: 480px) {
-    .tabs { padding: 0 8px; }
-    .tab-btn { padding: 10px 10px; font-size: 11px; }
+    .tabs { padding: 0 6px; }
+    .tab-btn { padding: 0 9px; font-size: 11px; }
   }
+</style>
 
-  .estado-badge { font-size: 10px; background: var(--bg-surface-soft); padding: 2px 6px; border-radius: 20px; color: var(--text-secondary); font-weight: 500; display: inline-block; }
-  .fsec { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 12px 0 8px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; }
-
-  /* ===== DETAIL POPUP ===== */
-  .detail-popup-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-    z-index: 8000; align-items: center; justify-content: center;
-  }
-  .detail-popup-overlay.open { display: flex; }
-  .detail-popup {
-    background: var(--bg-surface); border-radius: 20px;
-    padding: 24px 28px 20px; max-width: 1400px; width: 98%;
-    max-height: 92vh; overflow-y: auto;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
-    border: 1px solid var(--border-light);
-  }
-  .detail-popup-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 14px; gap: 12px;
-  }
-  .detail-popup-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-  .detail-popup-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
-  .detail-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-tertiary); padding: 4px; line-height: 1; }
-  .detail-close:hover { color: var(--danger); }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .detail-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .detail-field { }
-  .detail-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-bottom: 3px; }
-  .detail-field-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .detail-section { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.8px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; margin: 12px 0 8px; }
-  .detail-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
-  .lotes-status-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .lotes-status-table th { background: var(--bg-surface-soft); padding: 7px 10px; text-align: left; font-weight: 700; font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); border-bottom: 2px solid var(--border-light); }
-  .lotes-status-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
-  .lotes-status-table tr:last-child td { border-bottom: none; }
-  .saldo-ok { color: var(--success); font-weight: 700; }
-  .saldo-zero { color: var(--text-tertiary); }
-  .saldo-parcial { color: var(--warning); font-weight: 700; }
-  .progress-bar-wrap { background: var(--bg-inset); border-radius: 20px; height: 6px; width: 100px; display: inline-block; vertical-align: middle; }
-  .progress-bar-fill { height: 6px; border-radius: 20px; background: var(--success); }
-  .empenho-mini-list { margin-top: 8px; }
-  .empenho-mini-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--bg-surface-soft); border-radius: 8px; margin-bottom: 4px; font-size: 11px; }
-  .empenho-mini-item:hover { background: var(--bg-inset); }
-
-  /* ===== LOTE SELECTOR IN EMPENHO ===== */
-  .lote-selector-card {
-    border: 2px solid var(--border-light); border-radius: 10px; padding: 12px;
-    cursor: pointer; transition: all 0.15s; margin-bottom: 8px;
-    display: grid; grid-template-columns: auto 1fr auto auto auto;
-    gap: 12px; align-items: center;
-  }
-  .lote-selector-card:hover { border-color: var(--accent-primary); background: rgba(37,99,235,0.04); }
-  .lote-selector-card.selected { border-color: var(--accent-primary); background: rgba(37,99,235,0.08); }
-  .lote-selector-card.sem-saldo { opacity: 0.4; cursor: not-allowed; }
-  .lote-saldo-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
-  .lote-saldo-ok { background: var(--success-soft); color: var(--success); }
-  .lote-saldo-zero { background: var(--bg-inset); color: var(--text-tertiary); }
-  .lote-qtd-input-wrap { display: flex; align-items: center; gap: 6px; }
-  .lote-qtd-input-wrap input { width: 70px; padding: 6px; border: 1px solid var(--border-light); border-radius: 6px; text-align: center; font-weight: 700; background: var(--bg-surface); color: var(--text-primary); }
-
-  /* ===== ALERTAS DE PRAZO ===== */
-  tr.alerta-30 td { background: rgba(245,158,11,0.07) !important; }
-  tr.alerta-60 td { background: rgba(220,38,38,0.08) !important; }
-  tr.alerta-90 td { background: rgba(139,0,0,0.12) !important; }
-  body[data-theme="dark"] tr.alerta-30 td { background: rgba(245,158,11,0.12) !important; }
-  body[data-theme="dark"] tr.alerta-60 td { background: rgba(220,38,38,0.15) !important; }
-  body[data-theme="dark"] tr.alerta-90 td { background: rgba(220,38,38,0.22) !important; }
-
-  .dias-badge {
-    display: inline-block; padding: 2px 7px; border-radius: 20px;
-    font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
-  }
-  .dias-ok { background: var(--success-soft); color: var(--success); }
-  .dias-30 { background: var(--warning-soft); color: var(--warning); }
-  .dias-60 { background: rgba(220,38,38,0.12); color: var(--danger); }
-  .dias-90 { background: var(--danger-soft); color: var(--danger); font-size: 11px; font-weight: 700; animation: piscar 1.5s infinite; }
-  @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  .alerta-banner {
-    background: linear-gradient(135deg, rgba(220,38,38,0.1), rgba(245,158,11,0.08));
-    border: 1px solid rgba(220,38,38,0.25); border-radius: var(--radius-md);
-    padding: 10px 16px; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px; color: var(--danger); font-weight: 600;
-    cursor: pointer;
-  }
-  .alerta-banner:hover { background: rgba(220,38,38,0.15); }
-
-  /* ===== LOTES DA DISPUTA ===== */
-  .lotes-section { margin-top: 12px; }
-  .lote-row {
-    display: grid; grid-template-columns: 1fr 100px 100px 100px auto;
-    gap: 8px; align-items: center; margin-bottom: 6px;
-    background: var(--bg-surface-soft); padding: 8px 10px; border-radius: var(--radius-md);
-    border: 1px solid var(--border-light);
-  }
-  .lote-row input { padding: 5px 8px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); font-size: 12px; width: 100%; text-transform: uppercase; }
-  .lote-row input:focus { outline: none; border-color: var(--accent-primary); }
-  .btn-lote-del { background: var(--danger-soft); color: var(--danger); border: none; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
-  .btn-lote-del:hover { background: var(--danger); color: white; }
-  .lote-header { display: grid; grid-template-columns: 1fr 100px 100px 100px auto; gap: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-tertiary); padding: 0 10px; margin-bottom: 4px; }
-  .lotes-totais { display: flex; gap: 16px; padding: 8px 10px; background: var(--bg-inset); border-radius: var(--radius-md); font-size: 12px; margin-top: 6px; }
-  .lotes-totais span { color: var(--text-tertiary); }
-  .lotes-totais strong { color: var(--text-primary); margin-left: 4px; }
-
-  /* ===== LOGIN SCREEN ===== */
+  /* ─────────────────────────────────────────────
+     LOGIN
+  ───────────────────────────────────────────── */
   .login-overlay {
-    display: none; position: fixed; inset: 0;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-    z-index: 10000; align-items: center; justify-content: center; flex-direction: column;
+    position: fixed; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    background: var(--bg-app); z-index: 99999;
   }
   .login-overlay.open { display: flex; }
+
   .login-card {
-    background: rgba(255,255,255,0.07); backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 24px;
-    padding: 48px 40px; width: 380px; text-align: center;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-  }
-  .login-logo { font-size: 48px; margin-bottom: 8px; }
-  .login-title { font-size: 26px; font-weight: 700; color: white; margin-bottom: 4px; letter-spacing: -0.5px; }
-  .login-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 36px; }
-  .login-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-align: left; display: block; margin-bottom: 8px; }
-  .login-select {
-    width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 15px; font-weight: 600;
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-    color: white; outline: none; cursor: pointer; margin-bottom: 24px;
-    appearance: none;
-  }
-  .login-select option { background: #1e293b; color: white; }
-  .login-select:focus { border-color: rgba(99,179,237,0.6); }
-  .login-btn {
-    width: 100%; padding: 14px; border-radius: 12px; border: none;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white; font-size: 15px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 8px 24px rgba(37,99,235,0.4); transition: all 0.2s;
-    letter-spacing: -0.2px;
-  }
-  .login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(37,99,235,0.5); }
-  .login-footer { margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.3); }
-  .user-chip {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
-    border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600;
-    color: var(--text-primary); cursor: pointer;
-  }
-  .user-chip:hover { border-color: var(--danger); color: var(--danger); }
-  .user-avatar {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent-gradient); color: white;
-    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-  }
-
-  /* ===== EXCEL ATTACHMENT ===== */
-  .excel-drop-zone {
-    border: 2px dashed var(--border-medium); border-radius: var(--radius-md);
-    padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s;
-    color: var(--text-tertiary); font-size: 12px;
-  }
-  .excel-drop-zone:hover, .excel-drop-zone.dragover { border-color: #10b981; background: rgba(16,185,129,0.05); color: #10b981; }
-  .excel-preview { margin-top: 10px; overflow-x: auto; max-height: 200px; }
-  .excel-preview table { width: 100%; font-size: 10px; border-collapse: collapse; }
-  .excel-preview th { background: var(--bg-surface-soft); padding: 4px 8px; text-align: left; border: 1px solid var(--border-light); font-weight: 600; color: var(--text-secondary); }
-  .excel-preview td { padding: 3px 8px; border: 1px solid var(--border-light); color: var(--text-primary); white-space: nowrap; }
-  .excel-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); border-radius: 20px; padding: 2px 8px; font-size: 10px; font-weight: 600; cursor: pointer; }
-  .excel-badge:hover { background: #10b981; color: white; }
-
-  /* ===== DASHBOARD MELHORADO ===== */
-  .dash-kpi-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 12px; margin-bottom: 16px; }
-  .dash-kpi { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 14px 16px; }
-  .dash-kpi .val { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent-primary); }
-  .dash-kpi .lbl { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-  .dash-kpi .sub { font-size: 10px; margin-top: 4px; }
-  .sub-up { color: var(--success); }
-  .sub-dn { color: var(--danger); }
-  @media (max-width: 1100px) { .dash-kpi-row { grid-template-columns: repeat(3,1fr); } }
-
-  /* Modal Empenhos da Disputa */
-  .modal-emp-disp {
-    max-width: 900px;
-    width: 96%;
-  }
-
-  .emp-disp-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-
-  .emp-disp-table th {
-    background: var(--bg-surface-soft);
-    color: var(--text-tertiary);
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 8px 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-light);
-  }
-
-  .emp-disp-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border-light);
-    color: var(--text-secondary);
-  }
-
-  .emp-disp-table tr:hover td {
-    background: var(--bg-surface-hover);
-  }
-
-  .emp-disp-table tr.pago td {
-    opacity: 0.75;
-  }
-
-  .emp-disp-empty {
-    text-align: center;
-    padding: 32px;
-    color: var(--text-tertiary);
-    font-size: 13px;
-  }
-
-  .vinculo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 20px;
-    background: var(--purple-soft);
-    color: var(--purple);
-    border: 1px solid rgba(124,58,237,0.2);
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .vinculo-badge:hover {
-    background: var(--purple);
-    color: white;
-  }
-
-  .status-pago {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    background: var(--success-soft);
-    color: var(--success);
-    border: 1px solid rgba(5,150,105,0.2);
-  }
-
-  .status-pendente {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    background: var(--warning-soft);
-    color: var(--warning);
-    border: 1px solid rgba(217,119,6,0.2);
-  }
-
-  .disp-info-banner {
-    background: var(--bg-surface-soft);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 10px 14px;
-    margin-bottom: 14px;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    font-size: 12px;
-  }
-
-  .disp-info-banner span {
-    color: var(--text-tertiary);
-  }
-
-  .disp-info-banner strong {
-    color: var(--text-primary);
-    margin-left: 4px;
-  }
-
-  /* ===== COMPRAS INDIVIDUAIS ===== */
-  .compra-item-card {
-    border: 1px solid var(--border-light); border-radius: 10px; padding: 12px;
-    margin-bottom: 10px; background: var(--bg-surface-soft);
-  }
-  .compra-item-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-    padding-bottom: 8px; border-bottom: 1px solid var(--border-light);
-  }
-  .compra-item-title { font-size: 13px; font-weight: 700; color: var(--accent-primary); }
-  .compra-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
-  .compra-status-pago { color: var(--success); font-weight: 700; font-size: 11px; }
-  .compra-status-pendente { color: var(--warning); font-weight: 700; font-size: 11px; }
-  .btn-add-compra {
-    background: var(--success-soft); color: var(--success); border: 1px dashed var(--success);
-    border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 12px; font-weight: 600;
-    width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-add-compra:hover { background: var(--success); color: white; }
-
-  /* Ícones inline — tamanho e alinhamento padrão */
-  .btn svg, button svg {
-    width: 13px;
-    height: 13px;
-    vertical-align: middle;
-    flex-shrink: 0;
-    stroke-width: 1.8;
-  }
-  .tab-btn svg {
-    width: 12px;
-    height: 12px;
-    opacity: 0.75;
-  }
-  .tab-btn.active svg {
-    opacity: 1;
-  }
-  h3 svg {
-    width: 12px;
-    height: 12px;
-    vertical-align: middle;
-    opacity: 0.65;
-    margin-right: 5px;
-    flex-shrink: 0;
-  }
-  .fsec-collapsible svg {
-    width: 12px;
-    height: 12px;
-    opacity: 0.6;
-  }
-  /* Remove margens inline dos SVGs dentro de botões — CSS controla */
-  .btn svg, button svg {
-    margin-right: 4px;
-  }
-
-  .compra-lote-select {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px;
-  }
-  .compra-lote-btn {
-    border: 2px solid var(--border-light); border-radius: 8px; padding: 8px 10px; cursor: pointer;
-    font-size: 11px; text-align: center; transition: all 0.15s; background: var(--bg-surface);
-  }
-  .compra-lote-btn:hover { border-color: var(--accent-primary); }
-  .compra-lote-btn.selected { border-color: var(--accent-primary); background: rgba(37,99,235,0.08); }
-  .compra-lote-btn.sem-saldo { opacity: 0.45; cursor: not-allowed; }
-
-  /* ===== WIZARD RÁPIDO ===== */
-  .wizard-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(8px);
-    z-index: 3000;
-    align-items: center;
-    justify-content: center;
-  }
-  .wizard-overlay.open { display: flex; }
-
-  .wizard {
     background: var(--bg-surface);
     border: 1px solid var(--border-light);
-    border-radius: 24px;
-    width: 90%;
-    max-width: 500px;
-    padding: 24px;
+    border-radius: 20px; padding: 36px 32px;
+    width: 90%; max-width: 380px;
     box-shadow: var(--shadow-xl);
     animation: modalIn 0.3s ease;
   }
 
-  .wizard h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: var(--text-primary);
+  .login-title {
+    font-size: 20px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 3px; text-align: center; letter-spacing: -0.4px;
   }
+  .login-sub { font-size: 12px; color: var(--text-tertiary); text-align: center; margin-bottom: 26px; }
+  .login-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-tertiary); margin-bottom: 5px; }
+  .login-select {
+    width: 100%; background: var(--bg-surface-soft);
+    border: 1px solid var(--border-light); border-radius: var(--radius-md);
+    color: var(--text-primary); font-family: var(--font-sans);
+    font-size: 13px; padding: 10px 13px; outline: none; transition: all 0.15s;
+  }
+  .login-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); background: var(--bg-surface); }
+  .login-btn {
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-md); padding: 11px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    font-family: var(--font-sans); box-shadow: 0 2px 8px rgba(0,102,255,0.3);
+  }
+  .login-btn:hover { background: var(--accent-hover); box-shadow: 0 4px 16px rgba(0,102,255,0.4); }
+  .login-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .login-footer { text-align: center; font-size: 11px; color: var(--text-tertiary); margin-top: 14px; }
 
-  .wizard-step {
-    margin-bottom: 20px;
-  }
+  /* user-role-badge & push-notif */
+  .hstat-val { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--success); }
+  .hstat-label { font-size: 9px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .header-stats { display: flex; gap: 20px; }
+  .hstat { text-align: right; }
 
-  .wizard-step label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin-bottom: 6px;
-  }
+  /* acompanhamentos */
+  .acomp-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 14px 16px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+  .acomp-card:hover { box-shadow: var(--shadow-md); }
 
-  .wizard-step input, .wizard-step select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    font-size: 14px;
-  }
+  /* painel */
+  .painel-section { margin-bottom: 20px; }
+  .painel-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border-light); }
 
-  .wizard-progress {
-    display: flex;
-    gap: 8px;
-    margin: 20px 0;
-  }
-
-  .wizard-progress .step {
-    flex: 1;
-    height: 4px;
-    background: var(--border-light);
-    border-radius: 2px;
-  }
-
-  .wizard-progress .step.active {
-    background: var(--accent-primary);
-  }
-
-  .wizard-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-
-
-  /* Seções colapsáveis nos modais */
-  .fsec-collapsible {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 14px 0 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .fsec-collapsible:hover {
-    color: var(--accent-primary);
-  }
-  .fsec-collapsible .fsec-arrow {
-    transition: transform 0.2s;
-    font-size: 10px;
-    color: var(--text-tertiary);
-  }
-  .fsec-collapsible.collapsed .fsec-arrow {
-    transform: rotate(-90deg);
-  }
-  .fsec-content {
-    overflow: hidden;
-    transition: max-height 0.25s ease, opacity 0.2s;
-    max-height: 2000px;
-    opacity: 1;
-  }
-  .fsec-content.collapsed {
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* ===== INLINE EDIT ===== */
-  .inline-edit-cell { position: relative; }
-  .inline-edit-cell:hover .inline-edit-trigger { opacity: 1; }
-  .inline-edit-trigger { opacity: 0; transition: opacity 0.15s; cursor: pointer; font-size: 11px; color: var(--accent-primary); margin-left: 4px; }
-  .inline-edit-input {
-    font-size: 11px; padding: 3px 6px; border: 1px solid var(--accent-primary);
-    border-radius: 5px; background: var(--bg-surface); color: var(--text-primary);
-    outline: none; width: 100%; box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
-  }
-  .inline-edit-select {
-    font-size: 11px; padding: 3px 24px 3px 6px; border: 1px solid var(--accent-primary);
-    border-radius: 5px; background: var(--bg-surface); color: var(--text-primary);
-    outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 6px center;
-  }
-
-  /* ===== OCR / FILE UPLOAD ===== */
-  .file-upload-zone {
-    border: 2px dashed var(--border-medium); border-radius: var(--radius-md);
-    padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;
-    color: var(--text-tertiary); font-size: 12px; position: relative; overflow: hidden;
-  }
-  .file-upload-zone:hover, .file-upload-zone.dragover { border-color: var(--accent-primary); background: var(--info-soft); color: var(--accent-primary); }
-  .file-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  .file-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--info-soft); color: var(--accent-primary); border: 1px solid rgba(37,99,235,0.2); border-radius: 20px; padding: 3px 10px; font-size: 10px; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .file-badge-remove { cursor: pointer; color: var(--danger); font-size: 12px; margin-left: 4px; flex-shrink: 0; }
-  .ocr-result-box { background: var(--bg-surface-soft); border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--text-secondary); max-height: 100px; overflow-y: auto; white-space: pre-wrap; }
-  .ocr-progress { height: 4px; background: var(--border-light); border-radius: 2px; overflow: hidden; margin-top: 6px; }
-  .ocr-progress-bar { height: 100%; background: var(--accent-primary); border-radius: 2px; transition: width 0.3s; width: 0%; }
+  /* modal emp disp */
+  .modal-emp-disp { max-width: 900px; width: 96%; }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1978,7 +1174,7 @@
 
 <header>
   <div class="logo">
-    <div class="logo-icon" style="display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+    <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
     <div>
       <div class="logo-text">LicitationBiznis</div>
       <div class="logo-sub">Gestão de Licitações</div>
@@ -1988,18 +1184,18 @@
 
   <!-- BUSCA GLOBAL -->
   <div style="position:relative;margin-right:4px;">
-    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;color:var(--text-primary);padding:6px 34px 6px 12px;font-size:12px;width:200px;outline:none;transition:all 0.2s;" autocomplete="off">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:100px;color:var(--text-primary);padding:6px 30px 6px 30px;font-size:12px;width:200px;outline:none;transition:all 0.18s;" autocomplete="off">
     <span class="busca-kbd-hint">/</span>
-    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:420px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:8px;"></div>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:400px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
   </div>
 
   <!-- SININHO DE NOTIFICAÇÕES -->
   <div style="position:relative;">
-    <button id="notif-bell" onclick="toggleNotificacoes()" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:15px;position:relative;padding:6px 10px;color:var(--text-secondary);transition:all 0.15s;" title="Notificações">
+    <button id="notif-bell" onclick="toggleNotificacoes()" class="hbtn" style="position:relative;" title="Notificações">
       🔔
       <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
     </button>
-    <div id="notif-panel" style="display:none;position:absolute;right:0;top:40px;width:340px;max-height:460px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;padding:12px;">
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:320px;max-height:440px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-weight:700;font-size:13px;color:var(--text-primary);">🔔 Notificações</div>
         <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">🗑 Limpar tudo</button>
@@ -2018,7 +1214,7 @@
       <span id="user-nome">—</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style=""><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-    <div id="user-menu-dropdown" style="display:none;position:absolute;right:0;top:44px;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:9999;min-width:200px;padding:6px;overflow:hidden;">
+    <div id="user-menu-dropdown" style="display:none;position:absolute;right:0;top:40px;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;min-width:195px;padding:5px;overflow:hidden;">
       <div style="padding:8px 12px 6px;border-bottom:1px solid var(--border-light);margin-bottom:4px;">
         <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Configurações</div>
       </div>
@@ -2071,7 +1267,7 @@
       <p style="color:var(--text-tertiary); font-size:13px; margin-bottom:28px;">
         Se você já usava o sistema antes, importe seu backup JSON para restaurar todos os seus dados.
       </p>
-      <label style="display:inline-flex; align-items:center; gap:10px; background:var(--accent-primary); color:white; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4); margin-bottom:12px;">
+      <label style="display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:white; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,102,255,0.4); margin-bottom:12px;">
         ⬆ Importar meu backup (.json)
         <input type="file" accept=".json" onchange="importarBackup(event)" style="display:none;">
       </label>
@@ -2157,7 +1353,7 @@
 
     <!-- KPIs principais -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
-      <div class="card" style="border-left:4px solid var(--accent-primary);">
+      <div class="card" style="border-left:4px solid var(--accent);">
         <div class="card-label">Disputas Ativas</div>
         <div class="card-value cv-blue" id="dk-disputas">—</div>
       </div>
@@ -2169,7 +1365,7 @@
         <div class="card-label">Lucro Total</div>
         <div class="card-value cv-green" id="dk-lucro">—</div>
       </div>
-      <div class="card" style="border-left:4px solid var(--accent-primary);">
+      <div class="card" style="border-left:4px solid var(--accent);">
         <div class="card-label">Taxa Conversão</div>
         <div class="card-value cv-blue" id="dk-conversao">—</div>
       </div>
@@ -2442,11 +1638,11 @@
             <td></td><td></td>
             <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
             <td></td>
-            <td class="money" id="tfoot-d-contrato" style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-d-compra" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-d-custo" style="color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:'JetBrains Mono',monospace;"></td>
-            <td class="money" id="tfoot-d-lucro-real" style="color:var(--success);font-family:'JetBrains Mono',monospace;"></td>
+            <td class="money" id="tfoot-d-contrato" style="color:var(--accent);font-family:var(--font-mono);"></td>
+            <td class="money" id="tfoot-d-compra" style="color:var(--warning);font-family:var(--font-mono);"></td>
+            <td class="money" id="tfoot-d-custo" style="color:var(--text-tertiary);font-family:var(--font-mono);"></td>
+            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:var(--font-mono);"></td>
+            <td class="money" id="tfoot-d-lucro-real" style="color:var(--success);font-family:var(--font-mono);"></td>
             <td></td>
           </tr>
         </tfoot>
@@ -2522,10 +1718,10 @@
         <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
           <tr id="tfoot-empenhos-row" style="display:none;">
             <td colspan="4" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
-            <td class="money" id="tfoot-e-vem"      style="color:var(--accent-primary);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
-            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
-            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
-            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:700;"></td>
+            <td class="money" id="tfoot-e-vem"      style="color:var(--accent);font-family:var(--font-mono);font-weight:700;"></td>
+            <td class="money" id="tfoot-e-compra"   style="color:var(--warning);font-family:var(--font-mono);font-weight:700;"></td>
+            <td class="money" id="tfoot-e-lucro"    style="color:var(--success);font-family:var(--font-mono);font-weight:700;"></td>
+            <td class="money" id="tfoot-e-areceber" style="color:var(--purple);font-family:var(--font-mono);font-weight:700;"></td>
             <td colspan="2"></td>
           </tr>
         </tfoot>
@@ -2728,7 +1924,7 @@
           <label class="fl">📄 PDF do Contrato</label>
           <div id="d-contrato-upload-area"
             onclick="document.getElementById('d-contrato-file').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--accent-primary)'"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
             ondragleave="this.style.borderColor='var(--border)'"
             ondrop="handleContratoDrop(event)"
             style="border:2px dashed var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
@@ -2741,13 +1937,13 @@
           <input type="file" id="d-contrato-file" accept="application/pdf" style="display:none" onchange="handleContratoFile(this.files[0])">
           <div id="d-contrato-progress" style="display:none;margin-top:8px;">
             <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-              <div id="d-contrato-progress-bar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.3s;border-radius:3px;"></div>
+              <div id="d-contrato-progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:3px;"></div>
             </div>
             <div id="d-contrato-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
           </div>
           <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
             <span>📄</span>
-            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;"
+            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent);flex:1;cursor:pointer;"
               onclick="window.open(document.getElementById('d-contrato-url').value,'_blank')"></span>
             <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
           </div>
@@ -2776,7 +1972,7 @@
           <button type="button" class="btn btn-ghost btn-sm" onclick="adicionarLote()" style="margin-top:6px;">＋ Adicionar Item/Lote</button>
           <div class="lotes-totais" id="lotes-totais" style="display:none;margin-top:8px;">
             <span>Itens: <strong id="lt-count">0</strong></span>
-            <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent-primary);">R$ 0,00</strong></span>
+            <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent);">R$ 0,00</strong></span>
             <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
           </div>
           <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
@@ -2825,7 +2021,7 @@
           <div id="lote-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SELECIONE PELO MENOS UM LOTE PARA CONTINUAR.</div>
           <div id="lote-valor-total-wrap" style="margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;">
             <span style="font-size:11px;color:var(--text-tertiary);">VALOR TOTAL DO EMPENHO (CALCULADO): </span>
-            <strong id="lote-valor-total-calc" style="color:var(--accent-primary);font-size:14px;"></strong>
+            <strong id="lote-valor-total-calc" style="color:var(--accent);font-size:14px;"></strong>
           </div>
         </div>
 
@@ -2842,7 +2038,7 @@
           <label class="fl">📄 PDF do Empenho</label>
           <div id="e-ne-upload-area"
             onclick="document.getElementById('e-ne-file').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--accent-primary)'"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
             ondragleave="this.style.borderColor='var(--border)'"
             ondrop="handleEmpenhoFileDrop(event)"
             style="border:2px dashed var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
@@ -2855,13 +2051,13 @@
           <input type="file" id="e-ne-file" accept="application/pdf" style="display:none" onchange="handleEmpenhoFile(this.files[0])">
           <div id="e-ne-progress" style="display:none;margin-top:8px;">
             <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-              <div id="e-ne-progress-bar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.3s;border-radius:3px;"></div>
+              <div id="e-ne-progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:3px;"></div>
             </div>
             <div id="e-ne-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
           </div>
           <div id="e-ne-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
             <span>📄</span>
-            <span id="e-ne-link" style="font-size:13px;font-weight:600;color:var(--accent-primary);flex:1;cursor:pointer;"
+            <span id="e-ne-link" style="font-size:13px;font-weight:600;color:var(--accent);flex:1;cursor:pointer;"
               onclick="window.open(document.getElementById('e-ne-url').value,'_blank')"></span>
             <button onclick="removerEmpenhoFile()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
           </div>
@@ -2975,7 +2171,7 @@
         <div class="form-grid">
           <div class="fg half">
             <label class="fl">Item/Lote</label>
-            <input type="text" class="fc" id="c-lote-desc" readonly style="background:var(--bg-inset);color:var(--accent-primary);font-weight:700;">
+            <input type="text" class="fc" id="c-lote-desc" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
           </div>
           <div class="fg">
             <label class="fl">Qtd Empenho (Item)</label>
@@ -2983,7 +2179,7 @@
           </div>
           <div class="fg">
             <label class="fl">Vl. Empenho do Item (total)</label>
-            <input type="number" class="fc" id="c-vem-item" readonly style="background:var(--bg-inset);color:var(--accent-primary);font-weight:700;">
+            <input type="number" class="fc" id="c-vem-item" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
           </div>
           <div class="fg">
             <label class="fl">Qtd Comprando <span id="c-saldo-info" style="font-size:10px;color:var(--success);font-weight:700;"></span></label>
@@ -3007,7 +2203,7 @@
           </div>
           <div class="fg">
             <label class="fl">Vl. Total Compra (R$)</label>
-            <input type="number" step="0.01" class="fc" id="c-vtotal-compra" readonly style="background:var(--bg-inset);color:var(--accent-primary);font-weight:700;">
+            <input type="number" step="0.01" class="fc" id="c-vtotal-compra" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
           </div>
           <div class="fg">
             <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
@@ -3034,7 +2230,7 @@
               <!-- ICMS -->
               <div id="c-calc-bloco-icms" style="display:none;margin-bottom:8px;">
                 <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
-                  <span id="c-calc-estado-label" style="font-size:12px;font-weight:700;color:var(--accent-primary);"></span>
+                  <span id="c-calc-estado-label" style="font-size:12px;font-weight:700;color:var(--accent);"></span>
                   <span id="c-calc-icms-label" style="font-size:12px;font-weight:700;color:var(--warning);"></span>
                   <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" id="c-calc-custo-emp" onchange="calcCustoRecalcular()"> +Custo Empresa (3%)</label>
                 </div>
@@ -3046,7 +2242,7 @@
               <!-- Resultado e botão aplicar -->
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <span style="font-size:11px;color:var(--text-secondary);">Custo calculado:</span>
-                <span id="c-calc-resultado" style="font-size:15px;font-weight:800;color:var(--warning);font-family:'JetBrains Mono',monospace;">—</span>
+                <span id="c-calc-resultado" style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</span>
                 <button type="button" onclick="calcCustoAplicar()" class="btn btn-primary btn-sm" style="margin-left:auto;">✓ Aplicar no campo</button>
                 <button type="button" onclick="g('c-custo-calc-painel').style.display='none'" class="btn btn-ghost btn-sm">✕</button>
               </div>
@@ -3060,7 +2256,7 @@
           </div>
           <div class="fg">
             <label class="fl">% Lucro</label>
-            <input class="fc" id="c-pct-lucro" readonly style="background:var(--bg-inset);color:var(--success);font-weight:700;font-family:'JetBrains Mono',monospace;">
+            <input class="fc" id="c-pct-lucro" readonly style="background:var(--bg-inset);color:var(--success);font-weight:700;font-family:var(--font-mono);">
           </div>
           <div class="fg">
             <label class="fl">Vl. Total a Receber <button type="button" class="mtg" id="tbtn-c-rec" onclick="togCompra('rec')"><span class="dot"></span>Auto</button></label>
@@ -3128,8 +2324,8 @@
             </div>
 
             <!-- Formulário de adição -->
-            <div id="calc-form-item" style="background:var(--bg-surface-2,#f8fafc);border:2px solid var(--accent-primary);border-radius:10px;padding:12px;display:none;">
-              <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent-primary);" id="calc-form-item-titulo">Adicionar item</div>
+            <div id="calc-form-item" style="background:var(--bg-surface-2,#f8fafc);border:2px solid var(--accent);border-radius:10px;padding:12px;display:none;">
+              <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent);" id="calc-form-item-titulo">Adicionar item</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div class="fg" style="margin:0;">
                   <label class="fl">Qtd</label>
@@ -3206,9 +2402,9 @@
             <div id="calc-bloco-icms-info" style="display:none;background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
               <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros ICMS</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                <div style="text-align:center;padding:10px;background:var(--accent-primary)10;border:1px solid var(--border-light);border-radius:8px;">
+                <div style="text-align:center;padding:10px;background:var(--accent)10;border:1px solid var(--border-light);border-radius:8px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Estado</div>
-                  <div id="calc-estado-display" style="font-size:22px;font-weight:900;color:var(--accent-primary);"></div>
+                  <div id="calc-estado-display" style="font-size:22px;font-weight:900;color:var(--accent);"></div>
                 </div>
                 <div style="text-align:center;padding:10px;background:var(--warning-soft);border:1px solid var(--border-light);border-radius:8px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">ICMS</div>
@@ -3233,19 +2429,19 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Val. Empenho</div>
-                  <div id="calc-res-vem" style="font-size:17px;font-weight:800;color:var(--accent-primary);font-family:'JetBrains Mono',monospace;">—</div>
+                  <div id="calc-res-vem" style="font-size:17px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">—</div>
                 </div>
                 <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Custo Total</div>
-                  <div id="calc-res-custo" style="font-size:17px;font-weight:800;color:var(--warning);font-family:'JetBrains Mono',monospace;">—</div>
+                  <div id="calc-res-custo" style="font-size:17px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</div>
                 </div>
                 <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Lucro</div>
-                  <div id="calc-res-lucro" style="font-size:17px;font-weight:800;color:var(--success);font-family:'JetBrains Mono',monospace;">—</div>
+                  <div id="calc-res-lucro" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
                 </div>
                 <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
                   <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">% Margem</div>
-                  <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:'JetBrains Mono',monospace;">—</div>
+                  <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
                 </div>
               </div>
               <!-- Detalhamento ICMS -->
@@ -3468,8 +2664,8 @@ function aplicarPermissoes() {
       badgeEl.textContent = '🔒 ' + analistaDoUsuario;
       badgeEl.title = 'Você está visualizando apenas seus próprios registros';
       badgeEl.style.background = 'var(--info-soft)';
-      badgeEl.style.color      = 'var(--accent-primary)';
-      badgeEl.style.border     = '1px solid var(--accent-primary)';
+      badgeEl.style.color      = 'var(--accent)';
+      badgeEl.style.border     = '1px solid var(--accent)';
     }
   } else {
     // — Administrador: garante que tudo está habilitado —
@@ -3663,7 +2859,7 @@ function renderLotes() {
       '<input type="text" class="fc" value="'+(l.descricao||'')+'" placeholder="Ex: Armário" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].descricao=this.value">' +
       '<input type="number" class="fc" value="'+(l.qtd||1)+'" min="1" step="1" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].qtd=+this.value;atualizarLoteTotais('+i+')">' +
       '<input type="number" class="fc" value="'+(l.vunit||'')+'" placeholder="0,00" step="0.01" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].vunit=+this.value;atualizarLoteTotais('+i+')">' +
-      '<input type="number" class="fc" id="lote-total-'+i+'" value="'+total.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--accent-primary);font-weight:600;">' +
+      '<input type="number" class="fc" id="lote-total-'+i+'" value="'+total.toFixed(2)+'" readonly style="font-size:12px;padding:5px 8px;background:var(--bg-inset);color:var(--accent);font-weight:600;">' +
       '<input type="number" class="fc" value="'+(compraPrevUnit||'')+'" placeholder="unit." step="0.01" title="Valor unitário de compra previsto (será multiplicado pela qtd)" style="font-size:12px;padding:5px 8px;" oninput="lotesTemp['+i+'].compraPrev=+this.value;atualizarLoteTotais('+i+')">' +
       '<div style="display:flex;gap:2px;align-items:center;">' +
         '<input type="number" class="fc" id="lote-custo-prev-input-'+i+'" value="'+(custoPrevUnit||'')+'" placeholder="unit." step="0.01" title="Custo unitário previsto (será multiplicado pela qtd)" style="font-size:12px;padding:5px 8px;flex:1;" oninput="lotesTemp['+i+'].custoPrev=+this.value;atualizarLoteTotais('+i+')">' +
@@ -4479,14 +3675,14 @@ function abrirPopupDisputa(id) {
         const temSaldo = (l.qtdRestante || 0) > 0;
         const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent-primary);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
-          '<td class="mono" style="color:var(--accent-primary);font-weight:600;">' + l.qtdEnviada + '</td>' +
+          '<td class="mono" style="color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
           '<td class="mono" style="color:var(--success);font-weight:600;">' + qtdViaCompras + '</td>' +
           '<td class="mono ' + cls + '">' + (l.qtdRestante > 0 ? l.qtdRestante : '✓ COMPLETO') + '</td>' +
           '<td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pctVal + '%"></div></div></td>' +
-          '<td>' + (empsLote.map(e => '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;color:var(--accent-primary);font-size:10px;font-weight:600;margin-right:4px;">#' + e.num + '</span>').join('') || '—') + '</td>' +
+          '<td>' + (empsLote.map(e => '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;color:var(--accent);font-size:10px;font-weight:600;margin-right:4px;">#' + e.num + '</span>').join('') || '—') + '</td>' +
           '<td>' + statusPag + '</td>' +
           '</tr>';
       }).join('')}</tbody>
@@ -4519,7 +3715,7 @@ function abrirPopupDisputa(id) {
         <th>Nº Emp.</th><th>Produto</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Link</th>
       </tr></thead>
       <tbody>${todasCompras.map(c => {
-        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" style="color:var(--accent-primary);font-size:11px;">🔗 ver</a>` : '—';
+        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" style="color:var(--accent);font-size:11px;">🔗 ver</a>` : '—';
         return '<tr>' +
         '<td style="text-align:center;"><input type="checkbox" class="chk-compra-disp-'+id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
           '<td class="mono" style="font-weight:700;font-size:11px;">#'+c._empNum+'</td>' +
@@ -4529,7 +3725,7 @@ function abrirPopupDisputa(id) {
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
           '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
           '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent-primary);">'+fmt(c.rec||0)+'</td>' +
+          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
           '<td>'+linkBtn+'</td>' +
           '</tr>';
       }).join('')}
@@ -4543,14 +3739,14 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value">' + (r.empresa||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(contrato || r.venda) + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO PREVISTO</div><div class="detail-field-value" style="color:var(--warning);font-weight:700;">' + fmt(lucroPrevisto) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
-      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
+      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
 
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
-      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
+      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -4605,7 +3801,7 @@ function abrirPopupEmpenho(id) {
           '<td><strong>'+(item.descricao||'—').toUpperCase()+'</strong></td>' +
           '<td class="mono">'+(item.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(item.vunit)+'</td>' +
-          '<td class="mono" style="color:var(--accent-primary);font-weight:700;">'+fmt((item.qtd||0)*(item.vunit||0))+'</td>' +
+          '<td class="mono" style="color:var(--accent);font-weight:700;">'+fmt((item.qtd||0)*(item.vunit||0))+'</td>' +
           '<td class="mono">'+comprasItem.length+'</td>' +
           '<td>'+(pago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>')+'</td>' +
           '</tr>';
@@ -4625,7 +3821,7 @@ function abrirPopupEmpenho(id) {
       <tbody>${compras.map(c => {
         const itemRef = itens.find(i=>i.id===c.itemId);
         const pago = c.recebido > 0;
-        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" title="${c.link}" style="font-size:10px;color:var(--accent-primary);">🔗</a>` : '';
+        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" title="${c.link}" style="font-size:10px;color:var(--accent);">🔗</a>` : '';
         return '<tr>' +
           '<td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
           '<td style="font-size:10px;">'+((itemRef?.descricao||'—').toUpperCase())+'</td>' +
@@ -4635,12 +3831,12 @@ function abrirPopupEmpenho(id) {
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
           '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
           '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent-primary);">'+fmt(c.rec||0)+'</td>' +
+          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
           '<td>'+(pago?'<span class="status-pago">✅ '+fmt(c.recebido)+'</span>':'<span class="status-pendente">—</span>')+'</td>'+
           '<td class="mono">'+(fmtD(c.dpag)||'—')+'</td>' +
           '<td onclick="event.stopPropagation()">' +
             '<button class="btn btn-ghost btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\',\''+c.id+'\')" title="Editar">✏️</button>' +
-            '<button class="btn btn-ghost btn-sm" onclick="duplicarCompra(\''+r.id+'\',\''+c.id+'\')" title="Duplicar compra" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄</button>' +
+            '<button class="btn btn-ghost btn-sm" onclick="duplicarCompra(\''+r.id+'\',\''+c.id+'\')" title="Duplicar compra" style="color:var(--accent);border-color:var(--accent);">📄</button>' +
             '<button class="btn btn-danger btn-sm" onclick="delCompra(\''+r.id+'\',\''+c.id+'\')" title="Excluir">🗑</button>' +
           '</td>' +
           '</tr>';
@@ -4648,10 +3844,10 @@ function abrirPopupEmpenho(id) {
       <tfoot>
         <tr style="background:var(--bg-inset);font-weight:700;border-top:2px solid var(--border);">
           <td colspan="5" style="padding:6px 8px;font-size:11px;color:var(--text-secondary);text-align:right;letter-spacing:.05em;">TOTAL</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent-primary);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
           <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--warning);" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
           <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--success);font-weight:800;" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent-primary);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
+          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
           <td colspan="3"></td>
         </tr>
       </tfoot>
@@ -4669,9 +3865,9 @@ function abrirPopupEmpenho(id) {
     '</div>' +
 
     (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
-    (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent-primary)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
+    (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
-      '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent-primary)">' + fmt(r.vem) + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
 
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success)">' + fmt(compras.filter(c=>c.dpag).reduce((s,c)=>s+c.luc,0)) + '</div></div>' +
@@ -4757,7 +3953,7 @@ function onDisputaSelecionada(disputaId) {
       + `<label style="font-size:11px;color:var(--text-tertiary);">Qtd:</label>`
       + `<input type="number" min="1" max="${l.qtdRestante}" value="${l.qtdRestante}" id="lqtd-${l.id}" onclick="event.stopPropagation()" data-lid="${l.id}" data-vunit="${l.vunit}" data-maxqtd="${l.qtdRestante}" oninput="atualizarVemPorLoteEl(this)">`
       + `</div>`
-      + `<div style="font-size:11px;font-weight:700;color:var(--accent-primary);min-width:80px;text-align:right;" id="lval-${l.id}"></div>`
+      + `<div style="font-size:11px;font-weight:700;color:var(--accent);min-width:80px;text-align:right;" id="lval-${l.id}"></div>`
       + `</div>`;
   }).join('');
   const tvWrap = g('lote-valor-total-wrap'); if(tvWrap) tvWrap.style.display = 'none';
@@ -4890,7 +4086,7 @@ function renderD(){
 
     // ── Badge de empenhos abertos ──
     const empBadge = empsAbertos.length > 0
-      ? '<span onclick="event.stopPropagation();toggleEmpenhosDisputa(\'' + r.id + '\')" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
+      ? '<span onclick="event.stopPropagation();toggleEmpenhosDisputa(\'' + r.id + '\')" title="' + (expanded ? 'Ocultar empenhos' : 'Ver empenhos abertos') + '" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;background:var(--info-soft);color:var(--accent);border:1px solid var(--accent);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;cursor:pointer;user-select:none;">'
         + (expanded ? '▲' : '▼') + ' ' + empsAbertos.length + ' emp.</span>'
       : '';
 
@@ -4911,7 +4107,7 @@ function renderD(){
       '</td>' +
       '<td style="max-width:250px;"><div style="font-weight:600;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (r.orgao||'') + '">' + (r.orgao||'—') + contratoAlerta + empBadge + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
+      '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
       '<td class="mono" style="color:var(--text-secondary);font-size:11px;">'+(_compraPrev>0?fmt(_compraPrev):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
@@ -4941,7 +4137,7 @@ function renderD(){
           '<div style="display:flex;align-items:center;gap:14px;font-size:11px;font-weight:600;flex-wrap:wrap;">' +
             '<span style="color:var(--text-tertiary);font-weight:700;">📄 EMPENHOS EM ABERTO</span>' +
             '<span style="color:var(--text-tertiary);">' + empsAbertos.length + ' empenho(s)</span>' +
-            '<span style="color:var(--accent-primary);margin-left:auto;">Emp: ' + fmt(totalVem) + '</span>' +
+            '<span style="color:var(--accent);margin-left:auto;">Emp: ' + fmt(totalVem) + '</span>' +
             '<span style="color:var(--text-secondary);">Compra: ' + fmt(totalComp) + '</span>' +
             '<span style="color:var(--success);font-weight:700;">Lucro: ' + fmt(totalLucro) + '</span>' +
             '<span style="color:var(--warning);">A receber: ' + fmt(totalRec) + '</span>' +
@@ -4982,7 +4178,7 @@ function renderD(){
             loteDesc +
           '</td>' +
           '<td style="' + zebraTd + '"></td>' +
-          '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;' + zebraTd + '">' + fmt(e.vem) + '</td>' +
+          '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;' + zebraTd + '">' + fmt(e.vem) + '</td>' +
           '<td class="mono" style="color:var(--text-secondary);font-size:11px;' + zebraTd + '">' + (_vlComp>0?fmt(_vlComp):'—') + '</td>' +
           '<td class="mono" style="color:var(--warning);font-size:11px;' + zebraTd + '">' + (_custoReal>0?fmt(_custoReal):'—') + '</td>' +
           '<td class="mono" style="color:var(--success);font-size:11px;' + zebraTd + '">' + (_vlLucro>0?fmt(_vlLucro):'—') + '</td>' +
@@ -5070,7 +4266,7 @@ function empenhoTemSaldo(empenhoId) {
 function renderE(){
   // Sincroniza estilo do botão de agrupamento
   const _btnAgr = g('btn-agrupar-orgao');
-  if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent-primary)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
+  if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
@@ -5097,7 +4293,7 @@ function renderE(){
       const disp = DB.disputas.find(d => d.id === r.disputaId);
       if (disp) {
         const lote = r.loteId ? (disp.lotes||[]).find(l => l.id === r.loteId) : null;
-        loteInfo = '<span style="cursor:pointer;color:var(--accent-primary);font-size:11px;font-weight:600;" onclick="event.stopPropagation();abrirPopupDisputa(\''+disp.id+'\')">🔗 '+(lote ? lote.descricao.substring(0,16)+(lote.descricao.length>16?'…':'') : disp.orgao.substring(0,14))+'</span>';
+        loteInfo = '<span style="cursor:pointer;color:var(--accent);font-size:11px;font-weight:600;" onclick="event.stopPropagation();abrirPopupDisputa(\''+disp.id+'\')">🔗 '+(lote ? lote.descricao.substring(0,16)+(lote.descricao.length>16?'…':'') : disp.orgao.substring(0,14))+'</span>';
       }
     }
 
@@ -5110,10 +4306,10 @@ function renderE(){
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
       '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
       '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+      '<td class="mono" style="color:var(--accent);font-weight:700;">' + fmt(r.vem) + '</td>' +
       '<td class="mono" style="color:var(--text-secondary);font-size:11px;">' + (_vlCompra>0 ? fmt(_vlCompra) : '—') + '</td>' +
       '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:700;font-size:11px;">' + (_vlRec>0 ? fmt(_vlRec) : '—') + '</td>' +
+      '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;">' + (_vlRec>0 ? fmt(_vlRec) : '—') + '</td>' +
       '<td>' + diasBadge + '</td>' +
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
@@ -5329,7 +4525,7 @@ function verExcel(id, tipo) {
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
       <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">Reabrir</button>
-      <button class="btn btn-ghost btn-sm" id="popup-d-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
+      <button class="btn btn-ghost btn-sm" id="popup-d-tarefa-btn" onclick="" style="color:var(--accent);border-color:var(--accent);">📌 Tarefas</button>
       <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">+ Novo Empenho</button>
       <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
     </div>
@@ -5340,7 +4536,7 @@ function verExcel(id, tipo) {
 <!-- MODAL RESUMO DIÁRIO -->
 <div class="detail-popup-overlay" id="modal-resumo-diario" style="z-index:10001;">
   <div class="detail-popup" style="max-width:520px;">
-    <div class="detail-popup-header" style="background:linear-gradient(135deg,var(--accent-primary),var(--purple));border-radius:12px 12px 0 0;padding:20px 24px;">
+    <div class="detail-popup-header" style="background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:12px 12px 0 0;padding:20px 24px;">
       <div>
         <div class="detail-popup-title" id="resumo-titulo" style="color:#fff;font-size:18px;">☀️ Bom dia!</div>
         <div class="detail-popup-sub" style="color:rgba(255,255,255,0.8);" id="resumo-data"></div>
@@ -5410,7 +4606,7 @@ function verExcel(id, tipo) {
     <div id="popup-e-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
-      <button class="btn btn-ghost btn-sm" id="popup-e-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
+      <button class="btn btn-ghost btn-sm" id="popup-e-tarefa-btn" onclick="" style="color:var(--accent);border-color:var(--accent);">📌 Tarefas</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
     </div>
   </div>
@@ -5478,10 +4674,10 @@ function atualizarDashboard() {
   if(tbU) tbU.innerHTML = urgentes.length ? urgentes.map(r=>{
     const dias = diasSemPagamento(r);
     const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
-    return `<tr><td style="padding:7px 8px;font-weight:600;font-family:'JetBrains Mono',monospace;">${r.num||'—'}</td>
+    return `<tr><td style="padding:7px 8px;font-weight:600;font-family:var(--font-mono);">${r.num||'—'}</td>
       <td style="padding:7px 8px;">${r.orgao||'—'}</td>
       <td style="padding:7px 8px;"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
-      <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);">${fmt(r.vem)}</td>
+      <td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);">${fmt(r.vem)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${dias}d</td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente há mais de 30 dias</td></tr>';
 
@@ -5504,8 +4700,8 @@ function atualizarDashboard() {
     `<tr><td style="padding:7px 8px;font-weight:700;">${medalhas[i]||'#'+(i+1)}</td>
     <td style="padding:7px 8px;">${org}</td>
     <td style="padding:7px 8px;text-align:right;">${v.disputas}</td>
-    <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-primary);font-weight:600;">${fmt(v.contrato)}</td>
-    <td style="padding:7px 8px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--success);font-weight:600;">${fmt(v.lucro)}</td></tr>`
+    <td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);font-weight:600;">${fmt(v.contrato)}</td>
+    <td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--success);font-weight:600;">${fmt(v.lucro)}</td></tr>`
   ).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-tertiary);">Nenhuma disputa encontrada</td></tr>';
 
   // ===== VISÃO DE CAIXA =====
@@ -5538,7 +4734,7 @@ function atualizarDashboard() {
       <td style="padding:7px 8px;font-weight:600;font-family:monospace;">${e.num||'—'}</td>
       <td style="padding:7px 8px;">${(e.orgao||'—').substring(0,30)}</td>
       <td style="padding:7px 8px;"><span class="badge ${_badgeClass(e.analista)}" style="font-size:10px;">${e.analista||'—'}</span></td>
-      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(aReceber)}</td>
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent);">${fmt(aReceber)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;">${dias}d</td>
       <td style="padding:7px 8px;text-align:center;"><span style="background:${cor};color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;">${faixa}</span></td>
     </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-tertiary);">✅ Nenhum empenho pendente</td></tr>';
@@ -5558,7 +4754,7 @@ function atualizarDashboard() {
     const cor = v.maxDias>=90?'var(--danger)':v.maxDias>=60?'var(--warning)':'var(--text-secondary)';
     return `<tr><td style="padding:7px 8px;">${org.substring(0,28)}</td>
       <td style="padding:7px 8px;text-align:right;">${v.count}</td>
-      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent-primary);">${fmt(v.total)}</td>
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:var(--accent);">${fmt(v.total)}</td>
       <td style="padding:7px 8px;text-align:center;font-weight:700;color:${cor};">${v.maxDias}d</td></tr>`;
   }).join('') : '<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text-tertiary);">✅ Nenhum devedor</td></tr>';
 
@@ -5619,10 +4815,10 @@ function atualizarDashboard() {
   const situacoes = { 'Ativas': disputasFiltradas.filter(d=>!d.finalizada).length, 'Finalizadas': disputasFiltradas.filter(d=>d.finalizada).length };
   if(graficos.situacoes) graficos.situacoes.destroy();
   const ctx2 = document.getElementById('grafico-situacoes')?.getContext('2d');
-  const cores = ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+  const cores = ['var(--accent)','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
   if(ctx2) graficos.situacoes = new Chart(ctx2, {
     type: 'doughnut',
-    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: ['#2563eb','#10b981'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
+    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: ['var(--accent)','#10b981'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{font:{size:10}, boxWidth:12} } } }
   });
 
@@ -5660,7 +4856,7 @@ function atualizarDashboard() {
   const ctx4 = document.getElementById('grafico-analistas')?.getContext('2d');
   if(ctx4) graficos.analistas = new Chart(ctx4, {
     type: 'pie',
-    data: { labels: Object.keys(analistas), datasets: [{ data: Object.values(analistas), backgroundColor: ['#2563eb','#10b981','#f59e0b','#8b5cf6'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
+    data: { labels: Object.keys(analistas), datasets: [{ data: Object.values(analistas), backgroundColor: ['var(--accent)','#10b981','#f59e0b','#8b5cf6'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels:{font:{size:10}} } } }
   });
 
@@ -5707,7 +4903,7 @@ function atualizarDashboard() {
     data: {
       labels: ['Recebido', 'Lucro'],
       datasets: [
-        { label: lblMesAnt, data: [recMes(mesAnterior), lucMes(mesAnterior)], backgroundColor: 'rgba(37,99,235,0.4)', borderRadius: 4 },
+        { label: lblMesAnt, data: [recMes(mesAnterior), lucMes(mesAnterior)], backgroundColor: 'rgba(0,102,255,0.4)', borderRadius: 4 },
         { label: lblMesAt, data: [recMes(mesAtual), lucMes(mesAtual)], backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 4 }
       ]
     },
@@ -5766,7 +4962,7 @@ function verEmpenhosDisputa(disputaId) {
             <td class="mono" style="font-weight:600;">${e.num||'—'}</td>
             <td class="mono">${fmtD(e.data)}</td>
             <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;" title="${e.produto||''}">${e.produto||'—'}</td>
-            <td class="mono" style="color:var(--accent-primary)">${fmt(e.vem)}</td>
+            <td class="mono" style="color:var(--accent)">${fmt(e.vem)}</td>
             <td class="mono">${fmt(v.tot)}</td>
             <td class="mono" style="color:${v.luc>=0?'var(--success)':'var(--danger)'}">${fmt(v.luc)}</td>
             <td class="mono">${fmtP(v.pct)}</td>
@@ -5788,10 +4984,10 @@ function verEmpenhosDisputa(disputaId) {
     const totalLuc = emps.reduce((s,e) => s + eVals(e).luc, 0);
     const aReceber = emps.filter(e => !e.recebido || e.recebido===0).reduce((s,e) => s + eVals(e).rec, 0);
     g('disp-emp-totais').innerHTML = `
-      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Total Empenhado</div><div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent-primary)">${fmt(totalVem)}</div></div>
-      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Lucro Total</div><div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--success)">${fmt(totalLuc)}</div></div>
-      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Recebido</div><div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--success)">${fmt(totalRec)}</div></div>
-      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">A Receber</div><div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--warning)">${fmt(aReceber)}</div></div>
+      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Total Empenhado</div><div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--accent)">${fmt(totalVem)}</div></div>
+      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Lucro Total</div><div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--success)">${fmt(totalLuc)}</div></div>
+      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">Recebido</div><div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--success)">${fmt(totalRec)}</div></div>
+      <div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;">A Receber</div><div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--warning)">${fmt(aReceber)}</div></div>
     `;
   }
   
@@ -6916,7 +6112,7 @@ function calcFiltrarDisputas() {
   }
   lista.innerHTML = disputas.map(d => {
     const empCount = DB.empenhos.filter(e => e.disputaId === d.id).length;
-    const cor = d.empresa === 'Hamate' ? '#7c3aed' : '#2563eb';
+    const cor = d.empresa === 'Hamate' ? '#7c3aed' : 'var(--accent)';
     return `<div onclick="calcSelecionarDisputa('${d.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:2px solid var(--border-light);border-radius:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='${cor}'" onmouseout="this.style.borderColor='var(--border-light)'">
       <div>
         <div style="font-weight:700;font-size:13px;">${d.orgao} · ${d.estado}</div>
@@ -6944,7 +6140,7 @@ function calcSelecionarDisputa(id) {
     badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--purple-soft);color:var(--purple);font-weight:700;';
   } else {
     badge.textContent = 'Gadita';
-    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--info-soft);color:var(--accent-primary);font-weight:700;';
+    badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:var(--info-soft);color:var(--accent);font-weight:700;';
   }
 
   g('calc-tipo-gadita').style.display = d.empresa === 'Gadita' ? '' : 'none';
@@ -7095,7 +6291,7 @@ function calcAbrirFormItem(itemId) {
     el.style.borderColor = 'var(--border-light)'; el.style.background = '';
   });
   const el = g('calc-item-' + itemId);
-  if (el) { el.style.borderColor = '#2563eb'; el.style.background = '#2563eb10'; }
+  if (el) { el.style.borderColor = 'var(--accent)'; el.style.background = 'var(--accent)10'; }
 
   g('calc-form-item-titulo').textContent = '＋ ' + it.descricao;
   g('calc-form-qtd').value = it.qtd;
@@ -7184,7 +6380,7 @@ function calcRenderTabela() {
       <td style="padding:6px 8px;text-align:right;">${qtd}</td>
       <td style="padding:6px 8px;text-align:right;font-family:monospace;">${fmt(item.vunit)}</td>
       <td style="padding:6px 8px;text-align:right;font-family:monospace;">${vcompra ? fmt(vcompra) : '—'}</td>
-      <td style="padding:6px 8px;text-align:right;font-family:monospace;color:var(--accent-primary);">${fmt(vemTotal)}</td>
+      <td style="padding:6px 8px;text-align:right;font-family:monospace;color:var(--accent);">${fmt(vemTotal)}</td>
       <td style="padding:6px 8px;text-align:right;font-family:monospace;color:var(--warning);">${fmt(custo)}</td>
       <td style="padding:6px 8px;text-align:right;font-family:monospace;color:${lucro>=0?'var(--success)':'var(--danger)'};">${fmt(lucro)}</td>
       <td style="padding:6px 4px;text-align:center;"><button onclick="calcRemoverItemCalculo('${item.itemId}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;" title="Remover">🗑</button></td>
@@ -7502,7 +6698,7 @@ function buscaGlobal(q) {
           <div style="font-size:10px;color:var(--text-tertiary);">${r.tipo}</div>
           <div style="font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.label}</div>
         </div>
-        <div style="font-size:11px;color:var(--accent-secondary);white-space:nowrap;margin-left:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
+        <div style="font-size:11px;color:var(--accent-hover);white-space:nowrap;margin-left:8px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
       </div>`
     ).join('') + (resultados.length > 15 ? `<div style="color:var(--text-tertiary);font-size:11px;padding:6px 8px;text-align:center;">+${resultados.length-15} resultado(s) — refine a busca</div>` : '');
   }
@@ -7839,7 +7035,7 @@ function mostrarResumoDiario() {
   const alertas = [];
   if (emp60.length) alertas.push({ icon:'🔴', msg: `${emp60.length} empenho(s) com +60 dias sem pagamento`, cor:'var(--danger)' });
   else if (emp30.length) alertas.push({ icon:'🟡', msg: `${emp30.length} empenho(s) com +30 dias sem pagamento`, cor:'var(--warning)' });
-  if (dispSemEmp.length) alertas.push({ icon:'📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, cor:'var(--accent-primary)' });
+  if (dispSemEmp.length) alertas.push({ icon:'📋', msg: `${dispSemEmp.length} disputa(s) sem empenho há +15 dias`, cor:'var(--accent)' });
   if (tarefasResp.length) alertas.push({ icon:'📌', msg: `${tarefasResp.length} tarefa(s) no prazo hoje`, cor:'var(--purple)' });
 
   if (alertas.length) {
@@ -8151,8 +7347,8 @@ function renderFinalizadas() {
       '<td class="mono" style="font-size:11px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
       '<td style="' + zebraTd + '"><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
       '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'#2563eb20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'#2563eb') + ';">' + (r.empresa||'—') + '</span></td>' +
-      '<td class="mono" style="color:var(--accent-primary);font-weight:600;' + zebraTd + '">' + fmt(contrato) + '</td>' +
+      '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';">' + (r.empresa||'—') + '</span></td>' +
+      '<td class="mono" style="color:var(--accent);font-weight:600;' + zebraTd + '">' + fmt(contrato) + '</td>' +
       '<td class="mono" style="color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
       '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
       '<td style="' + zebraTd + '" onclick="event.stopPropagation()">' +
@@ -8250,7 +7446,7 @@ let _agrupadoFin = false;
 function toggleAgrupamentoFin() {
   _agrupadoFin = !_agrupadoFin;
   const btn = g('btn-agrupar-orgao-fin');
-  if (btn) { btn.style.background = _agrupadoFin ? 'var(--accent-primary)' : ''; btn.style.color = _agrupadoFin ? '#fff' : ''; }
+  if (btn) { btn.style.background = _agrupadoFin ? 'var(--accent)' : ''; btn.style.color = _agrupadoFin ? '#fff' : ''; }
   renderEmpFinalizados();
 }
 
@@ -8310,7 +7506,7 @@ function renderEmpFinalizados() {
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
           <td style="${zebraFinTd}"></td>
           <td style="${zebraFinTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
-          <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraFinTd}">${fmt(r.vem)}</td>
+          <td class="mono" style="color:var(--accent);font-weight:700;${zebraFinTd}">${fmt(r.vem)}</td>
           <td class="mono" style="color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
           <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
           <td onclick="event.stopPropagation()" style="${zebraFinTd}">
@@ -8323,7 +7519,7 @@ function renderEmpFinalizados() {
           <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;">
             <span>🏢 ${org}</span>
             <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
-            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--accent);margin-left:auto;">${fmt(g_.totalVem)}</span>
             <span style="font-size:11px;color:var(--success);">Lucro: ${fmt(g_.totalLucro)}</span>
           </div>
         </td></tr>${linhasEmp}`;
@@ -8340,7 +7536,7 @@ function renderEmpFinalizados() {
         '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
         '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-        '<td class="mono" style="color:var(--accent-primary);font-weight:700;">' + fmt(r.vem) + '</td>' +
+        '<td class="mono" style="color:var(--accent);font-weight:700;">' + fmt(r.vem) + '</td>' +
         '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
         '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
         '<td onclick="event.stopPropagation()">' +
@@ -8561,7 +7757,7 @@ async function uploadContratoSupabase(file) {
   if (progress) progress.style.display = 'block';
   if (progressBar) progressBar.style.width = '10%';
   if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent-primary)';
+  if (area) area.style.borderColor = 'var(--accent)';
 
   // Nome único para evitar conflitos
   const ext      = file.name.split('.').pop();
@@ -8663,7 +7859,7 @@ async function uploadEmpenhoSupabase(file) {
   if (progress) progress.style.display = 'block';
   if (progressBar) progressBar.style.width = '10%';
   if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent-primary)';
+  if (area) area.style.borderColor = 'var(--accent)';
 
   const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const path = `empenhos/${Date.now()}_${baseName}`;
@@ -8997,7 +8193,7 @@ function renderAcomp() {
     const vencido = ret && ret < agora;
     const hoje = ret && ret.toDateString() === agora.toDateString();
     const retStr = ret ? `<span style="font-size:11px;font-weight:700;color:${vencido?'var(--danger)':hoje?'var(--warning)':'var(--text-secondary)'};">${vencido?'🔴 ':''}${ret.toLocaleDateString('pt-BR')} ${ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>` : '—';
-    const statusColors = {pendente:'var(--warning)',recurso:'var(--accent-primary)',perdida:'var(--danger)'};
+    const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     const linkBtn = r.link ? `<a href="${r.link}" target="_blank" class="btn btn-ghost btn-sm" style="${btnStyle}" title="Abrir sistema">🔗</a>` : '';
     const zebraTd = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);');
@@ -9188,7 +8384,7 @@ function mostrarPopupAlerta(r) {
       <div style="font-size:18px;font-weight:700;color:var(--warning);margin:16px 0;padding:12px 20px;background:rgba(245,158,11,0.1);border-radius:12px;border:1px solid rgba(245,158,11,0.3);">📅 ${ret}</div>
       ${r.observacao ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-surface-soft);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">💬 ${r.observacao}</div>` : ''}
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
-        ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent-primary);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
+        ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
         <button onclick="window._pararAlarme?.();switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
         <button onclick="window._pararAlarme?.();document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
       </div>
@@ -9266,7 +8462,7 @@ function atualizarPainel() {
 
     <!-- KPIs -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
-      <div class="card" style="border-left:4px solid var(--accent-primary);cursor:pointer;" onclick="switchTab('disputas',document.querySelector('[onclick*=\\'disputas\\']'))">
+      <div class="card" style="border-left:4px solid var(--accent);cursor:pointer;" onclick="switchTab('disputas',document.querySelector('[onclick*=\\'disputas\\']'))">
         <div class="card-label">Disputas Ativas</div>
         <div class="card-value cv-blue">${disputasAtivas}</div>
         <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">Ver disputas →</div>
@@ -9285,7 +8481,7 @@ function atualizarPainel() {
         <div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div>
         <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">A receber</div>
       </div>
-      <div class="card" style="border-left:4px solid var(--accent-primary);">
+      <div class="card" style="border-left:4px solid var(--accent);">
         <div class="card-label">Lucro no Mês</div>
         <div class="card-value cv-blue">${fmt(lucroMes)}</div>
         <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">${new Date().toLocaleDateString('pt-BR',{month:'long'})}</div>
@@ -9324,7 +8520,7 @@ function atualizarPainel() {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
               <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
-                <div style="font-size:18px;font-weight:700;color:var(--accent-primary);">${dados.disputas}</div>
+                <div style="font-size:18px;font-weight:700;color:var(--accent);">${dados.disputas}</div>
                 <div style="font-size:9px;color:var(--text-tertiary);">Disputas</div>
               </div>
               <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
@@ -9350,7 +8546,7 @@ function atualizarPainel() {
               <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.orgao}</div>
               <div style="font-size:10px;color:var(--text-tertiary);">${d.analista||'—'} · ${d.data?new Date(d.data+'T12:00').toLocaleDateString('pt-BR'):'—'}</div>
             </div>
-            <span style="font-size:11px;color:var(--accent-primary);font-weight:600;">${fmt(d.venda||0)}</span>
+            <span style="font-size:11px;color:var(--accent);font-weight:600;">${fmt(d.venda||0)}</span>
           </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhuma disputa</div>'}
       </div>
       <div class="card">
@@ -9361,7 +8557,7 @@ function atualizarPainel() {
               <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.num?'#'+e.num+' — ':''} ${e.orgao||'—'}</div>
               <div style="font-size:10px;color:var(--text-tertiary);">${e.analista||'—'} · ${e.data?new Date(e.data+'T12:00').toLocaleDateString('pt-BR'):'—'}</div>
             </div>
-            <span style="font-size:11px;color:var(--accent-primary);font-weight:600;">${fmt(e.vem||0)}</span>
+            <span style="font-size:11px;color:var(--accent);font-weight:600;">${fmt(e.vem||0)}</span>
           </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum empenho</div>'}
       </div>
     </div>`;
@@ -9372,12 +8568,12 @@ let _agrupado = true;
 // Aplica estilo ativo no botão assim que o DOM carregar
 document.addEventListener('DOMContentLoaded', () => {
   const btn = g('btn-agrupar-orgao');
-  if(btn) { btn.style.background = 'var(--accent-primary)'; btn.style.color = '#fff'; }
+  if(btn) { btn.style.background = 'var(--accent)'; btn.style.color = '#fff'; }
 });
 function toggleAgrupamento() {
   _agrupado = !_agrupado;
   const btn = g('btn-agrupar-orgao');
-  if(btn) btn.style.background = _agrupado ? 'var(--accent-primary)' : '';
+  if(btn) btn.style.background = _agrupado ? 'var(--accent)' : '';
   if(btn) btn.style.color = _agrupado ? '#fff' : '';
   renderE();
 }
@@ -9409,10 +8605,10 @@ function renderEAgrupado(rows, tb) {
         <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;${zebraGrpTd}">${r.num||'—'}</td>
         <td style="${zebraGrpTd}"></td>
         <td style="${zebraGrpTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
-        <td class="mono" style="color:var(--accent-primary);font-weight:700;${zebraGrpTd}">${fmt(r.vem)}</td>
+        <td class="mono" style="color:var(--accent);font-weight:700;${zebraGrpTd}">${fmt(r.vem)}</td>
         <td class="mono" style="color:var(--text-secondary);font-size:11px;${zebraGrpTd}">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
         <td class="mono" style="color:var(--success);font-size:11px;${zebraGrpTd}">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
-        <td class="mono" style="color:var(--accent-primary);font-size:11px;${zebraGrpTd}">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
+        <td class="mono" style="color:var(--accent);font-size:11px;${zebraGrpTd}">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
         <td style="${zebraGrpTd}">${diasBadge}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraGrpTd}">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
@@ -9426,7 +8622,7 @@ function renderEAgrupado(rows, tb) {
           <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
             <span>🏢 ${org}</span>
             <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
-            <span style="font-size:11px;color:var(--accent-primary);margin-left:auto;">Emp: ${fmt(g_.totalVem)}</span>
+            <span style="font-size:11px;color:var(--accent);margin-left:auto;">Emp: ${fmt(g_.totalVem)}</span>
             <span style="font-size:11px;color:var(--success);font-weight:700;">Lucro: ${fmt(g_.totalLucro)}</span>
             <span style="font-size:11px;color:var(--warning);">A receber: ${fmt(g_.totalRec)}</span>
             <span style="font-size:11px;color:${corDias};">Maior atraso: ${g_.maxDias}d</span>
@@ -9662,9 +8858,9 @@ async function cloudinaryUpload(input, fieldPrefix, withOcr = false) {
   const setProgress = pct => {
     if (dropzone) dropzone.innerHTML = `
       <div style="padding:4px 0;">
-        <span style="color:var(--accent-primary);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
+        <span style="color:var(--accent);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
         <div style="height:4px;background:var(--border-light);border-radius:2px;margin-top:6px;overflow:hidden;">
-          <div style="width:${pct}%;height:100%;background:var(--accent-primary);border-radius:2px;transition:width .3s;"></div>
+          <div style="width:${pct}%;height:100%;background:var(--accent);border-radius:2px;transition:width .3s;"></div>
         </div>
       </div>`;
   };
@@ -9699,7 +8895,7 @@ async function cloudinaryUpload(input, fieldPrefix, withOcr = false) {
       if (dropzone) dropzone.innerHTML = `
         <input type="file" accept="${acceptAttr}" id="${fieldPrefix}-file"
           onchange="cloudinaryUpload(this,'${fieldPrefix}',${withOcr})">
-        ✅ <strong>${file.name}</strong> — <span style="color:var(--accent-primary);">Clique para trocar</span>`;
+        ✅ <strong>${file.name}</strong> — <span style="color:var(--accent);">Clique para trocar</span>`;
       toast(`✅ ${file.name} enviado!`, 'success');
       if (withOcr && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
         iniciarOCR(file, fieldPrefix);
@@ -9749,9 +8945,9 @@ async function handleStorageUpload(input, tipo, campo) {
   const setDropzone = html => { if (dropzone) dropzone.innerHTML = html; };
   const setProgress = pct => setDropzone(
     `<div style="padding:4px 0;">
-       <span style="color:var(--accent-primary);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
+       <span style="color:var(--accent);font-size:12px;">⏳ Enviando ${file.name}… ${pct}%</span>
        <div style="height:4px;background:var(--border-light);border-radius:2px;margin-top:6px;overflow:hidden;">
-         <div style="width:${pct}%;height:100%;background:var(--accent-primary);border-radius:2px;transition:width .3s;"></div>
+         <div style="width:${pct}%;height:100%;background:var(--accent);border-radius:2px;transition:width .3s;"></div>
        </div>
      </div>`
   );
@@ -9772,7 +8968,7 @@ async function handleStorageUpload(input, tipo, campo) {
     setDropzone(`<input type="file" accept="${acceptAttr}"
       id="${fieldPrefix}-file"
       onchange="handleStorageUpload(this,'${tipo}','${campo}')">
-      ✅ <strong>${file.name}</strong> — <span style="color:var(--accent-primary);">Clique para trocar</span>`);
+      ✅ <strong>${file.name}</strong> — <span style="color:var(--accent);">Clique para trocar</span>`);
     toast(`✅ ${file.name} enviado com sucesso!`, 'success');
     if (campo === 'ne' && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
       iniciarOCR(file, fieldPrefix);
@@ -10113,7 +9309,7 @@ function abrirConfigEmail() {
   overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML=`<div style="background:var(--bg-surface);border-radius:16px;padding:32px;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
     <h3 style="margin-bottom:20px;font-size:16px;">✉️ Configurar Alertas por E-mail</h3>
-    <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Crie sua conta gratuita em <a href="https://emailjs.com" target="_blank" style="color:var(--accent-primary);">emailjs.com</a> (200 e-mails/mês grátis), crie um template e preencha abaixo:</p>
+    <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Crie sua conta gratuita em <a href="https://emailjs.com" target="_blank" style="color:var(--accent);">emailjs.com</a> (200 e-mails/mês grátis), crie um template e preencha abaixo:</p>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <div><label class="fl" style="font-size:11px;">Public Key</label><input class="fc" id="cfg-ejs-pub" value="${cur.publicKey||''}" placeholder="user_xxxxxxxxxxxx"></div>
       <div><label class="fl" style="font-size:11px;">Service ID</label><input class="fc" id="cfg-ejs-svc" value="${cur.serviceId||''}" placeholder="service_gmail"></div>
