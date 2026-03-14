@@ -2940,13 +2940,19 @@ function renderExcelPreview(prefix) {
   </table></div>`;
 }
 
-// Dias sem recebimento (desde dcomp)
+// Dias sem recebimento (desde dcomp ou, se vazio, data mais antiga das compras)
 function diasSemPagamento(r) {
   // Recebimento está dentro das compras, não no empenho diretamente
   const temRecebimento = (r.compras||[]).some(c => c.dpag && (c.rec||0) > 0);
   if (temRecebimento) return 0;
-  if (!r.dcomp) return 0;
-  const compra = new Date(r.dcomp);
+  // Usa r.dcomp se disponível; senão pega a data mais antiga entre as compras individuais
+  let dataRef = r.dcomp;
+  if (!dataRef) {
+    const datas = (r.compras||[]).map(c => c.dcompra).filter(Boolean).sort();
+    if (datas.length) dataRef = datas[0];
+  }
+  if (!dataRef) return 0;
+  const compra = new Date(dataRef);
   const hoje = new Date();
   return Math.floor((hoje - compra) / 86400000);
 }
