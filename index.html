@@ -1760,6 +1760,41 @@
     width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .btn-add-compra:hover { background: var(--success); color: white; }
+
+  /* Ícones inline — tamanho e alinhamento padrão */
+  .btn svg, button svg {
+    width: 13px;
+    height: 13px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    stroke-width: 1.8;
+  }
+  .tab-btn svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.75;
+  }
+  .tab-btn.active svg {
+    opacity: 1;
+  }
+  h3 svg {
+    width: 12px;
+    height: 12px;
+    vertical-align: middle;
+    opacity: 0.65;
+    margin-right: 5px;
+    flex-shrink: 0;
+  }
+  .fsec-collapsible svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.6;
+  }
+  /* Remove margens inline dos SVGs dentro de botões — CSS controla */
+  .btn svg, button svg {
+    margin-right: 4px;
+  }
+
   .compra-lote-select {
     display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px;
   }
@@ -1981,7 +2016,7 @@
     <div class="user-chip" id="user-chip" onclick="toggleUserMenu()" title="Menu do usuário" style="cursor:pointer;">
       <div class="user-avatar" id="user-avatar">?</div>
       <span id="user-nome">—</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><polyline points="6 9 12 15 18 9"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style=""><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div id="user-menu-dropdown" style="display:none;position:absolute;right:0;top:44px;background:var(--bg-surface);border:1px solid var(--border-medium);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:9999;min-width:200px;padding:6px;overflow:hidden;">
       <div style="padding:8px 12px 6px;border-bottom:1px solid var(--border-light);margin-bottom:4px;">
@@ -2158,29 +2193,29 @@
     <!-- Gráficos principais -->
     <div class="dashboard-grid" style="margin-bottom:20px;">
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Recebido &amp; Lucro por Mês</h3>
+        <h3>Recebido &amp; Lucro por Mês</h3>
         <div style="height:240px;"><canvas id="grafico-lucro-mensal"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg> Top 5 Órgãos por Lucro</h3>
+        <h3>Top 5 Órgãos por Lucro</h3>
         <div style="height:240px;"><canvas id="grafico-orgaos"></canvas></div>
       </div>
     </div>
 
     <div class="dashboard-grid" style="grid-template-columns:repeat(3,1fr);">
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Performance por Analista</h3>
+        <h3>Performance por Analista</h3>
         <div style="height:220px;"><canvas id="grafico-analistas"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Velocidade Média de Pagamento</h3>
+        <h3>Velocidade Média de Pagamento</h3>
         <div style="height:220px;"><canvas id="grafico-velocidade"></canvas></div>
       </div>
     </div>
 
     <!-- Tabela: Empenhos urgentes -->
     <div class="chart-card" style="margin-top:20px;">
-      <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Empenhos Pendentes há mais de 30 dias</h3>
+      <h3>Empenhos Pendentes há mais de 30 dias</h3>
       <div style="overflow-x:auto;">
         <table style="width:100%;font-size:12px;border-collapse:collapse;">
           <thead>
@@ -2218,7 +2253,7 @@
 
     <!-- VISÃO DE CAIXA 30/60/90 dias -->
     <div class="chart-card" style="margin-top:20px;">
-      <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Previsão de Caixa — Empenhos Pendentes</h3>
+      <h3>Previsão de Caixa — Empenhos Pendentes</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
         <div class="card" style="border-left:4px solid var(--success);text-align:center;">
           <div class="card-label">Próximos 30 dias</div>
@@ -2259,7 +2294,7 @@
     <!-- TOP ÓRGÃOS DEVEDORES + TAXA DE RECEBIMENTO -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Top Órgãos Devedores</h3>
+        <h3>Top Órgãos Devedores</h3>
         <div style="overflow-x:auto;">
           <table style="width:100%;font-size:12px;border-collapse:collapse;">
             <thead><tr style="background:var(--bg-surface-soft);">
@@ -2273,7 +2308,7 @@
         </div>
       </div>
       <div class="chart-card">
-        <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Taxa de Recebimento por Órgão</h3>
+        <h3>Taxa de Recebimento por Órgão</h3>
         <div style="overflow-x:auto;">
           <table style="width:100%;font-size:12px;border-collapse:collapse;">
             <thead><tr style="background:var(--bg-surface-soft);">
@@ -2383,7 +2418,7 @@
       <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-        <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
+        <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
         <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
@@ -2465,7 +2500,7 @@
       <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
-        <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
+        <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
         <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
@@ -2624,7 +2659,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('acomp')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveAcomp()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
+      <button class="btn btn-primary" onclick="saveAcomp()">Salvar</button>
     </div>
   </div>
 </div>
@@ -2744,14 +2779,14 @@
             <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent-primary);">R$ 0,00</strong></span>
             <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
           </div>
-          <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
+          <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
         </div>
 
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('disputas')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveD()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
+      <button class="btn btn-primary" onclick="saveD()">Salvar</button>
     </div>
   </div>
 </div>
@@ -2787,7 +2822,7 @@
         <div class="fg full" id="lote-selector-wrap" style="display:none;">
           <label class="fl">📦 Itens/Lotes do Empenho <span style="color:var(--text-tertiary);font-size:9px;">(selecione um ou mais)</span></label>
           <div id="lote-selector-container"></div>
-          <div id="lote-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SELECIONE PELO MENOS UM LOTE PARA CONTINUAR.</div>
+          <div id="lote-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SELECIONE PELO MENOS UM LOTE PARA CONTINUAR.</div>
           <div id="lote-valor-total-wrap" style="margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;">
             <span style="font-size:11px;color:var(--text-tertiary);">VALOR TOTAL DO EMPENHO (CALCULADO): </span>
             <strong id="lote-valor-total-calc" style="color:var(--accent-primary);font-size:14px;"></strong>
@@ -2859,7 +2894,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('empenhos')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveE()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
+      <button class="btn btn-primary" onclick="saveE()">Salvar</button>
     </div>
   </div>
 </div>
@@ -2867,7 +2902,7 @@
 <!-- WIZARD DE ENTRADA RÁPIDA -->
 <div class="wizard-overlay" id="wizard-quick">
   <div class="wizard">
-    <h2><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Entrada Rápida</h2>
+    <h2>Entrada Rápida</h2>
     <div class="wizard-progress">
       <div class="step active" id="wiz-step1"></div>
       <div class="step" id="wiz-step2"></div>
@@ -2911,7 +2946,7 @@
       <div class="disp-info-banner" id="disp-info-banner"></div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-size:12px; color:var(--text-tertiary);" id="disp-emp-count"></div>
-        <button class="btn btn-primary btn-sm" onclick="novoEmpenhoDaDisputa()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho Vinculado</button>
+        <button class="btn btn-primary btn-sm" onclick="novoEmpenhoDaDisputa()">+ Novo Empenho Vinculado</button>
       </div>
       <div id="disp-emp-body">
         <div class="emp-disp-empty">Nenhum empenho vinculado a esta disputa.</div>
@@ -3050,7 +3085,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('compra')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveCompra()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Compra</button>
+      <button class="btn btn-primary" onclick="saveCompra()">Salvar Compra</button>
     </div>
   </div>
 </div>
@@ -3242,7 +3277,7 @@
     <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
     <div class="confirm-modal-actions">
       <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
-      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Sim, excluir</button>
+      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn">Sim, excluir</button>
     </div>
   </div>
 </div>
@@ -3488,10 +3523,10 @@ fbAuth.onAuthStateChanged(user => {
     } else {
       // E-mail não mapeado e não é admin: exibe aviso claro
       analistaDoUsuario = nomeFormatado;
-      console.warn(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> E-mail "${user.email}" não encontrado em EMAIL_TO_ANALISTA. ` +
+      console.warn(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> E-mail "${user.email}" não encontrado em EMAIL_TO_ANALISTA. ` +
         `Adicione uma entrada como: '${user.email}': 'Nome Com Acento'`);
       setTimeout(() => toast(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Seu e-mail não está configurado no sistema. Contate o administrador.`, 'error'
+        `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Seu e-mail não está configurado no sistema. Contate o administrador.`, 'error'
       ), 1500);
     }
     // Admins veem tudo; usuários comuns só veem seus próprios registros
@@ -4514,7 +4549,7 @@ function abrirPopupDisputa(id) {
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
 
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
-      (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
+      (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
       (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent-primary);border-color:var(--accent-primary);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
@@ -4645,7 +4680,7 @@ function abrirPopupEmpenho(id) {
     '</div>' +
     itensHTML +
     '<div style="margin-top:12px;">' +
-      '<button class="btn btn-primary btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\')" style="width:100%;">＋ NOVA COMPRA PARA ESTE EMPENHO</button>' +
+      (function(){ const _temP = empenhoTemSaldo(r.id); return '<button class="btn ' + (_temP ? 'btn-primary' : 'btn-ghost') + ' btn-sm" onclick="' + (_temP ? 'fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\'' + r.id + '\')' : '') + '" style="width:100%;' + (!_temP ? 'opacity:0.45;cursor:not-allowed;pointer-events:none;' : '') + '" title="' + (!_temP ? 'Todos os itens já foram completamente comprados' : '') + '">＋ ' + (_temP ? 'NOVA COMPRA PARA ESTE EMPENHO' : 'ITENS JÁ COMPLETAMENTE COMPRADOS') + '</button>'; })() +
     '</div>' +
     comprasHTML +
     (r.observacao ? '<div class="detail-field" style="margin-top:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
@@ -4848,7 +4883,7 @@ function renderD(){
           contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--danger-soft);color:var(--danger);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;">🔴 CONTRATO VENCIDO</span>';
         } else if (diasVenc <= 15) {
           rowStyle = 'cursor:pointer;border-left:4px solid var(--warning);background:rgba(245,158,11,0.05);';
-          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--warning-soft);color:var(--warning);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ' + diasVenc + 'd</span>';
+          contratoAlerta = '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--warning-soft);color:var(--warning);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ' + diasVenc + 'd</span>';
         }
       }
     }
@@ -4955,7 +4990,7 @@ function renderD(){
           '<td onclick="event.stopPropagation()" style="white-space:nowrap;' + zebraTd + '">' +
             '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Ver empenho" style="' + btnS + '">🔍</button>' +
             '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + e.id + '\')" title="Editar" style="' + btnS + '">✏️</button>' +
-            '<button class="btn btn-ghost btn-sm" onclick="abrirCompra(\'' + e.id + '\')" title="Nova Compra" style="' + btnS + ';color:var(--success);border-color:var(--success);">🛒</button>' +
+            (() => { const _temD = empenhoTemSaldo(e.id); return '<button class="btn btn-ghost btn-sm" onclick="' + (_temD ? "abrirCompra('" + e.id + "')" : '') + '" title="' + (_temD ? 'Nova Compra' : 'Sem saldo disponível') + '" style="' + btnS + ';' + (_temD ? 'color:var(--success);border-color:var(--success);' : 'opacity:0.35;cursor:not-allowed;') + '">🛒</button>'; })() +
           '</td></tr>'
         );
       });
@@ -5017,6 +5052,21 @@ function sumD(){
 
 }
 
+
+// Verifica se um empenho ainda tem saldo de itens para comprar
+function empenhoTemSaldo(empenhoId) {
+  const emp = DB.empenhos.find(x => x.id === empenhoId);
+  if (!emp) return false;
+  const itens = emp.itens || [];
+  if (!itens.length) return true; // sem itens = permite compra livre
+  return itens.some(item => {
+    const qtdComprada = (emp.compras || [])
+      .filter(c => c.itemId === item.id)
+      .reduce((s, c) => s + (c.qtd || 0), 0);
+    return qtdComprada < (item.qtd || 0);
+  });
+}
+
 function renderE(){
   // Sincroniza estilo do botão de agrupamento
   const _btnAgr = g('btn-agrupar-orgao');
@@ -5068,7 +5118,7 @@ function renderE(){
       '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + r.id + '\')" title="Editar" style="'+btnStyle+'">✏️</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="abrirCompra(\'' + r.id + '\')" title="Nova Compra" style="'+btnStyle+';color:var(--success);border-color:var(--success);">🛒</button>' +
+        (() => { const _tem = empenhoTemSaldo(r.id); return '<button class="btn btn-ghost btn-sm" onclick="' + (_tem ? "abrirCompra('" + r.id + "')" : '') + '" title="' + (_tem ? 'Nova Compra' : 'Sem saldo disponível') + '" style="'+btnStyle+';' + (_tem ? 'color:var(--success);border-color:var(--success);' : 'opacity:0.35;cursor:not-allowed;') + '">🛒</button>'; })() +
         '<button class="btn btn-ghost btn-sm" onclick="duplicarEmpenho(\'' + r.id + '\')" title="Duplicar" style="'+btnStyle+'">📄</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="finalizarEmpenho(\'' + r.id + '\')" title="Finalizar" style="'+btnStyle+';color:var(--purple);border-color:var(--purple);">☑️</button>' +
         '<button class="btn btn-danger btn-sm" onclick="delRow(\'empenhos\',\'' + r.id + '\')" title="Excluir" style="'+btnStyle+'">🗑️</button>' +
@@ -5278,10 +5328,10 @@ function verExcel(id, tipo) {
     <div id="popup-d-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
-      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir</button>
+      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">Reabrir</button>
       <button class="btn btn-ghost btn-sm" id="popup-d-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
-      <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho</button>
-      <button class="btn btn-primary" id="popup-d-edit-btn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">+ Novo Empenho</button>
+      <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
     </div>
   </div>
 </div>
@@ -5361,7 +5411,7 @@ function verExcel(id, tipo) {
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
       <button class="btn btn-ghost btn-sm" id="popup-e-tarefa-btn" onclick="" style="color:var(--accent-primary);border-color:var(--accent-primary);">📌 Tarefas</button>
-      <button class="btn btn-primary" id="popup-e-edit-btn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
     </div>
   </div>
 </div>
@@ -5418,7 +5468,7 @@ function atualizarDashboard() {
   setKpi('dk-areceber', fmt(aReceber));
   const atrasoEl = g('dk-atraso');
   if(atrasoEl) atrasoEl.innerHTML = emAtraso > 0
-    ? `<span style="color:var(--danger);font-size:22px;font-weight:800;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${emAtraso}</span><div style="font-size:11px;color:var(--text-tertiary);">empenhos &gt;60 dias</div>`
+    ? `<span style="color:var(--danger);font-size:22px;font-weight:800;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${emAtraso}</span><div style="font-size:11px;color:var(--text-tertiary);">empenhos &gt;60 dias</div>`
     : `<span style="color:var(--success);font-size:22px;font-weight:800;">✓</span><div style="font-size:11px;color:var(--text-tertiary);">tudo em dia</div>`;
 
   // Tabela urgentes (pendentes >30 dias)
@@ -5690,7 +5740,7 @@ function verEmpenhosDisputa(disputaId) {
   g('disp-emp-count').textContent = `${emps.length} empenho(s) vinculado(s)`;
   
   if(!emps.length) {
-    g('disp-emp-body').innerHTML = '<div class="emp-disp-empty">Nenhum empenho vinculado a esta disputa.<br><small>Clique em "<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho Vinculado" para adicionar.</small></div>';
+    g('disp-emp-body').innerHTML = '<div class="emp-disp-empty">Nenhum empenho vinculado a esta disputa.<br><small>Clique em "+ Novo Empenho Vinculado" para adicionar.</small></div>';
     g('disp-emp-totais').innerHTML = '';
   } else {
     g('disp-emp-body').innerHTML = `
@@ -5826,7 +5876,7 @@ function openModal(tab){
       if (sel) sel.disabled = true;
     }
   } else if(tab==='empenhos') {
-    toast('Para criar um empenho, abra uma disputa e clique em "<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho".', 'info');
+    toast('Para criar um empenho, abra uma disputa e clique em "+ Novo Empenho".', 'info');
     return;
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
@@ -6003,7 +6053,7 @@ document.addEventListener('keydown', (e) => {
     if(activeTab.textContent.includes('Disputas')) {
       openModal('disputas');
     } else if(activeTab.textContent.includes('Empenhos')) {
-      toast('Para criar um empenho, abra uma disputa e clique em "<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho".', 'info');
+      toast('Para criar um empenho, abra uma disputa e clique em "+ Novo Empenho".', 'info');
     }
   }
   
@@ -6062,7 +6112,7 @@ function _validarLotesSaldo(disputaId) {
     }
   });
   if (problemas.length) {
-    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ' + problemas[0].replace(/<[^>]+>/g,'') + ' — ajuste a quantidade.', 'error');
+    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ' + problemas[0].replace(/<[^>]+>/g,'') + ' — ajuste a quantidade.', 'error');
     return false;
   }
   return true;
@@ -6405,7 +6455,7 @@ function delRow(tab,id){
   const el = g('confirm-msg'); if(el) el.innerHTML = msg;
   // Garante que o botão aponta para confirmDel (padrão de exclusão)
   const _btn = g('confirm-del-btn');
-  if(_btn) { _btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Sim, excluir'; _btn.className = 'btn btn-danger'; _btn.style.minWidth = '110px'; _btn.onclick = confirmDel; }
+  if(_btn) { _btn.textContent = 'Sim, excluir'; _btn.className = 'btn btn-danger'; _btn.style.minWidth = '110px'; _btn.onclick = confirmDel; }
   g('modal-confirm').classList.add('open');
 }
 function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; btn && (btn.className='btn btn-danger'); btn && (btn.style.minWidth='110px'); }
@@ -6623,6 +6673,11 @@ function calcCompra() {
 }
 
 function abrirCompra(empenhoId, compraId) {
+  // Se não é edição, verificar saldo antes de abrir
+  if (!compraId && !empenhoTemSaldo(empenhoId)) {
+    toast('Todos os itens deste empenho já foram completamente comprados.', 'warning');
+    return;
+  }
   compraEmpenhoId = empenhoId;
   compraEditId = compraId || null;
   compraMSLuc = false; compraMSRec = false;
@@ -7325,13 +7380,13 @@ function reabrirDisputa(id) {
   if (!d) return;
   const empsFinalizados = DB.empenhos.filter(e => e.disputaId === id && e.finalizado);
   const msgEmps = empsFinalizados.length > 0
-    ? `<br><br><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <strong>${empsFinalizados.length} empenho(s)</strong> vinculado(s) também será(ão) reaberto(s) automaticamente.`
+    ? `<br><br><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <strong>${empsFinalizados.length} empenho(s)</strong> vinculado(s) também será(ão) reaberto(s) automaticamente.`
     : '';
   const totalCompras = empsFinalizados.reduce((s,e) => s + (e.compras||[]).filter(c => c.dpag || c.rec > 0).length, 0);
   const msgCompras = totalCompras > 0
-    ? `<br><span style="color:var(--warning);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> As datas de pagamento das <strong>${totalCompras} compra(s)</strong> serão apagadas para evitar refinalização automática. Valores a receber são preservados.</span>`
+    ? `<br><span style="color:var(--warning);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> As datas de pagamento das <strong>${totalCompras} compra(s)</strong> serão apagadas para evitar refinalização automática. Valores a receber são preservados.</span>`
     : '';
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}${msgCompras}`, btnLabel:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}${msgCompras}`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
     // Reabre empenhos e limpa dpag/rec das compras para quebrar o ciclo de auto-finalização
     empsFinalizados.forEach(e => {
@@ -8102,7 +8157,7 @@ function renderFinalizadas() {
       '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
       '<td style="' + zebraTd + '" onclick="event.stopPropagation()">' +
         '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="reabrirDisputa(\'' + r.id + '\')" title="Reabrir disputa" style="color:var(--warning);border-color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="reabrirDisputa(\'' + r.id + '\')" title="Reabrir disputa" style="color:var(--warning);border-color:var(--warning);">Reabrir</button>' +
       '</td></tr>';
   }).join('');
   sumFinalizadas(rows);
@@ -8147,7 +8202,7 @@ function finalizarEmpenho(id) {
   const compras = e.compras || [];
 
   if (compras.length === 0) {
-    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Cadastre ao menos uma compra antes de finalizar o empenho.', 'error');
+    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Cadastre ao menos uma compra antes de finalizar o empenho.', 'error');
     return;
   }
 
@@ -8166,7 +8221,7 @@ function finalizarEmpenho(id) {
       msg: `Não é possível finalizar o empenho <strong>${e.num||id}</strong>.<br><br>
 Pendências encontradas:<br>• ${problemas.join('<br>• ')}<br><br>
 Edite as compras e informe a data de pagamento e o valor recebido antes de finalizar.`,
-      btnLabel: '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar compras',
+      btnLabel: 'Editar compras',
       btnClass: 'btn-primary',
       onConfirm: () => {
         fecharPopup('empenho');
@@ -8187,7 +8242,7 @@ Edite as compras e informe a data de pagamento e o valor recebido antes de final
 
 function reabrirEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir empenho', msg:`Reabrir o empenho <strong>${e.num||id}</strong>?<br>Ele voltará para a aba Empenhos.`, btnLabel:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir', btnClass:'btn-ghost', onConfirm: () => { _doReabrirEmpenho(id); }});
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir empenho', msg:`Reabrir o empenho <strong>${e.num||id}</strong>?<br>Ele voltará para a aba Empenhos.`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => { _doReabrirEmpenho(id); }});
 }
 
 let _agrupadoFin = false;
@@ -8260,7 +8315,7 @@ function renderEmpFinalizados() {
           <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
           <td onclick="event.stopPropagation()" style="${zebraFinTd}">
             <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')">🔍</button>
-            <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir</button>
+            <button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho('${r.id}')" style="color:var(--warning);border-color:var(--warning);">Reabrir</button>
           </td></tr>`;
       }).join('');
       return `<tr style="background:var(--bg-inset);">
@@ -8290,7 +8345,7 @@ function renderEmpFinalizados() {
         '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
         '<td onclick="event.stopPropagation()">' +
           '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes">🔍</button>' +
-          '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="reabrirEmpenho(\'' + r.id + '\')" title="Reabrir empenho" style="color:var(--warning);border-color:var(--warning);">Reabrir</button>' +
         '</td></tr>';
     }).join('');
   }
@@ -8814,7 +8869,7 @@ function saveAcomp() {
         icon: '⚠️',
         titulo: 'Retorno no passado',
         msg: `A data de retorno informada já está no passado:<br><strong>${retDate.toLocaleString('pt-BR')}</strong><br><br>Deseja salvar mesmo assim?`,
-        btnLabel: '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar mesmo assim',
+        btnLabel: 'Salvar mesmo assim',
         btnClass: 'btn-ghost',
         onConfirm: () => { _doSaveAcomp(retornoVal); }
       });
@@ -8970,7 +9025,7 @@ function renderAcomp() {
     `<div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${(DB.acomp||[]).length}</div></div>` +
     `<div class="card"><div class="card-label">Pendentes</div><div class="card-value cv-yellow">${pendentes}</div></div>` +
     `<div class="card"><div class="card-label">Em Recurso</div><div class="card-value cv-blue">${recursos}</div></div>` +
-    (vencidos ? `<div class="card" style="border-left:3px solid var(--danger);"><div class="card-label"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Retorno Vencido</div><div class="card-value" style="color:var(--danger);">${vencidos}</div></div>` : '');
+    (vencidos ? `<div class="card" style="border-left:3px solid var(--danger);"><div class="card-label"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Retorno Vencido</div><div class="card-value" style="color:var(--danger);">${vencidos}</div></div>` : '');
 }
 
 function verAcomp(id) {
@@ -9362,7 +9417,7 @@ function renderEAgrupado(rows, tb) {
         <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraGrpTd}">
           <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
           <button class="btn btn-ghost btn-sm" onclick="editE('${r.id}')" style="${btnStyle}">✏️</button>
-          <button class="btn btn-ghost btn-sm" onclick="abrirCompra('${r.id}')" style="${btnStyle};color:var(--success);border-color:var(--success);">🛒</button>
+          ${(() => { const _ts = empenhoTemSaldo(r.id); return '<button class="btn btn-ghost btn-sm"' + (_ts ? ' onclick="abrirCompra(\'' + r.id + '\')"' : ' disabled title="Saldo esgotado"') + ' style="${btnStyle};' + (_ts ? 'color:var(--success);border-color:var(--success);' : 'opacity:0.35;cursor:not-allowed;') + '">🛒</button>'; })()}
         </td>
       </tr>`;
     }).join('');
@@ -9501,7 +9556,7 @@ async function enviarAlertasEmail() {
       await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
         to_email: emailDest,
         to_name: analista,
-        assunto: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${emps.length} empenho(s) com pagamento atrasado`,
+        assunto: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${emps.length} empenho(s) com pagamento atrasado`,
         mensagem: `Olá ${analista},\n\nVocê tem ${emps.length} empenho(s) com mais de 60 dias sem pagamento:\n\n${lista}\n\nAcesse o sistema para mais detalhes.`,
         data: hoje.toLocaleDateString('pt-BR'),
       });
@@ -9541,7 +9596,7 @@ async function enviarAlertaAcompanhamentoImediato(acomp) {
   } catch(e) {}
 
   if (!emailDest) {
-    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> E-mail do analista não configurado. Clique em ⚙️ para configurar.', 'error');
+    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> E-mail do analista não configurado. Clique em ⚙️ para configurar.', 'error');
     return;
   }
   if (!acomp.retorno) return;
@@ -9824,7 +9879,7 @@ function mostrarInstrucaoStorage(fieldPrefix, placeholder, acceptAttr, tipo, cam
   if (!dropzone) return;
   dropzone.innerHTML = `
     <div style="text-align:left;padding:8px;">
-      <div style="color:var(--warning);font-weight:700;margin-bottom:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Firebase Storage: permissão negada</div>
+      <div style="color:var(--warning);font-weight:700;margin-bottom:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Firebase Storage: permissão negada</div>
       <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
         Vá em <strong>Firebase Console → Storage → Rules</strong> e substitua por:<br>
         <code style="background:var(--bg-inset);padding:2px 6px;border-radius:4px;font-size:10px;display:block;margin:6px 0;white-space:pre;">rules_version = '2';
@@ -10068,7 +10123,7 @@ function abrirConfigEmail() {
     </div>
     <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end;">
       <button class="btn btn-ghost" onclick="this.closest('[style*=fixed]').remove()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarConfigEmail(this)"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar</button>
+      <button class="btn btn-primary" onclick="salvarConfigEmail(this)">Salvar</button>
     </div>
   </div>`;
   document.body.appendChild(overlay);
@@ -10175,9 +10230,9 @@ boot();
     <div id="popup-d-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
-      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.33"/></svg> Reabrir</button>
-      <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Empenho</button>
-      <button class="btn btn-primary" id="popup-d-edit-btn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">Reabrir</button>
+      <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">+ Novo Empenho</button>
+      <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
     </div>
   </div>
 </div>
@@ -10196,7 +10251,7 @@ boot();
     <div id="popup-e-body"></div>
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
-      <button class="btn btn-primary" id="popup-e-edit-btn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:middle;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
     </div>
   </div>
 </div>
