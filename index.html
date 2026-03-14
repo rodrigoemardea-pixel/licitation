@@ -35,10 +35,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Tesseract.js para OCR -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1221,10 +1217,6 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         Alternar tema
       </button>
-      <button onclick="abrirConfigEmail();toggleUserMenu();" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-secondary);text-align:left;" onmouseover="this.style.background='var(--bg-surface-soft)'" onmouseout="this.style.background='none'">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Alertas por e-mail
-      </button>
       <button onclick="togglePushNotificacoes();toggleUserMenu();" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-secondary);text-align:left;" onmouseover="this.style.background='var(--bg-surface-soft)'" onmouseout="this.style.background='none'">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Notificações push
@@ -1247,7 +1239,8 @@
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
   <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
   <button class="tab-btn" onclick="switchTab('acompanhamentos',this);renderAcomp();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Acompanhamentos <span class="tab-badge" id="badge-acomp" style="background:var(--warning);color:#000;">0</span></button>
-  <button class="tab-btn" onclick="switchTab('disputas',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg> Disputas em Andamento <span class="tab-badge" id="badge-disputas">0</span></button>
+  <button class="tab-btn" onclick="switchTab('disputas',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg> Contratos Ativos <span class="tab-badge" id="badge-disputas">0</span></button>
+  <button class="tab-btn" onclick="abrirCalculadora()" style="color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="18" y2="10"/><line x1="6" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="18" y2="14"/><line x1="6" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="18" y2="18"/></svg> 🧮 Cálculo Rápido</button>
   <button class="tab-btn" onclick="switchTab('empenhos',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Empenhos Pendentes <span class="tab-badge" id="badge-empenhos">0</span></button>
   <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizadas <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
   <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Emp. Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
@@ -1303,7 +1296,6 @@
           <option value="todos">Todos</option>
           <option value="pendente">Pendente</option>
           <option value="recurso">Em Recurso</option>
-          <option value="perdida">Perdida</option>
         </select>
       </div>
       <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="renderAcomp()"></div>
@@ -1527,8 +1519,7 @@
       📃 <span id="alerta-contratos-txt"></span>
     </div>
     <div class="toolbar">
-      <button class="btn btn-primary" onclick="openModal('disputas')">＋ Nova Disputa</button>
-      <button class="btn" onclick="abrirCalculadora()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;font-weight:700;display:flex;align-items:center;gap:6px;" title="Calculadora de Custos e Lucros">🧮 Cálculo Rápido</button>
+      <button class="btn btn-primary" onclick="openModal('disputas')">＋ Novo Contrato</button>
       <div class="toolbar-separator"></div>
       <div class="filter-group">
         <label>👤 Analista:</label>
@@ -1547,12 +1538,10 @@
         </select>
       </div>
 
-      <div class="filter-group" id="fg-data-range-disputas" title="Filtrar por intervalo de datas">
-        <label>📆 De:</label>
-        <input type="date" id="filtro-data-de-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
-        <label style="margin-left:4px;">Até:</label>
-        <input type="date" id="filtro-data-ate-disputas" onchange="filtrarDisputas()" style="background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-primary);outline:none;cursor:pointer;">
-      </div>
+
+
+
+
 
 
 
@@ -1835,14 +1824,13 @@
             <option value="">Selecione</option>
             <option selected>Márdea</option>
             <option>Rodrigo</option>
-          </select>
             <option>Krícia</option>
+          </select>
         </div>
         <div class="fg"><label class="fl">Status</label>
           <select class="fc" id="ac-status">
             <option value="pendente">Pendente</option>
             <option value="recurso">Em Recurso</option>
-            <option value="perdida">Perdida</option>
           </select>
         </div>
         <div class="fg"><label class="fl">🔗 Link do Sistema</label><input type="url" class="fc" id="ac-link" placeholder="https://..."></div>
@@ -1863,7 +1851,7 @@
 <div class="modal-overlay" id="modal-disputas">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="ttl-disputas">Nova Disputa Vencida</div>
+      <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
       <button class="modal-close" onclick="closeModal('disputas')">✕</button>
     </div>
     <div class="modal-body">
@@ -2749,8 +2737,6 @@ fbAuth.onAuthStateChanged(user => {
       renderAll();
       atualizarPainel();
       aplicarPermissoes();
-      // Dispara alertas de e-mail ao carregar
-      setTimeout(enviarAlertasEmail, 3000);
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
         iniciarNotificacoes();
@@ -4494,7 +4480,7 @@ function verExcel(id, tipo) {
   <div class="shortcuts-modal-box">
     <div class="shortcuts-modal-title">⌨️ Atalhos de Teclado</div>
     <div class="shortcut-row"><span class="desc">Abrir busca global</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
-    <div class="shortcut-row"><span class="desc">Nova Disputa</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>N</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Novo Contrato</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>N</kbd></span></div>
 	<div class="shortcut-row"><span class="desc">Novo Acompanhamento</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>A</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Novo Empenho</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>E</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Ir para Painel</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>1</kbd></span></div>
@@ -5063,7 +5049,7 @@ function openModal(tab){
   if(tab==='disputas'){
     clearD();
     lotesTemp = []; renderLotes();
-    g('ttl-disputas').textContent='Nova Disputa Vencida'; g('d-data').value=today();
+    g('ttl-disputas').textContent='Novo Contrato'; g('d-data').value=today();
     // Pré-preenche e bloqueia analista para não-admins
     if (!isAdmin && analistaDoUsuario) {
       setAnalistaSelect('d-analista', analistaDoUsuario);
@@ -6581,7 +6567,7 @@ function reabrirDisputa(id) {
   const msgCompras = totalCompras > 0
     ? `<br><span style="color:var(--warning);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> As datas de pagamento das <strong>${totalCompras} compra(s)</strong> serão apagadas para evitar refinalização automática. Valores a receber são preservados.</span>`
     : '';
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Disputas em Andamento.${msgEmps}${msgCompras}`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir disputa', msg:`Reabrir a disputa <strong>${d.orgao||id}</strong>?<br>Ela voltará para Contratos Ativos.${msgEmps}${msgCompras}`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
     // Reabre empenhos e limpa dpag/rec das compras para quebrar o ciclo de auto-finalização
     empsFinalizados.forEach(e => {
@@ -8238,7 +8224,7 @@ function _doCriarDisputaDeAcomp(r) {
   document.getElementById('d-estado').value = r.estado||'';
   document.getElementById('d-sistema').value = r.sistema||'';
   document.getElementById('d-analista').value = r.analista||'';
-  document.getElementById('ttl-disputas').textContent = 'Nova Disputa (de Acompanhamento)';
+  document.getElementById('ttl-disputas').textContent = 'Novo Contrato (de Acompanhamento)';
   document.getElementById('modal-disputas').classList.add('open');
 }
 
@@ -8267,13 +8253,6 @@ function checarRetornos() {
     const ret = parseRetorno(r.retorno);
     if (!ret) return;
     const diff = ret - agora; // ms até o retorno
-
-    // ── Email: dispara entre 5min e 1min antes (janela ampla para não ser pulada pelo intervalo de 30s) ──
-    const chaveAlerta = 'alerta|' + r.id + '|' + r.retorno;
-    if (!_emailAlertasEnviados.has(chaveAlerta) && diff <= 300000 && diff > 60000) {
-      _emailAlertasEnviados.add(chaveAlerta);
-      enviarEmailAlarme(r);
-    }
 
     // ── Popup + som + notificação browser: no horário exato (janela: 90s antes até 30s depois) ──
     const chavePopup = 'popup|' + r.id + '|' + r.retorno;
@@ -8321,6 +8300,8 @@ function dispararNotificacao(r) {
       _alarmTimeout = setTimeout(tocarCiclo, 1500);
     }
     tocarCiclo();
+    // Para o alarme automaticamente após 1 minuto
+    setTimeout(() => window._pararAlarme?.(), 60000);
   } catch(e) {}
 
   // Guarda ref para parar o som ao fechar
@@ -8331,35 +8312,6 @@ function dispararNotificacao(r) {
   };
 
   updateBadges();
-}
-
-async function enviarEmailAlarme(r) {
-  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
-  const analista = r.analista || '?';
-  let emailDest = ANALISTAS_EMAIL[analista];
-  try {
-    const saved = JSON.parse(localStorage.getItem('analistas_email') || '{}');
-    if (saved[analista]) emailDest = saved[analista];
-  } catch(e) {}
-  if (!emailDest) { console.warn('📧 E-mail não configurado para analista:', analista); return; }
-  const retStr = fmtRetorno(r.retorno);
-  const hoje = new Date();
-  const _lim = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g,(_, h)=>String.fromCharCode(parseInt(h,16))).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
-  const orgaoLimpo = _lim(r.orgao);
-  const sistemaLimpo = _lim(r.sistema);
-  const obsLimpa = _lim(r.observacao);
-  try {
-    await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-      to_email:  emailDest,
-      to_name:   analista,
-      assunto:   `⏰ RETORNO AGORA: ${orgaoLimpo}`,
-      mensagem:  `Olá ${analista},\n\nO sistema está apitando para o seguinte acompanhamento:\n\n• Órgão: ${orgaoLimpo}\n• Sistema: ${sistemaLimpo||'—'}\n• Retorno: ${retStr}\n• Status: ${r.status||'—'}\n• Observação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar o status.`,
-      data:      hoje.toLocaleDateString('pt-BR'),
-    });
-    console.log('✅ Email alarme enviado para', analista, '-', emailDest);
-  } catch(err) {
-    console.error('Erro ao enviar email alarme:', err);
-  }
 }
 
 
@@ -8693,81 +8645,9 @@ function delComentario(comentId, itemId) {
   });
 }
 
-// ========== EMAILJS — ALERTAS AUTOMÁTICOS ==========
-// Configuração (preencher após criar conta em emailjs.com)
-const EMAILJS_CONFIG = {
-  publicKey:   'GI1jO1l-TCc-KxTXY',
-  serviceId:   'service_rxbo8kk',
-  templateId:  'template_scme3nc',
-};
-const ANALISTAS_EMAIL = {
-  'Márdea':  '',   // ex: 'mardea@empresa.com'
-  'Rodrigo': '',   // ex: 'rodrigo@empresa.com'
-};
-// Controle de emails enviados — persiste no localStorage para sobreviver a refreshes
-const _emailAlertasEnviados = {
-  _key: 'email_alertas_enviados',
-  _load() {
-    try { return new Set(JSON.parse(localStorage.getItem(this._key) || '[]')); } catch(e) { return new Set(); }
-  },
-  _save(set) {
-    // Limpa chaves de dias anteriores para não acumular eternamente
-    const hoje = new Date().toISOString().slice(0,10);
-    const filtradas = [...set].filter(k => k.includes(hoje) || k.includes(new Date().getFullYear()));
-    try { localStorage.setItem(this._key, JSON.stringify(filtradas)); } catch(e) {}
-  },
-  has(chave) { return this._load().has(chave); },
-  add(chave) { const s = this._load(); s.add(chave); this._save(s); }
-};
-
-// Inicializa EmailJS com a public key
-(function initEmailJS() {
-  try { emailjs.init('GI1jO1l-TCc-KxTXY'); } catch(e) {}
-})();
-
-// Dispara alertas de e-mail sempre que necessário (ao salvar acomp e ao carregar)
-async function enviarAlertasEmail() {
-  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
-  const hoje = new Date();
-  const hoje_str = hoje.toISOString().slice(0,10);
-
-  // Empenhos >60 dias por analista
-  const empAtrasados = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60);
-  const porAnalista = {};
-  empAtrasados.forEach(e => {
-    const a = e.analista||'?';
-    if(!porAnalista[a]) porAnalista[a] = [];
-    porAnalista[a].push(e);
-  });
-
-  for(const [analista, emps] of Object.entries(porAnalista)) {
-    const emailDest = ANALISTAS_EMAIL[analista];
-    if(!emailDest) continue;
-    const chave = 'emp-atraso-'+analista+'-'+hoje_str;
-    if(_emailAlertasEnviados.has(chave)) continue;
-    _emailAlertasEnviados.add(chave);
-    const lista = emps.map(e=>`• Empenho #${e.num||'?'} — ${e.orgao||'?'} (${diasSemPagamento(e)} dias)`).join('\n');
-    try {
-      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: emailDest,
-        to_name: analista,
-        assunto: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${emps.length} empenho(s) com pagamento atrasado`,
-        mensagem: `Olá ${analista},\n\nVocê tem ${emps.length} empenho(s) com mais de 60 dias sem pagamento:\n\n${lista}\n\nAcesse o sistema para mais detalhes.`,
-        data: hoje.toLocaleDateString('pt-BR'),
-      });
-      console.log('✅ Email enviado para', analista);
-    } catch(err) { console.error('Erro EmailJS empenhos:', err); }
-  }
-
-  // Acompanhamentos são disparados pelo checarRetornos (10 min antes) — não aqui
-}
-
-// Dispara ao salvar um acompanhamento
 // Helper: parseia campo retorno (datetime-local ou date) de forma segura
 function parseRetorno(val) {
   if (!val) return null;
-  // Se já tem 'T' (datetime-local: "2025-03-01T14:30"), usa direto
-  // Se é só data ("2025-03-01"), adiciona meio-dia para evitar problema de fuso
   const str = val.includes('T') ? val : val + 'T12:00';
   const d = new Date(str);
   return isNaN(d.getTime()) ? null : d;
@@ -8780,63 +8660,6 @@ function fmtRetorno(val) {
   return d.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
 }
 
-async function enviarAlertaAcompanhamentoImediato(acomp) {
-  if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return;
-  const analista = acomp.analista||'?';
-
-  let emailDest = ANALISTAS_EMAIL[analista];
-  try {
-    const saved = JSON.parse(localStorage.getItem('analistas_email')||'{}');
-    if (saved[analista]) emailDest = saved[analista];
-  } catch(e) {}
-
-  if (!emailDest) {
-    toast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> E-mail do analista não configurado. Clique em ⚙️ para configurar.', 'error');
-    return;
-  }
-  if (!acomp.retorno) return;
-
-  const ret = parseRetorno(acomp.retorno);
-  if (!ret) return;
-  const hoje = new Date();
-
-  // Compara por dia (ignora horário) para evitar adiantamento por fuso
-  const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-  const retLocal  = new Date(ret.getFullYear(),  ret.getMonth(),  ret.getDate());
-  const diffDias  = Math.round((retLocal - hojeLocal) / 86400000);
-
-  if (diffDias > 3) return;
-
-  // Limpa entidades HTML (ex: &#x2F; → /)
-  const limparTexto = s => (s||'').replace(/&#x([0-9A-Fa-f]+);/g, (_, h) => String.fromCharCode(parseInt(h,16)))
-    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
-
-  const orgaoLimpo   = limparTexto(acomp.orgao);
-  const sistemaLimpo = limparTexto(acomp.sistema);
-  const obsLimpa     = limparTexto(acomp.observacao);
-  const retFormatado = fmtRetorno(acomp.retorno);
-
-  const msg = diffDias < 0
-    ? `O acompanhamento do órgão "${orgaoLimpo}" está com retorno VENCIDO (era ${retFormatado}).`
-    : diffDias === 0
-    ? `Você tem retorno HOJE (${retFormatado}) com o órgão "${orgaoLimpo}".`
-    : `Você tem retorno em ${diffDias} dia(s) com o órgão "${orgaoLimpo}" (${retFormatado}).`;
-
-  try {
-    const result = await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-      to_email: emailDest,
-      to_name:  analista,
-      assunto:  diffDias <= 0 ? `🔴 Retorno urgente: ${orgaoLimpo}` : `📋 Lembrete de retorno: ${orgaoLimpo}`,
-      mensagem: `Olá ${analista},\n\n${msg}\n\nSistema: ${sistemaLimpo||'—'}\nStatus: ${acomp.status||'—'}\nObservação: ${obsLimpa||'—'}\n\nAcesse o sistema para atualizar.`,
-      data: hoje.toLocaleDateString('pt-BR'),
-    });
-    console.log('✅ Email enviado!', result);
-    toast('📧 E-mail enviado para ' + analista, 'success');
-  } catch(err) {
-    console.error('Erro EmailJS imediato:', err);
-    toast('❌ Erro ao enviar e-mail: ' + (err.text||err.message||'verifique o console'), 'error');
-  }
-}
 async function cloudinaryUpload(input, fieldPrefix, withOcr = false) {
   const file = input.files ? input.files[0] : input;
   if (!file) return;
@@ -9299,51 +9122,6 @@ function carregarArquivosEmpenho(r) {
 // Empenhos atrasados: verifica 1x por dia na carga inicial (via setTimeout no onSnapshot)
 // Alertas de retorno: gerenciados pelo checarRetornos (a cada 30s)
 
-
-// ========== CONFIGURAÇÕES DE E-MAIL (modal) ==========
-function abrirConfigEmail() {
-  const cur = { publicKey: EMAILJS_CONFIG.publicKey, serviceId: EMAILJS_CONFIG.serviceId, templateId: EMAILJS_CONFIG.templateId };
-  const curAnalistas = { ...ANALISTAS_EMAIL };
-  const overlay = document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML=`<div style="background:var(--bg-surface);border-radius:16px;padding:32px;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
-    <h3 style="margin-bottom:20px;font-size:16px;">✉️ Configurar Alertas por E-mail</h3>
-    <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Crie sua conta gratuita em <a href="https://emailjs.com" target="_blank" style="color:var(--accent);">emailjs.com</a> (200 e-mails/mês grátis), crie um template e preencha abaixo:</p>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <div><label class="fl" style="font-size:11px;">Public Key</label><input class="fc" id="cfg-ejs-pub" value="${cur.publicKey||''}" placeholder="user_xxxxxxxxxxxx"></div>
-      <div><label class="fl" style="font-size:11px;">Service ID</label><input class="fc" id="cfg-ejs-svc" value="${cur.serviceId||''}" placeholder="service_gmail"></div>
-      <div><label class="fl" style="font-size:11px;">Template ID</label><input class="fc" id="cfg-ejs-tpl" value="${cur.templateId||''}" placeholder="template_alertas"></div>
-      <div><label class="fl" style="font-size:11px;">E-mail da Márdea</label><input class="fc" id="cfg-email-mardea" value="${curAnalistas['Márdea']||''}" placeholder="mardea@empresa.com"></div>
-      <div><label class="fl" style="font-size:11px;">E-mail do Rodrigo</label><input class="fc" id="cfg-email-rodrigo" value="${curAnalistas['Rodrigo']||''}" placeholder="rodrigo@empresa.com"></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="this.closest('[style*=fixed]').remove()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarConfigEmail(this)">Salvar</button>
-    </div>
-  </div>`;
-  document.body.appendChild(overlay);
-}
-
-function salvarConfigEmail(btn) {
-  const cfg = { publicKey: document.getElementById('cfg-ejs-pub').value.trim(), serviceId: document.getElementById('cfg-ejs-svc').value.trim(), templateId: document.getElementById('cfg-ejs-tpl').value.trim() };
-  const emails = { 'Márdea': document.getElementById('cfg-email-mardea').value.trim(), 'Rodrigo': document.getElementById('cfg-email-rodrigo').value.trim(), 'Krícia': document.getElementById('cfg-email-kricia').value.trim() };
-  localStorage.setItem('emailjs_config', JSON.stringify(cfg));
-  localStorage.setItem('analistas_email', JSON.stringify(emails));
-  Object.assign(EMAILJS_CONFIG, cfg);
-  Object.assign(ANALISTAS_EMAIL, emails);
-  toast('Configurações salvas!', 'success');
-  btn.closest('[style*=fixed]').remove();
-}
-
-// Carrega config salva ao iniciar
-(function() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('emailjs_config')||'{}');
-    const emails = JSON.parse(localStorage.getItem('analistas_email')||'{}');
-    Object.assign(EMAILJS_CONFIG, cfg);
-    Object.assign(ANALISTAS_EMAIL, emails);
-  } catch(e){}
-})();
 
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
