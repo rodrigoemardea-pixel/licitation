@@ -1012,23 +1012,7 @@
   .action-dropdown-item .item-icon { font-size: 15px; width: 20px; text-align: center; }
   .action-dropdown-divider { height: 1px; background: var(--border-light); margin: 4px 0; }
 
-  /* ─── Toggle de colunas ─── */
-  .col-eye {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 16px; height: 16px; margin-left: 5px; cursor: pointer;
-    color: var(--text-tertiary); opacity: 0.4; transition: opacity 0.15s, color 0.15s;
-    font-size: 12px; vertical-align: middle; flex-shrink: 0;
-    border-radius: 3px;
-  }
-  .col-eye:hover { opacity: 1; color: var(--accent); }
-  .col-restore {
-    opacity: 1 !important; color: var(--danger) !important;
-    width: 20px; height: 20px; border-radius: 4px;
-    background: var(--danger-soft); display: flex;
-    align-items: center; justify-content: center;
-  }
-  .col-restore:hover { background: var(--danger); color: #fff !important; }
-  th:has(.col-eye:hover) { background: var(--accent-muted) !important; }
+
 
   .fsec {
     font-size: 12px; font-weight: 600; color: var(--text-primary);
@@ -1484,8 +1468,8 @@
         <thead><tr>
           <th>Data</th>
           <th>Órgão / UF</th>
-          <th>Analista<span class="col-eye" onclick="toggleCol('acomp','analista')" title="Ocultar coluna">👁️</span></th>
-          <th>Sistema<span class="col-eye" onclick="toggleCol('acomp','sistema')" title="Ocultar coluna">👁️</span></th>
+          <th>Analista</th>
+          <th>Sistema</th>
           <th>Status</th>
           <th>⏰ Retorno</th>
           <th style="text-align:center;">⋯</th>
@@ -1789,14 +1773,14 @@
       <table>
         <thead><tr>
           <th style="width:36px;min-width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
-          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','data')" title="Ocultar coluna">👁️</span></th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
           <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
-          <th style="min-width:80px;width:80px;" data-col-d="analista">Analista<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','analista')" title="Ocultar coluna">👁️</span></th>
-          <th class="money" style="min-width:105px;width:105px;" data-col-d="contrato">💰 Vl. Contrato<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','contrato')" title="Ocultar coluna">👁️</span></th>
-          <th class="money" style="min-width:105px;width:105px;" data-col-d="compra">🛒 Compra Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','compra')" title="Ocultar coluna">👁️</span></th>
-          <th class="money" style="min-width:95px;width:95px;" data-col-d="custo">⚙️ Custo Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','custo')" title="Ocultar coluna">👁️</span></th>
-          <th class="money" style="min-width:95px;width:95px;" data-col-d="lucroprev">📈 Lucro Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','lucroprev')" title="Ocultar coluna">👁️</span></th>
-          <th class="money" style="min-width:115px;width:115px;" data-col-d="lucroreal">✅ Lucro Realizado<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','lucroreal')" title="Ocultar coluna">👁️</span></th>
+          <th style="min-width:80px;width:80px;">Analista</th>
+          <th class="money" style="min-width:105px;width:105px;">💰 Vl. Contrato</th>
+          <th class="money" style="min-width:105px;width:105px;">🛒 Compra Prev.</th>
+          <th class="money" style="min-width:95px;width:95px;">⚙️ Custo Prev.</th>
+          <th class="money" style="min-width:95px;width:95px;">📈 Lucro Prev.</th>
+          <th class="money" style="min-width:115px;width:115px;">✅ Lucro Realizado</th>
           <th style="min-width:50px;width:50px;text-align:center;">⋯</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
@@ -1873,12 +1857,12 @@
           <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
           <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
-          <th data-col-e="analista">Analista<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','analista')" title="Ocultar coluna">👁️</span></th>
+          <th>Analista</th>
           <th onclick="sort('empenhos', 'vem')" id="sort-empenhos-vem">Val. Empenho</th>
-          <th data-col-e="vlcompra">💰 Vl. Compra<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','vlcompra')" title="Ocultar coluna">👁️</span></th>
-          <th data-col-e="lucro">📈 Lucro<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','lucro')" title="Ocultar coluna">👁️</span></th>
-          <th data-col-e="areceber">⏳ A Receber<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','areceber')" title="Ocultar coluna">👁️</span></th>
-          <th data-col-e="dias">⏱️ Dias<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','dias')" title="Ocultar coluna">👁️</span></th>
+          <th>💰 Vl. Compra</th>
+          <th>📈 Lucro</th>
+          <th>⏳ A Receber</th>
+          <th>⏱️ Dias</th>
           <th style="min-width:50px;width:50px;text-align:center;">⋯</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
@@ -4293,7 +4277,7 @@ function renderD(){
             '<button class="action-dropdown-item" onclick="closeActionMenus();abrirPopupDisputa(\'' + r.id + '\')"><span class="item-icon">🔍</span>Ver detalhes</button>' +
             '<button class="action-dropdown-item" onclick="closeActionMenus();editD(\'' + r.id + '\')"><span class="item-icon">✏️</span>Editar</button>' +
             '<button class="action-dropdown-item" onclick="closeActionMenus();duplicarDisputa(\'' + r.id + '\')"><span class="item-icon">📄</span>Duplicar</button>' +
-            '<button class="action-dropdown-item" onclick="closeActionMenus();openModal(\'empenhos\');document.getElementById(\'e-disputa\').value=\'' + r.id + '\';onDisputaSelecionada(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">📋</span>Novo Empenho</button>' +
+
             '<button class="action-dropdown-item" onclick="closeActionMenus();finalizarDisputa(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">🏁</span>Finalizar</button>' +
             '<div class="action-dropdown-divider"></div>' +
             '<button class="action-dropdown-item danger" onclick="closeActionMenus();delRow(\'disputas\',\'' + r.id + '\')"><span class="item-icon">🗑️</span>Excluir</button>' +
@@ -4376,7 +4360,6 @@ function renderD(){
 
   tb.innerHTML = htmlParts.join('');
   sumD();
-  setTimeout(applyHiddenCols, 0);
 }
 
 function sumD(){
@@ -4512,7 +4495,6 @@ function renderE(){
   }).join('');
   sumE();
   verificarAlertas();
-  setTimeout(applyHiddenCols, 0);
 }
 function sumE(){
   const a=DB.empenhos.filter(r=>matches('empenhos',r) && !r.finalizado);
@@ -8410,7 +8392,6 @@ function renderAcomp() {
     </tr>`;
   }).join('');
 
-  setTimeout(applyHiddenCols, 0);
   const pendentes = (DB.acomp||[]).filter(r=>r.status==='pendente').length;
   const recursos = (DB.acomp||[]).filter(r=>r.status==='recurso').length;
   const vencidos = (DB.acomp||[]).filter(r=>r.retorno && new Date(r.retorno)<agora).length;
@@ -9436,95 +9417,6 @@ function closeActionMenus() {
 // Close on scroll
 document.addEventListener('scroll', closeActionMenus, true);
 
-// ========== TOGGLE DE COLUNAS ==========
-const _hiddenCols = JSON.parse(localStorage.getItem('hiddenCols') || '{}');
-
-function toggleCol(table, colKey) {
-  const key = table + '_' + colKey;
-  _hiddenCols[key] = !_hiddenCols[key];
-  localStorage.setItem('hiddenCols', JSON.stringify(_hiddenCols));
-  applyHiddenCols();
-}
-
-function applyHiddenCols() {
-  // col definitions: { key: [thSelector, colIndex] }
-  const tables = [
-    {
-      cols: { analista: 3, contrato: 4, compra: 5, custo: 6, lucroprev: 7, lucroreal: 8 },
-      prefix: 'disputas',
-      thSel: '#disputas-table-view thead th',
-      tbSel: '#tbody-disputas',
-      tfSel: '#tfoot-disputas-row'
-    },
-    {
-      cols: { analista: 3, vlcompra: 5, lucro: 6, areceber: 7, dias: 8 },
-      prefix: 'empenhos',
-      thSel: '#tab-empenhos .table-wrapper thead th',
-      tbSel: '#tbody-empenhos',
-      tfSel: null
-    },
-    {
-      cols: { analista: 2, sistema: 3 },
-      prefix: 'acomp',
-      thSel: '#tab-acompanhamentos .table-wrapper thead th',
-      tbSel: '#tbody-acomp',
-      tfSel: null
-    }
-  ];
-
-  tables.forEach(({ cols, prefix, thSel, tbSel, tfSel }) => {
-    const ths = document.querySelectorAll(thSel);
-    const tb = document.querySelector(tbSel);
-    const tf = tfSel ? document.querySelector(tfSel) : null;
-
-    Object.entries(cols).forEach(([col, idx]) => {
-      const hidden = !!_hiddenCols[prefix + '_' + col];
-      const th = ths[idx];
-      if (!th) return;
-
-      if (hidden) {
-        // Collapse th to just show the eye icon (so user can restore)
-        th.dataset.origText = th.dataset.origText || (th.innerText || '');
-        th.innerHTML = '<span class="col-eye col-restore" onclick="event.stopPropagation();toggleCol(\'' + prefix + '\',\'' + col + '\')" title="Mostrar coluna ' + (th.dataset.origText||col) + '">👁️</span>';
-        th.style.cssText = 'width:24px;min-width:24px;padding:4px;text-align:center;background:var(--danger-soft);cursor:pointer;';
-        th.onclick = (e) => { e.stopPropagation(); toggleCol(prefix, col); };
-      } else {
-        // Restore th — rebuild eye span inside original content
-        if (th.dataset.origText) {
-          // Restore original innerHTML with eye
-          const origLabel = th.dataset.origText;
-          const eyeSpan = '<span class="col-eye" onclick="event.stopPropagation();toggleCol(\'' + prefix + '\',\'' + col + '\')" title="Ocultar coluna">👁️</span>';
-          th.innerHTML = origLabel + eyeSpan;
-          th.style.cssText = '';
-          th.onclick = null;
-          delete th.dataset.origText;
-        } else {
-          // Just reset eye appearance
-          const eye = th.querySelector('.col-eye');
-          if (eye) { eye.style.opacity = ''; eye.style.color = ''; eye.title = 'Ocultar coluna'; eye.classList.remove('col-restore'); }
-          th.style.cssText = '';
-          th.onclick = null;
-        }
-      }
-
-      // Toggle td cells in tbody
-      if (tb) tb.querySelectorAll('tr').forEach(tr => {
-        const td = tr.querySelectorAll('td')[idx];
-        if (td) td.style.display = hidden ? 'none' : '';
-      });
-
-      // Toggle tfoot cells
-      if (tf) {
-        const td = tf.querySelectorAll('td')[idx];
-        if (td) td.style.display = hidden ? 'none' : '';
-      }
-    });
-  });
-}
-
-// Apply on tab switch
-const _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
-
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
 // Apenas inicializa o app com dados vazios (serão carregados após login).
@@ -9589,7 +9481,6 @@ function boot() {
 
 
 boot();
-document.addEventListener("DOMContentLoaded", () => setTimeout(applyHiddenCols, 500));
 
 </script>
 
