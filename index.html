@@ -863,6 +863,167 @@
   @keyframes shakeField { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 60%{transform:translateX(4px)} 80%{transform:translateX(-2px)} }
   .field-error-msg { font-size: 10px; color: var(--danger); margin-top: 2px; display:flex; align-items:center; gap:3px; }
 
+  /* ─── Auto/Manual toggle fields ─── */
+  .fc-auto {
+    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); color: var(--success); font-family: var(--font-mono);
+    font-size: 13px; font-weight: 700; padding: 7px 11px; outline: none; width: 100%;
+    cursor: default;
+  }
+  .fc-manual {
+    background: var(--bg-surface); border: 1.5px solid var(--accent);
+    border-radius: var(--radius-md); color: var(--accent); font-family: var(--font-mono);
+    font-size: 13px; font-weight: 700; padding: 7px 11px; outline: none; width: 100%;
+    transition: box-shadow 0.15s;
+  }
+  .fc-manual:focus { box-shadow: 0 0 0 3px var(--accent-ring); }
+  /* Toggle button (Auto/Manual) */
+  .mtg {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
+    border-radius: 100px; padding: 2px 8px 2px 5px;
+    font-size: 10px; font-weight: 600; cursor: pointer;
+    color: var(--text-tertiary); transition: all 0.15s;
+    vertical-align: middle; margin-left: 6px;
+  }
+  .mtg:hover { border-color: var(--accent); color: var(--accent); }
+  .mtg.on { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
+  .mtg .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-tertiary); transition: background 0.15s; display: inline-block;
+  }
+  .mtg.on .dot { background: var(--accent); }
+
+  /* ─── Dias badge (empenhos com atraso) ─── */
+  .dias-badge {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 100px; font-family: var(--font-mono); white-space: nowrap;
+  }
+  .dias-ok  { background: var(--success-soft); color: var(--success); }
+  .dias-30  { background: rgba(245,158,11,0.12); color: var(--warning); }
+  .dias-60  { background: rgba(212,43,43,0.10); color: var(--danger); }
+  .dias-90  { background: var(--danger-soft); color: var(--danger); font-size: 11px; }
+
+  /* ─── Empty state ─── */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 36px 20px; color: var(--text-tertiary); text-align: center;
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; opacity: 0.6; }
+  .empty-state p { font-size: 13px; margin: 0; }
+
+  /* ─── Table wrap (scrollable table container) ─── */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius-lg); }
+
+  /* ─── Toast container ─── */
+  .toast-container {
+    position: fixed; bottom: 20px; right: 20px; z-index: 99999;
+    display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+  }
+
+  /* ─── Pagination ─── */
+  .pagination { display: flex; align-items: center; gap: 4px; padding: 10px 0; flex-wrap: wrap; }
+  .page-btn {
+    min-width: 30px; height: 30px; padding: 0 8px;
+    border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    background: var(--bg-surface); color: var(--text-secondary);
+    font-size: 12px; cursor: pointer; transition: all 0.13s; font-family: var(--font-sans);
+  }
+  .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .page-info { font-size: 11px; color: var(--text-tertiary); padding: 0 4px; }
+
+  /* ─── Progress bar (lotes) ─── */
+  .progress-bar-wrap {
+    height: 6px; background: var(--bg-inset); border-radius: 100px; overflow: hidden;
+    min-width: 60px;
+  }
+  .progress-bar-fill {
+    height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.3s;
+  }
+
+  /* ─── Detail field (popup de detalhes) ─── */
+  .detail-field { margin-bottom: 10px; }
+  .detail-field-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--text-tertiary); margin-bottom: 2px;
+  }
+  .detail-field-value { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+
+  /* ─── Lotes status table ─── */
+  .lotes-status-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .lotes-status-table th { padding: 6px 8px; text-align: left; background: var(--bg-surface-soft); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-tertiary); }
+  .lotes-status-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-light); }
+  .lotes-totais { font-size: 12px; font-weight: 600; padding: 6px 0; }
+
+  /* ─── Alerta banner ─── */
+  .alerta-banner {
+    border-radius: var(--radius-xl); padding: 10px 14px; margin-bottom: 12px;
+    align-items: center; gap: 8px; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--warning); background: var(--warning-soft);
+    color: var(--warning); display: flex;
+  }
+
+  /* ─── Search highlight ─── */
+  .search-hl { background: rgba(255,220,0,0.35); border-radius: 2px; padding: 0 1px; }
+
+  /* ─── Copy button ─── */
+  .copy-btn {
+    background: none; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    padding: 2px 7px; font-size: 11px; cursor: pointer; color: var(--text-tertiary);
+    transition: all 0.13s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── Row highlight for empenhos atrasados ─── */
+  .alerta-90 { background: rgba(212,43,43,0.05) !important; }
+  .alerta-60 { background: rgba(245,158,11,0.05) !important; }
+  .alerta-30 { background: rgba(245,158,11,0.03) !important; }
+
+  /* ─── Dropdown de ações ─── */
+  .action-dropdown { position:relative; display:inline-block; }
+  .action-dropdown-btn {
+    background: none; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    color: var(--text-tertiary); cursor: pointer; padding: 4px 9px; font-size: 16px;
+    line-height: 1; transition: all 0.13s; font-family: var(--font-sans);
+  }
+  .action-dropdown-btn:hover { background: var(--bg-surface-soft); border-color: var(--border-medium); color: var(--text-primary); }
+  .action-dropdown-menu {
+    position: fixed; z-index: 9999;
+    background: var(--bg-surface); border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+    min-width: 170px; padding: 4px;
+    animation: fadeIn 0.1s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+  .action-dropdown-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    font-size: 13px; cursor: pointer; color: var(--text-primary);
+    transition: background 0.12s; border: none; background: none;
+    width: 100%; text-align: left; font-family: var(--font-sans);
+    white-space: nowrap;
+  }
+  .action-dropdown-item:hover { background: var(--bg-surface-soft); }
+  .action-dropdown-item.danger { color: var(--danger); }
+  .action-dropdown-item.danger:hover { background: var(--danger-soft); }
+  .action-dropdown-item .item-icon { font-size: 15px; width: 20px; text-align: center; }
+  .action-dropdown-divider { height: 1px; background: var(--border-light); margin: 4px 0; }
+
+  /* ─── Toggle de colunas ─── */
+  .col-eye {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; margin-left: 5px; cursor: pointer;
+    color: var(--text-tertiary); opacity: 0.4; transition: opacity 0.15s, color 0.15s;
+    font-size: 12px; vertical-align: middle; flex-shrink: 0;
+    border-radius: 3px;
+  }
+  .col-eye:hover { opacity: 1; color: var(--accent); }
+  .col-hidden { display: none !important; }
+  th:has(.col-eye:hover) { background: var(--accent-muted) !important; }
+
   .fsec {
     font-size: 12px; font-weight: 600; color: var(--text-primary);
     margin: 12px 0 7px; padding-bottom: 4px;
@@ -1317,11 +1478,11 @@
         <thead><tr>
           <th>Data</th>
           <th>Órgão / UF</th>
-          <th>Analista</th>
-          <th>Sistema</th>
+          <th>Analista<span class="col-eye" onclick="toggleCol('acomp','analista')" title="Ocultar coluna">👁️</span></th>
+          <th>Sistema<span class="col-eye" onclick="toggleCol('acomp','sistema')" title="Ocultar coluna">👁️</span></th>
           <th>Status</th>
           <th>⏰ Retorno</th>
-          <th>Ações</th>
+          <th style="text-align:center;">⋯</th>
         </tr></thead>
         <tbody id="tbody-acomp"></tbody>
       </table>
@@ -1622,15 +1783,15 @@
       <table>
         <thead><tr>
           <th style="width:36px;min-width:36px;text-align:center;"><input type="checkbox" id="chk-all-disputas" title="Selecionar todos" onchange="toggleSelectAll('disputas',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
-          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','data')" title="Ocultar coluna">👁️</span></th>
           <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
-          <th style="min-width:80px;width:80px;">Analista</th>
-          <th class="money" style="min-width:105px;width:105px;">💰 Vl. Contrato</th>
-          <th class="money" style="min-width:105px;width:105px;">🛒 Compra Prev.</th>
-          <th class="money" style="min-width:95px;width:95px;">⚙️ Custo Prev.</th>
-          <th class="money" style="min-width:95px;width:95px;">📈 Lucro Prev.</th>
-          <th class="money" style="min-width:115px;width:115px;">✅ Lucro Realizado</th>
-          <th style="min-width:170px;width:170px;">Ações</th>
+          <th style="min-width:80px;width:80px;" data-col-d="analista">Analista<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','analista')" title="Ocultar coluna">👁️</span></th>
+          <th class="money" style="min-width:105px;width:105px;" data-col-d="contrato">💰 Vl. Contrato<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','contrato')" title="Ocultar coluna">👁️</span></th>
+          <th class="money" style="min-width:105px;width:105px;" data-col-d="compra">🛒 Compra Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','compra')" title="Ocultar coluna">👁️</span></th>
+          <th class="money" style="min-width:95px;width:95px;" data-col-d="custo">⚙️ Custo Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','custo')" title="Ocultar coluna">👁️</span></th>
+          <th class="money" style="min-width:95px;width:95px;" data-col-d="lucroprev">📈 Lucro Prev.<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','lucroprev')" title="Ocultar coluna">👁️</span></th>
+          <th class="money" style="min-width:115px;width:115px;" data-col-d="lucroreal">✅ Lucro Realizado<span class="col-eye" onclick="event.stopPropagation();toggleCol('disputas','lucroreal')" title="Ocultar coluna">👁️</span></th>
+          <th style="min-width:50px;width:50px;text-align:center;">⋯</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
         <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
@@ -1706,13 +1867,13 @@
           <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
           <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
-          <th>Analista</th>
+          <th data-col-e="analista">Analista<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','analista')" title="Ocultar coluna">👁️</span></th>
           <th onclick="sort('empenhos', 'vem')" id="sort-empenhos-vem">Val. Empenho</th>
-          <th>💰 Vl. Compra</th>
-          <th>📈 Lucro</th>
-          <th>⏳ A Receber</th>
-          <th>⏱️ Dias</th>
-          <th>Ações</th>
+          <th data-col-e="vlcompra">💰 Vl. Compra<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','vlcompra')" title="Ocultar coluna">👁️</span></th>
+          <th data-col-e="lucro">📈 Lucro<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','lucro')" title="Ocultar coluna">👁️</span></th>
+          <th data-col-e="areceber">⏳ A Receber<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','areceber')" title="Ocultar coluna">👁️</span></th>
+          <th data-col-e="dias">⏱️ Dias<span class="col-eye" onclick="event.stopPropagation();toggleCol('empenhos','dias')" title="Ocultar coluna">👁️</span></th>
+          <th style="min-width:50px;width:50px;text-align:center;">⋯</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
         <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
@@ -4119,12 +4280,19 @@ function renderD(){
       '<td class="mono" style="color:var(--warning);font-size:11px;">'+(_custoPrev>0?fmt(_custoPrev):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
       '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">'+(_lucReal>0?fmt(_lucReal):'—')+'</td>' +
-      '<td onclick="event.stopPropagation()" style="white-space:nowrap;">'  +
-        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupDisputa(\'' + r.id + '\')" title="Ver detalhes" style="padding:5px 9px;font-size:15px;border-radius:8px;">🔍</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="editD(\'' + r.id + '\')" title="Editar" style="padding:5px 9px;font-size:15px;border-radius:8px;">✏️</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="duplicarDisputa(\'' + r.id + '\')" title="Duplicar" style="padding:5px 9px;font-size:15px;border-radius:8px;">📄</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="finalizarDisputa(\'' + r.id + '\')" title="Finalizar disputa" style="padding:5px 9px;font-size:15px;border-radius:8px;color:var(--success);border-color:var(--success);">🏁</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delRow(\'disputas\',\'' + r.id + '\')" title="Excluir" style="padding:5px 9px;font-size:15px;border-radius:8px;">🗑️</button>' +
+      '<td onclick="event.stopPropagation()" style="text-align:center;">' +
+        '<div class="action-dropdown">' +
+          '<button class="action-dropdown-btn" onclick="openActionMenu(event,this)" title="Ações">⋯</button>' +
+          '<div class="action-dropdown-menu" style="display:none;">' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();abrirPopupDisputa(\'' + r.id + '\')"><span class="item-icon">🔍</span>Ver detalhes</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();editD(\'' + r.id + '\')"><span class="item-icon">✏️</span>Editar</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();duplicarDisputa(\'' + r.id + '\')"><span class="item-icon">📄</span>Duplicar</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();openModal(\'empenhos\');document.getElementById(\'e-disputa\').value=\'' + r.id + '\';onDisputaSelecionada(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">📋</span>Novo Empenho</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();finalizarDisputa(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">🏁</span>Finalizar</button>' +
+            '<div class="action-dropdown-divider"></div>' +
+            '<button class="action-dropdown-item danger" onclick="closeActionMenus();delRow(\'disputas\',\'' + r.id + '\')"><span class="item-icon">🗑️</span>Excluir</button>' +
+          '</div>' +
+        '</div>' +
       '</td></tr>'
     );
 
@@ -4202,6 +4370,7 @@ function renderD(){
 
   tb.innerHTML = htmlParts.join('');
   sumD();
+  setTimeout(applyHiddenCols, 0);
 }
 
 function sumD(){
@@ -4318,17 +4487,26 @@ function renderE(){
       '<td class="mono" style="color:var(--success);font-weight:700;font-size:11px;">' + (_vlLucro>0 ? fmt(_vlLucro) : '—') + '</td>' +
       '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;">' + (_vlRec>0 ? fmt(_vlRec) : '—') + '</td>' +
       '<td>' + diasBadge + '</td>' +
-      '<td onclick="event.stopPropagation()" style="white-space:nowrap;">' +
-        '<button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + r.id + '\')" title="Ver detalhes" style="'+btnStyle+'">🔍</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="editE(\'' + r.id + '\')" title="Editar" style="'+btnStyle+'">✏️</button>' +
-        (() => { const _tem = empenhoTemSaldo(r.id); return '<button class="btn btn-ghost btn-sm" onclick="' + (_tem ? "abrirCompra('" + r.id + "')" : '') + '" title="' + (_tem ? 'Nova Compra' : 'Sem saldo disponível') + '" style="'+btnStyle+';' + (_tem ? 'color:var(--success);border-color:var(--success);' : 'opacity:0.35;cursor:not-allowed;') + '">🛒</button>'; })() +
-        '<button class="btn btn-ghost btn-sm" onclick="duplicarEmpenho(\'' + r.id + '\')" title="Duplicar" style="'+btnStyle+'">📄</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="finalizarEmpenho(\'' + r.id + '\')" title="Finalizar" style="'+btnStyle+';color:var(--purple);border-color:var(--purple);">☑️</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delRow(\'empenhos\',\'' + r.id + '\')" title="Excluir" style="'+btnStyle+'">🗑️</button>' +
+      '<td onclick="event.stopPropagation()" style="text-align:center;">' +
+        '<div class="action-dropdown">' +
+          '<button class="action-dropdown-btn" onclick="openActionMenu(event,this)" title="Ações">⋯</button>' +
+          '<div class="action-dropdown-menu" style="display:none;">' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();abrirPopupEmpenho(\'' + r.id + '\')"><span class="item-icon">🔍</span>Ver detalhes</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();editE(\'' + r.id + '\')"><span class="item-icon">✏️</span>Editar</button>' +
+            (() => { const _tem = empenhoTemSaldo(r.id); return _tem
+              ? '<button class="action-dropdown-item" onclick="closeActionMenus();abrirCompra(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">🛒</span>Nova Compra</button>'
+              : '<button class="action-dropdown-item" disabled style="opacity:0.4;cursor:not-allowed;"><span class="item-icon">🛒</span>Nova Compra (sem saldo)</button>'; })() +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();duplicarEmpenho(\'' + r.id + '\')"><span class="item-icon">📄</span>Duplicar</button>' +
+            '<button class="action-dropdown-item" onclick="closeActionMenus();finalizarEmpenho(\'' + r.id + '\')" style="color:var(--purple);"><span class="item-icon">☑️</span>Finalizar</button>' +
+            '<div class="action-dropdown-divider"></div>' +
+            '<button class="action-dropdown-item danger" onclick="closeActionMenus();delRow(\'empenhos\',\'' + r.id + '\')"><span class="item-icon">🗑️</span>Excluir</button>' +
+          '</div>' +
+        '</div>' +
       '</td></tr>';
   }).join('');
   sumE();
   verificarAlertas();
+  setTimeout(applyHiddenCols, 0);
 }
 function sumE(){
   const a=DB.empenhos.filter(r=>matches('empenhos',r) && !r.finalizado);
@@ -8211,15 +8389,22 @@ function renderAcomp() {
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
       <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
       <td style="${zebraTd}">${retStr}</td>
-      <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraTd}">
-        ${linkBtn}
-        <button class="btn btn-ghost btn-sm" onclick="editAcomp('${r.id}')" title="Editar" style="${btnStyle}">✏️</button>
-        <button class="btn btn-ghost btn-sm" onclick="converterEmDisputa('${r.id}')" title="Converter em Disputa Vencida" style="${btnStyle};color:var(--success);border-color:var(--success);">🏆</button>
-        <button class="btn btn-danger btn-sm" onclick="delAcomp('${r.id}')" title="Excluir" style="${btnStyle}">🗑️</button>
+      <td onclick="event.stopPropagation()" style="text-align:center;${zebraTd}">
+        <div class="action-dropdown">
+          <button class="action-dropdown-btn" onclick="openActionMenu(event,this)" title="Ações">⋯</button>
+          <div class="action-dropdown-menu" style="display:none;">
+            ${r.link ? '<button class="action-dropdown-item" onclick="closeActionMenus();window.open(\'' + r.link + '\',\'_blank\')"><span class="item-icon">🔗</span>Abrir sistema</button>' : ''}
+            <button class="action-dropdown-item" onclick="closeActionMenus();editAcomp('${r.id}')"><span class="item-icon">✏️</span>Editar</button>
+            <button class="action-dropdown-item" onclick="closeActionMenus();converterEmDisputa('${r.id}')" style="color:var(--success);"><span class="item-icon">🏆</span>Converter em Contrato</button>
+            <div class="action-dropdown-divider"></div>
+            <button class="action-dropdown-item danger" onclick="closeActionMenus();delAcomp('${r.id}')"><span class="item-icon">🗑️</span>Excluir</button>
+          </div>
+        </div>
       </td>
     </tr>`;
   }).join('');
 
+  setTimeout(applyHiddenCols, 0);
   const pendentes = (DB.acomp||[]).filter(r=>r.status==='pendente').length;
   const recursos = (DB.acomp||[]).filter(r=>r.status==='recurso').length;
   const vencidos = (DB.acomp||[]).filter(r=>r.retorno && new Date(r.retorno)<agora).length;
@@ -8637,10 +8822,18 @@ function renderEAgrupado(rows, tb) {
         <td class="mono" style="color:var(--success);font-size:11px;${zebraGrpTd}">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
         <td class="mono" style="color:var(--accent);font-size:11px;${zebraGrpTd}">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
         <td style="${zebraGrpTd}">${diasBadge}</td>
-        <td onclick="event.stopPropagation()" style="white-space:nowrap;${zebraGrpTd}">
-          <button class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${r.id}')" style="${btnStyle}">🔍</button>
-          <button class="btn btn-ghost btn-sm" onclick="editE('${r.id}')" style="${btnStyle}">✏️</button>
-          ${(() => { const _ts = empenhoTemSaldo(r.id); return '<button class="btn btn-ghost btn-sm"' + (_ts ? ' onclick="abrirCompra(\'' + r.id + '\')"' : ' disabled title="Saldo esgotado"') + ' style="${btnStyle};' + (_ts ? 'color:var(--success);border-color:var(--success);' : 'opacity:0.35;cursor:not-allowed;') + '">🛒</button>'; })()}
+        <td onclick="event.stopPropagation()" style="text-align:center;${zebraGrpTd}">
+          <div class="action-dropdown">
+            <button class="action-dropdown-btn" onclick="openActionMenu(event,this)" title="Ações">⋯</button>
+            <div class="action-dropdown-menu" style="display:none;">
+              <button class="action-dropdown-item" onclick="closeActionMenus();abrirPopupEmpenho('${r.id}')"><span class="item-icon">🔍</span>Ver detalhes</button>
+              <button class="action-dropdown-item" onclick="closeActionMenus();editE('${r.id}')"><span class="item-icon">✏️</span>Editar</button>
+              ${(() => { const _ts = empenhoTemSaldo(r.id); return _ts ? '<button class="action-dropdown-item" onclick="closeActionMenus();abrirCompra(\'' + r.id + '\')" style="color:var(--success);"><span class="item-icon">🛒</span>Nova Compra</button>' : '<button class="action-dropdown-item" disabled style="opacity:0.4;cursor:not-allowed;"><span class="item-icon">🛒</span>Sem saldo</button>'; })()}
+              <button class="action-dropdown-item" onclick="closeActionMenus();duplicarEmpenho('${r.id}')"><span class="item-icon">📄</span>Duplicar</button>
+              <div class="action-dropdown-divider"></div>
+              <button class="action-dropdown-item danger" onclick="closeActionMenus();delRow('empenhos','${r.id}')"><span class="item-icon">🗑️</span>Excluir</button>
+            </div>
+          </div>
         </td>
       </tr>`;
     }).join('');
@@ -9199,6 +9392,125 @@ function carregarArquivosEmpenho(r) {
 // Alertas de retorno: gerenciados pelo checarRetornos (a cada 30s)
 
 
+// ========== DROPDOWN DE AÇÕES ==========
+function openActionMenu(event, btn) {
+  event.stopPropagation();
+  closeActionMenus();
+  const menu = btn.nextElementSibling;
+  if (!menu) return;
+  
+  // Position the menu relative to the viewport
+  const rect = btn.getBoundingClientRect();
+  menu.style.display = 'block';
+  
+  // Calculate position
+  const menuW = 180;
+  const menuH = menu.scrollHeight || 200;
+  let left = rect.right - menuW;
+  let top = rect.bottom + 4;
+  
+  // Keep inside viewport
+  if (left < 8) left = 8;
+  if (top + menuH > window.innerHeight - 8) top = rect.top - menuH - 4;
+  
+  menu.style.left = left + 'px';
+  menu.style.top = top + 'px';
+  menu.style.position = 'fixed';
+  
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', closeActionMenus, { once: true });
+  }, 0);
+}
+
+function closeActionMenus() {
+  document.querySelectorAll('.action-dropdown-menu').forEach(m => m.style.display = 'none');
+}
+
+// Close on scroll
+document.addEventListener('scroll', closeActionMenus, true);
+
+// ========== TOGGLE DE COLUNAS ==========
+const _hiddenCols = JSON.parse(localStorage.getItem('hiddenCols') || '{}');
+
+function toggleCol(table, colKey) {
+  const key = table + '_' + colKey;
+  _hiddenCols[key] = !_hiddenCols[key];
+  localStorage.setItem('hiddenCols', JSON.stringify(_hiddenCols));
+  applyHiddenCols();
+}
+
+function applyHiddenCols() {
+  // Disputas
+  const dCols = { analista: 3, contrato: 4, compra: 5, custo: 6, lucroprev: 7, lucroreal: 8 };
+  const eCols = { analista: 3, vlcompra: 5, lucro: 6, areceber: 7, dias: 8 };
+  
+  const tbD = document.querySelector('#tbody-disputas');
+  const tbE = document.querySelector('#tbody-empenhos');
+  
+  // Apply to thead
+  Object.entries(dCols).forEach(([col, idx]) => {
+    const hidden = _hiddenCols['disputas_' + col];
+    const ths = document.querySelectorAll('#disputas-table-view thead th');
+    if (ths[idx]) {
+      ths[idx].style.display = hidden ? 'none' : '';
+      const eye = ths[idx].querySelector('.col-eye');
+      if (eye) eye.style.opacity = hidden ? '1' : '';
+      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
+      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
+    }
+    // Apply to tbody
+    if (tbD) tbD.querySelectorAll('tr').forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
+    });
+    // Apply to tfoot
+    const tfRow = document.querySelector('#tfoot-disputas-row');
+    if (tfRow) {
+      const tds = tfRow.querySelectorAll('td');
+      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
+    }
+  });
+  
+  Object.entries(eCols).forEach(([col, idx]) => {
+    const hidden = _hiddenCols['empenhos_' + col];
+    const ths = document.querySelectorAll('#tab-empenhos .table-wrapper thead th');
+    if (ths[idx]) {
+      ths[idx].style.display = hidden ? 'none' : '';
+      const eye = ths[idx].querySelector('.col-eye');
+      if (eye) eye.style.opacity = hidden ? '1' : '';
+      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
+      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
+    }
+    if (tbE) tbE.querySelectorAll('tr').forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
+    });
+  });
+
+  // Acompanhamentos columns: analista=2, sistema=3
+  const aCols = { analista: 2, sistema: 3 };
+  const tbA = document.querySelector('#tbody-acomp');
+  Object.entries(aCols).forEach(([col, idx]) => {
+    const hidden = _hiddenCols['acomp_' + col];
+    const ths = document.querySelectorAll('#tab-acompanhamentos .table-wrapper thead th');
+    if (ths[idx]) {
+      ths[idx].style.display = hidden ? 'none' : '';
+      const eye = ths[idx].querySelector('.col-eye');
+      if (eye) eye.style.opacity = hidden ? '1' : '';
+      if (eye) eye.style.color = hidden ? 'var(--danger)' : '';
+      if (eye) eye.title = hidden ? 'Mostrar coluna' : 'Ocultar coluna';
+    }
+    if (tbA) tbA.querySelectorAll('tr').forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds[idx]) tds[idx].style.display = hidden ? 'none' : '';
+    });
+  });
+}
+
+// Apply on tab switch
+const _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
+
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
 // Apenas inicializa o app com dados vazios (serão carregados após login).
@@ -9263,6 +9575,7 @@ function boot() {
 
 
 boot();
+document.addEventListener("DOMContentLoaded", () => setTimeout(applyHiddenCols, 500));
 
 </script>
 
