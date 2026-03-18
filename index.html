@@ -1445,6 +1445,22 @@
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('acomp')">＋ Novo Acompanhamento</button>
       <div class="filter-group">
+        <label>🏢 Empresa:</label>
+        <select id="filtro-empresa-acomp" onchange="renderAcomp()">
+          <option value="todos">Todas</option>
+          <option value="Hamate">Hamate</option>
+          <option value="Gadita">Gadita</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📋 Tipo:</label>
+        <select id="filtro-tipo-acomp" onchange="renderAcomp()">
+          <option value="todos">Todos</option>
+          <option value="Pregão Eletrônico">Pregão</option>
+          <option value="Dispensa">Dispensa</option>
+        </select>
+      </div>
+      <div class="filter-group">
         <label>👤 Analista:</label>
         <select id="filtro-analista-acomp" onchange="renderAcomp()">
           <option value="todos">Todos</option>
@@ -1468,6 +1484,8 @@
         <thead><tr>
           <th>Data</th>
           <th>Órgão / UF</th>
+          <th>Empresa</th>
+          <th>Tipo / Processo</th>
           <th>Analista</th>
           <th>Sistema</th>
           <th>Status</th>
@@ -1996,6 +2014,21 @@
             <option value="recurso">Em Recurso</option>
           </select>
         </div>
+        <div class="fg"><label class="fl">Empresa</label>
+          <select class="fc" id="ac-empresa">
+            <option value="">Selecione</option>
+            <option value="Hamate">Hamate</option>
+            <option value="Gadita">Gadita</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Tipo de Processo</label>
+          <select class="fc" id="ac-tipo">
+            <option value="">Selecione</option>
+            <option value="Pregão Eletrônico">Pregão Eletrônico</option>
+            <option value="Dispensa">Dispensa</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Nº do Processo</label><input type="text" class="fc" id="ac-processo" placeholder="Ex: 001/2025"></div>
         <div class="fg"><label class="fl">🔗 Link do Sistema</label><input type="url" class="fc" id="ac-link" placeholder="https://..."></div>
         <div class="fg"><label class="fl">⏰ Data e Hora de Retorno</label><input type="datetime-local" class="fc" id="ac-retorno"></div>
         <div class="fg full"><label class="fl">Observação</label>
@@ -8277,6 +8310,9 @@ function _doSaveAcomp(retornoVal) {
     sistema: document.getElementById('ac-sistema')?.value || '',
     analista: document.getElementById('ac-analista')?.value || '',
     status: document.getElementById('ac-status')?.value || 'pendente',
+    empresa: document.getElementById('ac-empresa')?.value || '',
+    tipo: document.getElementById('ac-tipo')?.value || '',
+    processo: (document.getElementById('ac-processo')?.value || '').toUpperCase(),
     link: document.getElementById('ac-link')?.value || '',
     retorno: retornoVal,
     observacao: document.getElementById('ac-observacao')?.value?.toUpperCase() || '',
@@ -8315,7 +8351,7 @@ function _doSaveAcomp(retornoVal) {
 
 function clearAcomp() {
   EID_acomp = null;
-  ['ac-data','ac-orgao','ac-estado','ac-sistema','ac-analista','ac-status','ac-link','ac-retorno','ac-observacao'].forEach(id => {
+  ['ac-data','ac-orgao','ac-estado','ac-sistema','ac-analista','ac-status','ac-empresa','ac-tipo','ac-processo','ac-link','ac-retorno','ac-observacao'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   setAnalistaSelect('ac-analista', analistaDoUsuario || 'Márdea');
@@ -8334,6 +8370,9 @@ function editAcomp(id) {
   document.getElementById('ac-sistema').value = r.sistema || '';
   setAnalistaSelect('ac-analista', r.analista || analistaDoUsuario || '');
   document.getElementById('ac-status').value = r.status || 'pendente';
+  document.getElementById('ac-empresa').value = r.empresa || '';
+  document.getElementById('ac-tipo').value = r.tipo || '';
+  document.getElementById('ac-processo').value = r.processo || '';
   document.getElementById('ac-link').value = r.link || '';
   document.getElementById('ac-retorno').value = r.retorno || '';
   document.getElementById('ac-observacao').value = r.observacao || '';
@@ -8363,18 +8402,22 @@ function renderAcomp() {
   const tb = document.getElementById('tbody-acomp'); if (!tb) return;
   const analista = document.getElementById('filtro-analista-acomp')?.value || 'todos';
   const status = document.getElementById('filtro-status-acomp')?.value || 'todos';
+  const empresa = document.getElementById('filtro-empresa-acomp')?.value || 'todos';
+  const tipoFiltro = document.getElementById('filtro-tipo-acomp')?.value || 'todos';
   const busca = (document.getElementById('search-acomp')?.value || '').toLowerCase();
   const agora = new Date();
 
   let rows = (DB.acomp||[]).filter(r => {
     if (analista !== 'todos' && r.analista !== analista) return false;
     if (status !== 'todos' && r.status !== status) return false;
+    if (empresa !== 'todos' && r.empresa !== empresa) return false;
+    if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
     if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
     return true;
   }).sort((a,b) => (a.retorno||'').localeCompare(b.retorno||''));
 
   if (!rows.length) {
-    tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
     const el = document.getElementById('sum-acomp'); if(el) el.innerHTML='';
     return;
   }
@@ -8392,6 +8435,8 @@ function renderAcomp() {
     return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
       <td style="${zebraTd}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
+      <td style="${zebraTd}"><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa||'—'}</span></td>
+      <td style="${zebraTd}"><div style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</div><span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo||''}</span></td>
       <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
       <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
@@ -8426,7 +8471,7 @@ function verAcomp(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
   const ret = r.retorno ? new Date(r.retorno) : null;
   const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Em Recurso',perdida:'❌ Perdida'};
-  alert(`📋 ${r.orgao} — ${r.estado}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
+  alert(`📋 ${r.orgao} — ${r.estado}\n🏢 Empresa: ${r.empresa||'—'}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n🏷️ Tipo: ${r.tipo||'—'} | Processo: ${r.processo||'—'}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
 }
 
 function _doCriarDisputaDeAcomp(r) {
