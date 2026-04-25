@@ -8496,8 +8496,43 @@ function renderAcomp() {
 function verAcomp(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
   const ret = r.retorno ? new Date(r.retorno) : null;
+  const agora = new Date();
+  const vencido = ret && ret < agora;
   const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Em Recurso',perdida:'❌ Perdida'};
-  alert(`📋 ${r.orgao} — ${r.estado}\n🏢 Empresa: ${r.empresa||'—'}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n🏷️ Tipo: ${r.tipo||'—'} | Processo: ${r.processo||'—'}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
+  const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
+  const corEmp = r.empresa==='Hamate' ? '#7c3aed' : 'var(--accent)';
+  const bgEmp  = r.empresa==='Hamate' ? 'rgba(124,58,237,0.12)' : 'var(--accent-muted)';
+  const retStr = ret
+    ? '<span style="font-weight:700;color:' + (vencido?'var(--danger)':'var(--text-primary)') + ';">' +
+        (vencido ? '🔴 ' : '⏰ ') + ret.toLocaleDateString('pt-BR') + ' ' + ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</span>' +
+        (vencido ? ' <span style="font-size:10px;padding:2px 7px;background:var(--danger-soft);color:var(--danger);border-radius:10px;font-weight:700;">VENCIDO</span>' : '')
+    : '—';
+
+  g('popup-a-title').textContent = (r.orgao||'ACOMPANHAMENTO').toUpperCase();
+  g('popup-a-sub').textContent = (r.processo||'') + (r.sistema ? ' · ' + r.sistema : '') + (r.data ? ' · ' + new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '');
+  g('popup-a-body').innerHTML =
+    '<div class="detail-grid-3">' +
+      '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value"><span style="font-size:12px;padding:2px 9px;border-radius:12px;background:'+bgEmp+';color:'+corEmp+';font-weight:700;">' + (r.empresa||'—') + '</span></div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value"><span class="badge ' + _badgeClass(r.analista) + '">' + (r.analista||'—') + '</span></div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value"><span style="font-weight:700;color:' + (statusColors[r.status]||'var(--text-secondary)') + ';">' + (statusLabels[r.status]||r.status||'—') + '</span></div></div>' +
+    '</div>' +
+    '<div class="detail-grid">' +
+      '<div class="detail-field"><div class="detail-field-label">TIPO</div><div class="detail-field-value">' + (r.tipo||'—') + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">ESTADO</div><div class="detail-field-value"><span class="estado-badge">' + (r.estado||'—') + '</span></div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">DATA</div><div class="detail-field-value">' + (r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—') + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">⏰ RETORNO AGENDADO</div><div class="detail-field-value">' + retStr + '</div></div>' +
+    '</div>' +
+    (r.link ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">LINK DO SISTEMA</div><div class="detail-field-value"><a href="' + r.link + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);text-decoration:none;">🔗 Abrir sistema</a></div></div>' : '') +
+    (r.observacao ? '<div class="detail-section">💬 OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;line-height:1.6;white-space:pre-wrap;">' + r.observacao + '</div>' : '') +
+    renderComentarios('acomp', id);
+
+  g('popup-a-edit-btn').onclick = () => { fecharPopupAcomp(); editAcomp(id); };
+  g('popup-a-converter-btn').onclick = () => { fecharPopupAcomp(); converterEmDisputa(id); };
+  g('popup-acomp').classList.add('open');
+}
+
+function fecharPopupAcomp() {
+  g('popup-acomp').classList.remove('open');
 }
 
 function _doCriarDisputaDeAcomp(r) {
@@ -9615,6 +9650,24 @@ boot();
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
+    </div>
+  </div>
+</div>
+<!-- POPUP DETALHES ACOMPANHAMENTO -->
+<div class="detail-popup-overlay" id="popup-acomp">
+  <div class="detail-popup">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="popup-a-title">Detalhes do Acompanhamento</div>
+        <div class="detail-popup-sub" id="popup-a-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharPopupAcomp()">✕</button>
+    </div>
+    <div id="popup-a-body"></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharPopupAcomp()">Fechar</button>
+      <button class="btn btn-success" id="popup-a-converter-btn" style="background:var(--success);color:#fff;border:none;">🏆 Converter em Contrato</button>
+      <button class="btn btn-primary" id="popup-a-edit-btn">Editar</button>
     </div>
   </div>
 </div>
