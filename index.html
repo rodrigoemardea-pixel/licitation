@@ -4061,7 +4061,7 @@ function abrirPopupEmpenho(id) {
               📈 ${fmtPct(pctLucroEmp)}
               <span style="font-size:9px;font-weight:500;opacity:0.75;">(lucro / comprado)</span>
             </span>
-            ${empresaEmp ? `<span style="margin-left:8px;font-size:11px;padding:3px 10px;border-radius:20px;background:${empresaEmp==='Hamate'?'rgba(124,58,237,0.12)':'var(--accent-muted)'};color:${empresaEmp==='Hamate'?'#7c3aed':'var(--accent)'};font-weight:700;">${empresaEmp}</span>` : ''}
+            ${empresaEmp ? '<span style="margin-left:8px;font-size:11px;padding:3px 10px;border-radius:20px;background:'+(empresaEmp==="Hamate"?'rgba(124,58,237,0.12)':'var(--accent-muted)')+';color:'+(empresaEmp==="Hamate"?'#7c3aed':'var(--accent)')+';font-weight:700;">'+empresaEmp+'</span>' : ''}
           </td>
         </tr>
       </tfoot>
