@@ -3868,9 +3868,9 @@ function abrirPopupDisputa(id) {
         });
         const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
         const temSaldo = (l.qtdRestante || 0) > 0;
-        const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
+        const rowClick = (temSaldo && !r.finalizada) ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo && !r.finalizada ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
           '<td class="mono" style="color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
@@ -3949,7 +3949,15 @@ function abrirPopupDisputa(id) {
     renderComentarios('disputa', id);
 
   g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
-  g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
+  const _newEmpBtn = g('popup-d-new-emp-btn');
+  if (_newEmpBtn) {
+    if (r.finalizada) {
+      _newEmpBtn.style.display = 'none';
+    } else {
+      _newEmpBtn.style.display = '';
+      _newEmpBtn.onclick = () => novoEmpenhoParaDisputa(id);
+    }
+  }
   // Botão reabrir — só aparece se a disputa está finalizada
   const reabrirBtn = g('popup-d-reabrir-btn');
   if (reabrirBtn) {
