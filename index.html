@@ -3983,13 +3983,14 @@ function abrirPopupEmpenho(id) {
   
   const compras = r.compras || [];
 
-  // Variáveis extras para as novas features
-  const outrosEmpenhos = disp ? DB.empenhos.filter(e => e.disputaId === r.disputaId && e.id !== r.id) : [];
-  const empresaEmp = (disp && disp.empresa) ? disp.empresa : (r.empresa || null);
-  const _totalComprado = compras.reduce((s,c) => s + (c.vtotal||0), 0);
-  const _lucroTotal = compras.reduce((s,c) => s + (c.luc||0), 0);
-  const _pctLucro = _totalComprado > 0 ? (_lucroTotal / _totalComprado * 100) : 0;
-  const _corPct = _pctLucro >= 15 ? 'var(--success)' : _pctLucro >= 8 ? 'var(--warning)' : 'var(--danger)';
+  // Extras: outros empenhos da mesma disputa, empresa, % lucro
+  const _outrosEmps = disp ? DB.empenhos.filter(function(e){ return e.disputaId === r.disputaId && e.id !== r.id; }) : [];
+  const _empresa = (disp && disp.empresa) ? disp.empresa : (r.empresa || null);
+  const _totalC = compras.reduce(function(s,c){ return s+(c.vtotal||0); }, 0);
+  const _lucroT = compras.reduce(function(s,c){ return s+(c.luc||0); }, 0);
+  const _pct = _totalC > 0 ? (_lucroT / _totalC * 100) : 0;
+  const _corP = _pct >= 15 ? 'var(--success)' : _pct >= 8 ? 'var(--warning)' : 'var(--danger)';
+  const _pctStr = (_pct >= 0 ? '+' : '') + _pct.toFixed(1).replace('.', ',') + '%';
   
   const itensHTML = itens.length ? `
     <div class="detail-section">📦 ITENS DO EMPENHO</div>
@@ -4055,7 +4056,7 @@ function abrirPopupEmpenho(id) {
         </tr>
         <tr style="background:var(--bg-surface-soft);border-top:1px solid var(--border-light);">
           <td colspan="6" style="padding:5px 8px;font-size:10px;color:var(--text-tertiary);text-align:right;">% LUCRO DESTE EMPENHO</td>
-          <td colspan="6" style="padding:5px 8px;">${'<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;background:'+_corPct+'1a;border:1px solid '+_corPct+';color:'+_corPct+';font-family:var(--font-mono);font-size:12px;font-weight:800;">📈 '+fmtPct(_pctLucro)+'<span style="font-size:9px;font-weight:400;opacity:0.7;margin-left:4px;">(lucro/comprado)</span></span>'+(empresaEmp?' <span style="margin-left:6px;font-size:11px;padding:2px 8px;border-radius:12px;background:'+(empresaEmp==="Hamate"?'rgba(124,58,237,0.12)':'var(--accent-muted)')+';color:'+(empresaEmp==="Hamate"?'#7c3aed':'var(--accent)')+';font-weight:700;">'+empresaEmp+'</span>':'')}</td>
+          <td colspan="6" style="padding:5px 8px;">${'<span style="padding:3px 10px;border-radius:20px;background:'+_corP+'1a;border:1px solid '+_corP+';color:'+_corP+';font-family:var(--font-mono);font-size:12px;font-weight:800;">📈 '+_pctStr+'</span>'+(_empresa?' <span style="margin-left:6px;font-size:11px;padding:2px 8px;border-radius:12px;background:'+(_empresa==="Hamate"?'rgba(124,58,237,0.12)':'var(--accent-muted)')+';color:'+(_empresa==="Hamate"?'#7c3aed':'var(--accent)')+';font-weight:700;">'+_empresa+'</span>':'')}</td>
         </tr>
       </tfoot>
     </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
@@ -4069,12 +4070,12 @@ function abrirPopupEmpenho(id) {
     '<div class="detail-grid-3">' +
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
-      (empresaEmp ? '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value"><span style="font-size:12px;padding:2px 10px;border-radius:12px;background:'+(empresaEmp==="Hamate"?'rgba(124,58,237,0.12)':'var(--accent-muted)')+';color:'+(empresaEmp==="Hamate"?'#7c3aed':'var(--accent)')+';font-weight:700;">'+empresaEmp+'</span></div></div>' : '') +
+      (_empresa ? '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value"><span style="font-size:12px;padding:2px 9px;border-radius:12px;background:' + (_empresa==='Hamate'?'rgba(124,58,237,0.12)':'var(--accent-muted)') + ';color:' + (_empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';font-weight:700;">' + _empresa + '</span></div></div>' : '') +
     '</div>' +
 
     (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
-    (outrosEmpenhos.length > 0 ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">🔗 OUTROS EMPENHOS DESTA DISPUTA</div><div class="detail-field-value" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">' + outrosEmpenhos.map(function(e){ var pago=empenhoEstaPago(e); var cor=pago?'var(--success)':'var(--accent)'; var bg=pago?'var(--success-soft)':'var(--accent-muted)'; return '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid '+cor+';background:'+bg+';color:'+cor+';font-size:11px;font-weight:700;">'+(pago?'✅':'📋')+' #'+(e.num||'?')+'</span>'; }).join('') + '</div></div>' : '') +
+    (_outrosEmps.length > 0 ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">🔗 OUTROS EMPENHOS DESTA DISPUTA</div><div class="detail-field-value" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">' + _outrosEmps.map(function(e){ var pg=empenhoEstaPago(e); var cor=pg?'var(--success)':'var(--accent)'; var bg=pg?'var(--success-soft)':'var(--accent-muted)'; return '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:1px solid '+cor+';background:'+bg+';color:'+cor+';font-size:11px;font-weight:700;">'+(pg?'✅':'📋')+' #'+(e.num||'?')+'</span>'; }).join('') + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
