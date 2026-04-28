@@ -4728,7 +4728,7 @@ function verExcel(id, tipo) {
   const w = window.open('', '_blank', 'width=900,height=500');
   w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
 <!-- SHORTCUTS MODAL -->
-<div class="shortcuts-modal" id="shortcuts-modal" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="shortcuts-modal" id="shortcuts-modal">
   <div class="shortcuts-modal-box">
     <div class="shortcuts-modal-title">⌨️ Atalhos de Teclado</div>
     <div class="shortcut-row"><span class="desc">Abrir busca global</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
@@ -6057,7 +6057,7 @@ function importarBackup(event) {
 
 function toast(msg,type='info'){ const icons={success:'✅',error:'❌',info:'ℹ️'}; const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`<span>${icons[type]}</span> ${msg}`; g('toasts').appendChild(el); setTimeout(()=>el.remove(),3000); }
 
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');PDel=null;disputaAtiva=null;}}));
+// Fechar ao clicar fora desativado — use o botão de fechar (✕)
 
 // ========== COMPRAS INDIVIDUAIS ==========
 let compraEmpenhoId = null;
@@ -8661,7 +8661,7 @@ function mostrarPopupAlerta(r) {
     </div>`;
 
   // Fechar clicando fora do card
-  overlay.addEventListener('click', e => { if (e.target === overlay) { window._pararAlarme?.(); overlay.remove(); } });
+  // Fechar ao clicar fora desativado — use o botão de fechar (✕)
   document.body.appendChild(overlay);
   // Auto-fecha após 60 segundos
   setTimeout(() => { if (overlay.parentNode) { window._pararAlarme?.(); overlay.remove(); } }, 60000);
