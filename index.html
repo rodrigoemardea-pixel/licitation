@@ -8600,6 +8600,14 @@ function dispararNotificacao(r) {
   // 4. Som em loop até o usuário fechar
   let _alarmCtx = null;
   let _alarmTimeout = null;
+
+  // Define _pararAlarme ANTES de tocar para que qualquer botão já possa chamá-la
+  window._pararAlarme = () => {
+    clearTimeout(_alarmTimeout);
+    _alarmTimeout = null;
+    if (_alarmCtx) { try { _alarmCtx.close(); } catch(e){} _alarmCtx = null; }
+  };
+
   try {
     _alarmCtx = new (window.AudioContext||window.webkitAudioContext)();
     function tocarCiclo() {
@@ -8622,13 +8630,6 @@ function dispararNotificacao(r) {
     // Para o alarme automaticamente após 1 minuto
     setTimeout(() => window._pararAlarme?.(), 60000);
   } catch(e) {}
-
-  // Guarda ref para parar o som ao fechar
-  window._pararAlarme = () => {
-    clearTimeout(_alarmTimeout);
-    _alarmTimeout = null;
-    if (_alarmCtx) { try { _alarmCtx.close(); } catch(e){} _alarmCtx = null; }
-  };
 
   updateBadges();
 }
@@ -8654,7 +8655,7 @@ function mostrarPopupAlerta(r) {
       <div style="font-size:18px;font-weight:700;color:var(--warning);margin:16px 0;padding:12px 20px;background:rgba(245,158,11,0.1);border-radius:12px;border:1px solid rgba(245,158,11,0.3);">📅 ${ret}</div>
       ${r.observacao ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-surface-soft);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">💬 ${r.observacao}</div>` : ''}
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
-        ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
+        ${r.link ? `<a href="${r.link}" target="_blank" onclick="window._pararAlarme?.();document.getElementById('notif-popup')?.remove();" style="text-decoration:none;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
         <button onclick="window._pararAlarme?.();switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
         <button onclick="window._pararAlarme?.();document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
       </div>
@@ -8782,7 +8783,7 @@ function atualizarPainel() {
               <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao}</div>
               <div style="font-size:10px;color:var(--text-tertiary);">${r.analista} · ${r._ret.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
             </div>
-            ${r.link ? `<a href="${r.link}" target="_blank" style="font-size:16px;">🔗</a>` : ''}
+            ${r.link ? `<a href="${r.link}" target="_blank" onclick="window._pararAlarme?.();document.getElementById('notif-popup')?.remove();" style="font-size:16px;">🔗</a>` : ''}
           </div>`;
         }).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:12px 0;text-align:center;">Nenhum retorno agendado 🎉</div>'}
       </div>
