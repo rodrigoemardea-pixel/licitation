@@ -3834,6 +3834,11 @@ function abrirPopupDisputa(id) {
   const lucroRealizado = emps.reduce((s,e) => {
     return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0);
   }, 0);
+  // Totais financeiros consolidados da disputa
+  const totalComprasDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.vtotal||0), 0), 0);
+  const totalCustosDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.custo||0), 0), 0);
+  const totalLucroDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.luc||0), 0), 0);
+  const totalAReceberDisp = emps.reduce((s,e) => s + (e.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0), 0);
   // Lucro previsto = soma de (vlTotal - compraPrev*qtd - custoPrev*qtd) de cada lote
   const lucroPrevisto = lotes.reduce((s,l) => {
     const qtd   = l.qtd || 0;
@@ -3868,9 +3873,9 @@ function abrirPopupDisputa(id) {
         });
         const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
         const temSaldo = (l.qtdRestante || 0) > 0;
-        const rowClick = (temSaldo && !r.finalizada) ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
+        const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo && !r.finalizada ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
           '<td class="mono" style="color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
@@ -3937,6 +3942,27 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(contrato || r.venda) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO PREVISTO</div><div class="detail-field-value" style="color:var(--warning);font-weight:700;">' + fmt(lucroPrevisto) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
+      '</div>' +
+      '<div class="detail-section" style="margin-top:14px;">💰 RESUMO FINANCEIRO</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">' +
+      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--warning);border-radius:10px;padding:12px 14px;text-align:center;">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL COMPRAS</div>' +
+      '<div style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">' + fmt(totalComprasDisp) + '</div>' +
+      '</div>' +
+      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--text-tertiary);border-radius:10px;padding:12px 14px;text-align:center;">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL CUSTOS</div>' +
+      '<div style="font-size:15px;font-weight:800;color:var(--text-secondary);font-family:var(--font-mono);">' + fmt(totalCustosDisp) + '</div>' +
+      '</div>' +
+      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--success);border-radius:10px;padding:12px 14px;text-align:center;">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">LUCRO TOTAL</div>' +
+      '<div style="font-size:15px;font-weight:800;color:' + (totalLucroDisp >= 0 ? 'var(--success)' : 'var(--danger)') + ';font-family:var(--font-mono);">' + fmt(totalLucroDisp) + '</div>' +
+      '</div>' +
+      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--accent);border-radius:10px;padding:12px 14px;text-align:center;">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">A RECEBER</div>' +
+      '<div style="font-size:15px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">' + fmt(totalAReceberDisp) + '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="detail-grid-3">' +
       (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
 
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
@@ -3949,15 +3975,7 @@ function abrirPopupDisputa(id) {
     renderComentarios('disputa', id);
 
   g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
-  const _newEmpBtn = g('popup-d-new-emp-btn');
-  if (_newEmpBtn) {
-    if (r.finalizada) {
-      _newEmpBtn.style.display = 'none';
-    } else {
-      _newEmpBtn.style.display = '';
-      _newEmpBtn.onclick = () => novoEmpenhoParaDisputa(id);
-    }
-  }
+  g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
   // Botão reabrir — só aparece se a disputa está finalizada
   const reabrirBtn = g('popup-d-reabrir-btn');
   if (reabrirBtn) {
@@ -3990,15 +4008,6 @@ function abrirPopupEmpenho(id) {
   });
   
   const compras = r.compras || [];
-
-  // Extras: outros empenhos da mesma disputa, empresa, % lucro
-  const _outrosEmps = disp ? DB.empenhos.filter(function(e){ return e.disputaId === r.disputaId && e.id !== r.id; }) : [];
-  const _empresa = (disp && disp.empresa) ? disp.empresa : (r.empresa || null);
-  const _totalC = compras.reduce(function(s,c){ return s+(c.vtotal||0); }, 0);
-  const _lucroT = compras.reduce(function(s,c){ return s+(c.luc||0); }, 0);
-  const _pct = _totalC > 0 ? (_lucroT / _totalC * 100) : 0;
-  const _corP = _pct >= 15 ? 'var(--success)' : _pct >= 8 ? 'var(--warning)' : 'var(--danger)';
-  const _pctStr = (_pct >= 0 ? '+' : '') + _pct.toFixed(1).replace('.', ',') + '%';
   
   const itensHTML = itens.length ? `
     <div class="detail-section">📦 ITENS DO EMPENHO</div>
@@ -4062,10 +4071,6 @@ function abrirPopupEmpenho(id) {
           <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
           <td colspan="3"></td>
         </tr>
-        <tr style="background:var(--bg-surface-soft);border-top:1px solid var(--border-light);">
-          <td colspan="6" style="padding:5px 8px;font-size:10px;color:var(--text-tertiary);text-align:right;">% LUCRO DESTE EMPENHO</td>
-          <td colspan="6" style="padding:5px 8px;">${'<span style="padding:3px 10px;border-radius:20px;background:'+_corP+'1a;border:1px solid '+_corP+';color:'+_corP+';font-family:var(--font-mono);font-size:12px;font-weight:800;">📈 '+_pctStr+'</span>'+(_empresa?' <span style="margin-left:6px;font-size:11px;padding:2px 8px;border-radius:12px;background:'+(_empresa==="Hamate"?'rgba(124,58,237,0.12)':'var(--accent-muted)')+';color:'+(_empresa==="Hamate"?'#7c3aed':'var(--accent)')+';font-weight:700;">'+_empresa+'</span>':'')}</td>
-        </tr>
       </tfoot>
     </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
 
@@ -4078,12 +4083,10 @@ function abrirPopupEmpenho(id) {
     '<div class="detail-grid-3">' +
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
-      (_empresa ? '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value"><span style="font-size:12px;padding:2px 9px;border-radius:12px;background:' + (_empresa==='Hamate'?'rgba(124,58,237,0.12)':'var(--accent-muted)') + ';color:' + (_empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';font-weight:700;">' + _empresa + '</span></div></div>' : '') +
     '</div>' +
 
     (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">DISPUTA VINCULADA</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
-    (_outrosEmps.length > 0 ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">🔗 OUTROS EMPENHOS DESTA DISPUTA</div><div class="detail-field-value" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">' + _outrosEmps.map(function(e){ var pg=empenhoEstaPago(e); var cor=pg?'var(--success)':'var(--accent)'; var bg=pg?'var(--success-soft)':'var(--accent-muted)'; return '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:1px solid '+cor+';background:'+bg+';color:'+cor+';font-size:11px;font-weight:700;">'+(pg?'✅':'📋')+' #'+(e.num||'?')+'</span>'; }).join('') + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
@@ -4728,7 +4731,7 @@ function verExcel(id, tipo) {
   const w = window.open('', '_blank', 'width=900,height=500');
   w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
 <!-- SHORTCUTS MODAL -->
-<div class="shortcuts-modal" id="shortcuts-modal">
+<div class="shortcuts-modal" id="shortcuts-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="shortcuts-modal-box">
     <div class="shortcuts-modal-title">⌨️ Atalhos de Teclado</div>
     <div class="shortcut-row"><span class="desc">Abrir busca global</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
@@ -6057,7 +6060,7 @@ function importarBackup(event) {
 
 function toast(msg,type='info'){ const icons={success:'✅',error:'❌',info:'ℹ️'}; const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`<span>${icons[type]}</span> ${msg}`; g('toasts').appendChild(el); setTimeout(()=>el.remove(),3000); }
 
-// Fechar ao clicar fora desativado — use o botão de fechar (✕)
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');PDel=null;disputaAtiva=null;}}));
 
 // ========== COMPRAS INDIVIDUAIS ==========
 let compraEmpenhoId = null;
@@ -8496,43 +8499,8 @@ function renderAcomp() {
 function verAcomp(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
   const ret = r.retorno ? new Date(r.retorno) : null;
-  const agora = new Date();
-  const vencido = ret && ret < agora;
   const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Em Recurso',perdida:'❌ Perdida'};
-  const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
-  const corEmp = r.empresa==='Hamate' ? '#7c3aed' : 'var(--accent)';
-  const bgEmp  = r.empresa==='Hamate' ? 'rgba(124,58,237,0.12)' : 'var(--accent-muted)';
-  const retStr = ret
-    ? '<span style="font-weight:700;color:' + (vencido?'var(--danger)':'var(--text-primary)') + ';">' +
-        (vencido ? '🔴 ' : '⏰ ') + ret.toLocaleDateString('pt-BR') + ' ' + ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</span>' +
-        (vencido ? ' <span style="font-size:10px;padding:2px 7px;background:var(--danger-soft);color:var(--danger);border-radius:10px;font-weight:700;">VENCIDO</span>' : '')
-    : '—';
-
-  g('popup-a-title').textContent = (r.orgao||'ACOMPANHAMENTO').toUpperCase();
-  g('popup-a-sub').textContent = (r.processo||'') + (r.sistema ? ' · ' + r.sistema : '') + (r.data ? ' · ' + new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '');
-  g('popup-a-body').innerHTML =
-    '<div class="detail-grid-3">' +
-      '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value"><span style="font-size:12px;padding:2px 9px;border-radius:12px;background:'+bgEmp+';color:'+corEmp+';font-weight:700;">' + (r.empresa||'—') + '</span></div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value"><span class="badge ' + _badgeClass(r.analista) + '">' + (r.analista||'—') + '</span></div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value"><span style="font-weight:700;color:' + (statusColors[r.status]||'var(--text-secondary)') + ';">' + (statusLabels[r.status]||r.status||'—') + '</span></div></div>' +
-    '</div>' +
-    '<div class="detail-grid">' +
-      '<div class="detail-field"><div class="detail-field-label">TIPO</div><div class="detail-field-value">' + (r.tipo||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">ESTADO</div><div class="detail-field-value"><span class="estado-badge">' + (r.estado||'—') + '</span></div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">DATA</div><div class="detail-field-value">' + (r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">⏰ RETORNO AGENDADO</div><div class="detail-field-value">' + retStr + '</div></div>' +
-    '</div>' +
-    (r.link ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">LINK DO SISTEMA</div><div class="detail-field-value"><a href="' + r.link + '" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);text-decoration:none;">🔗 Abrir sistema</a></div></div>' : '') +
-    (r.observacao ? '<div class="detail-section">💬 OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;line-height:1.6;white-space:pre-wrap;">' + r.observacao + '</div>' : '') +
-    renderComentarios('acomp', id);
-
-  g('popup-a-edit-btn').onclick = () => { fecharPopupAcomp(); editAcomp(id); };
-  g('popup-a-converter-btn').onclick = () => { fecharPopupAcomp(); converterEmDisputa(id); };
-  g('popup-acomp').classList.add('open');
-}
-
-function fecharPopupAcomp() {
-  g('popup-acomp').classList.remove('open');
+  alert(`📋 ${r.orgao} — ${r.estado}\n🏢 Empresa: ${r.empresa||'—'}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n🏷️ Tipo: ${r.tipo||'—'} | Processo: ${r.processo||'—'}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
 }
 
 function _doCriarDisputaDeAcomp(r) {
@@ -8600,14 +8568,6 @@ function dispararNotificacao(r) {
   // 4. Som em loop até o usuário fechar
   let _alarmCtx = null;
   let _alarmTimeout = null;
-
-  // Define _pararAlarme ANTES de tocar para que qualquer botão já possa chamá-la
-  window._pararAlarme = () => {
-    clearTimeout(_alarmTimeout);
-    _alarmTimeout = null;
-    if (_alarmCtx) { try { _alarmCtx.close(); } catch(e){} _alarmCtx = null; }
-  };
-
   try {
     _alarmCtx = new (window.AudioContext||window.webkitAudioContext)();
     function tocarCiclo() {
@@ -8630,6 +8590,13 @@ function dispararNotificacao(r) {
     // Para o alarme automaticamente após 1 minuto
     setTimeout(() => window._pararAlarme?.(), 60000);
   } catch(e) {}
+
+  // Guarda ref para parar o som ao fechar
+  window._pararAlarme = () => {
+    clearTimeout(_alarmTimeout);
+    _alarmTimeout = null;
+    if (_alarmCtx) { try { _alarmCtx.close(); } catch(e){} _alarmCtx = null; }
+  };
 
   updateBadges();
 }
@@ -8655,14 +8622,14 @@ function mostrarPopupAlerta(r) {
       <div style="font-size:18px;font-weight:700;color:var(--warning);margin:16px 0;padding:12px 20px;background:rgba(245,158,11,0.1);border-radius:12px;border:1px solid rgba(245,158,11,0.3);">📅 ${ret}</div>
       ${r.observacao ? `<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-surface-soft);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">💬 ${r.observacao}</div>` : ''}
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
-        ${r.link ? `<a href="${r.link}" target="_blank" onclick="window._pararAlarme?.();document.getElementById('notif-popup')?.remove();" style="text-decoration:none;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
+        ${r.link ? `<a href="${r.link}" target="_blank" style="text-decoration:none;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;">🔗 Abrir Sistema</a>` : ''}
         <button onclick="window._pararAlarme?.();switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();document.getElementById('notif-popup').remove();" style="background:var(--bg-surface-soft);color:var(--text-primary);border:1px solid var(--border-light);border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">📋 Ver Acompanhamentos</button>
         <button onclick="window._pararAlarme?.();document.getElementById('notif-popup').remove();" style="background:none;color:var(--text-tertiary);border:1px solid var(--border-light);border-radius:10px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Fechar</button>
       </div>
     </div>`;
 
   // Fechar clicando fora do card
-  // Fechar ao clicar fora desativado — use o botão de fechar (✕)
+  overlay.addEventListener('click', e => { if (e.target === overlay) { window._pararAlarme?.(); overlay.remove(); } });
   document.body.appendChild(overlay);
   // Auto-fecha após 60 segundos
   setTimeout(() => { if (overlay.parentNode) { window._pararAlarme?.(); overlay.remove(); } }, 60000);
@@ -8783,7 +8750,7 @@ function atualizarPainel() {
               <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao}</div>
               <div style="font-size:10px;color:var(--text-tertiary);">${r.analista} · ${r._ret.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
             </div>
-            ${r.link ? `<a href="${r.link}" target="_blank" onclick="window._pararAlarme?.();document.getElementById('notif-popup')?.remove();" style="font-size:16px;">🔗</a>` : ''}
+            ${r.link ? `<a href="${r.link}" target="_blank" style="font-size:16px;">🔗</a>` : ''}
           </div>`;
         }).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:12px 0;text-align:center;">Nenhum retorno agendado 🎉</div>'}
       </div>
@@ -9651,24 +9618,6 @@ boot();
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
-    </div>
-  </div>
-</div>
-<!-- POPUP DETALHES ACOMPANHAMENTO -->
-<div class="detail-popup-overlay" id="popup-acomp">
-  <div class="detail-popup">
-    <div class="detail-popup-header">
-      <div>
-        <div class="detail-popup-title" id="popup-a-title">Detalhes do Acompanhamento</div>
-        <div class="detail-popup-sub" id="popup-a-sub"></div>
-      </div>
-      <button class="detail-close" onclick="fecharPopupAcomp()">✕</button>
-    </div>
-    <div id="popup-a-body"></div>
-    <div class="detail-actions">
-      <button class="btn btn-ghost" onclick="fecharPopupAcomp()">Fechar</button>
-      <button class="btn btn-success" id="popup-a-converter-btn" style="background:var(--success);color:#fff;border:none;">🏆 Converter em Contrato</button>
-      <button class="btn btn-primary" id="popup-a-edit-btn">Editar</button>
     </div>
   </div>
 </div>
