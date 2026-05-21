@@ -2043,6 +2043,26 @@
   </div>
 </div>
 
+
+<!-- POPUP DETALHES ACOMPANHAMENTO -->
+<div class="detail-popup-overlay" id="popup-acomp">
+  <div class="detail-popup">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="popup-ac-title">Detalhes do Acompanhamento</div>
+        <div class="detail-popup-sub" id="popup-ac-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharPopup('acomp')">&#10005;</button>
+    </div>
+    <div id="popup-ac-body"></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharPopup('acomp')">Fechar</button>
+      <button class="btn btn-primary" id="popup-ac-edit-btn">Editar</button>
+      <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Disputa</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DISPUTAS (com campo Observação) -->
 <div class="modal-overlay" id="modal-disputas">
   <div class="modal">
@@ -5291,6 +5311,9 @@ let _acompConvertendoId = null;
 function openModal(tab){
   if (tab === 'acomp') {
     clearAcomp();
+    // Pré-preenche empresa com HAMATE por padrão
+    const selEmpresa = g('ac-empresa');
+    if (selEmpresa) selEmpresa.value = 'Hamate';
     // Pré-preenche e bloqueia analista para não-admins
     if (!isAdmin && analistaDoUsuario) {
       setAnalistaSelect('ac-analista', analistaDoUsuario);
@@ -6060,7 +6083,7 @@ function importarBackup(event) {
 
 function toast(msg,type='info'){ const icons={success:'✅',error:'❌',info:'ℹ️'}; const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`<span>${icons[type]}</span> ${msg}`; g('toasts').appendChild(el); setTimeout(()=>el.remove(),3000); }
 
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');PDel=null;disputaAtiva=null;}}));
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o && o.id!=='modal-acomp'){o.classList.remove('open');PDel=null;disputaAtiva=null;}}));
 
 // ========== COMPRAS INDIVIDUAIS ==========
 let compraEmpenhoId = null;
@@ -8499,8 +8522,75 @@ function renderAcomp() {
 function verAcomp(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
   const ret = r.retorno ? new Date(r.retorno) : null;
+  const agora = new Date();
+  const vencido = ret && ret < agora;
+  const hoje = ret && ret.toDateString() === agora.toDateString();
   const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Em Recurso',perdida:'❌ Perdida'};
-  alert(`📋 ${r.orgao} — ${r.estado}\n🏢 Empresa: ${r.empresa||'—'}\n👤 ${r.analista} | ${r.sistema}\n📅 Data: ${r.data||'—'}\n📌 Status: ${statusLabels[r.status]||r.status}\n🏷️ Tipo: ${r.tipo||'—'} | Processo: ${r.processo||'—'}\n⏰ Retorno: ${ret?ret.toLocaleString('pt-BR'):'—'}\n\n💬 ${r.observacao||'(sem observação)'}`);
+  const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
+
+  g('popup-ac-title').textContent = r.orgao || 'Acompanhamento';
+  g('popup-ac-sub').textContent = (r.estado ? r.estado + ' · ' : '') + (r.sistema || '') + (r.processo ? ' · ' + r.processo : '');
+
+  const retStr = ret ? ret.toLocaleDateString('pt-BR') + ' ' + ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+  const retColor = vencido ? 'var(--danger)' : hoje ? 'var(--warning)' : 'var(--text-primary)';
+
+  g('popup-ac-body').innerHTML = `
+    <div class="detail-section">INFORMAÇÕES GERAIS</div>
+    <div class="detail-grid">
+      <div class="detail-field">
+        <div class="detail-field-label">Data da Disputa</div>
+        <div class="detail-field-value">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Órgão</div>
+        <div class="detail-field-value">${r.orgao || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">UF</div>
+        <div class="detail-field-value">${r.estado || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Sistema</div>
+        <div class="detail-field-value">${r.sistema || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Analista</div>
+        <div class="detail-field-value">${r.analista || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Empresa</div>
+        <div class="detail-field-value"><span style="padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent-muted)'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa || '—'}</span></div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Tipo de Processo</div>
+        <div class="detail-field-value">${r.tipo || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Nº do Processo</div>
+        <div class="detail-field-value">${r.processo || '—'}</div>
+      </div>
+    </div>
+    <div class="detail-section">STATUS E RETORNO</div>
+    <div class="detail-grid">
+      <div class="detail-field">
+        <div class="detail-field-label">Status</div>
+        <div class="detail-field-value"><span style="color:${statusColors[r.status]||'var(--text-primary)'};font-weight:700;">${statusLabels[r.status]||r.status||'—'}</span></div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Data/Hora de Retorno</div>
+        <div class="detail-field-value"><span style="color:${retColor};font-weight:700;">${vencido?'🔴 VENCIDO · ':''}${retStr}</span></div>
+      </div>
+    </div>
+    ${r.link ? '<div class="detail-section">LINK DO SISTEMA</div><div style="margin-bottom:10px;"><a href="'+r.link+'" target="_blank" style="color:var(--accent);font-size:12px;word-break:break-all;">'+r.link+'</a></div>' : ''}
+    ${r.observacao ? '<div class="detail-section">OBSERVAÇÃO</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;background:var(--bg-surface-soft);padding:10px 14px;border-radius:var(--radius-md);white-space:pre-wrap;">'+r.observacao+'</div>' : ''}
+  `;
+
+  const editBtn = g('popup-ac-edit-btn');
+  if (editBtn) editBtn.onclick = function() { fecharPopup('acomp'); editAcomp(id); };
+  const convBtn = g('popup-ac-conv-btn');
+  if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputa(id); };
+
+  g('popup-acomp').classList.add('open');
 }
 
 function _doCriarDisputaDeAcomp(r) {
