@@ -1897,8 +1897,7 @@
         </tfoot>
       </table>
     </div>
-      <div id="pagination-empenhos" class="pagination" style="display:none;"></div>
-    </div>
+  </div>
 
   <!-- TAB EMPENHOS FINALIZADOS -->
   <div class="tab-pane" id="tab-emp-finalizados">
@@ -2960,7 +2959,6 @@ fbAuth.onAuthStateChanged(user => {
       renderAll();
       atualizarPainel();
       aplicarPermissoes();
-        if (!window._integrityChecked) { window._integrityChecked = true; setTimeout(() => validarIntegridade(true), 3000); }
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
         iniciarNotificacoes();
@@ -9714,5 +9712,183 @@ boot();
     </div>
   </div>
 </div>
+
+<script>
+
+// ══════════ MELHORIAS v2 ══════════
+function _debounce(fn,ms){var t;return function(){clearTimeout(t);var a=arguments,ctx=this;t=setTimeout(function(){fn.apply(ctx,a);},ms);};}
+var _debouncedBusca=_debounce(function(v){buscaGlobal(v);},200);
+
+function inlineEditAnalista(id,tipo){
+  var r=DB[tipo].find(function(x){return x.id===id;});
+  if(!r)return;
+  var cid='inline-an-'+tipo+'-'+id;
+  var cell=document.getElementById(cid);
+  if(!cell)return;
+  var nomes=[];
+  (DB.disputas||[]).concat(DB.empenhos||[]).forEach(function(x){if(x.analista&&nomes.indexOf(x.analista)<0)nomes.push(x.analista);});
+  nomes.sort();
+  var opts='<option value="">-</option>';
+  nomes.forEach(function(n){opts+='<option value="'+n+'"'+(n===r.analista?' selected':'')+'>'+n+'</option>';});
+  cell.innerHTML='<select class="inline-edit-select" onchange="commitInlineAnalista(this.dataset.rid,this.dataset.rtipo,this.value)" data-rid="'+id+'" data-rtipo="'+tipo+'" onblur="setTimeout(renderAll,200)">'+opts+'</select>';
+  cell.querySelector('select').focus();
+}
+function commitInlineAnalista(id,tipo,val){
+  var r=_fullDB[tipo].find(function(x){return x.id===id;});
+  if(!r)return;
+  r.analista=val;
+  save(tipo,_fullDB[tipo]);
+  toast('Analista: '+val,'success');
+  setTimeout(renderAll,80);
+}
+
+function validarIntegridade(sil){
+  var p=0,f=0;
+  var dids={};(_fullDB.disputas||[]).forEach(function(d){dids[d.id]=true;});
+  var eids={};(_fullDB.empenhos||[]).forEach(function(e){eids[e.id]=true;});
+  (_fullDB.empenhos||[]).forEach(function(e){
+    if(e.disputaId&&!dids[e.disputaId]){p++;e.disputaId=null;f++;}
+  });
+  (_fullDB.empenhos||[]).forEach(function(e){
+    if(!e.compras||!e.compras.length)return;
+    var ids={};(e.itens||[]).forEach(function(i){ids[i.id]=true;});
+    if(!Object.keys(ids).length)return;
+    var a=e.compras.length;
+    e.compras=e.compras.filter(function(c){return !c.itemId||ids[c.itemId];});
+    var r=a-e.compras.length;p+=r;f+=r;
+  });
+  if(f>0){save('empenhos',_fullDB.empenhos);}
+  if(!sil){toast(p===0?'Integridade OK':'Corrigidas '+f+' ref. orfas',p===0?'success':'info');}
+  return {problemas:p,corrigidos:f};
+}
+
+// Override renderLotes for drag handles + Sortable
+(function(){
+  var orig=renderLotes;
+  renderLotes=function(){
+    orig();
+    var c=document.getElementById('lotes-container');
+    if(!c||!c.children.length)return;
+    for(var i=0;i<c.children.length;i++){
+      var row=c.children[i];
+      if(!row.querySelector('.ldh')){
+        var h=document.createElement('span');
+        h.className='ldh';h.title='Arrastar';h.textContent='\u2630';
+        h.style.cssText='cursor:grab;color:#999;font-size:16px;padding:2px 6px;user-select:none;';
+        row.style.display='flex';row.style.alignItems='center';
+        row.insertBefore(h,row.firstChild);
+      }
+    }
+    if(typeof Sortable!=='undefined'&&c.children.length>1){
+      if(c._st)c._st.destroy();
+      c._st=Sortable.create(c,{handle:'.ldh',animation:150,
+        onEnd:function(evt){var m=lotesTemp.splice(evt.oldIndex,1)[0];lotesTemp.splice(evt.newIndex,0,m);renderLotes();}});
+    }
+  };
+})();
+
+// Override renderD for progress bar
+(function(){
+  var orig=renderD;
+  renderD=function(){
+    orig();
+    var th=document.querySelector('#disputas-table-view thead tr');
+    if(th&&!th.querySelector('.pth')){
+      var el=document.createElement('th');el.className='pth';el.style.cssText='min-width:80px;text-align:center;';el.textContent='Progresso';
+      th.insertBefore(el,th.lastElementChild);
+    }
+    var rows=document.querySelectorAll('#tbody-disputas > tr[onclick]');
+    rows.forEach(function(tr){
+      if(tr.querySelector('.pcl'))return;
+      var oc=tr.getAttribute('onclick')||'';
+      var m=oc.match(/abrirPopupDisputa\('([^']+)'\)/);
+      if(!m)return;
+      var id=m[1];var r=null;
+      (DB.disputas||[]).forEach(function(x){if(x.id===id)r=x;});
+      if(!r)return;
+      var lotes=r.lotes||[];
+      var tC=0,tE=0;
+      lotes.forEach(function(l){tC+=(l.qtd||0);tE+=calcQtdEnviada(r.id,l.id);});
+      var pct=tC>0?Math.round(tE/tC*100):0;
+      var cor=pct>=100?'var(--success)':pct>0?'var(--accent)':'var(--border-light)';
+      var td=document.createElement('td');td.className='pcl';td.style.textAlign='center';
+      td.innerHTML='<div class="progress-bar-wrap" style="min-width:50px"><div class="progress-bar-fill" style="width:'+pct+'%;background:'+cor+'"></div></div><span style="font-size:9px;color:#999">'+pct+'%</span>';
+      tr.insertBefore(td,tr.lastElementChild);
+    });
+  };
+})();
+
+// Pagination empenhos
+(function(){
+  var orig=renderE;
+  renderE=function(){
+    orig();
+    var tb=document.getElementById('tbody-empenhos');if(!tb)return;
+    if(!document.getElementById('pagination-empenhos')){
+      var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';
+      tb.closest('.tab-pane').appendChild(d);
+    }
+    var rows=tb.querySelectorAll(':scope > tr');
+    if(rows.length<=PAGE_SIZE){renderPagination('empenhos',rows.length);return;}
+    var tp=Math.ceil(rows.length/PAGE_SIZE);if(_page.empenhos>tp)_page.empenhos=1;
+    var s=(_page.empenhos-1)*PAGE_SIZE;
+    rows.forEach(function(tr,i){tr.style.display=(i>=s&&i<s+PAGE_SIZE)?'':'none';});
+    renderPagination('empenhos',rows.length);
+  };
+  var origF=filtrarEmpenhos;
+  filtrarEmpenhos=function(){_page.empenhos=1;origF();};
+})();
+
+// Dashboard comparison selectors
+(function(){
+  var orig=atualizarDashboard;
+  atualizarDashboard=function(){
+    orig();
+    var tb=document.querySelector('#tab-dashboard > div:first-child');
+    if(tb&&!document.getElementById('dash-comp-mes1')){
+      ['dash-comp-mes1','dash-comp-mes2'].forEach(function(id,ix){
+        var fg=document.createElement('div');fg.className='filter-group';
+        fg.innerHTML='<label>'+(ix===0?'Mes A:':'vs B:')+'</label><select id="'+id+'" onchange="atualizarDashboard()"><option value="">-</option></select>';
+        tb.appendChild(fg);
+      });
+    }
+    var ms={};
+    DB.empenhos.forEach(function(e){(e.compras||[]).forEach(function(c){if(c.dpag)ms[c.dpag.slice(0,7)]=1;});});
+    var sorted=Object.keys(ms).sort().reverse();
+    ['dash-comp-mes1','dash-comp-mes2'].forEach(function(id){
+      var sel=document.getElementById(id);if(!sel||sel.options.length>1)return;
+      sorted.forEach(function(m){var o=document.createElement('option');o.value=m;var p=m.split('-');o.textContent=new Date(p[0],parseInt(p[1])-1).toLocaleString('pt-BR',{month:'short',year:'numeric'});sel.appendChild(o);});
+    });
+  };
+})();
+
+// Integrity auto-check + menu button
+setTimeout(function(){if(!window._ic){window._ic=1;validarIntegridade(true);}},4000);
+setTimeout(function(){
+  var menu=document.getElementById('user-menu-dropdown');
+  if(!menu)return;
+  var ref=menu.querySelector('[onclick*="toggleTema"]');
+  if(!ref)return;
+  var b=document.createElement('button');
+  b.style.cssText='display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-secondary);text-align:left;';
+  b.textContent='\u2713 Validar integridade';
+  b.onclick=function(){validarIntegridade(false);toggleUserMenu();};
+  ref.parentNode.insertBefore(b,ref);
+},2000);
+
+// Rewire busca global
+setTimeout(function(){
+  var bi=document.getElementById('busca-global-input');
+  if(bi){bi.oninput=function(){_debouncedBusca(this.value);};}
+},500);
+
+// Ghost CSS
+var _css=document.createElement('style');
+_css.textContent='.sortable-ghost{opacity:.3;background:rgba(0,102,255,.08);}';
+document.head.appendChild(_css);
+
+console.log('v2 OK: debounce, inline-analista, sortable, progress, pagination, dash-comp, integridade');
+
+</script>
 </body>
 </html>
