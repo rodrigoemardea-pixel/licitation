@@ -1309,6 +1309,7 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
 </head>
 <body data-theme="light">
 
@@ -1896,7 +1897,8 @@
         </tfoot>
       </table>
     </div>
-  </div>
+      <div id="pagination-empenhos" class="pagination" style="display:none;"></div>
+    </div>
 
   <!-- TAB EMPENHOS FINALIZADOS -->
   <div class="tab-pane" id="tab-emp-finalizados">
@@ -2058,7 +2060,7 @@
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('acomp')">Fechar</button>
       <button class="btn btn-primary" id="popup-ac-edit-btn">Editar</button>
-      <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Contrato</button>
+      <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Disputa</button>
     </div>
   </div>
 </div>
@@ -2958,6 +2960,7 @@ fbAuth.onAuthStateChanged(user => {
       renderAll();
       atualizarPainel();
       aplicarPermissoes();
+        if (!window._integrityChecked) { window._integrityChecked = true; setTimeout(() => validarIntegridade(true), 3000); }
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
         iniciarNotificacoes();
@@ -4006,9 +4009,6 @@ function abrirPopupDisputa(id) {
       reabrirBtn.style.display = 'none';
     }
   }
-  // Esconde +Novo Empenho em contratos finalizados
-  const _empBtnFin = g('popup-d-new-emp-btn');
-  if (_empBtnFin) _empBtnFin.style.display = r.finalizada ? 'none' : '';
   g('popup-disputa').classList.add('open');
 }
 
@@ -8610,7 +8610,7 @@ function _doCriarDisputaDeAcomp(r) {
 
 function converterEmDisputa(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
-  _confirmarAcao({icon:'🏆', titulo:'Converter em Contrato', msg:`Converter o acompanhamento <strong>${r.orgao}</strong> em Contrato Ativo?<br><br>Ele será criado na aba de Contratos Ativos.`, btnLabel:'🏆 Converter', btnClass:'btn-primary', onConfirm: () => { _doCriarDisputaDeAcomp(r); }});
+  _confirmarAcao({icon:'🏆', titulo:'Converter em Disputa Vencida', msg:`Converter o acompanhamento <strong>${r.orgao}</strong> em Disputa Vencida?<br><br>Ele será criado na aba de Disputas com status ativo.`, btnLabel:'🏆 Converter', btnClass:'btn-primary', onConfirm: () => { _doCriarDisputaDeAcomp(r); }});
 }
 
 // ========== NOTIFICAÇÕES DE RETORNO ==========
