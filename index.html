@@ -4006,6 +4006,8 @@ function abrirPopupDisputa(id) {
       reabrirBtn.style.display = 'none';
     }
   }
+  const _newEmpBtnD = g('popup-d-new-emp-btn');
+  if (_newEmpBtnD) _newEmpBtnD.style.display = r.finalizada ? 'none' : '';
   g('popup-disputa').classList.add('open');
 }
 
@@ -8607,7 +8609,7 @@ function _doCriarDisputaDeAcomp(r) {
 
 function converterEmDisputa(id) {
   const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
-  _confirmarAcao({icon:'🏆', titulo:'Converter em Disputa Vencida', msg:`Converter o acompanhamento <strong>${r.orgao}</strong> em Disputa Vencida?<br><br>Ele será criado na aba de Disputas com status ativo.`, btnLabel:'🏆 Converter', btnClass:'btn-primary', onConfirm: () => { _doCriarDisputaDeAcomp(r); }});
+  _confirmarAcao({icon:'🏆', titulo:'Converter em Contrato', msg:`Converter o acompanhamento <strong>${r.orgao}</strong> em Contrato Ativo?<br><br>Ele será criado na aba de Contratos Ativos.`, btnLabel:'🏆 Converter', btnClass:'btn-primary', onConfirm: () => { _doCriarDisputaDeAcomp(r); }});
 }
 
 // ========== NOTIFICAÇÕES DE RETORNO ==========
@@ -9673,43 +9675,5 @@ boot();
 
 </script>
 
-<!-- POPUP DETALHES DISPUTA -->
-<div class="detail-popup-overlay" id="popup-disputa">
-  <div class="detail-popup">
-    <div class="detail-popup-header">
-      <div>
-        <div class="detail-popup-title" id="popup-d-title">Detalhes da Disputa</div>
-        <div class="detail-popup-sub" id="popup-d-sub"></div>
-      </div>
-      <button class="detail-close" onclick="fecharPopup('disputa')">✕</button>
-    </div>
-    <div id="popup-d-body"></div>
-    <div class="detail-actions">
-      <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
-      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="display:none;color:var(--warning);border-color:var(--warning);">Reabrir</button>
-      <button class="btn btn-success" id="popup-d-new-emp-btn" style="background:var(--success);color:#fff;border:none;">+ Novo Empenho</button>
-      <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
-    </div>
-  </div>
-</div>
-
-<!-- POPUP DETALHES EMPENHO -->
-
-<div class="detail-popup-overlay" id="popup-empenho">
-  <div class="detail-popup">
-    <div class="detail-popup-header">
-      <div>
-        <div class="detail-popup-title" id="popup-e-title">Detalhes do Empenho</div>
-        <div class="detail-popup-sub" id="popup-e-sub"></div>
-      </div>
-      <button class="detail-close" onclick="fecharPopup('empenho')">✕</button>
-    </div>
-    <div id="popup-e-body"></div>
-    <div class="detail-actions">
-      <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
-      <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
