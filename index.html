@@ -1308,87 +1308,27 @@
   .modal-emp-disp { max-width: 900px; width: 96%; }
 
 
-  /* ─── v2.0: STATUS CHIPS ─── */
-  .status-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px; border-radius: 100px;
-    font-size: 10px; font-weight: 700;
-    white-space: nowrap; line-height: 1.6;
-  }
-  .status-chip.aguardando-empenho { background: rgba(99,102,241,0.1); color: #6366f1; border: 1px solid rgba(99,102,241,0.2); }
-  .status-chip.aguardando-compra { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
-  .status-chip.aguardando-entrega { background: rgba(14,165,233,0.1); color: #0ea5e9; border: 1px solid rgba(14,165,233,0.2); }
-  .status-chip.aguardando-pagamento { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-  .status-chip.concluido { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
-  /* ─── v2.0: Tabs dentro de popups ─── */
-  .popup-tabs { display: flex; border-bottom: 2px solid var(--border-light); margin-bottom: 14px; gap: 0; }
-  .popup-tab {
-    background: none; border: none; border-bottom: 2px solid transparent;
-    padding: 8px 16px; font-size: 12px; font-weight: 600;
-    color: var(--text-tertiary); cursor: pointer; transition: all 0.15s;
-    font-family: var(--font-sans); margin-bottom: -2px;
-  }
-  .popup-tab:hover { color: var(--text-primary); }
-  .popup-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .popup-tab-pane { display: none; }
-  .popup-tab-pane.active { display: block; }
-  /* ─── v2.0: Collapsible sections melhoradas ─── */
-  .section-collapse {
-    border: 1px solid var(--border-light); border-radius: var(--radius-lg);
-    margin-bottom: 12px; overflow: hidden;
-  }
-  .section-collapse-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; cursor: pointer; user-select: none;
-    background: var(--bg-surface-soft); font-size: 12px; font-weight: 700;
-    color: var(--text-secondary); transition: background 0.15s;
-  }
-  .section-collapse-header:hover { background: var(--bg-surface-hover); }
-  .section-collapse-body { padding: 12px 14px; }
-  .section-collapse.collapsed .section-collapse-body { display: none; }
-  .section-collapse-arrow { transition: transform 0.2s; font-size: 10px; }
-  .section-collapse.collapsed .section-collapse-arrow { transform: rotate(-90deg); }
-  /* ─── v2.0: Entrega status badges ─── */
-  .entrega-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 10px; font-weight: 700; padding: 2px 7px;
-    border-radius: 100px; white-space: nowrap;
-  }
-  .entrega-pendente { background: rgba(245,158,11,0.12); color: var(--warning); }
-  .entrega-transito { background: rgba(14,165,233,0.12); color: #0ea5e9; }
-  .entrega-entregue { background: rgba(16,185,129,0.12); color: var(--success); }
-  .entrega-aceito { background: rgba(107,63,160,0.12); color: var(--purple); }
-  /* ─── v2.0: Next action banner ─── */
-  .next-action {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10px; font-weight: 600; padding: 3px 8px;
-    border-radius: 6px; white-space: nowrap;
-  }
-  .next-action.urgente { background: rgba(239,68,68,0.1); color: #ef4444; }
-  .next-action.atencao { background: rgba(245,158,11,0.1); color: #d97706; }
-  .next-action.normal { background: rgba(99,102,241,0.1); color: #6366f1; }
-  .next-action.ok { background: rgba(16,185,129,0.1); color: #10b981; }
-  /* ─── v2.0: Price history ─── */
-  .price-history-wrap {
-    background: var(--bg-surface-soft); border: 1px solid var(--border-light);
-    border-radius: var(--radius-md); padding: 8px 12px; margin-top: 8px;
-    font-size: 11px;
-  }
-  .price-history-item {
-    display: flex; justify-content: space-between; padding: 3px 0;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .price-history-item:last-child { border-bottom: none; }
-  /* ─── v2.0: Sugestao finalizar banner ─── */
-  .sugestao-finalizar {
-    background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03));
-    border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-lg);
-    padding: 12px 16px; margin-bottom: 12px; display: flex;
-    align-items: center; gap: 10px; font-size: 12px;
-  }
-  .sugestao-finalizar button {
-    margin-left: auto; flex-shrink: 0;
-  }
+  /* v2.0 status/entrega/acoes */
+  .status-chip { display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap;line-height:1.6; }
+  .status-chip.aguardando-empenho { background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2); }
+  .status-chip.aguardando-compra { background:rgba(245,158,11,0.1);color:#d97706;border:1px solid rgba(245,158,11,0.2); }
+  .status-chip.aguardando-entrega { background:rgba(14,165,233,0.1);color:#0ea5e9;border:1px solid rgba(14,165,233,0.2); }
+  .status-chip.aguardando-pagamento { background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2); }
+  .status-chip.concluido { background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2); }
+  .entrega-pendente { background:rgba(245,158,11,0.12);color:var(--warning); }
+  .entrega-transito { background:rgba(14,165,233,0.12);color:#0ea5e9; }
+  .entrega-entregue { background:rgba(16,185,129,0.12);color:var(--success); }
+  .entrega-aceito { background:rgba(107,63,160,0.12);color:var(--purple); }
+  .next-action { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap; }
+  .next-action.urgente { background:rgba(239,68,68,0.1);color:#ef4444; }
+  .next-action.atencao { background:rgba(245,158,11,0.1);color:#d97706; }
+  .next-action.normal { background:rgba(99,102,241,0.1);color:#6366f1; }
+  .next-action.ok { background:rgba(16,185,129,0.1);color:#10b981; }
+  .price-history-wrap { background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:8px 12px;margin-top:8px;font-size:11px; }
+  .price-history-item { display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border-light); }
+  .price-history-item:last-child { border-bottom:none; }
+  .sugestao-finalizar { background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(16,185,129,0.03));border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12px; }
+  .sugestao-finalizar button { margin-left:auto;flex-shrink:0; }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2211,12 +2151,12 @@
           <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()" placeholder="Calculado automaticamente">
         </div>
         <div class="fg">
-          <label class="fl">Situação do Contrato</label>
+          <label class="fl">Situacao do Contrato</label>
           <select class="fc" id="d-contrato-situacao">
             <option value="vigente">Vigente</option>
             <option value="renovado">Renovado</option>
             <option value="aditivo">Com Aditivo</option>
-            <option value="encerrado">Encerrado sem Renovação</option>
+            <option value="encerrado">Encerrado sem Renovacao</option>
           </select>
         </div>
         <div class="fg full">
@@ -2497,7 +2437,7 @@
             <input type="url" class="fc" id="c-link" placeholder="https://...">
           </div>
           <div class="fg">
-            <label class="fl">Vl. Unitário Compra (R$) <button type="button" class="mtg" onclick="mostrarHistoricoPrecos()" title="Ver preços anteriores deste item"><span class="dot"></span>Histórico</button></label>
+            <label class="fl">Vl. Unitário Compra (R$) <button type="button" class="mtg" onclick="mostrarHistoricoPrecos()" title="Ver precos anteriores"><span class="dot"></span>Historico</button></label>
             <input type="number" step="0.01" class="fc" id="c-vunit" oninput="calcCompra()">
             <div id="c-historico-precos" style="display:none;"></div>
           </div>
@@ -2565,15 +2505,15 @@
           </div>
           <div class="fsec full">📦 Entrega</div>
           <div class="fg">
-            <label class="fl">Nº Nota Fiscal</label>
+            <label class="fl">Nota Fiscal</label>
             <input type="text" class="fc" id="c-nf" placeholder="NF-e ou NFS-e">
           </div>
           <div class="fg">
-            <label class="fl">Código Rastreio</label>
-            <input type="text" class="fc" id="c-rastreio" placeholder="Ex: BR123456789BR">
+            <label class="fl">Codigo Rastreio</label>
+            <input type="text" class="fc" id="c-rastreio" placeholder="BR123456789BR">
           </div>
           <div class="fg">
-            <label class="fl">Data Entrega ao Órgão</label>
+            <label class="fl">Data Entrega ao Orgao</label>
             <input type="date" class="fc" id="c-dentrega">
           </div>
           <div class="fg">
@@ -2581,9 +2521,9 @@
             <select class="fc" id="c-statusEntrega">
               <option value="">Selecione</option>
               <option value="pendente">Pendente</option>
-              <option value="transito">Em Trânsito</option>
-              <option value="entregue">Entregue ao Órgão</option>
-              <option value="aceito">Aceito pelo Órgão</option>
+              <option value="transito">Em Transito</option>
+              <option value="entregue">Entregue ao Orgao</option>
+              <option value="aceito">Aceito pelo Orgao</option>
             </select>
           </div>
           <div class="fsec full">🏦 Pagamento</div>
@@ -6069,7 +6009,6 @@ function atualizarBotaoLote(tab) {
   const span = g('cnt-sel-' + tab);
   if (btn) btn.style.display = cnt > 0 ? '' : 'none';
   if (span) span.textContent = cnt;
-  // v2.0: botões extras de ação em lote
   const btnFin = g('btn-fin-lote-' + tab);
   const btnAtrib = g('btn-atrib-lote-' + tab);
   if (btnFin) btnFin.style.display = cnt > 0 ? '' : 'none';
@@ -9945,906 +9884,305 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 console.log('v2 OK');
 
 
-// ══════════════════════════════════════════════════════════════════════
-//  LICITATIONBIZNIS v2.0 — MELHORIAS DE REGRA DE NEGÓCIO E UI
-// ══════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
+// LICITATIONBIZNIS v2.0
+// ══════════════════════════════════════════
 
-// ─── CONCEITO CHAVE: Lucro Previsto vs Lucro Realizado ───
-// Lucro Previsto = valor contrato (item vencido) - compra estimada - custo estimado
-//   → calculado a partir dos campos compraPrev e custoPrev dos lotes da disputa
-// Lucro Realizado = lucro efetivo após compra e recebimento
-//   → calculado a partir das compras com dpag preenchido
-//   → = valor proporcional do empenho - valor total compra - custo real
+// -- Lucro padronizado --
+function getLucroPrevisto(d){return(d.lotes||[]).reduce(function(s,l){var q=l.qtd||0;return s+q*(l.vunit||0)-(l.compraPrev||0)*q-(l.custoPrev||0)*q;},0);}
+function getLucroRealizado(did){return DB.empenhos.filter(function(e){return e.disputaId===did;}).reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return c.dpag&&c.dpag!=='';}).reduce(function(ss,c){return ss+((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));},0);},0);}
+function getLucroEmpenhado(did){return DB.empenhos.filter(function(e){return e.disputaId===did;}).reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(ss,c){return ss+((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));},0);},0);}
 
-// ═══════════════════════════════════════════════════════════
-// 1. DESATIVAR AUTO-FINALIZAÇÃO — substituir por sugestão
-// ═══════════════════════════════════════════════════════════
+// -- Proxima acao --
+function getProximaAcao(d){
+  var emps=DB.empenhos.filter(function(e){return e.disputaId===d.id;});
+  var lotes=d.lotes||[],tC=0,tE=0,tComp=0,tEnt=0,tPag=0;
+  lotes.forEach(function(l){tC+=(l.qtd||0);tE+=calcQtdEnviada(d.id,l.id);});
+  emps.forEach(function(e){(e.compras||[]).forEach(function(c){tComp+=(c.qtd||0);if(c.statusEntrega==='entregue'||c.statusEntrega==='aceito')tEnt+=(c.qtd||0);if(c.dpag&&c.dpag!=='')tPag+=(c.qtd||0);});});
+  var diasMax=emps.reduce(function(m,e){return Math.max(m,diasSemPagamento(e));},0);
+  if(d._sugerirFinalizar)return{label:'Pronto p/ finalizar',css:'ok',icon:'\u2705'};
+  if(tE===0)return{label:'Aguardando empenho',css:'normal',icon:'\uD83D\uDCC4'};
+  if(tComp<tE)return{label:'Aguardando compra',css:'atencao',icon:'\uD83D\uDED2'};
+  if(diasMax>=60)return{label:'Cobrar pagamento ('+diasMax+'d)',css:'urgente',icon:'\uD83D\uDD34'};
+  if(tComp>tEnt)return{label:'Aguardando entrega',css:'atencao',icon:'\uD83D\uDCE6'};
+  if(tEnt>tPag)return{label:'Aguardando pagamento',css:'atencao',icon:'\uD83D\uDCB0'};
+  return{label:'Em andamento',css:'normal',icon:'\u25B6'};
+}
+function getProximaAcaoEmpenho(e){
+  var c=e.compras||[],it=e.itens||[];
+  if(e._sugerirFinalizar)return{label:'Pronto p/ finalizar',css:'ok',icon:'\u2705'};
+  if(!c.length)return{label:'Cadastrar compra',css:'atencao',icon:'\uD83D\uDED2'};
+  var qC=c.reduce(function(s,x){return s+(x.qtd||0);},0),qE=it.reduce(function(s,i){return s+(i.qtd||0);},0)||(e.qtd||1);
+  if(qC<qE)return{label:'Compra incompleta ('+qC+'/'+qE+')',css:'atencao',icon:'\uD83D\uDED2'};
+  var semEnt=c.filter(function(x){return !x.statusEntrega||x.statusEntrega==='pendente'||x.statusEntrega==='';});
+  if(semEnt.length)return{label:'Registrar entrega',css:'normal',icon:'\uD83D\uDCE6'};
+  var semPag=c.filter(function(x){return !x.dpag||x.dpag==='';});var dias=diasSemPagamento(e);
+  if(semPag.length&&dias>=60)return{label:'Cobrar pagamento ('+dias+'d)',css:'urgente',icon:'\uD83D\uDD34'};
+  if(semPag.length&&dias>=30)return{label:'Aguardando pagamento ('+dias+'d)',css:'atencao',icon:'\uD83D\uDCB0'};
+  if(semPag.length)return{label:'Aguardando pagamento',css:'normal',icon:'\uD83D\uDCB0'};
+  return{label:'Concluido',css:'ok',icon:'\u2705'};
+}
+function renderProximaAcao(a){return '<span class="next-action '+a.css+'">'+a.icon+' '+a.label+'</span>';}
 
-// Guarda as funções originais para chamar internamente
-const _v2_origRenderAll = renderAll;
-
-// Override do renderAll: remove auto-finalização agressiva,
-// substitui por banners de sugestão
-renderAll = function() {
-  // NÃO auto-finaliza empenhos nem disputas.
-  // Em vez disso, detecta os que poderiam ser finalizados e mostra sugestão.
-
-  // Verifica empenhos que estão 100% pagos mas NÃO finalizados
-  DB.empenhos.forEach(e => {
-    if (e.finalizado) return;
-    if (empenhoEstaPago(e)) {
-      e._sugerirFinalizar = true;
-    } else {
-      e._sugerirFinalizar = false;
-    }
-  });
-
-  // Verifica disputas que atendem critérios de finalização
-  DB.disputas.forEach(d => {
-    if (d.finalizada) return;
-    if (disputaEstaFinalizada(d.id)) {
-      d._sugerirFinalizar = true;
-    } else {
-      d._sugerirFinalizar = false;
-    }
-  });
-
-  // Chama renders originais (que já existem no código)
-  renderD();
-  renderE();
-  renderEmpFinalizados();
-  renderFinalizadas();
-  updateBadges();
-  updateHeader();
-  popularFiltroMes();
-  atualizarNotificacoes();
-  if (_activeTab === 'painel') atualizarPainel();
-  if (_activeTab === 'acompanhamentos') renderAcomp();
+// -- Desativar auto-finalizacao, usar sugestao --
+var _v2origRA=renderAll;
+renderAll=function(){
+  DB.empenhos.forEach(function(e){if(!e.finalizado){e._sugerirFinalizar=empenhoEstaPago(e);}});
+  DB.disputas.forEach(function(d){if(!d.finalizada){d._sugerirFinalizar=disputaEstaFinalizada(d.id);}});
+  renderD();renderE();renderEmpFinalizados();renderFinalizadas();updateBadges();updateHeader();popularFiltroMes();atualizarNotificacoes();
+  if(_activeTab==='painel')atualizarPainel();
+  if(_activeTab==='acompanhamentos')renderAcomp();
 };
 
-// ═══════════════════════════════════════════════════════════
-// 2. PRÓXIMA AÇÃO NECESSÁRIA — determina o status de cada registro
-// ═══════════════════════════════════════════════════════════
-
-function getProximaAcao(disputa) {
-  const d = disputa;
-  const emps = DB.empenhos.filter(e => e.disputaId === d.id);
-  const lotes = d.lotes || [];
-  const totalContratado = lotes.reduce((s,l) => s + (l.qtd||0), 0);
-  const totalEmpenhado = lotes.reduce((s,l) => s + calcQtdEnviada(d.id, l.id), 0);
-  const totalComprado = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.qtd||0), 0), 0);
-  const totalEntregue = emps.reduce((s,e) => s + (e.compras||[]).filter(c => c.statusEntrega === 'entregue' || c.statusEntrega === 'aceito').reduce((ss,c) => ss + (c.qtd||0), 0), 0);
-  const totalPago = emps.reduce((s,e) => s + (e.compras||[]).filter(c => c.dpag && c.dpag !== '').reduce((ss,c) => ss + (c.qtd||0), 0), 0);
-
-  if (d._sugerirFinalizar) return { label: 'Pronto para finalizar', css: 'ok', icon: '✅' };
-  if (totalEmpenhado === 0) return { label: 'Aguardando empenho', css: 'normal', icon: '📄' };
-  if (totalEmpenhado > 0 && totalComprado < totalEmpenhado) return { label: 'Aguardando compra', css: 'atencao', icon: '🛒' };
-
-  // Verifica atraso de pagamento
-  const diasMax = emps.reduce((max, e) => Math.max(max, diasSemPagamento(e)), 0);
-  if (diasMax >= 60) return { label: 'Cobrar pagamento (' + diasMax + 'd)', css: 'urgente', icon: '🔴' };
-  if (totalComprado > totalEntregue) return { label: 'Aguardando entrega', css: 'atencao', icon: '📦' };
-  if (totalEntregue > totalPago) return { label: 'Aguardando pagamento', css: 'atencao', icon: '💰' };
-  if (totalPago > 0 && totalPago < totalContratado) return { label: 'Parcialmente pago', css: 'normal', icon: '⏳' };
-
-  return { label: 'Em andamento', css: 'normal', icon: '▶' };
-}
-
-function getProximaAcaoEmpenho(emp) {
-  const compras = emp.compras || [];
-  const itens = emp.itens || [];
-
-  if (emp._sugerirFinalizar) return { label: 'Pronto para finalizar', css: 'ok', icon: '✅' };
-  if (compras.length === 0) return { label: 'Cadastrar compra', css: 'atencao', icon: '🛒' };
-
-  const qtdComprada = compras.reduce((s,c) => s + (c.qtd||0), 0);
-  const qtdEmpenho = itens.reduce((s,i) => s + (i.qtd||0), 0) || emp.qtd || 1;
-  if (qtdComprada < qtdEmpenho) return { label: 'Compra incompleta (' + qtdComprada + '/' + qtdEmpenho + ')', css: 'atencao', icon: '🛒' };
-
-  const semEntrega = compras.filter(c => !c.statusEntrega || c.statusEntrega === 'pendente' || c.statusEntrega === '');
-  if (semEntrega.length > 0) return { label: 'Registrar entrega', css: 'normal', icon: '📦' };
-
-  const semPag = compras.filter(c => !c.dpag || c.dpag === '');
-  const dias = diasSemPagamento(emp);
-  if (semPag.length > 0 && dias >= 60) return { label: 'Cobrar pagamento (' + dias + 'd)', css: 'urgente', icon: '🔴' };
-  if (semPag.length > 0 && dias >= 30) return { label: 'Aguardando pagamento (' + dias + 'd)', css: 'atencao', icon: '💰' };
-  if (semPag.length > 0) return { label: 'Aguardando pagamento', css: 'normal', icon: '💰' };
-
-  return { label: 'Concluído', css: 'ok', icon: '✅' };
-}
-
-function renderProximaAcao(acao) {
-  return '<span class="next-action ' + acao.css + '">' + acao.icon + ' ' + acao.label + '</span>';
-}
-
-// ═══════════════════════════════════════════════════════════
-// 3. LUCRO PREVISTO vs REALIZADO — funções padronizadas
-// ═══════════════════════════════════════════════════════════
-
-function getLucroPrevisto(disputa) {
-  // Lucro Previsto = soma de (vlTotal - compraPrev*qtd - custoPrev*qtd) por lote
-  return (disputa.lotes || []).reduce((s, l) => {
-    const qtd = l.qtd || 0;
-    const total = qtd * (l.vunit || 0);
-    return s + total - (l.compraPrev || 0) * qtd - (l.custoPrev || 0) * qtd;
-  }, 0);
-}
-
-function getLucroRealizado(disputaId) {
-  // Lucro Realizado = soma do lucro das compras COM dpag preenchido
-  const emps = DB.empenhos.filter(e => e.disputaId === disputaId);
-  return emps.reduce((s, e) => {
-    return s + (e.compras || [])
-      .filter(c => c.dpag && c.dpag !== '')
-      .reduce((ss, c) => {
-        const luc = (c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0) - (c.vtotal||0) - (c.custo||0);
-        return ss + luc;
-      }, 0);
-  }, 0);
-}
-
-function getLucroEmpenhado(disputaId) {
-  // Lucro Empenhado = lucro das compras SEM dpag (a receber)
-  const emps = DB.empenhos.filter(e => e.disputaId === disputaId);
-  return emps.reduce((s, e) => {
-    return s + (e.compras || [])
-      .filter(c => !c.dpag || c.dpag === '')
-      .reduce((ss, c) => {
-        const luc = (c.luc !== undefined && c.luc !== null) ? c.luc : (c.rec||0) - (c.vtotal||0) - (c.custo||0);
-        return ss + luc;
-      }, 0);
-  }, 0);
-}
-
-// ═══════════════════════════════════════════════════════════
-// 4. SALVAR COMPRA — inclui novos campos de entrega
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origSaveCompra = saveCompra;
-saveCompra = function() {
-  // Antes de salvar, injeta os novos campos no objeto compra
-  // O original saveCompra() monta o objeto e salva.
-  // Vamos interceptar o ponto onde o objeto é construído.
-  // Como o código original usa gv() para ler campos, basta garantir que
-  // os novos campos existam no DOM — o que já fizemos.
-  // Precisamos fazer o patch no objeto compra DEPOIS que saveCompra() salva.
-
-  // Guarda referências dos novos campos antes de chamar o original
-  const _nf = (document.getElementById('c-nf') || {}).value || '';
-  const _rastreio = (document.getElementById('c-rastreio') || {}).value || '';
-  const _dentrega = (document.getElementById('c-dentrega') || {}).value || '';
-  const _statusEntrega = (document.getElementById('c-statusEntrega') || {}).value || '';
-
-  // Chama o original
-  _v2_origSaveCompra();
-
-  // Agora patch: encontra a última compra salva e adiciona os campos
-  const emp = DB.empenhos.find(x => x.id === compraEmpenhoId);
-  if (emp && emp.compras && emp.compras.length > 0) {
-    // Se estava editando, atualiza a compra editada; senão, a última
-    const targetId = compraEditId;
-    const compra = targetId
-      ? emp.compras.find(c => c.id === targetId)
-      : emp.compras[emp.compras.length - 1];
-    if (compra) {
-      compra.nf = _nf.toUpperCase();
-      compra.rastreio = _rastreio.toUpperCase();
-      compra.dentrega = _dentrega;
-      compra.statusEntrega = _statusEntrega;
-      save('empenhos', DB.empenhos);
-    }
+// -- saveCompra override: inclui campos entrega --
+var _v2origSC=saveCompra;
+saveCompra=function(){
+  var _nf=(g('c-nf')||{}).value||'';
+  var _rast=(g('c-rastreio')||{}).value||'';
+  var _dent=(g('c-dentrega')||{}).value||'';
+  var _sEnt=(g('c-statusEntrega')||{}).value||'';
+  var _eid=compraEmpenhoId;var _cid=compraEditId;
+  _v2origSC();
+  var emp=_fullDB.empenhos.find(function(x){return x.id===_eid;});
+  if(emp&&emp.compras&&emp.compras.length){
+    var c=_cid?emp.compras.find(function(x){return x.id===_cid;}):emp.compras[emp.compras.length-1];
+    if(c){c.nf=_nf.toUpperCase();c.rastreio=_rast.toUpperCase();c.dentrega=_dent;c.statusEntrega=_sEnt;save('empenhos',_fullDB.empenhos);}
   }
 };
 
-// ═══════════════════════════════════════════════════════════
-// 5. ABRIR COMPRA — preenche campos de entrega ao editar
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origSelecionarCompraLote = selecionarCompraLote;
-selecionarCompraLote = function(empenhoId, itemId, dadosExist) {
-  _v2_origSelecionarCompraLote(empenhoId, itemId, dadosExist);
-
-  // Preenche campos de entrega se estiver editando
-  if (dadosExist) {
-    const nfEl = document.getElementById('c-nf');
-    const rastEl = document.getElementById('c-rastreio');
-    const dentEl = document.getElementById('c-dentrega');
-    const statusEl = document.getElementById('c-statusEntrega');
-    if (nfEl) nfEl.value = dadosExist.nf || '';
-    if (rastEl) rastEl.value = dadosExist.rastreio || '';
-    if (dentEl) dentEl.value = dadosExist.dentrega || '';
-    if (statusEl) statusEl.value = dadosExist.statusEntrega || '';
+// -- selecionarCompraLote override: preenche entrega ao editar --
+var _v2origSCL=selecionarCompraLote;
+selecionarCompraLote=function(eid,iid,d){
+  _v2origSCL(eid,iid,d);
+  if(d){
+    var el;
+    el=g('c-nf');if(el)el.value=d.nf||'';
+    el=g('c-rastreio');if(el)el.value=d.rastreio||'';
+    el=g('c-dentrega');if(el)el.value=d.dentrega||'';
+    el=g('c-statusEntrega');if(el)el.value=d.statusEntrega||'';
   }
 };
 
-// ═══════════════════════════════════════════════════════════
-// 6. HISTÓRICO DE PREÇOS
-// ═══════════════════════════════════════════════════════════
+// -- abrirCompra override: limpa campos entrega --
+var _v2origAC=abrirCompra;
+abrirCompra=function(eid,cid){
+  _v2origAC(eid,cid);
+  ['c-nf','c-rastreio','c-dentrega','c-statusEntrega'].forEach(function(id){var el=g(id);if(el)el.value='';});
+  var h=g('c-historico-precos');if(h)h.style.display='none';
+};
 
-function mostrarHistoricoPrecos() {
-  const panel = document.getElementById('c-historico-precos');
-  if (!panel) return;
-
-  if (panel.style.display === 'block') { panel.style.display = 'none'; return; }
-
-  // Pega a descrição do item sendo comprado
-  const descEl = document.getElementById('c-lote-desc');
-  const desc = (descEl ? descEl.value : '').toLowerCase().trim();
-  if (!desc) { panel.innerHTML = '<div class="price-history-wrap">Selecione um item primeiro.</div>'; panel.style.display = 'block'; return; }
-
-  // Busca todas as compras de itens com descrição similar
-  const historico = [];
-  DB.empenhos.forEach(e => {
-    const itensEmp = e.itens || [];
-    (e.compras || []).forEach(c => {
-      const itemRef = itensEmp.find(i => i.id === c.itemId);
-      const itemDesc = (itemRef ? itemRef.descricao : e.produto || '').toLowerCase();
-      // Match por similaridade (contém a descrição)
-      if (itemDesc && (itemDesc.includes(desc) || desc.includes(itemDesc))) {
-        historico.push({
-          data: c.dcompra || e.data || '',
-          vunit: c.vunit || 0,
-          plataforma: c.plataforma || '?',
-          orgao: e.orgao || '?'
-        });
-      }
-    });
-  });
-
-  if (!historico.length) {
-    panel.innerHTML = '<div class="price-history-wrap">Nenhuma compra anterior encontrada para "' + desc + '".</div>';
-    panel.style.display = 'block';
-    return;
-  }
-
-  // Ordena por data desc e limita a 8
-  historico.sort((a,b) => (b.data||'').localeCompare(a.data||''));
-  const top = historico.slice(0, 8);
-  const media = top.reduce((s,h) => s + h.vunit, 0) / top.length;
-  const menor = Math.min(...top.map(h => h.vunit));
-  const maior = Math.max(...top.map(h => h.vunit));
-
-  panel.innerHTML = '<div class="price-history-wrap">' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-weight:700;">' +
-      '<span>Histórico: ' + desc.substring(0,25).toUpperCase() + '</span>' +
-      '<span style="color:var(--accent);">Média: ' + fmt(media) + '</span>' +
-    '</div>' +
-    '<div style="display:flex;gap:12px;margin-bottom:6px;font-size:10px;color:var(--text-tertiary);">' +
-      '<span>Menor: <strong style="color:var(--success);">' + fmt(menor) + '</strong></span>' +
-      '<span>Maior: <strong style="color:var(--danger);">' + fmt(maior) + '</strong></span>' +
-      '<span>' + top.length + ' compra(s)</span>' +
-    '</div>' +
-    top.map(h =>
-      '<div class="price-history-item">' +
-        '<span>' + fmtD(h.data) + ' · ' + h.plataforma + '</span>' +
-        '<span style="font-weight:700;color:var(--accent);">' + fmt(h.vunit) + '</span>' +
-      '</div>'
-    ).join('') +
-    '<button onclick="document.getElementById(\'c-vunit\').value=' + media.toFixed(2) + ';calcCompra();document.getElementById(\'c-historico-precos\').style.display=\'none\';" class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px;">Usar média (' + fmt(media) + ')</button>' +
-  '</div>';
-  panel.style.display = 'block';
+// -- Historico de precos --
+function mostrarHistoricoPrecos(){
+  var panel=g('c-historico-precos');if(!panel)return;
+  if(panel.style.display==='block'){panel.style.display='none';return;}
+  var descEl=g('c-lote-desc');var desc=(descEl?descEl.value:'').toLowerCase().trim();
+  if(!desc){panel.innerHTML='<div class="price-history-wrap">Selecione um item primeiro.</div>';panel.style.display='block';return;}
+  var hist=[];
+  DB.empenhos.forEach(function(e){(e.compras||[]).forEach(function(c){
+    var it=(e.itens||[]).find(function(i){return i.id===c.itemId;});
+    var id_=(it?it.descricao:e.produto||'').toLowerCase();
+    if(id_&&(id_.indexOf(desc)>=0||desc.indexOf(id_)>=0))hist.push({data:c.dcompra||e.data||'',vunit:c.vunit||0,plat:c.plataforma||'?',orgao:e.orgao||'?'});
+  });});
+  if(!hist.length){panel.innerHTML='<div class="price-history-wrap">Nenhuma compra anterior para "'+desc+'".</div>';panel.style.display='block';return;}
+  hist.sort(function(a,b){return(b.data||'').localeCompare(a.data||'');});
+  var top=hist.slice(0,8);
+  var media=top.reduce(function(s,h){return s+h.vunit;},0)/top.length;
+  var menor=Math.min.apply(null,top.map(function(h){return h.vunit;}));
+  var maior=Math.max.apply(null,top.map(function(h){return h.vunit;}));
+  panel.innerHTML='<div class="price-history-wrap">'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-weight:700;">'
+    +'<span>'+desc.substring(0,25).toUpperCase()+'</span><span style="color:var(--accent);">Media: '+fmt(media)+'</span></div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:6px;font-size:10px;color:var(--text-tertiary);">'
+    +'<span>Menor: <strong style="color:var(--success);">'+fmt(menor)+'</strong></span>'
+    +'<span>Maior: <strong style="color:var(--danger);">'+fmt(maior)+'</strong></span>'
+    +'<span>'+top.length+' compra(s)</span></div>'
+    +top.map(function(h){return '<div class="price-history-item"><span>'+fmtD(h.data)+' \u00B7 '+h.plat+'</span><span style="font-weight:700;color:var(--accent);">'+fmt(h.vunit)+'</span></div>';}).join('')
+    +'<button onclick="g(\'c-vunit\').value='+media.toFixed(2)+';calcCompra();g(\'c-historico-precos\').style.display=\'none\';" class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px;">Usar media ('+fmt(media)+')</button></div>';
+  panel.style.display='block';
 }
 
-// ═══════════════════════════════════════════════════════════
-// 7. SALVAR DISPUTA — inclui situação do contrato e histórico acomp
-// ═══════════════════════════════════════════════════════════
+// -- saveD override: situacao contrato --
+var _v2origSD=saveD;
+saveD=function(){
+  var sit=(g('d-contrato-situacao')||{}).value||'vigente';
+  _v2origSD();
+  if(EID.disputas){var d=_fullDB.disputas.find(function(x){return x.id===EID.disputas;});if(d){d.contratoSituacao=sit;save('disputas',_fullDB.disputas);}}
+};
+var _v2origED=editD;
+editD=function(id){_v2origED(id);var r=DB.disputas.find(function(x){return x.id===id;});if(r){var el=g('d-contrato-situacao');if(el)el.value=r.contratoSituacao||'vigente';}};
 
-const _v2_origSaveD = saveD;
-saveD = function() {
-  // Injeta campo de situação do contrato antes de salvar
-  const _situacaoEl = document.getElementById('d-contrato-situacao');
-  const _situacao = _situacaoEl ? _situacaoEl.value : 'vigente';
+// -- Converter acomp preserva historico --
+var _v2origCDA=_doCriarDisputaDeAcomp;
+_doCriarDisputaDeAcomp=function(r){_v2origCDA(r);var obs=g('d-observacao');if(obs&&r){var h='';if(r.data)h+='DISPUTA: '+fmtD(r.data)+'. ';if(r.retorno)h+='RETORNO: '+fmtRetorno(r.retorno)+'. ';if(r.status)h+='STATUS: '+r.status.toUpperCase()+'. ';if(r.observacao)h+=r.observacao;obs.value=('ORIGEM: ACOMPANHAMENTO. '+h).substring(0,200);}};
 
-  _v2_origSaveD();
-
-  // Patch: adiciona situação do contrato ao registro salvo
-  const id = EID.disputas;
-  if (id) {
-    const d = _fullDB.disputas.find(x => x.id === id);
-    if (d) {
-      d.contratoSituacao = _situacao;
-      save('disputas', _fullDB.disputas);
-    }
-  }
+// -- Duplicar compra com saldo ajustado --
+var _v2origDC=duplicarCompra;
+duplicarCompra=function(eid,cid){
+  var emp=DB.empenhos.find(function(x){return x.id===eid;});if(!emp)return;
+  var orig=(emp.compras||[]).find(function(c){return c.id===cid;});if(!orig)return;
+  var iid=orig.itemId;var item=(emp.itens||[]).find(function(i){return i.id===iid;});
+  var qE=item?(item.qtd||0):(emp.qtd||1);
+  var qJ=(emp.compras||[]).filter(function(c){return c.itemId===iid;}).reduce(function(s,c){return s+(c.qtd||0);},0);
+  var saldo=Math.max(0,qE-qJ);
+  if(saldo<=0){toast('Sem saldo para duplicar. Todas unidades ja compradas.','error');return;}
+  var qN=Math.min(orig.qtd||1,saldo);
+  var nova=JSON.parse(JSON.stringify(orig));nova.id=uid();nova.qtd=qN;nova.vtotal=qN*(orig.vunit||0);nova.dpag='';nova.recebido=0;nova.dentrega='';nova.statusEntrega='';nova.nf='';nova.rastreio='';
+  var vemI=item?(item.qtd||1)*(item.vunit||0):(emp.vem||0);var qEi=item?(item.qtd||1):(emp.qtd||1);
+  var vu=qEi>0?vemI/qEi:0;nova.luc=vu*qN-nova.vtotal-(nova.custo||0);nova.rec=nova.vtotal+nova.luc;
+  emp.compras=[].concat(emp.compras||[],[nova]);upsert('empenhos',emp);
+  toast(qN<(orig.qtd||1)?'Duplicada com '+qN+' un. (saldo ajustado)':'Compra duplicada!','success');
+  setTimeout(function(){abrirPopupEmpenho(eid);},150);
 };
 
-// ═══════════════════════════════════════════════════════════
-// 8. EDITAR DISPUTA — carrega situação do contrato
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origEditD = editD;
-editD = function(id) {
-  _v2_origEditD(id);
-  const r = DB.disputas.find(x => x.id === id);
-  if (r) {
-    const el = document.getElementById('d-contrato-situacao');
-    if (el) el.value = r.contratoSituacao || 'vigente';
-  }
-};
-
-// ═══════════════════════════════════════════════════════════
-// 9. CONVERTER ACOMPANHAMENTO — preserva histórico
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origDoCriarDisputaDeAcomp = _doCriarDisputaDeAcomp;
-_doCriarDisputaDeAcomp = function(r) {
-  _v2_origDoCriarDisputaDeAcomp(r);
-
-  // Adiciona histórico do acompanhamento no campo de observação da disputa
-  const obsEl = document.getElementById('d-observacao');
-  if (obsEl && r) {
-    let historico = '';
-    if (r.data) historico += 'DISPUTA: ' + fmtD(r.data) + '. ';
-    if (r.retorno) historico += 'RETORNO: ' + fmtRetorno(r.retorno) + '. ';
-    if (r.status) historico += 'STATUS: ' + r.status.toUpperCase() + '. ';
-    if (r.observacao) historico += r.observacao;
-    obsEl.value = ('ORIGEM: ACOMPANHAMENTO. ' + historico).substring(0, 200);
-  }
-};
-
-// ═══════════════════════════════════════════════════════════
-// 10. DUPLICAR COMPRA — ajusta saldo automaticamente
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origDuplicarCompra = duplicarCompra;
-duplicarCompra = function(empId, compraId) {
-  const emp = DB.empenhos.find(x => x.id === empId);
-  if (!emp) return;
-  const original = (emp.compras||[]).find(c => c.id === compraId);
-  if (!original) return;
-
-  // Calcula saldo disponível para o item
-  const itemId = original.itemId;
-  const item = (emp.itens||[]).find(i => i.id === itemId);
-  const qtdEmpenho = item ? (item.qtd || 0) : (emp.qtd || 1);
-  const qtdJaComprada = (emp.compras||[])
-    .filter(c => c.itemId === itemId)
-    .reduce((s,c) => s + (c.qtd||0), 0);
-  const saldo = Math.max(0, qtdEmpenho - qtdJaComprada);
-
-  if (saldo <= 0) {
-    toast('Sem saldo disponível para duplicar. Todas as unidades já foram compradas.', 'error');
-    return;
-  }
-
-  // Duplica com quantidade ajustada ao saldo
-  const qtdNova = Math.min(original.qtd || 1, saldo);
-  const nova = {
-    ...original,
-    id: uid(),
-    qtd: qtdNova,
-    vtotal: qtdNova * (original.vunit || 0),
-    dpag: '',
-    recebido: 0,
-    dentrega: '',
-    statusEntrega: '',
-    nf: '',
-    rastreio: ''
-  };
-
-  // Recalcula lucro proporcional
-  const vemItem = item ? (item.qtd||1) * (item.vunit||0) : (emp.vem || 0);
-  const qtdEmpItem = item ? (item.qtd||1) : (emp.qtd||1);
-  const vemUnit = qtdEmpItem > 0 ? vemItem / qtdEmpItem : 0;
-  const vemProp = vemUnit * qtdNova;
-  nova.luc = vemProp - nova.vtotal - (nova.custo || 0);
-  nova.rec = nova.vtotal + nova.luc;
-
-  emp.compras = [...(emp.compras||[]), nova];
-  upsert('empenhos', emp);
-
-  if (qtdNova < (original.qtd || 1)) {
-    toast('Compra duplicada com ' + qtdNova + ' un. (saldo ajustado de ' + saldo + ' disponíveis)', 'success');
-  } else {
-    toast('Compra duplicada!', 'success');
-  }
-  setTimeout(() => abrirPopupEmpenho(empId), 150);
-};
-
-// ═══════════════════════════════════════════════════════════
-// 11. MÉTRICAS POR PLATAFORMA
-// ═══════════════════════════════════════════════════════════
-
-function getMetricasPlataforma() {
-  const plats = {};
-  DB.empenhos.forEach(e => {
-    (e.compras || []).forEach(c => {
-      const p = (c.plataforma || 'NAO INFORMADO').toUpperCase();
-      if (!plats[p]) plats[p] = { qtd: 0, total: 0, lucro: 0, diasEntrega: [] };
-      plats[p].qtd++;
-      plats[p].total += c.vtotal || 0;
-      plats[p].lucro += c.luc || 0;
-      // Calcula dias de entrega se tiver data de compra e entrega
-      if (c.dcompra && c.dentrega) {
-        const dias = Math.floor((new Date(c.dentrega) - new Date(c.dcompra)) / 86400000);
-        if (dias >= 0 && dias < 365) plats[p].diasEntrega.push(dias);
-      }
-    });
-  });
-
-  return Object.entries(plats)
-    .map(([nome, d]) => ({
-      nome,
-      qtd: d.qtd,
-      total: d.total,
-      lucro: d.lucro,
-      mediaEntrega: d.diasEntrega.length ? Math.round(d.diasEntrega.reduce((a,b)=>a+b,0) / d.diasEntrega.length) : null,
-      precoMedio: d.qtd > 0 ? d.total / d.qtd : 0
-    }))
-    .sort((a,b) => b.total - a.total);
+// -- Metricas por plataforma --
+function getMetricasPlataforma(){
+  var p={};DB.empenhos.forEach(function(e){(e.compras||[]).forEach(function(c){
+    var n=(c.plataforma||'NAO INFORMADO').toUpperCase();if(!p[n])p[n]={qtd:0,total:0,lucro:0,dias:[]};
+    p[n].qtd++;p[n].total+=c.vtotal||0;p[n].lucro+=c.luc||0;
+    if(c.dcompra&&c.dentrega){var d=Math.floor((new Date(c.dentrega)-new Date(c.dcompra))/86400000);if(d>=0&&d<365)p[n].dias.push(d);}
+  });});
+  return Object.entries(p).map(function(x){var n=x[0],d=x[1];return{nome:n,qtd:d.qtd,total:d.total,lucro:d.lucro,mediaEntrega:d.dias.length?Math.round(d.dias.reduce(function(a,b){return a+b;},0)/d.dias.length):null,precoMedio:d.qtd>0?d.total/d.qtd:0};}).sort(function(a,b){return b.total-a.total;});
 }
 
-// ═══════════════════════════════════════════════════════════
-// 12. RESUMO DIÁRIO PERSONALIZADO POR ANALISTA
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origMostrarResumoDiario = mostrarResumoDiario;
-mostrarResumoDiario = function() {
-  const hoje = new Date().toISOString().slice(0,10);
-  const saved = JSON.parse(localStorage.getItem('resumoDiario') || '{}');
-  if (saved.data === hoje && saved.naoMostrar) return;
-
-  const titulo = document.getElementById('resumo-titulo');
-  const dataEl = document.getElementById('resumo-data');
-  const body = document.getElementById('resumo-body');
-  if (!titulo || !body) return;
-
-  const nomeUsuario = usuarioLogado || 'você';
-  titulo.textContent = saudacao() + ', ' + nomeUsuario + '!';
-  const diasSemana = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-  const agora = new Date();
-  dataEl.textContent = diasSemana[agora.getDay()] + ', ' + agora.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
-
-  // Dados personalizados para o analista logado
-  const meusEmpenhos = DB.empenhos.filter(e => !e.finalizado);
-  const empPendentes = meusEmpenhos.filter(e => !empenhoEstaPago(e));
-  const emp30 = empPendentes.filter(e => diasSemPagamento(e) >= 30);
-  const emp60 = empPendentes.filter(e => diasSemPagamento(e) >= 60);
-  const empSemCompra = meusEmpenhos.filter(e => !(e.compras||[]).length);
-  const aReceber = empPendentes.reduce((s,e) => s + (e.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0), 0);
-  const lucroMes = meusEmpenhos.reduce((s,e) => s + (e.compras||[]).filter(c => c.dpag && c.dpag.startsWith(hoje.slice(0,7))).reduce((ss,c) => ss + (c.luc||0), 0), 0);
-
-  // Retornos do dia
-  const retornosHoje = (DB.acomp||[]).filter(r => {
-    if (!r.retorno) return false;
-    const ret = new Date(r.retorno);
-    return ret.toDateString() === agora.toDateString();
-  });
-
-  // Tarefas do dia
-  const tarefasHoje = (DB.tarefas||[]).filter(t => !t.concluida && t.prazo && t.prazo <= hoje);
-
-  // Disputas sem empenho há mais de 7 dias
-  const dispSemEmp = DB.disputas.filter(d => {
-    if (d.finalizada) return false;
-    if (DB.empenhos.some(e => e.disputaId === d.id)) return false;
-    if (!d.data) return false;
-    return Math.floor((agora - new Date(d.data)) / 86400000) >= 7;
-  });
-
-  let html = '';
-
-  // Card principal: A receber + Lucro do mês
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">';
-  html += '<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;">';
-  html += '<div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">A receber</div>';
-  html += '<div style="font-size:20px;font-weight:800;color:var(--success);">' + fmt(aReceber) + '</div>';
-  html += '<div style="font-size:10px;color:var(--text-tertiary);">' + empPendentes.length + ' empenho(s)</div>';
-  html += '</div>';
-  html += '<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;">';
-  html += '<div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">Lucro no mês</div>';
-  html += '<div style="font-size:20px;font-weight:800;color:var(--accent);">' + fmt(lucroMes) + '</div>';
-  html += '<div style="font-size:10px;color:var(--text-tertiary);">' + agora.toLocaleDateString('pt-BR', {month:'long'}) + '</div>';
-  html += '</div></div>';
-
-  // Retornos do dia
-  if (retornosHoje.length > 0) {
-    html += '<div style="background:var(--warning-soft);border-left:3px solid var(--warning);border-radius:6px;padding:10px 14px;margin-bottom:8px;">';
-    html += '<div style="font-weight:700;font-size:12px;margin-bottom:6px;">⏰ Retornos agendados para hoje</div>';
-    retornosHoje.forEach(r => {
-      const ret = new Date(r.retorno);
-      html += '<div style="font-size:12px;margin-bottom:4px;">';
-      html += '<strong>' + ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</strong> · ' + r.orgao;
-      if (r.link) html += ' <a href="' + r.link + '" target="_blank" style="color:var(--accent);">🔗</a>';
-      html += '</div>';
-    });
-    html += '</div>';
+// -- Acoes em lote --
+function finalizarSelecionados(tab){
+  var ids=Array.from(document.querySelectorAll('.chk-row-'+tab+':checked')).map(function(c){return c.dataset.id;});
+  if(!ids.length){toast('Selecione ao menos um.','error');return;}
+  if(tab==='empenhos'){
+    var emps=ids.map(function(id){return DB.empenhos.find(function(e){return e.id===id;});}).filter(Boolean);
+    var sc=emps.filter(function(e){return !(e.compras||[]).length;});
+    if(sc.length){toast(sc.length+' sem compra. Cadastre antes.','error');return;}
+    _confirmarAcao({icon:'\u2705',titulo:'Finalizar '+emps.length,msg:'Finalizar os selecionados?',btnLabel:'Finalizar',btnClass:'btn-success',onConfirm:function(){
+      emps.forEach(function(e){e.finalizado=true;e._manualFinalizado=true;e.dataFinalizacao=e.dataFinalizacao||new Date().toISOString().slice(0,10);});
+      save('empenhos',DB.empenhos);renderAll();toast(emps.length+' finalizado(s)!','success');
+    }});
   }
+}
+function atribuirAnalistaSelecionados(tab){
+  var ids=Array.from(document.querySelectorAll('.chk-row-'+tab+':checked')).map(function(c){return c.dataset.id;});
+  if(!ids.length){toast('Selecione ao menos um.','error');return;}
+  var nomes=new Set();_fullDB.disputas.forEach(function(r){if(r.analista)nomes.add(r.analista);});_fullDB.empenhos.forEach(function(r){if(r.analista)nomes.add(r.analista);});
+  var sel=prompt('Atribuir a '+ids.length+' registro(s).\nNome: '+[...nomes].sort().join(', '));
+  if(!sel||!sel.trim())return;
+  ids.forEach(function(id){var r=_fullDB[tab].find(function(x){return x.id===id;});if(r)r.analista=sel.trim();});
+  save(tab,_fullDB[tab]);renderAll();toast(ids.length+' atribuido(s) a '+sel.trim(),'success');
+}
 
-  // Ações do dia
-  const acoes = [];
-  if (emp60.length) acoes.push({ icon: '🔴', msg: emp60.length + ' empenho(s) com +60 dias sem pagamento', cor: 'var(--danger)' });
-  else if (emp30.length) acoes.push({ icon: '🟡', msg: emp30.length + ' empenho(s) com +30 dias sem pagamento', cor: 'var(--warning)' });
-  if (empSemCompra.length) acoes.push({ icon: '🛒', msg: empSemCompra.length + ' empenho(s) sem compra cadastrada', cor: 'var(--accent)' });
-  if (dispSemEmp.length) acoes.push({ icon: '📋', msg: dispSemEmp.length + ' disputa(s) sem empenho há +7 dias', cor: 'var(--accent)' });
-  if (tarefasHoje.length) acoes.push({ icon: '📌', msg: tarefasHoje.length + ' tarefa(s) no prazo hoje', cor: 'var(--purple)' });
-
-  if (acoes.length) {
-    html += '<div style="display:flex;flex-direction:column;gap:6px;">';
-    acoes.forEach(a => {
-      html += '<div style="background:var(--bg-surface-soft);border-left:3px solid ' + a.cor + ';border-radius:6px;padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:8px;">';
-      html += '<span>' + a.icon + '</span><span>' + a.msg + '</span></div>';
-    });
-    html += '</div>';
-  } else {
-    html += '<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;color:var(--success);font-size:13px;font-weight:600;">✅ Tudo em dia! Nenhuma ação pendente.</div>';
+// -- Banner sugestao finalizar --
+var _v2origRE=renderE;
+renderE=function(){
+  _v2origRE();
+  document.querySelectorAll('.sugestao-finalizar').forEach(function(el){el.remove();});
+  var sug=DB.empenhos.filter(function(e){return !e.finalizado&&e._sugerirFinalizar;});
+  if(sug.length>0){
+    var banner=g('alerta-empenhos-banner');if(!banner)return;
+    var div=document.createElement('div');div.className='sugestao-finalizar';
+    div.innerHTML='<span style="font-size:20px;">\u2705</span><div><strong>'+sug.length+' empenho(s)</strong> totalmente pago(s).</div><button class="btn btn-success btn-sm" onclick="finalizarTodosSugeridos()">Finalizar todos</button>';
+    banner.parentNode.insertBefore(div,banner);
   }
+};
+function finalizarTodosSugeridos(){
+  var emps=DB.empenhos.filter(function(e){return !e.finalizado&&e._sugerirFinalizar;});
+  if(!emps.length)return;
+  _confirmarAcao({icon:'\u2705',titulo:'Finalizar '+emps.length+' empenho(s)',msg:emps.map(function(e){return '<strong>#'+(e.num||'?')+'</strong> \u00B7 '+(e.orgao||'?');}).join('<br>'),btnLabel:'Finalizar todos',btnClass:'btn-success',onConfirm:function(){
+    emps.forEach(function(e){e.finalizado=true;e._manualFinalizado=true;e.dataFinalizacao=e.dataFinalizacao||new Date().toISOString().slice(0,10);if(e.disputaId)verificarAutoFinalizarDisputa(e.disputaId);});
+    save('empenhos',DB.empenhos);renderAll();toast(emps.length+' finalizado(s)!','success');
+  }});
+}
 
-  body.innerHTML = html;
-  document.getElementById('resumo-nao-mostrar').checked = false;
-  document.getElementById('modal-resumo-diario').classList.add('open');
+// -- Dashboard: metricas plataforma + KPIs clicaveis --
+var _v2origDash=atualizarDashboard;
+atualizarDashboard=function(){
+  _v2origDash();
+  var kpis={'dk-disputas':function(){switchTab('disputas',document.querySelectorAll('.tab-btn')[3]);},'dk-empenhos':function(){switchTab('empenhos',document.querySelectorAll('.tab-btn')[4]);}};
+  Object.entries(kpis).forEach(function(x){var el=g(x[0]);if(el){el.style.cursor='pointer';el.title='Clique para ver';el.onclick=x[1];}});
+  var pc=g('dash-plataformas-container');
+  if(!pc){var td=g('tab-dashboard');if(td){pc=document.createElement('div');pc.id='dash-plataformas-container';pc.className='chart-card';pc.style.marginTop='20px';td.appendChild(pc);}}
+  if(pc){
+    var plats=getMetricasPlataforma().slice(0,10);
+    pc.innerHTML='<h3>\uD83C\uDFEA Metricas por Plataforma</h3>'+(plats.length?'<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="background:var(--bg-surface-soft);"><th style="padding:7px 8px;text-align:left;">Plataforma</th><th style="padding:7px 8px;text-align:right;">Compras</th><th style="padding:7px 8px;text-align:right;">Valor Total</th><th style="padding:7px 8px;text-align:right;">Lucro</th><th style="padding:7px 8px;text-align:right;">Preco Medio</th><th style="padding:7px 8px;text-align:center;">Entrega Media</th></tr></thead><tbody>'+plats.map(function(p){return '<tr><td style="padding:7px 8px;font-weight:600;">'+p.nome+'</td><td style="padding:7px 8px;text-align:right;">'+p.qtd+'</td><td style="padding:7px 8px;text-align:right;color:var(--accent);font-weight:600;">'+fmt(p.total)+'</td><td style="padding:7px 8px;text-align:right;color:var(--success);font-weight:600;">'+fmt(p.lucro)+'</td><td style="padding:7px 8px;text-align:right;">'+fmt(p.precoMedio)+'</td><td style="padding:7px 8px;text-align:center;">'+(p.mediaEntrega!==null?p.mediaEntrega+' dias':'\u2014')+'</td></tr>';}).join('')+'</tbody></table></div>':'<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhuma compra registrada.</div>');
+  }
 };
 
-// ═══════════════════════════════════════════════════════════
-// 13. EXPORTAÇÃO EXCEL MELHORADA
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origExportXLSX = exportXLSX;
-exportXLSX = function(tab) {
-  if (typeof XLSX === 'undefined') { _v2_origExportXLSX(tab); return; }
-
-  const filtroInfo = [];
-  if (tab === 'disputas') {
-    if (filtroAnalistaDisputas !== 'todos') filtroInfo.push('Analista: ' + filtroAnalistaDisputas);
-    if (filtroEmpresaDisputas !== 'todas') filtroInfo.push('Empresa: ' + filtroEmpresaDisputas);
-    if (filtroEstadoDisputas !== 'todos') filtroInfo.push('UF: ' + filtroEstadoDisputas);
-  } else {
-    if (filtroAnalistaEmpenhos !== 'todos') filtroInfo.push('Analista: ' + filtroAnalistaEmpenhos);
-    if (filtroAtrasoEmpenhos !== 'todos') filtroInfo.push('Atraso: +' + filtroAtrasoEmpenhos + 'd');
-  }
-
-  const H = {
-    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','Lucro Realizado','Próxima Ação','Observação'],
-    empenhos: ['Empenho','Data','Órgão','Analista','Vl.Empenho','Compra Total','Custo Total','Lucro Realizado','A Receber','Dias','Próxima Ação','Observação']
-  };
-
-  const R = {
-    disputas: DB.disputas.filter(r => !r.finalizada && matches('disputas', r)).map(r => {
-      const acao = getProximaAcao(r);
-      return [r.data, r.orgao, r.estado, r.empresa, r.tipo, r.rp, r.processo, r.analista,
-        getValorContrato(r), (r.lotes||[]).reduce((s,l)=>(l.compraPrev||0)*(l.qtd||0)+s,0),
-        (r.lotes||[]).reduce((s,l)=>(l.custoPrev||0)*(l.qtd||0)+s,0),
-        getLucroPrevisto(r), getLucroRealizado(r.id),
-        acao.icon + ' ' + acao.label, r.observacao||''];
-    }),
-    empenhos: DB.empenhos.filter(r => matches('empenhos', r) && !r.finalizado).map(r => {
-      const compras = r.compras || [];
-      const vlCompra = compras.reduce((s,c) => s + (c.vtotal||0), 0);
-      const vlCusto = compras.reduce((s,c) => s + (c.custo||0), 0);
-      const vlLucro = compras.filter(c=>c.dpag).reduce((s,c) => s + (c.luc||0), 0);
-      const vlRec = compras.filter(c=>!c.dpag||c.dpag==='').reduce((s,c) => s + (c.rec||0), 0);
-      const dias = diasSemPagamento(r);
-      const acao = getProximaAcaoEmpenho(r);
-      return [r.num, r.data, r.orgao, r.analista, r.vem||0, vlCompra, vlCusto, vlLucro, vlRec,
-        dias, acao.icon + ' ' + acao.label, r.observacao||''];
-    })
-  };
-
-  // Monta planilha com cabeçalho e totais
-  const sheetName = tab === 'disputas' ? 'Disputas' : 'Empenhos';
-  const titulo = ['LicitationBiznis — ' + sheetName + ' — ' + new Date().toLocaleDateString('pt-BR')];
-  const filtros = filtroInfo.length ? ['Filtros: ' + filtroInfo.join(' | ')] : ['Sem filtros'];
-
-  const dados = [titulo, filtros, [], H[tab], ...R[tab]];
-
-  // Linha de totais
-  if (R[tab].length > 0) {
-    const numCols = H[tab].length;
-    const totais = new Array(numCols).fill('');
-    totais[0] = 'TOTAIS (' + R[tab].length + ' registros)';
-
-    if (tab === 'disputas') {
-      totais[8] = R[tab].reduce((s,r) => s + (r[8]||0), 0);   // Vl.Contrato
-      totais[9] = R[tab].reduce((s,r) => s + (r[9]||0), 0);   // Compra Prev.
-      totais[10] = R[tab].reduce((s,r) => s + (r[10]||0), 0);  // Custo Prev.
-      totais[11] = R[tab].reduce((s,r) => s + (r[11]||0), 0);  // Lucro Prev.
-      totais[12] = R[tab].reduce((s,r) => s + (r[12]||0), 0);  // Lucro Real.
-    } else {
-      totais[4] = R[tab].reduce((s,r) => s + (r[4]||0), 0);   // Vl.Empenho
-      totais[5] = R[tab].reduce((s,r) => s + (r[5]||0), 0);   // Compra
-      totais[6] = R[tab].reduce((s,r) => s + (r[6]||0), 0);   // Custo
-      totais[7] = R[tab].reduce((s,r) => s + (r[7]||0), 0);   // Lucro Real.
-      totais[8] = R[tab].reduce((s,r) => s + (r[8]||0), 0);   // A Receber
-    }
-    dados.push([], totais);
-  }
-
-  // Aba de resumo por analista
-  const resumoH = ['Analista', 'Disputas', 'Empenhos', 'Lucro Previsto', 'Lucro Realizado', 'A Receber'];
-  const analistas = {};
-  DB.disputas.filter(d=>!d.finalizada).forEach(d => {
-    const a = d.analista||'—';
-    if (!analistas[a]) analistas[a] = { disputas:0, empenhos:0, lucroPrev:0, lucroReal:0, aReceber:0 };
-    analistas[a].disputas++;
-    analistas[a].lucroPrev += getLucroPrevisto(d);
-    analistas[a].lucroReal += getLucroRealizado(d.id);
-  });
-  DB.empenhos.filter(e=>!e.finalizado).forEach(e => {
-    const a = e.analista||'—';
-    if (!analistas[a]) analistas[a] = { disputas:0, empenhos:0, lucroPrev:0, lucroReal:0, aReceber:0 };
-    analistas[a].empenhos++;
-    analistas[a].aReceber += (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-  });
-  const resumoR = Object.entries(analistas).map(([n,d]) => [n, d.disputas, d.empenhos, d.lucroPrev, d.lucroReal, d.aReceber]);
-
-  const wb = XLSX.utils.book_new();
-
-  // Aba principal
-  const ws = XLSX.utils.aoa_to_sheet(dados);
-  ws['!cols'] = H[tab].map((h) => ({ wch: Math.max(h.length + 4, 14) }));
-  if (dados.length > 1) ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:H[tab].length-1} }];
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
+// -- Excel melhorado com 3 abas --
+var _v2origXL=exportXLSX;
+exportXLSX=function(tab){
+  if(typeof XLSX==='undefined'){_v2origXL(tab);return;}
+  var fi=[];
+  if(tab==='disputas'){if(filtroAnalistaDisputas!=='todos')fi.push('Analista: '+filtroAnalistaDisputas);if(filtroEmpresaDisputas!=='todas')fi.push('Empresa: '+filtroEmpresaDisputas);}
+  else{if(filtroAnalistaEmpenhos!=='todos')fi.push('Analista: '+filtroAnalistaEmpenhos);if(filtroAtrasoEmpenhos!=='todos')fi.push('Atraso: +'+filtroAtrasoEmpenhos+'d');}
+  var H={disputas:['Data','Orgao','UF','Empresa','Tipo','RP','Processo','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','Lucro Realiz.','Proxima Acao','Obs'],
+    empenhos:['Empenho','Data','Orgao','Analista','Vl.Empenho','Compra','Custo','Lucro Realiz.','A Receber','Dias','Proxima Acao','Obs']};
+  var R={disputas:DB.disputas.filter(function(r){return !r.finalizada&&matches('disputas',r);}).map(function(r){var a=getProximaAcao(r);return[r.data,r.orgao,r.estado,r.empresa,r.tipo,r.rp,r.processo,r.analista,getValorContrato(r),(r.lotes||[]).reduce(function(s,l){return s+(l.compraPrev||0)*(l.qtd||0);},0),(r.lotes||[]).reduce(function(s,l){return s+(l.custoPrev||0)*(l.qtd||0);},0),getLucroPrevisto(r),getLucroRealizado(r.id),a.icon+' '+a.label,r.observacao||''];}),
+    empenhos:DB.empenhos.filter(function(r){return matches('empenhos',r)&&!r.finalizado;}).map(function(r){var c=r.compras||[];var a=getProximaAcaoEmpenho(r);return[r.num,r.data,r.orgao,r.analista,r.vem||0,c.reduce(function(s,x){return s+(x.vtotal||0);},0),c.reduce(function(s,x){return s+(x.custo||0);},0),c.filter(function(x){return x.dpag;}).reduce(function(s,x){return s+(x.luc||0);},0),c.filter(function(x){return !x.dpag||x.dpag==='';}).reduce(function(s,x){return s+(x.rec||0);},0),diasSemPagamento(r),a.icon+' '+a.label,r.observacao||''];})};
+  var sn=tab==='disputas'?'Disputas':'Empenhos';
+  var dados=[[sn+' \u2014 '+new Date().toLocaleDateString('pt-BR')],[fi.length?'Filtros: '+fi.join(' | '):'Sem filtros'],[],H[tab]].concat(R[tab]);
+  if(R[tab].length){var tot=new Array(H[tab].length).fill('');tot[0]='TOTAIS ('+R[tab].length+')';
+    if(tab==='disputas'){[8,9,10,11,12].forEach(function(i){tot[i]=R[tab].reduce(function(s,r){return s+(r[i]||0);},0);});}
+    else{[4,5,6,7,8].forEach(function(i){tot[i]=R[tab].reduce(function(s,r){return s+(r[i]||0);},0);});}
+    dados.push([],tot);}
+  var wb=XLSX.utils.book_new();
+  var ws=XLSX.utils.aoa_to_sheet(dados);ws['!cols']=H[tab].map(function(h){return{wch:Math.max(h.length+4,14)};});
+  XLSX.utils.book_append_sheet(wb,ws,sn);
   // Aba resumo
-  const wsR = XLSX.utils.aoa_to_sheet([['Resumo por Analista'], [], resumoH, ...resumoR]);
-  wsR['!cols'] = resumoH.map((h) => ({ wch: Math.max(h.length + 4, 14) }));
-  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
-
+  var rH=['Analista','Disputas','Empenhos','Lucro Prev.','Lucro Realiz.','A Receber'];var an={};
+  DB.disputas.filter(function(d){return !d.finalizada;}).forEach(function(d){var a=d.analista||'\u2014';if(!an[a])an[a]={d:0,e:0,lp:0,lr:0,ar:0};an[a].d++;an[a].lp+=getLucroPrevisto(d);an[a].lr+=getLucroRealizado(d.id);});
+  DB.empenhos.filter(function(e){return !e.finalizado;}).forEach(function(e){var a=e.analista||'\u2014';if(!an[a])an[a]={d:0,e:0,lp:0,lr:0,ar:0};an[a].e++;an[a].ar+=(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(s,c){return s+(c.rec||0);},0);});
+  var rR=Object.entries(an).map(function(x){return[x[0],x[1].d,x[1].e,x[1].lp,x[1].lr,x[1].ar];});
+  var wsR=XLSX.utils.aoa_to_sheet([['Resumo por Analista'],[],rH].concat(rR));XLSX.utils.book_append_sheet(wb,wsR,'Resumo');
   // Aba plataformas
-  const plats = getMetricasPlataforma();
-  const platH = ['Plataforma', 'Compras', 'Valor Total', 'Lucro', 'Preço Médio', 'Entrega Média (dias)'];
-  const platR = plats.map(p => [p.nome, p.qtd, p.total, p.lucro, p.precoMedio, p.mediaEntrega || '—']);
-  const wsP = XLSX.utils.aoa_to_sheet([['Métricas por Plataforma'], [], platH, ...platR]);
-  wsP['!cols'] = platH.map((h) => ({ wch: Math.max(h.length + 4, 14) }));
-  XLSX.utils.book_append_sheet(wb, wsP, 'Plataformas');
-
-  XLSX.writeFile(wb, sheetName + '_' + today() + '.xlsx');
-  toast('Excel exportado com ' + R[tab].length + ' registros + resumo + plataformas', 'success');
+  var pl=getMetricasPlataforma();var pH=['Plataforma','Compras','Valor Total','Lucro','Preco Medio','Entrega Media (dias)'];
+  var pR=pl.map(function(p){return[p.nome,p.qtd,p.total,p.lucro,p.precoMedio,p.mediaEntrega||'\u2014'];});
+  var wsP=XLSX.utils.aoa_to_sheet([['Metricas por Plataforma'],[],pH].concat(pR));XLSX.utils.book_append_sheet(wb,wsP,'Plataformas');
+  XLSX.writeFile(wb,sn+'_'+today()+'.xlsx');toast('Excel: '+R[tab].length+' registros + resumo + plataformas','success');
 };
 
-// ═══════════════════════════════════════════════════════════
-// 14. POPUP DE DETALHES COM ABAS (override abrirPopupDisputa)
-// ═══════════════════════════════════════════════════════════
-
-function switchPopupTab(popupId, tabId) {
-  const popup = document.getElementById(popupId);
-  if (!popup) return;
-  popup.querySelectorAll('.popup-tab').forEach(t => t.classList.remove('active'));
-  popup.querySelectorAll('.popup-tab-pane').forEach(p => p.classList.remove('active'));
-  const tab = popup.querySelector('[data-tab="' + tabId + '"]');
-  const pane = popup.querySelector('#' + tabId);
-  if (tab) tab.classList.add('active');
-  if (pane) pane.classList.add('active');
-}
-
-// ═══════════════════════════════════════════════════════════
-// 15. DASHBOARD KPIs CLICÁVEIS + métricas por plataforma
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origAtualizarDashboard = atualizarDashboard;
-atualizarDashboard = function() {
-  _v2_origAtualizarDashboard();
-
-  // Torna KPIs clicáveis
-  const kpis = {
-    'dk-disputas': () => switchTab('disputas', document.querySelectorAll('.tab-btn')[3]),
-    'dk-empenhos': () => switchTab('empenhos', document.querySelectorAll('.tab-btn')[4]),
-  };
-  Object.entries(kpis).forEach(([id, fn]) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.style.cursor = 'pointer';
-      el.title = 'Clique para ver detalhes';
-      el.onclick = fn;
-    }
-  });
-
-  // Adiciona tabela de métricas por plataforma se não existir
-  let platContainer = document.getElementById('dash-plataformas-container');
-  if (!platContainer) {
-    const tabDash = document.getElementById('tab-dashboard');
-    if (tabDash) {
-      platContainer = document.createElement('div');
-      platContainer.id = 'dash-plataformas-container';
-      platContainer.className = 'chart-card';
-      platContainer.style.marginTop = '20px';
-      tabDash.appendChild(platContainer);
-    }
-  }
-
-  if (platContainer) {
-    const plats = getMetricasPlataforma().slice(0, 10);
-    platContainer.innerHTML = '<h3>🏪 Métricas por Plataforma de Compra</h3>' +
-      (plats.length ? '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;">' +
-      '<thead><tr style="background:var(--bg-surface-soft);">' +
-        '<th style="padding:7px 8px;text-align:left;">Plataforma</th>' +
-        '<th style="padding:7px 8px;text-align:right;">Compras</th>' +
-        '<th style="padding:7px 8px;text-align:right;">Valor Total</th>' +
-        '<th style="padding:7px 8px;text-align:right;">Lucro</th>' +
-        '<th style="padding:7px 8px;text-align:right;">Preço Médio</th>' +
-        '<th style="padding:7px 8px;text-align:center;">Entrega Média</th>' +
-      '</tr></thead><tbody>' +
-      plats.map(p => '<tr>' +
-        '<td style="padding:7px 8px;font-weight:600;">' + p.nome + '</td>' +
-        '<td style="padding:7px 8px;text-align:right;">' + p.qtd + '</td>' +
-        '<td style="padding:7px 8px;text-align:right;color:var(--accent);font-weight:600;">' + fmt(p.total) + '</td>' +
-        '<td style="padding:7px 8px;text-align:right;color:var(--success);font-weight:600;">' + fmt(p.lucro) + '</td>' +
-        '<td style="padding:7px 8px;text-align:right;">' + fmt(p.precoMedio) + '</td>' +
-        '<td style="padding:7px 8px;text-align:center;">' + (p.mediaEntrega !== null ? p.mediaEntrega + ' dias' : '—') + '</td>' +
-      '</tr>').join('') +
-      '</tbody></table></div>'
-      : '<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhuma compra registrada ainda.</div>');
-  }
+// -- Resumo diario personalizado --
+var _v2origRD=mostrarResumoDiario;
+mostrarResumoDiario=function(){
+  var hoje=new Date().toISOString().slice(0,10);var saved=JSON.parse(localStorage.getItem('resumoDiario')||'{}');
+  if(saved.data===hoje&&saved.naoMostrar)return;
+  var tit=g('resumo-titulo'),dtEl=g('resumo-data'),body=g('resumo-body');if(!tit||!body)return;
+  tit.textContent=saudacao()+', '+(usuarioLogado||'voce')+'!';
+  var ds=['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];var ag=new Date();
+  dtEl.textContent=ds[ag.getDay()]+', '+ag.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  var mE=DB.empenhos.filter(function(e){return !e.finalizado;});
+  var eP=mE.filter(function(e){return !empenhoEstaPago(e);});
+  var e30=eP.filter(function(e){return diasSemPagamento(e)>=30;});
+  var e60=eP.filter(function(e){return diasSemPagamento(e)>=60;});
+  var eSC=mE.filter(function(e){return !(e.compras||[]).length;});
+  var aR=eP.reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(ss,c){return ss+(c.rec||0);},0);},0);
+  var lM=mE.reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return c.dpag&&c.dpag.startsWith(hoje.slice(0,7));}).reduce(function(ss,c){return ss+(c.luc||0);},0);},0);
+  var rH=(DB.acomp||[]).filter(function(r){return r.retorno&&new Date(r.retorno).toDateString()===ag.toDateString();});
+  var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">';
+  h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">A receber</div><div style="font-size:20px;font-weight:800;color:var(--success);">'+fmt(aR)+'</div><div style="font-size:10px;color:var(--text-tertiary);">'+eP.length+' empenho(s)</div></div>';
+  h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">Lucro no mes</div><div style="font-size:20px;font-weight:800;color:var(--accent);">'+fmt(lM)+'</div></div></div>';
+  if(rH.length){h+='<div style="background:var(--warning-soft);border-left:3px solid var(--warning);border-radius:6px;padding:10px 14px;margin-bottom:8px;"><div style="font-weight:700;font-size:12px;margin-bottom:6px;">\u23F0 Retornos hoje</div>';rH.forEach(function(r){var rt=new Date(r.retorno);h+='<div style="font-size:12px;margin-bottom:4px;"><strong>'+rt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</strong> \u00B7 '+r.orgao+(r.link?' <a href="'+r.link+'" target="_blank">\uD83D\uDD17</a>':'')+'</div>';});h+='</div>';}
+  var ac=[];
+  if(e60.length)ac.push({i:'\uD83D\uDD34',m:e60.length+' empenho(s) +60d sem pagamento',c:'var(--danger)'});
+  else if(e30.length)ac.push({i:'\uD83D\uDFE1',m:e30.length+' empenho(s) +30d sem pagamento',c:'var(--warning)'});
+  if(eSC.length)ac.push({i:'\uD83D\uDED2',m:eSC.length+' empenho(s) sem compra',c:'var(--accent)'});
+  if(ac.length){h+='<div style="display:flex;flex-direction:column;gap:6px;">';ac.forEach(function(a){h+='<div style="background:var(--bg-surface-soft);border-left:3px solid '+a.c+';border-radius:6px;padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:8px;"><span>'+a.i+'</span><span>'+a.m+'</span></div>';});h+='</div>';}
+  else h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;color:var(--success);font-size:13px;font-weight:600;">\u2705 Tudo em dia!</div>';
+  body.innerHTML=h;g('resumo-nao-mostrar').checked=false;g('modal-resumo-diario').classList.add('open');
 };
 
-// ═══════════════════════════════════════════════════════════
-// 16. BANNER DE SUGESTÃO DE FINALIZAÇÃO (não auto-finaliza)
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origRenderE = renderE;
-const _v2_renderEPatched = function() {
-  _v2_origRenderE();
-
-  // Adiciona banner de sugestão para empenhos prontos para finalizar
-  const empSugerir = DB.empenhos.filter(e => !e.finalizado && e._sugerirFinalizar);
-  if (empSugerir.length > 0) {
-    const banner = document.getElementById('alerta-empenhos-banner');
-    if (banner) {
-      const existente = banner.innerHTML;
-      // Não sobrescreve se já tem conteúdo de atraso
-      if (!existente.includes('finalizar')) {
-        const sugBanner = document.createElement('div');
-        sugBanner.className = 'sugestao-finalizar';
-        sugBanner.innerHTML = '<span style="font-size:20px;">✅</span>' +
-          '<div><strong>' + empSugerir.length + ' empenho(s)</strong> totalmente pago(s) e pronto(s) para finalizar.</div>' +
-          '<button class="btn btn-success btn-sm" onclick="finalizarTodosSugeridos()">Finalizar todos</button>';
-        banner.parentNode.insertBefore(sugBanner, banner);
-      }
-    }
-  }
-
-  // Remove banners antigos de sugestão se não há mais candidatos
-  if (empSugerir.length === 0) {
-    document.querySelectorAll('.sugestao-finalizar').forEach(el => el.remove());
-  }
-};
-// Substitui renderE
-renderE = _v2_renderEPatched;
-
-function finalizarTodosSugeridos() {
-  const emps = DB.empenhos.filter(e => !e.finalizado && e._sugerirFinalizar);
-  if (!emps.length) return;
-  _confirmarAcao({
-    icon: '✅',
-    titulo: 'Finalizar ' + emps.length + ' empenho(s)',
-    msg: 'Os seguintes empenhos estão totalmente pagos:<br><br>' +
-      emps.map(e => '<strong>#' + (e.num||'?') + '</strong> · ' + (e.orgao||'?')).join('<br>') +
-      '<br><br>Deseja finalizar todos?',
-    btnLabel: '✅ Finalizar todos',
-    btnClass: 'btn-success',
-    onConfirm: () => {
-      emps.forEach(e => {
-        e.finalizado = true;
-        e._manualFinalizado = true;
-        e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
-        if (e.disputaId) verificarAutoFinalizarDisputa(e.disputaId);
-      });
-      save('empenhos', DB.empenhos);
-      renderAll();
-      toast(emps.length + ' empenho(s) finalizado(s)!', 'success');
-    }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// 17. AÇÕES EM LOTE EXPANDIDAS
-// ═══════════════════════════════════════════════════════════
-
-function finalizarSelecionados(tab) {
-  const ids = Array.from(document.querySelectorAll('.chk-row-' + tab + ':checked')).map(c => c.dataset.id);
-  if (!ids.length) { toast('Selecione ao menos um registro.', 'error'); return; }
-
-  if (tab === 'empenhos') {
-    const emps = ids.map(id => DB.empenhos.find(e => e.id === id)).filter(Boolean);
-    const semCompra = emps.filter(e => !(e.compras||[]).length);
-    if (semCompra.length > 0) {
-      toast(semCompra.length + ' empenho(s) sem compra cadastrada. Cadastre antes de finalizar.', 'error');
-      return;
-    }
-    _confirmarAcao({
-      icon: '✅', titulo: 'Finalizar ' + emps.length + ' empenho(s)',
-      msg: 'Finalizar os empenhos selecionados?',
-      btnLabel: '✅ Finalizar', btnClass: 'btn-success',
-      onConfirm: () => {
-        emps.forEach(e => {
-          e.finalizado = true; e._manualFinalizado = true;
-          e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
-        });
-        save('empenhos', DB.empenhos);
-        renderAll(); toast(emps.length + ' finalizado(s)!', 'success');
-      }
-    });
-  }
-}
-
-function atribuirAnalistaSelecionados(tab) {
-  const ids = Array.from(document.querySelectorAll('.chk-row-' + tab + ':checked')).map(c => c.dataset.id);
-  if (!ids.length) { toast('Selecione ao menos um registro.', 'error'); return; }
-
-  const nomes = new Set();
-  _fullDB.disputas.forEach(r => r.analista && nomes.add(r.analista));
-  _fullDB.empenhos.forEach(r => r.analista && nomes.add(r.analista));
-  const sorted = [...nomes].sort();
-
-  const sel = prompt('Atribuir analista a ' + ids.length + ' registro(s).\nDigite o nome: ' + sorted.join(', '));
-  if (!sel || !sel.trim()) return;
-
-  ids.forEach(id => {
-    const r = _fullDB[tab].find(x => x.id === id);
-    if (r) r.analista = sel.trim();
-  });
-  save(tab, _fullDB[tab]);
-  renderAll();
-  toast(ids.length + ' registro(s) atribuído(s) a ' + sel.trim(), 'success');
-}
-
-// ═══════════════════════════════════════════════════════════
-// 18. LIMPAR CAMPOS DE COMPRA — inclui novos campos
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origAbrirCompra = abrirCompra;
-abrirCompra = function(empenhoId, compraId) {
-  _v2_origAbrirCompra(empenhoId, compraId);
-  // Limpa campos de entrega
-  ['c-nf','c-rastreio','c-dentrega','c-statusEntrega'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
-  // Esconde histórico de preços
-  const hist = document.getElementById('c-historico-precos');
-  if (hist) hist.style.display = 'none';
+// -- Painel: acoes necessarias + plataformas --
+var _v2origPain=atualizarPainel;
+atualizarPainel=function(){
+  _v2origPain();
+  var pb=g('painel-body');if(!pb)return;
+  var dca=DB.disputas.filter(function(d){return !d.finalizada;}).map(function(d){return{d:d,a:getProximaAcao(d)};}).filter(function(x){return x.a.css==='urgente'||x.a.css==='atencao';}).slice(0,6);
+  if(dca.length){var ah='<div class="card" style="margin-top:16px;"><div style="font-size:13px;font-weight:700;margin-bottom:10px;">\u26A1 Acoes Necessarias</div>';
+    dca.forEach(function(x){ah+='<div onclick="abrirPopupDisputa(\''+x.d.id+'\')" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;"><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+x.d.orgao+'</div><div style="font-size:10px;color:var(--text-tertiary);">'+(x.d.analista||'')+' \u00B7 '+fmt(getValorContrato(x.d))+'</div></div>'+renderProximaAcao(x.a)+'</div>';});
+    ah+='</div>';pb.innerHTML+=ah;}
+  var pl=getMetricasPlataforma().slice(0,5);
+  if(pl.length){var ph='<div class="card" style="margin-top:16px;"><div style="font-size:13px;font-weight:700;margin-bottom:10px;">\uD83C\uDFEA Top Plataformas</div>';
+    pl.forEach(function(p){ph+='<div style="padding:6px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;"><div style="flex:1;font-size:12px;font-weight:600;">'+p.nome+'</div><span style="font-size:11px;color:var(--text-tertiary);">'+p.qtd+' compras</span><span style="font-size:11px;color:var(--accent);font-weight:600;">'+fmt(p.total)+'</span>'+(p.mediaEntrega!==null?'<span style="font-size:10px;color:var(--text-tertiary);">'+p.mediaEntrega+'d</span>':'')+'</div>';});
+    ph+='</div>';pb.innerHTML+=ph;}
 };
 
-// ═══════════════════════════════════════════════════════════
-// 19. PAINEL MELHORADO — com próximas ações e plataformas
-// ═══════════════════════════════════════════════════════════
-
-const _v2_origAtualizarPainel = atualizarPainel;
-atualizarPainel = function() {
-  _v2_origAtualizarPainel();
-
-  const painelBody = document.getElementById('painel-body');
-  if (!painelBody) return;
-
-  // Adiciona seção de próximas ações ao final do painel
-  const disputasComAcao = DB.disputas.filter(d => !d.finalizada).map(d => ({
-    d, acao: getProximaAcao(d)
-  })).filter(x => x.acao.css === 'urgente' || x.acao.css === 'atencao').slice(0, 6);
-
-  if (disputasComAcao.length > 0) {
-    let acaoHtml = '<div class="card" style="margin-top:16px;">';
-    acaoHtml += '<div style="font-size:13px;font-weight:700;margin-bottom:10px;">⚡ Ações Necessárias</div>';
-    disputasComAcao.forEach(({d, acao}) => {
-      acaoHtml += '<div onclick="abrirPopupDisputa(\'' + d.id + '\')" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;">';
-      acaoHtml += '<div style="flex:1;min-width:0;">';
-      acaoHtml += '<div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + d.orgao + '</div>';
-      acaoHtml += '<div style="font-size:10px;color:var(--text-tertiary);">' + (d.analista||'') + ' · ' + fmt(getValorContrato(d)) + '</div>';
-      acaoHtml += '</div>';
-      acaoHtml += renderProximaAcao(acao);
-      acaoHtml += '</div>';
-    });
-    acaoHtml += '</div>';
-    painelBody.innerHTML += acaoHtml;
-  }
-
-  // Top plataformas no painel
-  const plats = getMetricasPlataforma().slice(0, 5);
-  if (plats.length > 0) {
-    let platHtml = '<div class="card" style="margin-top:16px;">';
-    platHtml += '<div style="font-size:13px;font-weight:700;margin-bottom:10px;">🏪 Top Plataformas</div>';
-    plats.forEach(p => {
-      platHtml += '<div style="padding:6px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;">';
-      platHtml += '<div style="flex:1;font-size:12px;font-weight:600;">' + p.nome + '</div>';
-      platHtml += '<span style="font-size:11px;color:var(--text-tertiary);">' + p.qtd + ' compras</span>';
-      platHtml += '<span style="font-size:11px;color:var(--accent);font-weight:600;">' + fmt(p.total) + '</span>';
-      if (p.mediaEntrega !== null) platHtml += '<span style="font-size:10px;color:var(--text-tertiary);">' + p.mediaEntrega + 'd entrega</span>';
-      platHtml += '</div>';
-    });
-    platHtml += '</div>';
-    painelBody.innerHTML += platHtml;
-  }
-};
-
-console.log('v2.0 COMPLETO: regras de negocio + UI melhoradas');
+console.log('v2.0 COMPLETO');
 
 </script>
 
