@@ -1307,29 +1307,6 @@
   /* modal emp disp */
   .modal-emp-disp { max-width: 900px; width: 96%; }
 
-
-  /* v2.0 status/entrega/acoes */
-  .status-chip { display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap;line-height:1.6; }
-  .status-chip.aguardando-empenho { background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2); }
-  .status-chip.aguardando-compra { background:rgba(245,158,11,0.1);color:#d97706;border:1px solid rgba(245,158,11,0.2); }
-  .status-chip.aguardando-entrega { background:rgba(14,165,233,0.1);color:#0ea5e9;border:1px solid rgba(14,165,233,0.2); }
-  .status-chip.aguardando-pagamento { background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2); }
-  .status-chip.concluido { background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2); }
-  .entrega-pendente { background:rgba(245,158,11,0.12);color:var(--warning); }
-  .entrega-transito { background:rgba(14,165,233,0.12);color:#0ea5e9; }
-  .entrega-entregue { background:rgba(16,185,129,0.12);color:var(--success); }
-  .entrega-aceito { background:rgba(107,63,160,0.12);color:var(--purple); }
-  .next-action { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap; }
-  .next-action.urgente { background:rgba(239,68,68,0.1);color:#ef4444; }
-  .next-action.atencao { background:rgba(245,158,11,0.1);color:#d97706; }
-  .next-action.normal { background:rgba(99,102,241,0.1);color:#6366f1; }
-  .next-action.ok { background:rgba(16,185,129,0.1);color:#10b981; }
-  .price-history-wrap { background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:8px 12px;margin-top:8px;font-size:11px; }
-  .price-history-item { display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border-light); }
-  .price-history-item:last-child { border-bottom:none; }
-  .sugestao-finalizar { background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(16,185,129,0.03));border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12px; }
-  .sugestao-finalizar button { margin-left:auto;flex-shrink:0; }
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -1808,7 +1785,6 @@
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <button class="btn btn-danger btn-sm" id="btn-del-lote-disputas" style="display:none;" onclick="deletarSelecionados('disputas')">Excluir selecionados (<span id="cnt-sel-disputas">0</span>)</button>
-        <button class="btn btn-ghost btn-sm" id="btn-atrib-lote-disputas" style="display:none;" onclick="atribuirAnalistaSelecionados('disputas')">Atribuir analista</button>
         <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
@@ -1891,8 +1867,6 @@
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
         <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
-        <button class="btn btn-success btn-sm" id="btn-fin-lote-empenhos" style="display:none;" onclick="finalizarSelecionados('empenhos')">Finalizar selecionados</button>
-        <button class="btn btn-ghost btn-sm" id="btn-atrib-lote-empenhos" style="display:none;" onclick="atribuirAnalistaSelecionados('empenhos')">Atribuir analista</button>
         <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
       </div>
     </div>
@@ -2149,15 +2123,6 @@
         <div class="fg">
           <label class="fl">📆 Vencimento do Contrato <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano, ou defina manualmente)</span></label>
           <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()" placeholder="Calculado automaticamente">
-        </div>
-        <div class="fg">
-          <label class="fl">Situacao do Contrato</label>
-          <select class="fc" id="d-contrato-situacao">
-            <option value="vigente">Vigente</option>
-            <option value="renovado">Renovado</option>
-            <option value="aditivo">Com Aditivo</option>
-            <option value="encerrado">Encerrado sem Renovacao</option>
-          </select>
         </div>
         <div class="fg full">
           <label class="fl">📄 PDF do Contrato</label>
@@ -2437,9 +2402,8 @@
             <input type="url" class="fc" id="c-link" placeholder="https://...">
           </div>
           <div class="fg">
-            <label class="fl">Vl. Unitário Compra (R$) <button type="button" class="mtg" onclick="mostrarHistoricoPrecos()" title="Ver precos anteriores"><span class="dot"></span>Historico</button></label>
+            <label class="fl">Vl. Unitário Compra (R$)</label>
             <input type="number" step="0.01" class="fc" id="c-vunit" oninput="calcCompra()">
-            <div id="c-historico-precos" style="display:none;"></div>
           </div>
           <div class="fg">
             <label class="fl">Vl. Total Compra (R$)</label>
@@ -2502,29 +2466,6 @@
             <label class="fl">Vl. Total a Receber <button type="button" class="mtg" id="tbtn-c-rec" onclick="togCompra('rec')"><span class="dot"></span>Auto</button></label>
             <input class="fc-auto" id="c-rec-a" readonly>
             <input type="number" step="0.01" class="fc-manual" id="c-rec-m" oninput="calcCompra()">
-          </div>
-          <div class="fsec full">📦 Entrega</div>
-          <div class="fg">
-            <label class="fl">Nota Fiscal</label>
-            <input type="text" class="fc" id="c-nf" placeholder="NF-e ou NFS-e">
-          </div>
-          <div class="fg">
-            <label class="fl">Codigo Rastreio</label>
-            <input type="text" class="fc" id="c-rastreio" placeholder="BR123456789BR">
-          </div>
-          <div class="fg">
-            <label class="fl">Data Entrega ao Orgao</label>
-            <input type="date" class="fc" id="c-dentrega">
-          </div>
-          <div class="fg">
-            <label class="fl">Status Entrega</label>
-            <select class="fc" id="c-statusEntrega">
-              <option value="">Selecione</option>
-              <option value="pendente">Pendente</option>
-              <option value="transito">Em Transito</option>
-              <option value="entregue">Entregue ao Orgao</option>
-              <option value="aceito">Aceito pelo Orgao</option>
-            </select>
           </div>
           <div class="fsec full">🏦 Pagamento</div>
           <div class="fg">
@@ -6009,10 +5950,6 @@ function atualizarBotaoLote(tab) {
   const span = g('cnt-sel-' + tab);
   if (btn) btn.style.display = cnt > 0 ? '' : 'none';
   if (span) span.textContent = cnt;
-  const btnFin = g('btn-fin-lote-' + tab);
-  const btnAtrib = g('btn-atrib-lote-' + tab);
-  if (btnFin) btnFin.style.display = cnt > 0 ? '' : 'none';
-  if (btnAtrib) btnAtrib.style.display = cnt > 0 ? '' : 'none';
 }
 function deletarSelecionados(tab) {
   const ids = Array.from(document.querySelectorAll('.chk-row-' + tab + ':checked')).map(c => c.dataset.id);
@@ -9882,308 +9819,6 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 
 
 console.log('v2 OK');
-
-
-// ══════════════════════════════════════════
-// LICITATIONBIZNIS v2.0
-// ══════════════════════════════════════════
-
-// -- Lucro padronizado --
-function getLucroPrevisto(d){return(d.lotes||[]).reduce(function(s,l){var q=l.qtd||0;return s+q*(l.vunit||0)-(l.compraPrev||0)*q-(l.custoPrev||0)*q;},0);}
-function getLucroRealizado(did){return DB.empenhos.filter(function(e){return e.disputaId===did;}).reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return c.dpag&&c.dpag!=='';}).reduce(function(ss,c){return ss+((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));},0);},0);}
-function getLucroEmpenhado(did){return DB.empenhos.filter(function(e){return e.disputaId===did;}).reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(ss,c){return ss+((c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0));},0);},0);}
-
-// -- Proxima acao --
-function getProximaAcao(d){
-  var emps=DB.empenhos.filter(function(e){return e.disputaId===d.id;});
-  var lotes=d.lotes||[],tC=0,tE=0,tComp=0,tEnt=0,tPag=0;
-  lotes.forEach(function(l){tC+=(l.qtd||0);tE+=calcQtdEnviada(d.id,l.id);});
-  emps.forEach(function(e){(e.compras||[]).forEach(function(c){tComp+=(c.qtd||0);if(c.statusEntrega==='entregue'||c.statusEntrega==='aceito')tEnt+=(c.qtd||0);if(c.dpag&&c.dpag!=='')tPag+=(c.qtd||0);});});
-  var diasMax=emps.reduce(function(m,e){return Math.max(m,diasSemPagamento(e));},0);
-  if(d._sugerirFinalizar)return{label:'Pronto p/ finalizar',css:'ok',icon:'\u2705'};
-  if(tE===0)return{label:'Aguardando empenho',css:'normal',icon:'\uD83D\uDCC4'};
-  if(tComp<tE)return{label:'Aguardando compra',css:'atencao',icon:'\uD83D\uDED2'};
-  if(diasMax>=60)return{label:'Cobrar pagamento ('+diasMax+'d)',css:'urgente',icon:'\uD83D\uDD34'};
-  if(tComp>tEnt)return{label:'Aguardando entrega',css:'atencao',icon:'\uD83D\uDCE6'};
-  if(tEnt>tPag)return{label:'Aguardando pagamento',css:'atencao',icon:'\uD83D\uDCB0'};
-  return{label:'Em andamento',css:'normal',icon:'\u25B6'};
-}
-function getProximaAcaoEmpenho(e){
-  var c=e.compras||[],it=e.itens||[];
-  if(e._sugerirFinalizar)return{label:'Pronto p/ finalizar',css:'ok',icon:'\u2705'};
-  if(!c.length)return{label:'Cadastrar compra',css:'atencao',icon:'\uD83D\uDED2'};
-  var qC=c.reduce(function(s,x){return s+(x.qtd||0);},0),qE=it.reduce(function(s,i){return s+(i.qtd||0);},0)||(e.qtd||1);
-  if(qC<qE)return{label:'Compra incompleta ('+qC+'/'+qE+')',css:'atencao',icon:'\uD83D\uDED2'};
-  var semEnt=c.filter(function(x){return !x.statusEntrega||x.statusEntrega==='pendente'||x.statusEntrega==='';});
-  if(semEnt.length)return{label:'Registrar entrega',css:'normal',icon:'\uD83D\uDCE6'};
-  var semPag=c.filter(function(x){return !x.dpag||x.dpag==='';});var dias=diasSemPagamento(e);
-  if(semPag.length&&dias>=60)return{label:'Cobrar pagamento ('+dias+'d)',css:'urgente',icon:'\uD83D\uDD34'};
-  if(semPag.length&&dias>=30)return{label:'Aguardando pagamento ('+dias+'d)',css:'atencao',icon:'\uD83D\uDCB0'};
-  if(semPag.length)return{label:'Aguardando pagamento',css:'normal',icon:'\uD83D\uDCB0'};
-  return{label:'Concluido',css:'ok',icon:'\u2705'};
-}
-function renderProximaAcao(a){return '<span class="next-action '+a.css+'">'+a.icon+' '+a.label+'</span>';}
-
-// -- Desativar auto-finalizacao, usar sugestao --
-var _v2origRA=renderAll;
-renderAll=function(){
-  DB.empenhos.forEach(function(e){if(!e.finalizado){e._sugerirFinalizar=empenhoEstaPago(e);}});
-  DB.disputas.forEach(function(d){if(!d.finalizada){d._sugerirFinalizar=disputaEstaFinalizada(d.id);}});
-  renderD();renderE();renderEmpFinalizados();renderFinalizadas();updateBadges();updateHeader();popularFiltroMes();atualizarNotificacoes();
-  if(_activeTab==='painel')atualizarPainel();
-  if(_activeTab==='acompanhamentos')renderAcomp();
-};
-
-// -- saveCompra override: inclui campos entrega --
-var _v2origSC=saveCompra;
-saveCompra=function(){
-  var _nf=(g('c-nf')||{}).value||'';
-  var _rast=(g('c-rastreio')||{}).value||'';
-  var _dent=(g('c-dentrega')||{}).value||'';
-  var _sEnt=(g('c-statusEntrega')||{}).value||'';
-  var _eid=compraEmpenhoId;var _cid=compraEditId;
-  _v2origSC();
-  var emp=_fullDB.empenhos.find(function(x){return x.id===_eid;});
-  if(emp&&emp.compras&&emp.compras.length){
-    var c=_cid?emp.compras.find(function(x){return x.id===_cid;}):emp.compras[emp.compras.length-1];
-    if(c){c.nf=_nf.toUpperCase();c.rastreio=_rast.toUpperCase();c.dentrega=_dent;c.statusEntrega=_sEnt;save('empenhos',_fullDB.empenhos);}
-  }
-};
-
-// -- selecionarCompraLote override: preenche entrega ao editar --
-var _v2origSCL=selecionarCompraLote;
-selecionarCompraLote=function(eid,iid,d){
-  _v2origSCL(eid,iid,d);
-  if(d){
-    var el;
-    el=g('c-nf');if(el)el.value=d.nf||'';
-    el=g('c-rastreio');if(el)el.value=d.rastreio||'';
-    el=g('c-dentrega');if(el)el.value=d.dentrega||'';
-    el=g('c-statusEntrega');if(el)el.value=d.statusEntrega||'';
-  }
-};
-
-// -- abrirCompra override: limpa campos entrega --
-var _v2origAC=abrirCompra;
-abrirCompra=function(eid,cid){
-  _v2origAC(eid,cid);
-  ['c-nf','c-rastreio','c-dentrega','c-statusEntrega'].forEach(function(id){var el=g(id);if(el)el.value='';});
-  var h=g('c-historico-precos');if(h)h.style.display='none';
-};
-
-// -- Historico de precos --
-function mostrarHistoricoPrecos(){
-  var panel=g('c-historico-precos');if(!panel)return;
-  if(panel.style.display==='block'){panel.style.display='none';return;}
-  var descEl=g('c-lote-desc');var desc=(descEl?descEl.value:'').toLowerCase().trim();
-  if(!desc){panel.innerHTML='<div class="price-history-wrap">Selecione um item primeiro.</div>';panel.style.display='block';return;}
-  var hist=[];
-  DB.empenhos.forEach(function(e){(e.compras||[]).forEach(function(c){
-    var it=(e.itens||[]).find(function(i){return i.id===c.itemId;});
-    var id_=(it?it.descricao:e.produto||'').toLowerCase();
-    if(id_&&(id_.indexOf(desc)>=0||desc.indexOf(id_)>=0))hist.push({data:c.dcompra||e.data||'',vunit:c.vunit||0,plat:c.plataforma||'?',orgao:e.orgao||'?'});
-  });});
-  if(!hist.length){panel.innerHTML='<div class="price-history-wrap">Nenhuma compra anterior para "'+desc+'".</div>';panel.style.display='block';return;}
-  hist.sort(function(a,b){return(b.data||'').localeCompare(a.data||'');});
-  var top=hist.slice(0,8);
-  var media=top.reduce(function(s,h){return s+h.vunit;},0)/top.length;
-  var menor=Math.min.apply(null,top.map(function(h){return h.vunit;}));
-  var maior=Math.max.apply(null,top.map(function(h){return h.vunit;}));
-  panel.innerHTML='<div class="price-history-wrap">'
-    +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-weight:700;">'
-    +'<span>'+desc.substring(0,25).toUpperCase()+'</span><span style="color:var(--accent);">Media: '+fmt(media)+'</span></div>'
-    +'<div style="display:flex;gap:12px;margin-bottom:6px;font-size:10px;color:var(--text-tertiary);">'
-    +'<span>Menor: <strong style="color:var(--success);">'+fmt(menor)+'</strong></span>'
-    +'<span>Maior: <strong style="color:var(--danger);">'+fmt(maior)+'</strong></span>'
-    +'<span>'+top.length+' compra(s)</span></div>'
-    +top.map(function(h){return '<div class="price-history-item"><span>'+fmtD(h.data)+' \u00B7 '+h.plat+'</span><span style="font-weight:700;color:var(--accent);">'+fmt(h.vunit)+'</span></div>';}).join('')
-    +'<button onclick="g(\'c-vunit\').value='+media.toFixed(2)+';calcCompra();g(\'c-historico-precos\').style.display=\'none\';" class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px;">Usar media ('+fmt(media)+')</button></div>';
-  panel.style.display='block';
-}
-
-// -- saveD override: situacao contrato --
-var _v2origSD=saveD;
-saveD=function(){
-  var sit=(g('d-contrato-situacao')||{}).value||'vigente';
-  _v2origSD();
-  if(EID.disputas){var d=_fullDB.disputas.find(function(x){return x.id===EID.disputas;});if(d){d.contratoSituacao=sit;save('disputas',_fullDB.disputas);}}
-};
-var _v2origED=editD;
-editD=function(id){_v2origED(id);var r=DB.disputas.find(function(x){return x.id===id;});if(r){var el=g('d-contrato-situacao');if(el)el.value=r.contratoSituacao||'vigente';}};
-
-// -- Converter acomp preserva historico --
-var _v2origCDA=_doCriarDisputaDeAcomp;
-_doCriarDisputaDeAcomp=function(r){_v2origCDA(r);var obs=g('d-observacao');if(obs&&r){var h='';if(r.data)h+='DISPUTA: '+fmtD(r.data)+'. ';if(r.retorno)h+='RETORNO: '+fmtRetorno(r.retorno)+'. ';if(r.status)h+='STATUS: '+r.status.toUpperCase()+'. ';if(r.observacao)h+=r.observacao;obs.value=('ORIGEM: ACOMPANHAMENTO. '+h).substring(0,200);}};
-
-// -- Duplicar compra com saldo ajustado --
-var _v2origDC=duplicarCompra;
-duplicarCompra=function(eid,cid){
-  var emp=DB.empenhos.find(function(x){return x.id===eid;});if(!emp)return;
-  var orig=(emp.compras||[]).find(function(c){return c.id===cid;});if(!orig)return;
-  var iid=orig.itemId;var item=(emp.itens||[]).find(function(i){return i.id===iid;});
-  var qE=item?(item.qtd||0):(emp.qtd||1);
-  var qJ=(emp.compras||[]).filter(function(c){return c.itemId===iid;}).reduce(function(s,c){return s+(c.qtd||0);},0);
-  var saldo=Math.max(0,qE-qJ);
-  if(saldo<=0){toast('Sem saldo para duplicar. Todas unidades ja compradas.','error');return;}
-  var qN=Math.min(orig.qtd||1,saldo);
-  var nova=JSON.parse(JSON.stringify(orig));nova.id=uid();nova.qtd=qN;nova.vtotal=qN*(orig.vunit||0);nova.dpag='';nova.recebido=0;nova.dentrega='';nova.statusEntrega='';nova.nf='';nova.rastreio='';
-  var vemI=item?(item.qtd||1)*(item.vunit||0):(emp.vem||0);var qEi=item?(item.qtd||1):(emp.qtd||1);
-  var vu=qEi>0?vemI/qEi:0;nova.luc=vu*qN-nova.vtotal-(nova.custo||0);nova.rec=nova.vtotal+nova.luc;
-  emp.compras=[].concat(emp.compras||[],[nova]);upsert('empenhos',emp);
-  toast(qN<(orig.qtd||1)?'Duplicada com '+qN+' un. (saldo ajustado)':'Compra duplicada!','success');
-  setTimeout(function(){abrirPopupEmpenho(eid);},150);
-};
-
-// -- Metricas por plataforma --
-function getMetricasPlataforma(){
-  var p={};DB.empenhos.forEach(function(e){(e.compras||[]).forEach(function(c){
-    var n=(c.plataforma||'NAO INFORMADO').toUpperCase();if(!p[n])p[n]={qtd:0,total:0,lucro:0,dias:[]};
-    p[n].qtd++;p[n].total+=c.vtotal||0;p[n].lucro+=c.luc||0;
-    if(c.dcompra&&c.dentrega){var d=Math.floor((new Date(c.dentrega)-new Date(c.dcompra))/86400000);if(d>=0&&d<365)p[n].dias.push(d);}
-  });});
-  return Object.entries(p).map(function(x){var n=x[0],d=x[1];return{nome:n,qtd:d.qtd,total:d.total,lucro:d.lucro,mediaEntrega:d.dias.length?Math.round(d.dias.reduce(function(a,b){return a+b;},0)/d.dias.length):null,precoMedio:d.qtd>0?d.total/d.qtd:0};}).sort(function(a,b){return b.total-a.total;});
-}
-
-// -- Acoes em lote --
-function finalizarSelecionados(tab){
-  var ids=Array.from(document.querySelectorAll('.chk-row-'+tab+':checked')).map(function(c){return c.dataset.id;});
-  if(!ids.length){toast('Selecione ao menos um.','error');return;}
-  if(tab==='empenhos'){
-    var emps=ids.map(function(id){return DB.empenhos.find(function(e){return e.id===id;});}).filter(Boolean);
-    var sc=emps.filter(function(e){return !(e.compras||[]).length;});
-    if(sc.length){toast(sc.length+' sem compra. Cadastre antes.','error');return;}
-    _confirmarAcao({icon:'\u2705',titulo:'Finalizar '+emps.length,msg:'Finalizar os selecionados?',btnLabel:'Finalizar',btnClass:'btn-success',onConfirm:function(){
-      emps.forEach(function(e){e.finalizado=true;e._manualFinalizado=true;e.dataFinalizacao=e.dataFinalizacao||new Date().toISOString().slice(0,10);});
-      save('empenhos',DB.empenhos);renderAll();toast(emps.length+' finalizado(s)!','success');
-    }});
-  }
-}
-function atribuirAnalistaSelecionados(tab){
-  var ids=Array.from(document.querySelectorAll('.chk-row-'+tab+':checked')).map(function(c){return c.dataset.id;});
-  if(!ids.length){toast('Selecione ao menos um.','error');return;}
-  var nomes=new Set();_fullDB.disputas.forEach(function(r){if(r.analista)nomes.add(r.analista);});_fullDB.empenhos.forEach(function(r){if(r.analista)nomes.add(r.analista);});
-  var sel=prompt('Atribuir a '+ids.length+' registro(s).\nNome: '+[...nomes].sort().join(', '));
-  if(!sel||!sel.trim())return;
-  ids.forEach(function(id){var r=_fullDB[tab].find(function(x){return x.id===id;});if(r)r.analista=sel.trim();});
-  save(tab,_fullDB[tab]);renderAll();toast(ids.length+' atribuido(s) a '+sel.trim(),'success');
-}
-
-// -- Banner sugestao finalizar --
-var _v2origRE=renderE;
-renderE=function(){
-  _v2origRE();
-  document.querySelectorAll('.sugestao-finalizar').forEach(function(el){el.remove();});
-  var sug=DB.empenhos.filter(function(e){return !e.finalizado&&e._sugerirFinalizar;});
-  if(sug.length>0){
-    var banner=g('alerta-empenhos-banner');if(!banner)return;
-    var div=document.createElement('div');div.className='sugestao-finalizar';
-    div.innerHTML='<span style="font-size:20px;">\u2705</span><div><strong>'+sug.length+' empenho(s)</strong> totalmente pago(s).</div><button class="btn btn-success btn-sm" onclick="finalizarTodosSugeridos()">Finalizar todos</button>';
-    banner.parentNode.insertBefore(div,banner);
-  }
-};
-function finalizarTodosSugeridos(){
-  var emps=DB.empenhos.filter(function(e){return !e.finalizado&&e._sugerirFinalizar;});
-  if(!emps.length)return;
-  _confirmarAcao({icon:'\u2705',titulo:'Finalizar '+emps.length+' empenho(s)',msg:emps.map(function(e){return '<strong>#'+(e.num||'?')+'</strong> \u00B7 '+(e.orgao||'?');}).join('<br>'),btnLabel:'Finalizar todos',btnClass:'btn-success',onConfirm:function(){
-    emps.forEach(function(e){e.finalizado=true;e._manualFinalizado=true;e.dataFinalizacao=e.dataFinalizacao||new Date().toISOString().slice(0,10);if(e.disputaId)verificarAutoFinalizarDisputa(e.disputaId);});
-    save('empenhos',DB.empenhos);renderAll();toast(emps.length+' finalizado(s)!','success');
-  }});
-}
-
-// -- Dashboard: metricas plataforma + KPIs clicaveis --
-var _v2origDash=atualizarDashboard;
-atualizarDashboard=function(){
-  _v2origDash();
-  var kpis={'dk-disputas':function(){switchTab('disputas',document.querySelectorAll('.tab-btn')[3]);},'dk-empenhos':function(){switchTab('empenhos',document.querySelectorAll('.tab-btn')[4]);}};
-  Object.entries(kpis).forEach(function(x){var el=g(x[0]);if(el){el.style.cursor='pointer';el.title='Clique para ver';el.onclick=x[1];}});
-  var pc=g('dash-plataformas-container');
-  if(!pc){var td=g('tab-dashboard');if(td){pc=document.createElement('div');pc.id='dash-plataformas-container';pc.className='chart-card';pc.style.marginTop='20px';td.appendChild(pc);}}
-  if(pc){
-    var plats=getMetricasPlataforma().slice(0,10);
-    pc.innerHTML='<h3>\uD83C\uDFEA Metricas por Plataforma</h3>'+(plats.length?'<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="background:var(--bg-surface-soft);"><th style="padding:7px 8px;text-align:left;">Plataforma</th><th style="padding:7px 8px;text-align:right;">Compras</th><th style="padding:7px 8px;text-align:right;">Valor Total</th><th style="padding:7px 8px;text-align:right;">Lucro</th><th style="padding:7px 8px;text-align:right;">Preco Medio</th><th style="padding:7px 8px;text-align:center;">Entrega Media</th></tr></thead><tbody>'+plats.map(function(p){return '<tr><td style="padding:7px 8px;font-weight:600;">'+p.nome+'</td><td style="padding:7px 8px;text-align:right;">'+p.qtd+'</td><td style="padding:7px 8px;text-align:right;color:var(--accent);font-weight:600;">'+fmt(p.total)+'</td><td style="padding:7px 8px;text-align:right;color:var(--success);font-weight:600;">'+fmt(p.lucro)+'</td><td style="padding:7px 8px;text-align:right;">'+fmt(p.precoMedio)+'</td><td style="padding:7px 8px;text-align:center;">'+(p.mediaEntrega!==null?p.mediaEntrega+' dias':'\u2014')+'</td></tr>';}).join('')+'</tbody></table></div>':'<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhuma compra registrada.</div>');
-  }
-};
-
-// -- Excel melhorado com 3 abas --
-var _v2origXL=exportXLSX;
-exportXLSX=function(tab){
-  if(typeof XLSX==='undefined'){_v2origXL(tab);return;}
-  var fi=[];
-  if(tab==='disputas'){if(filtroAnalistaDisputas!=='todos')fi.push('Analista: '+filtroAnalistaDisputas);if(filtroEmpresaDisputas!=='todas')fi.push('Empresa: '+filtroEmpresaDisputas);}
-  else{if(filtroAnalistaEmpenhos!=='todos')fi.push('Analista: '+filtroAnalistaEmpenhos);if(filtroAtrasoEmpenhos!=='todos')fi.push('Atraso: +'+filtroAtrasoEmpenhos+'d');}
-  var H={disputas:['Data','Orgao','UF','Empresa','Tipo','RP','Processo','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','Lucro Realiz.','Proxima Acao','Obs'],
-    empenhos:['Empenho','Data','Orgao','Analista','Vl.Empenho','Compra','Custo','Lucro Realiz.','A Receber','Dias','Proxima Acao','Obs']};
-  var R={disputas:DB.disputas.filter(function(r){return !r.finalizada&&matches('disputas',r);}).map(function(r){var a=getProximaAcao(r);return[r.data,r.orgao,r.estado,r.empresa,r.tipo,r.rp,r.processo,r.analista,getValorContrato(r),(r.lotes||[]).reduce(function(s,l){return s+(l.compraPrev||0)*(l.qtd||0);},0),(r.lotes||[]).reduce(function(s,l){return s+(l.custoPrev||0)*(l.qtd||0);},0),getLucroPrevisto(r),getLucroRealizado(r.id),a.icon+' '+a.label,r.observacao||''];}),
-    empenhos:DB.empenhos.filter(function(r){return matches('empenhos',r)&&!r.finalizado;}).map(function(r){var c=r.compras||[];var a=getProximaAcaoEmpenho(r);return[r.num,r.data,r.orgao,r.analista,r.vem||0,c.reduce(function(s,x){return s+(x.vtotal||0);},0),c.reduce(function(s,x){return s+(x.custo||0);},0),c.filter(function(x){return x.dpag;}).reduce(function(s,x){return s+(x.luc||0);},0),c.filter(function(x){return !x.dpag||x.dpag==='';}).reduce(function(s,x){return s+(x.rec||0);},0),diasSemPagamento(r),a.icon+' '+a.label,r.observacao||''];})};
-  var sn=tab==='disputas'?'Disputas':'Empenhos';
-  var dados=[[sn+' \u2014 '+new Date().toLocaleDateString('pt-BR')],[fi.length?'Filtros: '+fi.join(' | '):'Sem filtros'],[],H[tab]].concat(R[tab]);
-  if(R[tab].length){var tot=new Array(H[tab].length).fill('');tot[0]='TOTAIS ('+R[tab].length+')';
-    if(tab==='disputas'){[8,9,10,11,12].forEach(function(i){tot[i]=R[tab].reduce(function(s,r){return s+(r[i]||0);},0);});}
-    else{[4,5,6,7,8].forEach(function(i){tot[i]=R[tab].reduce(function(s,r){return s+(r[i]||0);},0);});}
-    dados.push([],tot);}
-  var wb=XLSX.utils.book_new();
-  var ws=XLSX.utils.aoa_to_sheet(dados);ws['!cols']=H[tab].map(function(h){return{wch:Math.max(h.length+4,14)};});
-  XLSX.utils.book_append_sheet(wb,ws,sn);
-  // Aba resumo
-  var rH=['Analista','Disputas','Empenhos','Lucro Prev.','Lucro Realiz.','A Receber'];var an={};
-  DB.disputas.filter(function(d){return !d.finalizada;}).forEach(function(d){var a=d.analista||'\u2014';if(!an[a])an[a]={d:0,e:0,lp:0,lr:0,ar:0};an[a].d++;an[a].lp+=getLucroPrevisto(d);an[a].lr+=getLucroRealizado(d.id);});
-  DB.empenhos.filter(function(e){return !e.finalizado;}).forEach(function(e){var a=e.analista||'\u2014';if(!an[a])an[a]={d:0,e:0,lp:0,lr:0,ar:0};an[a].e++;an[a].ar+=(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(s,c){return s+(c.rec||0);},0);});
-  var rR=Object.entries(an).map(function(x){return[x[0],x[1].d,x[1].e,x[1].lp,x[1].lr,x[1].ar];});
-  var wsR=XLSX.utils.aoa_to_sheet([['Resumo por Analista'],[],rH].concat(rR));XLSX.utils.book_append_sheet(wb,wsR,'Resumo');
-  // Aba plataformas
-  var pl=getMetricasPlataforma();var pH=['Plataforma','Compras','Valor Total','Lucro','Preco Medio','Entrega Media (dias)'];
-  var pR=pl.map(function(p){return[p.nome,p.qtd,p.total,p.lucro,p.precoMedio,p.mediaEntrega||'\u2014'];});
-  var wsP=XLSX.utils.aoa_to_sheet([['Metricas por Plataforma'],[],pH].concat(pR));XLSX.utils.book_append_sheet(wb,wsP,'Plataformas');
-  XLSX.writeFile(wb,sn+'_'+today()+'.xlsx');toast('Excel: '+R[tab].length+' registros + resumo + plataformas','success');
-};
-
-// -- Resumo diario personalizado --
-var _v2origRD=mostrarResumoDiario;
-mostrarResumoDiario=function(){
-  var hoje=new Date().toISOString().slice(0,10);var saved=JSON.parse(localStorage.getItem('resumoDiario')||'{}');
-  if(saved.data===hoje&&saved.naoMostrar)return;
-  var tit=g('resumo-titulo'),dtEl=g('resumo-data'),body=g('resumo-body');if(!tit||!body)return;
-  tit.textContent=saudacao()+', '+(usuarioLogado||'voce')+'!';
-  var ds=['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];var ag=new Date();
-  dtEl.textContent=ds[ag.getDay()]+', '+ag.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  var mE=DB.empenhos.filter(function(e){return !e.finalizado;});
-  var eP=mE.filter(function(e){return !empenhoEstaPago(e);});
-  var e30=eP.filter(function(e){return diasSemPagamento(e)>=30;});
-  var e60=eP.filter(function(e){return diasSemPagamento(e)>=60;});
-  var eSC=mE.filter(function(e){return !(e.compras||[]).length;});
-  var aR=eP.reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return !c.dpag||c.dpag==='';}).reduce(function(ss,c){return ss+(c.rec||0);},0);},0);
-  var lM=mE.reduce(function(s,e){return s+(e.compras||[]).filter(function(c){return c.dpag&&c.dpag.startsWith(hoje.slice(0,7));}).reduce(function(ss,c){return ss+(c.luc||0);},0);},0);
-  var rH=(DB.acomp||[]).filter(function(r){return r.retorno&&new Date(r.retorno).toDateString()===ag.toDateString();});
-  var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">';
-  h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">A receber</div><div style="font-size:20px;font-weight:800;color:var(--success);">'+fmt(aR)+'</div><div style="font-size:10px;color:var(--text-tertiary);">'+eP.length+' empenho(s)</div></div>';
-  h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;font-weight:600;">Lucro no mes</div><div style="font-size:20px;font-weight:800;color:var(--accent);">'+fmt(lM)+'</div></div></div>';
-  if(rH.length){h+='<div style="background:var(--warning-soft);border-left:3px solid var(--warning);border-radius:6px;padding:10px 14px;margin-bottom:8px;"><div style="font-weight:700;font-size:12px;margin-bottom:6px;">\u23F0 Retornos hoje</div>';rH.forEach(function(r){var rt=new Date(r.retorno);h+='<div style="font-size:12px;margin-bottom:4px;"><strong>'+rt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</strong> \u00B7 '+r.orgao+(r.link?' <a href="'+r.link+'" target="_blank">\uD83D\uDD17</a>':'')+'</div>';});h+='</div>';}
-  var ac=[];
-  if(e60.length)ac.push({i:'\uD83D\uDD34',m:e60.length+' empenho(s) +60d sem pagamento',c:'var(--danger)'});
-  else if(e30.length)ac.push({i:'\uD83D\uDFE1',m:e30.length+' empenho(s) +30d sem pagamento',c:'var(--warning)'});
-  if(eSC.length)ac.push({i:'\uD83D\uDED2',m:eSC.length+' empenho(s) sem compra',c:'var(--accent)'});
-  if(ac.length){h+='<div style="display:flex;flex-direction:column;gap:6px;">';ac.forEach(function(a){h+='<div style="background:var(--bg-surface-soft);border-left:3px solid '+a.c+';border-radius:6px;padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:8px;"><span>'+a.i+'</span><span>'+a.m+'</span></div>';});h+='</div>';}
-  else h+='<div style="background:var(--bg-surface-soft);border-radius:10px;padding:14px;text-align:center;color:var(--success);font-size:13px;font-weight:600;">\u2705 Tudo em dia!</div>';
-  body.innerHTML=h;g('resumo-nao-mostrar').checked=false;g('modal-resumo-diario').classList.add('open');
-};
-
-// -- Painel: acoes necessarias + plataformas --
-var _v2origPain=atualizarPainel;
-atualizarPainel=function(){
-  _v2origPain();
-  var pb=g('painel-body');if(!pb)return;
-  var dca=DB.disputas.filter(function(d){return !d.finalizada;}).map(function(d){return{d:d,a:getProximaAcao(d)};}).filter(function(x){return x.a.css==='urgente'||x.a.css==='atencao';}).slice(0,6);
-  if(dca.length){var ah='<div class="card" style="margin-top:16px;"><div style="font-size:13px;font-weight:700;margin-bottom:10px;">\u26A1 Acoes Necessarias</div>';
-    dca.forEach(function(x){ah+='<div onclick="abrirPopupDisputa(\''+x.d.id+'\')" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;"><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+x.d.orgao+'</div><div style="font-size:10px;color:var(--text-tertiary);">'+(x.d.analista||'')+' \u00B7 '+fmt(getValorContrato(x.d))+'</div></div>'+renderProximaAcao(x.a)+'</div>';});
-    ah+='</div>';pb.innerHTML+=ah;}
-  var pl=getMetricasPlataforma().slice(0,5);
-  if(pl.length){var ph='<div class="card" style="margin-top:16px;"><div style="font-size:13px;font-weight:700;margin-bottom:10px;">\uD83C\uDFEA Top Plataformas</div>';
-    pl.forEach(function(p){ph+='<div style="padding:6px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;"><div style="flex:1;font-size:12px;font-weight:600;">'+p.nome+'</div><span style="font-size:11px;color:var(--text-tertiary);">'+p.qtd+' compras</span><span style="font-size:11px;color:var(--accent);font-weight:600;">'+fmt(p.total)+'</span>'+(p.mediaEntrega!==null?'<span style="font-size:10px;color:var(--text-tertiary);">'+p.mediaEntrega+'d</span>':'')+'</div>';});
-    ph+='</div>';pb.innerHTML+=ph;}
-};
-
-console.log('v2.0 COMPLETO');
-
 </script>
 
 </body>
