@@ -2059,6 +2059,7 @@
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('acomp')">Fechar</button>
       <button class="btn btn-primary" id="popup-ac-edit-btn">Editar</button>
+      <button class="btn btn-ghost" id="popup-ac-prop-btn" style="color:#2d6a4f;border-color:#2d6a4f;">📄 Gerar Proposta</button>
       <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Disputa</button>
     </div>
   </div>
@@ -4759,6 +4760,7 @@ function verExcel(id, tipo) {
     <div class="shortcut-row"><span class="desc">Novo Contrato</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>N</kbd></span></div>
 	<div class="shortcut-row"><span class="desc">Novo Acompanhamento</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>A</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Novo Empenho</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>E</kbd></span></div>
+    <div class="shortcut-row"><span class="desc">Nova Proposta</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>P</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Ir para Painel</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>1</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Ir para Dashboard</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>2</kbd></span></div>
     <div class="shortcut-row"><span class="desc">Ir para Disputas</span><span class="shortcut-keys"><kbd>Alt</kbd><kbd>3</kbd></span></div>
@@ -8500,6 +8502,7 @@ function renderAcomp() {
           <div class="action-dropdown-menu" style="display:none;">
             ${r.link ? '<button class="action-dropdown-item" onclick="closeActionMenus();window.open(\'' + r.link + '\',\'_blank\')"><span class="item-icon">🔗</span>Abrir sistema</button>' : ''}
             <button class="action-dropdown-item" onclick="closeActionMenus();editAcomp('${r.id}')"><span class="item-icon">✏️</span>Editar</button>
+            <button class="action-dropdown-item" onclick="closeActionMenus();propAbrir('${r.id}')" style="color:#2d6a4f;"><span class="item-icon">📄</span>Gerar Proposta</button>
             <button class="action-dropdown-item" onclick="closeActionMenus();converterEmDisputa('${r.id}')" style="color:var(--success);"><span class="item-icon">🏆</span>Converter em Contrato</button>
             <div class="action-dropdown-divider"></div>
             <button class="action-dropdown-item danger" onclick="closeActionMenus();delAcomp('${r.id}')"><span class="item-icon">🗑️</span>Excluir</button>
@@ -8588,6 +8591,8 @@ function verAcomp(id) {
 
   const editBtn = g('popup-ac-edit-btn');
   if (editBtn) editBtn.onclick = function() { fecharPopup('acomp'); editAcomp(id); };
+  const propBtnAc = g('popup-ac-prop-btn');
+  if (propBtnAc) propBtnAc.onclick = function() { fecharPopup('acomp'); propAbrir(id); };
   const convBtn = g('popup-ac-conv-btn');
   if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputa(id); };
 
@@ -9616,6 +9621,7 @@ document.addEventListener('keydown', e => {
   if (e.key === '?' && !inInput) { e.preventDefault(); document.getElementById('shortcuts-modal')?.classList.toggle('open'); return; }
   if (e.altKey && e.key === 'n') { e.preventDefault(); openModal('disputas'); return; }
   if (e.altKey && e.key === 'e') { e.preventDefault(); openModal('empenhos'); return; }
+  if (e.altKey && e.key === 'p') { e.preventDefault(); propAbrir(); return; }
   if (e.altKey && e.key === 't') { e.preventDefault(); toggleTema(); return; }
   if (e.altKey && e.key === '1') { e.preventDefault(); document.getElementById('tab-btn-painel')?.click(); return; }
   if (e.altKey && e.key === '2') { e.preventDefault(); switchTab('dashboard', document.querySelectorAll('.tab-btn')[1]); atualizarDashboard(); return; }
@@ -9712,6 +9718,153 @@ boot();
     </div>
   </div>
 </div>
+
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- MODAL PROPOSTA COMERCIAL -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-proposta" style="z-index:2500;">
+  <div class="modal" style="max-width:1400px;width:98%;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#2d6a4f,#40916c);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;">
+      <div class="modal-title" style="color:#fff;font-size:16px;" id="ttl-proposta">Nova Proposta Comercial</div>
+      <button class="modal-close" onclick="fecharProposta()" style="color:#fff;opacity:0.8;">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:calc(96vh - 120px);overflow-y:auto;">
+
+      <!-- DADOS DA EMPRESA (fixos HAMATE) -->
+      <div class="fsec-collapsible" onclick="toggleSection('sec-empresa-prop')">
+        <span>🏢 DADOS DA EMPRESA</span>
+        <span class="fsec-arrow">▼</span>
+      </div>
+      <div class="fsec-content" id="sec-empresa-prop-content">
+        <div class="form-grid">
+          <div class="fg half"><label class="fl">Razao Social</label><input type="text" class="fc" id="prop-empresa-razao" value="HAMATE ELETROINFO LTDA" readonly style="background:var(--bg-inset);font-weight:700;"></div>
+          <div class="fg"><label class="fl">CNPJ</label><input type="text" class="fc" id="prop-empresa-cnpj" value="29.391.565/0001-29" readonly style="background:var(--bg-inset);"></div>
+          <div class="fg"><label class="fl">Inscricao Estadual</label><input type="text" class="fc" id="prop-empresa-ie" value="ISENTO" readonly style="background:var(--bg-inset);"></div>
+          <div class="fg half"><label class="fl">Endereco</label><input type="text" class="fc" id="prop-empresa-end" value="RUA JOSE BRAZ SOBRINHO, 100, SALA 01, SANTA EFIGENIA, BELO HORIZONTE/MG" readonly style="background:var(--bg-inset);"></div>
+          <div class="fg"><label class="fl">Telefone</label><input type="text" class="fc" id="prop-empresa-tel" value="(31) 98462-8407" readonly style="background:var(--bg-inset);"></div>
+          <div class="fg"><label class="fl">E-mail</label><input type="text" class="fc" id="prop-empresa-email" value="HAMATE.ELETROINFO@GMAIL.COM" readonly style="background:var(--bg-inset);"></div>
+        </div>
+      </div>
+
+      <!-- DADOS DO CLIENTE / ORGAO -->
+      <div class="fsec" style="margin-top:16px;">🏛️ DADOS DO ORGAO / CLIENTE</div>
+      <div class="form-grid">
+        <div class="fg half"><label class="fl">Orgao</label><input type="text" class="fc" id="prop-orgao" placeholder="PREFEITURA MUNICIPAL DE..."></div>
+        <div class="fg"><label class="fl">UF</label>
+          <select class="fc" id="prop-estado">
+            <option value="">Selecione</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">CEP</label><input type="text" class="fc" id="prop-cep" placeholder="00000-000" maxlength="9" oninput="propBuscarCEP(this.value)"></div>
+        <div class="fg half"><label class="fl">Endereco</label><input type="text" class="fc" id="prop-endereco" placeholder="RUA / AV..."></div>
+        <div class="fg"><label class="fl">Cidade</label><input type="text" class="fc" id="prop-cidade"></div>
+        <div class="fg"><label class="fl">Bairro</label><input type="text" class="fc" id="prop-bairro"></div>
+      </div>
+
+      <!-- DADOS DA PROPOSTA -->
+      <div class="fsec" style="margin-top:16px;">📋 DADOS DA PROPOSTA</div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Nro. Processo</label><input type="text" class="fc" id="prop-processo" placeholder="001/2026"></div>
+        <div class="fg"><label class="fl">Nro. Pregao / Dispensa</label><input type="text" class="fc" id="prop-pregao"></div>
+        <div class="fg"><label class="fl">Data da Proposta</label><input type="date" class="fc" id="prop-data"></div>
+        <div class="fg"><label class="fl">Validade da Proposta (dias)</label><input type="number" class="fc" id="prop-validade" value="60"></div>
+        <div class="fg"><label class="fl">Prazo de Entrega (dias)</label><input type="number" class="fc" id="prop-prazo-entrega" value="30"></div>
+        <div class="fg"><label class="fl">Condicoes de Pagamento</label><input type="text" class="fc" id="prop-pagamento" value="CONFORME EDITAL"></div>
+      </div>
+
+      <!-- ITENS DA PROPOSTA -->
+      <div class="fsec" style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;">
+        <span>📦 ITENS DA PROPOSTA</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="font-size:10px;color:var(--text-tertiary);display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="prop-mostrar-internos" onchange="propToggleInternos()" checked> Mostrar colunas internas
+          </label>
+        </div>
+      </div>
+      <div style="overflow-x:auto;margin-top:8px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="prop-itens-tabela">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:6px 4px;text-align:center;width:30px;font-size:10px;">ITEM</th>
+              <th style="padding:6px 4px;text-align:left;min-width:200px;font-size:10px;">DESCRICAO / ESPECIFICACAO</th>
+              <th style="padding:6px 4px;text-align:center;width:60px;font-size:10px;">UND</th>
+              <th style="padding:6px 4px;text-align:center;width:50px;font-size:10px;">QTD</th>
+              <th style="padding:6px 4px;text-align:right;width:100px;font-size:10px;">VL. UNIT. (R$)</th>
+              <th style="padding:6px 4px;text-align:right;width:100px;font-size:10px;">VL. TOTAL (R$)</th>
+              <th style="padding:6px 4px;text-align:center;width:80px;font-size:10px;">MARCA</th>
+              <!-- COLUNAS INTERNAS (nao vao no PDF) -->
+              <th class="prop-col-interna" style="padding:6px 4px;text-align:right;width:90px;font-size:10px;background:#fff3e0;color:#e65100;">VL. COMPRA</th>
+              <th class="prop-col-interna" style="padding:6px 4px;text-align:right;width:90px;font-size:10px;background:#e8f5e9;color:#2e7d32;">VL. VENDA</th>
+              <th class="prop-col-interna" style="padding:6px 4px;text-align:right;width:80px;font-size:10px;background:#fce4ec;color:#c62828;">CUSTO</th>
+              <th class="prop-col-interna" style="padding:6px 4px;text-align:right;width:80px;font-size:10px;background:#e8f5e9;color:#2e7d32;">LUCRO</th>
+              <th class="prop-col-interna" style="padding:6px 4px;text-align:center;width:60px;font-size:10px;background:#e8f5e9;color:#2e7d32;">% LUCRO</th>
+              <th style="padding:6px 4px;width:30px;"></th>
+            </tr>
+          </thead>
+          <tbody id="prop-itens-tbody"></tbody>
+          <tfoot id="prop-itens-tfoot" style="font-weight:700;border-top:2px solid var(--border-medium);"></tfoot>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="propAdicionarItem()" style="margin-top:8px;">+ Adicionar Item</button>
+
+      <!-- OBSERVACOES -->
+      <div class="fsec" style="margin-top:16px;">📝 OBSERVACOES</div>
+      <textarea class="fc" id="prop-observacoes" rows="3" placeholder="OBSERVACOES ADICIONAIS..." maxlength="500"></textarea>
+
+    </div>
+    <div class="modal-footer" style="background:var(--bg-surface-soft);flex-wrap:wrap;gap:8px;">
+      <button class="btn btn-ghost" onclick="fecharProposta()">Cancelar</button>
+      <button class="btn btn-ghost" onclick="propSalvar()" style="color:var(--accent);border-color:var(--accent);">Salvar Rascunho</button>
+      <button class="btn btn-success" onclick="propExportarPDF()" style="background:#2d6a4f;">📄 Exportar PDF</button>
+      <button class="btn btn-primary" id="prop-btn-converter" onclick="propAbrirConversao()" style="display:none;">Converter em Contrato</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONVERSAO PROPOSTA -> CONTRATO -->
+<div class="modal-overlay" id="modal-prop-conversao" style="z-index:2600;">
+  <div class="modal" style="max-width:800px;">
+    <div class="modal-header">
+      <div class="modal-title">Converter Proposta em Contrato</div>
+      <button class="modal-close" onclick="document.getElementById('modal-prop-conversao').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+        Selecione os itens vencidos e ajuste os valores finais para criar o contrato.
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:8px;width:30px;"><input type="checkbox" id="prop-conv-chk-all" onchange="propConvToggleAll(this.checked)"></th>
+              <th style="padding:8px;text-align:left;">Descricao</th>
+              <th style="padding:8px;text-align:center;">Qtd</th>
+              <th style="padding:8px;text-align:right;">Vl. Unit.</th>
+              <th style="padding:8px;text-align:right;">Vl. Total</th>
+            </tr>
+          </thead>
+          <tbody id="prop-conv-tbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:var(--info-soft);border-radius:8px;display:flex;gap:16px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:var(--text-tertiary);">TOTAL SELECIONADO:</span>
+        <strong id="prop-conv-total" style="color:var(--accent);font-family:var(--font-mono);">R$ 0,00</strong>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-prop-conversao').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" onclick="propConfirmarConversao()">Criar Contrato</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .prop-col-interna { transition: opacity 0.2s, max-width 0.2s; }
+  .prop-col-interna.hidden { display:none !important; }
+  @media print { .prop-col-interna { display:none !important; } }
+</style>
 
 <script>
 // FIX: define confirmar() que closeModal chama mas nao existe
@@ -9816,6 +9969,451 @@ setTimeout(function(){
   ref.parentNode.insertBefore(b,ref);
 },2000);
 setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi){bi.oninput=function(){_debouncedBusca(this.value);};}},500);
+
+
+
+// ══════════════════════════════════════════════════════════════
+//   MODULO PROPOSTA COMERCIAL
+// ══════════════════════════════════════════════════════════════
+var _propItens = [];
+var _propAcompId = null;  // ID do acompanhamento de origem
+var _propEditId = null;   // ID da proposta sendo editada
+
+function propAbrir(acompId) {
+  _propAcompId = acompId || null;
+  _propEditId = null;
+  _propItens = [];
+
+  // Limpa campos
+  ['prop-orgao','prop-estado','prop-cep','prop-endereco','prop-cidade','prop-bairro',
+   'prop-processo','prop-pregao','prop-observacoes'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('prop-data').value = new Date().toISOString().slice(0,10);
+  document.getElementById('prop-validade').value = '60';
+  document.getElementById('prop-prazo-entrega').value = '30';
+  document.getElementById('prop-pagamento').value = 'CONFORME EDITAL';
+
+  // Se veio de um acompanhamento, pre-preenche
+  if (acompId) {
+    var ac = (DB.acomp||[]).find(function(x) { return x.id === acompId; });
+    if (ac) {
+      document.getElementById('prop-orgao').value = ac.orgao || '';
+      document.getElementById('prop-estado').value = ac.estado || '';
+      document.getElementById('prop-processo').value = ac.processo || '';
+      document.getElementById('ttl-proposta').textContent = 'Proposta - ' + (ac.orgao || '');
+    }
+  }
+
+  // Botao converter: so aparece em propostas salvas
+  var btnConv = document.getElementById('prop-btn-converter');
+  if (btnConv) btnConv.style.display = 'none';
+
+  propRenderItens();
+  document.getElementById('modal-proposta').classList.add('open');
+}
+
+function fecharProposta() {
+  document.getElementById('modal-proposta').classList.remove('open');
+  _propAcompId = null;
+  _propEditId = null;
+  _propItens = [];
+}
+
+// --- ITENS ---
+function propAdicionarItem() {
+  _propItens.push({
+    id: uid(),
+    descricao: '',
+    unidade: 'UN',
+    qtd: 1,
+    vlUnit: 0,
+    marca: '',
+    vlCompra: 0,
+    vlVenda: 0,   // auto: compra + 22%
+    vendaManual: false
+  });
+  propRenderItens();
+  // Foca no campo descricao do ultimo item
+  setTimeout(function() {
+    var els = document.querySelectorAll('.prop-desc-input');
+    if (els.length) els[els.length-1].focus();
+  }, 50);
+}
+
+function propRemoverItem(idx) {
+  _propItens.splice(idx, 1);
+  propRenderItens();
+}
+
+function propAtualizarItem(idx, campo, valor) {
+  var item = _propItens[idx];
+  if (!item) return;
+
+  if (campo === 'descricao') item.descricao = valor;
+  else if (campo === 'unidade') item.unidade = valor;
+  else if (campo === 'qtd') item.qtd = parseFloat(valor) || 0;
+  else if (campo === 'vlUnit') item.vlUnit = parseFloat(valor) || 0;
+  else if (campo === 'marca') item.marca = valor;
+  else if (campo === 'vlCompra') {
+    item.vlCompra = parseFloat(valor) || 0;
+    // Auto-calcula venda = compra + 22% (se nao manual)
+    if (!item.vendaManual) {
+      item.vlVenda = +(item.vlCompra * 1.22).toFixed(2);
+    }
+  }
+  else if (campo === 'vlVenda') {
+    item.vlVenda = parseFloat(valor) || 0;
+    item.vendaManual = true;
+  }
+
+  propRenderItens();
+}
+
+function propRenderItens() {
+  var tb = document.getElementById('prop-itens-tbody');
+  var tf = document.getElementById('prop-itens-tfoot');
+  if (!tb) return;
+
+  if (!_propItens.length) {
+    tb.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:12px;">Nenhum item. Clique em "+ Adicionar Item".</td></tr>';
+    if (tf) tf.innerHTML = '';
+    return;
+  }
+
+  var totalVlUnit = 0, totalVlTotal = 0, totalCompra = 0, totalVenda = 0, totalCusto = 0, totalLucro = 0;
+
+  tb.innerHTML = _propItens.map(function(item, i) {
+    var vlTotal = item.qtd * item.vlUnit;
+    var vlCompraTotal = item.qtd * item.vlCompra;
+    var vlVendaTotal = item.qtd * item.vlVenda;
+    // Custo = 9% do valor de venda total
+    var custo = vlVendaTotal * 0.09;
+    var lucro = vlVendaTotal - vlCompraTotal - custo;
+    var pctLucro = vlCompraTotal > 0 ? (lucro / vlCompraTotal * 100) : 0;
+
+    totalVlTotal += vlTotal;
+    totalCompra += vlCompraTotal;
+    totalVenda += vlVendaTotal;
+    totalCusto += custo;
+    totalLucro += lucro;
+
+    var corLucro = lucro >= 0 ? '#2e7d32' : '#c62828';
+    var bgVenda = item.vendaManual ? 'background:#c8e6c9;' : 'background:#e8f5e9;';
+
+    return '<tr style="border-bottom:1px solid var(--border-light);">' +
+      '<td style="padding:5px 4px;text-align:center;font-weight:700;color:var(--text-tertiary);font-size:11px;">' + (i+1) + '</td>' +
+      '<td style="padding:3px 2px;"><textarea class="fc prop-desc-input" rows="1" style="font-size:11px;padding:4px 6px;min-height:28px;resize:vertical;" oninput="propAtualizarItem('+i+',\'descricao\',this.value)">' + (item.descricao||'') + '</textarea></td>' +
+      '<td style="padding:3px 2px;"><input type="text" class="fc" style="font-size:11px;padding:4px;text-align:center;width:50px;" value="' + (item.unidade||'UN') + '" oninput="propAtualizarItem('+i+',\'unidade\',this.value)"></td>' +
+      '<td style="padding:3px 2px;"><input type="number" class="fc" style="font-size:11px;padding:4px;text-align:center;width:45px;" value="' + (item.qtd||1) + '" min="1" oninput="propAtualizarItem('+i+',\'qtd\',this.value)"></td>' +
+      '<td style="padding:3px 2px;"><input type="number" step="0.01" class="fc" style="font-size:11px;padding:4px;text-align:right;width:90px;" value="' + (item.vlUnit||'') + '" oninput="propAtualizarItem('+i+',\'vlUnit\',this.value)"></td>' +
+      '<td style="padding:5px 4px;text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--accent);font-weight:600;">' + fmt(vlTotal) + '</td>' +
+      '<td style="padding:3px 2px;"><input type="text" class="fc" style="font-size:11px;padding:4px;text-align:center;width:70px;" value="' + (item.marca||'') + '" oninput="propAtualizarItem('+i+',\'marca\',this.value)"></td>' +
+      // Colunas internas
+      '<td class="prop-col-interna" style="padding:3px 2px;background:#fff8e1;"><input type="number" step="0.01" class="fc" style="font-size:11px;padding:4px;text-align:right;width:80px;" value="' + (item.vlCompra||'') + '" oninput="propAtualizarItem('+i+',\'vlCompra\',this.value)" placeholder="0,00"></td>' +
+      '<td class="prop-col-interna" style="padding:3px 2px;' + bgVenda + '"><input type="number" step="0.01" class="fc" style="font-size:11px;padding:4px;text-align:right;width:80px;' + (item.vendaManual?'color:#1b5e20;font-weight:700;':'') + '" value="' + (item.vlVenda||'') + '" oninput="propAtualizarItem('+i+',\'vlVenda\',this.value)" title="Auto: compra +22%. Edite para valor manual."></td>' +
+      '<td class="prop-col-interna" style="padding:5px 4px;text-align:right;font-family:var(--font-mono);font-size:11px;color:#c62828;background:#fce4ec;">' + fmt(custo) + '</td>' +
+      '<td class="prop-col-interna" style="padding:5px 4px;text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:700;color:' + corLucro + ';background:#e8f5e9;">' + fmt(lucro) + '</td>' +
+      '<td class="prop-col-interna" style="padding:5px 4px;text-align:center;font-size:10px;font-weight:700;color:' + corLucro + ';background:#e8f5e9;">' + pctLucro.toFixed(1) + '%</td>' +
+      '<td style="padding:3px;text-align:center;"><button onclick="propRemoverItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;">✕</button></td>' +
+    '</tr>';
+  }).join('');
+
+  // Rodape com totais
+  var pctTotal = totalCompra > 0 ? (totalLucro / totalCompra * 100) : 0;
+  if (tf) tf.innerHTML = '<tr>' +
+    '<td colspan="4" style="padding:8px 4px;text-align:right;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;">TOTAIS</td>' +
+    '<td></td>' +
+    '<td style="padding:8px 4px;text-align:right;font-family:var(--font-mono);color:var(--accent);font-weight:800;">' + fmt(totalVlTotal) + '</td>' +
+    '<td></td>' +
+    '<td class="prop-col-interna" style="padding:8px 4px;text-align:right;font-family:var(--font-mono);color:#e65100;background:#fff3e0;">' + fmt(totalCompra) + '</td>' +
+    '<td class="prop-col-interna" style="padding:8px 4px;text-align:right;font-family:var(--font-mono);color:#2e7d32;background:#e8f5e9;">' + fmt(totalVenda) + '</td>' +
+    '<td class="prop-col-interna" style="padding:8px 4px;text-align:right;font-family:var(--font-mono);color:#c62828;background:#fce4ec;">' + fmt(totalCusto) + '</td>' +
+    '<td class="prop-col-interna" style="padding:8px 4px;text-align:right;font-family:var(--font-mono);font-weight:800;color:' + (totalLucro>=0?'#2e7d32':'#c62828') + ';background:#e8f5e9;">' + fmt(totalLucro) + '</td>' +
+    '<td class="prop-col-interna" style="padding:8px 4px;text-align:center;font-weight:800;color:' + (pctTotal>=0?'#2e7d32':'#c62828') + ';background:#e8f5e9;">' + pctTotal.toFixed(1) + '%</td>' +
+    '<td></td></tr>';
+}
+
+function propToggleInternos() {
+  var checked = document.getElementById('prop-mostrar-internos').checked;
+  document.querySelectorAll('.prop-col-interna').forEach(function(el) {
+    el.classList.toggle('hidden', !checked);
+  });
+}
+
+// --- CEP VIA VIACEP ---
+var _propCepTimeout = null;
+function propBuscarCEP(cep) {
+  cep = (cep || '').replace(/\D/g, '');
+  if (cep.length !== 8) return;
+  clearTimeout(_propCepTimeout);
+  _propCepTimeout = setTimeout(function() {
+    fetch('https://viacep.com.br/ws/' + cep + '/json/')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.erro) { toast('CEP nao encontrado', 'error'); return; }
+        var el;
+        el = document.getElementById('prop-endereco'); if (el && d.logradouro) el.value = d.logradouro.toUpperCase();
+        el = document.getElementById('prop-cidade'); if (el && d.localidade) el.value = d.localidade.toUpperCase();
+        el = document.getElementById('prop-bairro'); if (el && d.bairro) el.value = d.bairro.toUpperCase();
+        el = document.getElementById('prop-estado'); if (el && d.uf) el.value = d.uf;
+        toast('CEP preenchido!', 'success');
+      })
+      .catch(function() { toast('Erro ao buscar CEP', 'error'); });
+  }, 400);
+}
+
+// --- SALVAR PROPOSTA ---
+function propSalvar() {
+  var orgao = (document.getElementById('prop-orgao').value || '').trim();
+  if (!orgao) { toast('Informe o orgao!', 'error'); return; }
+  if (!_propItens.length) { toast('Adicione pelo menos 1 item!', 'error'); return; }
+
+  var proposta = {
+    id: _propEditId || uid(),
+    acompId: _propAcompId || null,
+    orgao: orgao.toUpperCase(),
+    estado: document.getElementById('prop-estado').value || '',
+    cep: document.getElementById('prop-cep').value || '',
+    endereco: (document.getElementById('prop-endereco').value || '').toUpperCase(),
+    cidade: (document.getElementById('prop-cidade').value || '').toUpperCase(),
+    bairro: (document.getElementById('prop-bairro').value || '').toUpperCase(),
+    processo: (document.getElementById('prop-processo').value || '').toUpperCase(),
+    pregao: (document.getElementById('prop-pregao').value || '').toUpperCase(),
+    data: document.getElementById('prop-data').value || '',
+    validade: +document.getElementById('prop-validade').value || 60,
+    prazoEntrega: +document.getElementById('prop-prazo-entrega').value || 30,
+    pagamento: (document.getElementById('prop-pagamento').value || '').toUpperCase(),
+    observacoes: (document.getElementById('prop-observacoes').value || '').toUpperCase(),
+    itens: JSON.parse(JSON.stringify(_propItens)),
+    criadoEm: new Date().toISOString()
+  };
+
+  if (!_fullDB.propostas) _fullDB.propostas = [];
+  var idx = _fullDB.propostas.findIndex(function(p) { return p.id === proposta.id; });
+  if (idx !== -1) _fullDB.propostas[idx] = proposta;
+  else _fullDB.propostas.push(proposta);
+  save('propostas', _fullDB.propostas);
+
+  _propEditId = proposta.id;
+  var btnConv = document.getElementById('prop-btn-converter');
+  if (btnConv) btnConv.style.display = '';
+
+  toast('Proposta salva!', 'success');
+}
+
+// --- EXPORTAR PDF ---
+function propExportarPDF() {
+  if (!_propItens.length) { toast('Adicione pelo menos 1 item!', 'error'); return; }
+
+  var orgao = (document.getElementById('prop-orgao').value || '').toUpperCase() || 'PROPOSTA';
+  var estado = document.getElementById('prop-estado').value || '';
+  var cidade = (document.getElementById('prop-cidade').value || '').toUpperCase();
+  var endereco = (document.getElementById('prop-endereco').value || '').toUpperCase();
+  var bairro = (document.getElementById('prop-bairro').value || '').toUpperCase();
+  var cep = document.getElementById('prop-cep').value || '';
+  var processo = (document.getElementById('prop-processo').value || '').toUpperCase();
+  var pregao = (document.getElementById('prop-pregao').value || '').toUpperCase();
+  var dataProp = document.getElementById('prop-data').value || '';
+  var validade = document.getElementById('prop-validade').value || '60';
+  var prazoEnt = document.getElementById('prop-prazo-entrega').value || '30';
+  var pagamento = (document.getElementById('prop-pagamento').value || '').toUpperCase();
+  var obs = (document.getElementById('prop-observacoes').value || '').toUpperCase();
+
+  var dataFormatada = dataProp ? new Date(dataProp + 'T12:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+
+  // Calcular totais
+  var totalGeral = _propItens.reduce(function(s, it) { return s + (it.qtd * it.vlUnit); }, 0);
+
+  // Gerar tabela de itens (apenas colunas externas)
+  var itensRows = _propItens.map(function(it, i) {
+    var vlTotal = it.qtd * it.vlUnit;
+    return '<tr>' +
+      '<td style="padding:6px 8px;text-align:center;border:1px solid #ccc;font-size:11px;">' + (i+1) + '</td>' +
+      '<td style="padding:6px 8px;border:1px solid #ccc;font-size:11px;">' + (it.descricao || '').toUpperCase() + '</td>' +
+      '<td style="padding:6px 8px;text-align:center;border:1px solid #ccc;font-size:11px;">' + (it.unidade || 'UN') + '</td>' +
+      '<td style="padding:6px 8px;text-align:center;border:1px solid #ccc;font-size:11px;">' + (it.qtd || 0) + '</td>' +
+      '<td style="padding:6px 8px;text-align:right;border:1px solid #ccc;font-size:11px;">R$ ' + (it.vlUnit || 0).toFixed(2).replace('.',',') + '</td>' +
+      '<td style="padding:6px 8px;text-align:right;border:1px solid #ccc;font-size:11px;font-weight:700;">R$ ' + vlTotal.toFixed(2).replace('.',',') + '</td>' +
+      '<td style="padding:6px 8px;text-align:center;border:1px solid #ccc;font-size:11px;">' + (it.marca || '').toUpperCase() + '</td>' +
+    '</tr>';
+  }).join('');
+
+  var totalStr = 'R$ ' + totalGeral.toFixed(2).replace('.', ',');
+
+  // Monta HTML do PDF
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proposta - ' + orgao + '</title>' +
+    '<style>' +
+    'body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;color:#333;font-size:12px;}' +
+    '.header{background:#2d6a4f;color:#fff;padding:20px 30px;display:flex;align-items:center;gap:16px;}' +
+    '.header h1{margin:0;font-size:18px;letter-spacing:1px;}' +
+    '.header p{margin:2px 0;font-size:11px;opacity:0.85;}' +
+    '.content{padding:20px 30px;}' +
+    'h2{color:#2d6a4f;font-size:13px;border-bottom:2px solid #2d6a4f;padding-bottom:4px;margin:18px 0 10px;text-transform:uppercase;letter-spacing:0.5px;}' +
+    '.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;margin-bottom:14px;font-size:11px;}' +
+    '.info-grid span{color:#666;}' +
+    '.info-grid strong{color:#333;}' +
+    'table{width:100%;border-collapse:collapse;margin:10px 0;}' +
+    'th{background:#2d6a4f;color:#fff;padding:8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;border:1px solid #1b4332;}' +
+    '.total-row td{background:#e8f5e9;font-weight:800;font-size:12px;}' +
+    '.footer{margin-top:30px;border-top:1px solid #ccc;padding-top:12px;font-size:10px;color:#666;text-align:center;}' +
+    '.decl{font-size:10px;line-height:1.6;margin:4px 0;color:#444;}' +
+    '.assinatura{margin-top:40px;text-align:center;font-size:11px;}' +
+    '.assinatura .linha{width:300px;border-top:1px solid #333;margin:0 auto 4px;padding-top:4px;}' +
+    '@media print{body{margin:0;} .no-print{display:none;}}' +
+    '</style></head><body>' +
+
+    '<div class="header">' +
+    '<div style="width:60px;height:60px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#2d6a4f;">H</div>' +
+    '<div>' +
+    '<h1>HAMATE ELETROINFO LTDA</h1>' +
+    '<p>CNPJ: 29.391.565/0001-29 | IE: ISENTO</p>' +
+    '<p>RUA JOSE BRAZ SOBRINHO, 100, SALA 01, SANTA EFIGENIA, BELO HORIZONTE/MG</p>' +
+    '<p>TEL: (31) 98462-8407 | E-MAIL: HAMATE.ELETROINFO@GMAIL.COM</p>' +
+    '</div></div>' +
+
+    '<div class="content">' +
+    '<h2>PROPOSTA COMERCIAL</h2>' +
+    '<div class="info-grid">' +
+    '<div><span>ORGAO:</span> <strong>' + orgao + '</strong></div>' +
+    '<div><span>DATA:</span> <strong>' + dataFormatada + '</strong></div>' +
+    (cidade ? '<div><span>CIDADE/UF:</span> <strong>' + cidade + '/' + estado + '</strong></div>' : '') +
+    (endereco ? '<div><span>ENDERECO:</span> <strong>' + endereco + (bairro ? ', ' + bairro : '') + (cep ? ' - CEP: ' + cep : '') + '</strong></div>' : '') +
+    (processo ? '<div><span>PROCESSO:</span> <strong>' + processo + '</strong></div>' : '') +
+    (pregao ? '<div><span>PREGAO/DISPENSA:</span> <strong>' + pregao + '</strong></div>' : '') +
+    '</div>' +
+
+    '<h2>ITENS</h2>' +
+    '<table>' +
+    '<thead><tr><th>ITEM</th><th>DESCRICAO</th><th>UND</th><th>QTD</th><th>VL. UNIT.</th><th>VL. TOTAL</th><th>MARCA</th></tr></thead>' +
+    '<tbody>' + itensRows +
+    '<tr class="total-row"><td colspan="5" style="text-align:right;padding:8px;border:1px solid #ccc;">VALOR TOTAL:</td>' +
+    '<td style="text-align:right;padding:8px;border:1px solid #ccc;color:#2d6a4f;font-size:14px;">' + totalStr + '</td><td style="border:1px solid #ccc;"></td></tr>' +
+    '</tbody></table>' +
+
+    '<h2>CONDICOES</h2>' +
+    '<div class="info-grid" style="grid-template-columns:1fr 1fr 1fr;">' +
+    '<div><span>VALIDADE:</span> <strong>' + validade + ' DIAS</strong></div>' +
+    '<div><span>PRAZO DE ENTREGA:</span> <strong>' + prazoEnt + ' DIAS</strong></div>' +
+    '<div><span>PAGAMENTO:</span> <strong>' + pagamento + '</strong></div>' +
+    '</div>' +
+
+    (obs ? '<h2>OBSERVACOES</h2><p style="font-size:11px;line-height:1.6;">' + obs + '</p>' : '') +
+
+    '<h2>DECLARACOES</h2>' +
+    '<p class="decl">1. DECLARAMOS QUE OS PRECOS APRESENTADOS CONTEMPLAM TODOS OS CUSTOS DIRETOS E INDIRETOS REFERENTES AO OBJETO LICITADO, INCLUINDO TRIBUTOS, SEGUROS, FRETES, EMBALAGENS, MAO DE OBRA, ENCARGOS SOCIAIS, TRABALHISTAS E PREVIDENCIARIOS, E QUAISQUER OUTROS CUSTOS OU DESPESAS QUE INCIDAM OU VENHAM A INCIDIR SOBRE O FORNECIMENTO.</p>' +
+    '<p class="decl">2. DECLARAMOS QUE ATENDEMOS A TODAS AS CONDICOES DE HABILITACAO E QUALIFICACAO EXIGIDAS NO EDITAL E SEUS ANEXOS.</p>' +
+    '<p class="decl">3. DECLARAMOS QUE NAO EMPREGAMOS MENORES DE 18 ANOS EM TRABALHO NOTURNO, PERIGOSO OU INSALUBRE, NEM MENORES DE 16 ANOS EM QUALQUER TRABALHO, SALVO NA CONDICAO DE APRENDIZ, A PARTIR DOS 14 ANOS, NOS TERMOS DO ART. 7, INCISO XXXIII, DA CONSTITUICAO FEDERAL.</p>' +
+    '<p class="decl">4. DECLARAMOS QUE INEXISTE FATO IMPEDITIVO PARA A HABILITACAO NO PRESENTE PROCESSO LICITATORIO, CIENTES DA OBRIGATORIEDADE DE DECLARAR OCORRENCIAS POSTERIORES.</p>' +
+    '<p class="decl">5. DECLARAMOS QUE NAO POSSUIMOS EM NOSSO QUADRO SOCIETARIO SERVIDOR PUBLICO DA ATIVA, OU EMPREGADO DE EMPRESA PUBLICA OU DE SOCIEDADE DE ECONOMIA MISTA.</p>' +
+
+    '<div class="assinatura">' +
+    '<br><br>' +
+    '<div class="linha">HAMATE ELETROINFO LTDA</div>' +
+    '<div>CNPJ: 29.391.565/0001-29</div>' +
+    '<div>' + (cidade || 'BELO HORIZONTE') + ', ' + dataFormatada + '</div>' +
+    '</div>' +
+
+    '<div class="footer">HAMATE ELETROINFO LTDA - CNPJ: 29.391.565/0001-29 - PROPOSTA GERADA PELO SISTEMA LICITATIONBIZNIS</div>' +
+    '</div></body></html>';
+
+  // Abre em nova janela e imprime (gera PDF via browser)
+  var win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function() { win.print(); }, 400);
+
+  toast('PDF gerado! Use Ctrl+P para salvar como PDF.', 'success');
+}
+
+// --- CONVERSAO PROPOSTA -> CONTRATO ---
+function propAbrirConversao() {
+  if (!_propItens.length) { toast('Nenhum item na proposta!', 'error'); return; }
+
+  var tb = document.getElementById('prop-conv-tbody');
+  tb.innerHTML = _propItens.map(function(it, i) {
+    var vlTotal = it.qtd * it.vlUnit;
+    return '<tr>' +
+      '<td style="padding:8px;text-align:center;border-bottom:1px solid var(--border-light);"><input type="checkbox" class="prop-conv-chk" data-idx="' + i + '" checked onchange="propConvRecalc()"></td>' +
+      '<td style="padding:8px;border-bottom:1px solid var(--border-light);font-size:12px;">' + (it.descricao || '').toUpperCase() + '</td>' +
+      '<td style="padding:8px;text-align:center;border-bottom:1px solid var(--border-light);"><input type="number" class="fc prop-conv-qtd" data-idx="' + i + '" value="' + it.qtd + '" min="1" style="width:60px;font-size:12px;text-align:center;" oninput="propConvRecalc()"></td>' +
+      '<td style="padding:8px;text-align:right;border-bottom:1px solid var(--border-light);"><input type="number" step="0.01" class="fc prop-conv-vunit" data-idx="' + i + '" value="' + it.vlUnit + '" style="width:90px;font-size:12px;text-align:right;" oninput="propConvRecalc()"></td>' +
+      '<td style="padding:8px;text-align:right;border-bottom:1px solid var(--border-light);font-family:var(--font-mono);font-weight:700;color:var(--accent);" id="prop-conv-vt-' + i + '">' + fmt(vlTotal) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  propConvRecalc();
+  document.getElementById('modal-prop-conversao').classList.add('open');
+}
+
+function propConvToggleAll(checked) {
+  document.querySelectorAll('.prop-conv-chk').forEach(function(c) { c.checked = checked; });
+  propConvRecalc();
+}
+
+function propConvRecalc() {
+  var total = 0;
+  document.querySelectorAll('.prop-conv-chk').forEach(function(chk) {
+    var idx = +chk.dataset.idx;
+    var qtdEl = document.querySelector('.prop-conv-qtd[data-idx="' + idx + '"]');
+    var vuEl = document.querySelector('.prop-conv-vunit[data-idx="' + idx + '"]');
+    var vtEl = document.getElementById('prop-conv-vt-' + idx);
+    var qtd = qtdEl ? (+qtdEl.value || 0) : 0;
+    var vu = vuEl ? (+vuEl.value || 0) : 0;
+    var vt = qtd * vu;
+    if (vtEl) vtEl.textContent = fmt(vt);
+    if (chk.checked) total += vt;
+  });
+  var el = document.getElementById('prop-conv-total');
+  if (el) el.textContent = fmt(total);
+}
+
+function propConfirmarConversao() {
+  var selecionados = [];
+  document.querySelectorAll('.prop-conv-chk:checked').forEach(function(chk) {
+    var idx = +chk.dataset.idx;
+    var it = _propItens[idx];
+    if (!it) return;
+    var qtdEl = document.querySelector('.prop-conv-qtd[data-idx="' + idx + '"]');
+    var vuEl = document.querySelector('.prop-conv-vunit[data-idx="' + idx + '"]');
+    selecionados.push({
+      descricao: (it.descricao || '').toUpperCase(),
+      qtd: qtdEl ? (+qtdEl.value || 1) : it.qtd,
+      vunit: vuEl ? (+vuEl.value || 0) : it.vlUnit,
+      compraPrev: it.vlCompra || 0,
+      custoPrev: 0
+    });
+  });
+
+  if (!selecionados.length) { toast('Selecione pelo menos 1 item!', 'error'); return; }
+
+  // Fecha modais
+  document.getElementById('modal-prop-conversao').classList.remove('open');
+  fecharProposta();
+
+  // Abre modal de disputa pre-preenchido
+  EID['disputas'] = null;
+  clearD();
+  document.getElementById('d-data').value = document.getElementById('prop-data').value || today();
+  document.getElementById('d-orgao').value = (document.getElementById('prop-orgao').value || '').toUpperCase();
+  document.getElementById('d-estado').value = document.getElementById('prop-estado').value || '';
+  document.getElementById('d-empresa').value = 'Hamate';
+  document.getElementById('d-processo').value = (document.getElementById('prop-processo').value || '').toUpperCase();
+
+  // Popula lotes
+  lotesTemp = selecionados.map(function(s) {
+    return { id: uid(), descricao: s.descricao, qtd: s.qtd, vunit: s.vunit, compraPrev: s.compraPrev, custoPrev: s.custoPrev };
+  });
+  renderLotes();
+
+  // Se veio de acomp, marca para remover ao salvar
+  if (_propAcompId) _acompConvertendoId = _propAcompId;
+
+  document.getElementById('ttl-disputas').textContent = 'Novo Contrato (da Proposta)';
+  document.getElementById('modal-disputas').classList.add('open');
+
+  toast('Itens carregados no contrato! Revise e salve.', 'success');
+}
 
 
 console.log('v2 OK');
