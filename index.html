@@ -4789,41 +4789,24 @@ function verExcel(id, tipo) {
       <div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-xl);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
         <div style="flex-shrink:0;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:900;">H</div>
         <div style="flex:1;">
-          <div style="font-size:14px;font-weight:800;color:var(--text-primary);">HAMATE ELETROINFO LTDA</div>
+          <div style="font-size:14px;font-weight:800;">HAMATE ELETROINFO LTDA</div>
           <div style="font-size:11px;color:var(--text-secondary);">CNPJ: 63.102.067/0001-57 &middot; IE: 084.666.93-5</div>
-          <div style="font-size:10px;color:var(--text-tertiary);">AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503 &middot; 29.010-004 &middot; VITORIA - ES</div>
+          <div style="font-size:10px;color:var(--text-tertiary);">AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503 &middot; CEP 29.010-004 &middot; VITORIA-ES</div>
         </div>
         <div style="text-align:right;font-size:10px;color:var(--text-tertiary);line-height:1.6;">TEL: 61-99612-9484<br>HAMATEELETROINFO@GMAIL.COM<br>BANCO INTER (077) AG:0001 CC:48527325-0</div>
       </div>
       <div class="form-grid" style="margin-bottom:16px;">
         <div class="fg half"><label class="fl">Orgao</label><input type="text" class="fc" id="prop-orgao" placeholder="PREFEITURA DE..."></div>
-        <div class="fg"><label class="fl">UF</label>
-          <select class="fc" id="prop-estado"><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select>
-        </div>
-        <div class="fg"><label class="fl">Modalidade</label>
-          <select class="fc" id="prop-modalidade"><option value="">Selecione</option><option selected>Pregao Eletronico</option><option>Dispensa</option></select>
-        </div>
+        <div class="fg"><label class="fl">UF</label><select class="fc" id="prop-estado"><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
+        <div class="fg"><label class="fl">Modalidade</label><select class="fc" id="prop-modalidade"><option value="">Selecione</option><option selected>Pregao Eletronico</option><option>Dispensa</option></select></div>
         <div class="fg"><label class="fl">Processo</label><input type="text" class="fc" id="prop-processo" placeholder="001/2026"></div>
         <div class="fg full"><label class="fl">Objeto</label><input type="text" class="fc" id="prop-objeto" placeholder="AQUISICAO DE MATERIAIS..."></div>
-        <div class="fg"><label class="fl">CEP de Entrega</label>
-          <div style="display:flex;gap:4px;">
-            <input type="text" class="fc" id="prop-cep" placeholder="00000-000" maxlength="9" style="flex:1;" oninput="mascaraCEP(this)">
-            <button type="button" class="btn btn-ghost btn-sm" onclick="consultarCEPProposta()" style="white-space:nowrap;">Buscar</button>
-          </div>
-        </div>
+        <div class="fg"><label class="fl">CEP de Entrega</label><div style="display:flex;gap:4px;"><input type="text" class="fc" id="prop-cep" placeholder="00000-000" maxlength="9" style="flex:1;" oninput="mascaraCEP(this)"><button type="button" class="btn btn-ghost btn-sm" onclick="consultarCEPProposta()" style="white-space:nowrap;">Buscar</button></div></div>
         <div class="fg half"><label class="fl">Endereco (auto)</label><input type="text" class="fc" id="prop-endereco" readonly style="background:var(--bg-inset);"></div>
       </div>
-      <div class="fsec" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>Itens da Proposta</span>
-        <span id="prop-itens-count" style="font-size:11px;color:var(--text-tertiary);font-weight:400;"></span>
-      </div>
+      <div class="fsec" style="display:flex;align-items:center;justify-content:space-between;"><span>Itens da Proposta</span><span id="prop-itens-count" style="font-size:11px;color:var(--text-tertiary);font-weight:400;"></span></div>
       <div style="overflow-x:auto;">
-        <div class="proposta-itens-header">
-          <span>#</span><span>Descricao</span><span>Und</span><span>Qtd</span><span>Marca/Modelo</span>
-          <span>V.Unit (Venda)</span><span>V.Total</span><span style="color:var(--warning);">Compra Unit.</span>
-          <span style="color:var(--text-tertiary);">Custo Unit.</span><span style="color:var(--success);">Lucro Unit.</span>
-          <span style="color:var(--success);">% Lucro</span><span>Link</span><span></span>
-        </div>
+        <div class="proposta-itens-header"><span>#</span><span>Descricao</span><span>Und</span><span>Qtd</span><span>Marca/Modelo</span><span>V.Unit (Venda)</span><span>V.Total</span><span style="color:var(--warning);">Compra Unit.</span><span style="color:var(--text-tertiary);">Custo Unit.</span><span style="color:var(--success);">Lucro Unit.</span><span style="color:var(--success);">% Lucro</span><span>Link</span><span></span></div>
         <div id="prop-itens-container" class="proposta-itens-grid"></div>
       </div>
       <button type="button" class="btn btn-ghost btn-sm" onclick="propAdicionarItem()" style="margin-top:8px;">+ Adicionar Item</button>
@@ -4843,7 +4826,6 @@ function verExcel(id, tipo) {
     </div>
   </div>
 </div>
-
 <!-- MODAL CONVERSAO PROPOSTA -> CONTRATO -->
 <div class="modal-overlay" id="modal-conv-proposta" style="z-index:2600;">
   <div class="modal" style="max-width:800px;">
@@ -4852,19 +4834,14 @@ function verExcel(id, tipo) {
       <button class="modal-close" onclick="closeModal('conv-proposta',true)" style="color:#fff;opacity:.8;">&#10005;</button>
     </div>
     <div class="modal-body">
-      <div style="background:var(--info-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--accent);line-height:1.6;">
-        Selecione os itens que foram vencidos na disputa e ajuste os valores finais. Apenas os itens marcados serao criados como lotes no contrato.
-      </div>
+      <div style="background:var(--info-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--accent);line-height:1.6;">Selecione os itens que foram vencidos na disputa e ajuste os valores finais. Apenas os itens marcados serao criados como lotes no contrato.</div>
       <div id="conv-orgao-info" style="font-size:13px;font-weight:700;margin-bottom:12px;"></div>
       <div style="overflow-x:auto;">
         <div class="conv-item-row conv-header"><span></span><span>Descricao</span><span>Qtd</span><span>V.Unit Proposto</span><span>V.Unit Vencido</span><span>V.Total</span></div>
         <div id="conv-itens-container"></div>
       </div>
       <div id="conv-resumo" style="margin-top:14px;padding:12px 16px;background:var(--success-soft);border:1px solid var(--success);border-radius:var(--radius-lg);display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:12px;font-weight:700;color:var(--success);">VALOR TOTAL DO CONTRATO:</span>
-          <span id="conv-total" style="font-size:18px;font-weight:900;color:var(--success);font-family:var(--font-mono);"></span>
-        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;color:var(--success);">VALOR TOTAL DO CONTRATO:</span><span id="conv-total" style="font-size:18px;font-weight:900;color:var(--success);font-family:var(--font-mono);"></span></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -8712,17 +8689,17 @@ function verAcomp(id) {
 
   const editBtn = g('popup-ac-edit-btn');
   if (editBtn) editBtn.onclick = function() { fecharPopup('acomp'); editAcomp(id); };
-    // Proposta button in popup
-  const propBtnEl = document.getElementById('popup-ac-prop-btn-dyn');
-  if(propBtnEl) propBtnEl.remove(); // Remove previous
-  const _propBtnNew = document.createElement('button');
-  _propBtnNew.id = 'popup-ac-prop-btn-dyn';
-  _propBtnNew.className = 'btn btn-ghost';
-  _propBtnNew.style.cssText = 'color:#7c3aed;border-color:#7c3aed;';
-  _propBtnNew.textContent = temProposta(id) ? 'Editar Proposta' : 'Gerar Proposta';
-  _propBtnNew.onclick = function() { fecharPopup('acomp'); abrirProposta(id); };
-  const _acActions = g('popup-ac-conv-btn') ? g('popup-ac-conv-btn').parentElement : null;
-  if(_acActions) _acActions.insertBefore(_propBtnNew, g('popup-ac-conv-btn'));
+    // Dynamic proposta button in popup
+  var _oldPropBtn = document.getElementById('popup-ac-prop-btn-dyn');
+  if(_oldPropBtn) _oldPropBtn.remove();
+  var _newPropBtn = document.createElement('button');
+  _newPropBtn.id = 'popup-ac-prop-btn-dyn';
+  _newPropBtn.className = 'btn btn-ghost';
+  _newPropBtn.style.cssText = 'color:#7c3aed;border-color:#7c3aed;';
+  _newPropBtn.textContent = temProposta(id) ? 'Editar Proposta' : 'Gerar Proposta';
+  _newPropBtn.onclick = function() { fecharPopup('acomp'); abrirProposta(id); };
+  var _acAct = g('popup-ac-conv-btn') ? g('popup-ac-conv-btn').parentElement : null;
+  if(_acAct) _acAct.insertBefore(_newPropBtn, g('popup-ac-conv-btn'));
 
   const convBtn = g('popup-ac-conv-btn');
   if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputaComProposta(id); };
@@ -9956,306 +9933,190 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 
 
 // ═══════════════════════════════════════════════════════════
-//   MODULO PROPOSTA COMERCIAL
+//   MODULO PROPOSTA COMERCIAL v3
 // ═══════════════════════════════════════════════════════════
-var HAMATE_DATA = {
-  razao:'HAMATE ELETROINFO LTDA', cnpj:'63.102.067/0001-57', ie:'084.666.93-5',
-  endereco:'AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503',
-  cep:'29.010-004', cidade:'VITORIA - ES', tel:'61-99612-9484',
-  email:'HAMATEELETROINFO@GMAIL.COM', banco:'077 BANCO INTER',
-  agencia:'0001', conta:'48527325-0', pix:'63102067000157',
-  proprietario:'JACIANO CARVALHO MOREIRA', cpf:'730.834.965-91', rg:'730.834.965-91'
-};
-var propItensTemp = [];
-var propEditId = null;
-var propAcompId = null;
+var HAMATE_DATA={razao:'HAMATE ELETROINFO LTDA',cnpj:'63.102.067/0001-57',ie:'084.666.93-5',endereco:'AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503',cep:'29.010-004',cidade:'VITORIA - ES',tel:'61-99612-9484',email:'HAMATEELETROINFO@GMAIL.COM',banco:'077 BANCO INTER',agencia:'0001',conta:'48527325-0',pix:'63102067000157',proprietario:'JACIANO CARVALHO MOREIRA',cpf:'730.834.965-91'};
+var propItensTemp=[];
+var propEditId=null;
+var propAcompId=null;
+function mascaraCEP(inp){var v=inp.value.replace(/\D/g,'');if(v.length>5)v=v.slice(0,5)+'-'+v.slice(5,8);inp.value=v;}
+function consultarCEPProposta(){var c=(g('prop-cep').value||'').replace(/\D/g,'');if(c.length!==8){toast('CEP invalido','error');return;}var e=g('prop-endereco');if(e)e.value='Buscando...';fetch('https://viacep.com.br/ws/'+c+'/json/').then(function(r){return r.json();}).then(function(d){if(d.erro){if(e)e.value='Nao encontrado';return;}var end=(d.logradouro||'')+(d.bairro?', '+d.bairro:'')+' - '+(d.localidade||'')+'/'+(d.uf||'');if(e)e.value=end.toUpperCase();var uf=g('prop-estado');if(uf&&d.uf)uf.value=d.uf;}).catch(function(){if(e)e.value='Erro';});}
+function temProposta(aid){return(_fullDB.propostas||[]).some(function(p){return p.acompId===aid;});}
 
-function mascaraCEP(input) {
-  var v = input.value.replace(/\D/g,'');
-  if(v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
-  input.value = v;
-}
-
-function consultarCEPProposta() {
-  var cep = (g('prop-cep').value || '').replace(/\D/g,'');
-  if(cep.length !== 8) { toast('CEP invalido (8 digitos)', 'error'); return; }
-  var endEl = g('prop-endereco');
-  if(endEl) endEl.value = 'Buscando...';
-  fetch('https://viacep.com.br/ws/' + cep + '/json/')
-    .then(function(r){ return r.json(); })
-    .then(function(data) {
-      if(data.erro) { if(endEl) endEl.value = 'CEP nao encontrado'; return; }
-      var end = (data.logradouro||'') + (data.bairro ? ', ' + data.bairro : '') + ' - ' + (data.localidade||'') + '/' + (data.uf||'');
-      if(endEl) endEl.value = end.toUpperCase();
-      var ufSel = g('prop-estado');
-      if(ufSel && data.uf) ufSel.value = data.uf;
-    })
-    .catch(function(){ if(endEl) endEl.value = 'Erro na consulta'; });
-}
-
-function temProposta(acompId) {
-  return (_fullDB.propostas||[]).some(function(p) { return p.acompId === acompId; });
-}
-
-function abrirProposta(acompId) {
-  propAcompId = acompId;
-  var acomp = (DB.acomp||[]).find(function(x){ return x.id === acompId; });
-  var existente = (_fullDB.propostas||[]).find(function(p){ return p.acompId === acompId; });
-
-  if(existente) {
-    propEditId = existente.id;
-    g('prop-orgao').value = existente.orgao || '';
-    g('prop-estado').value = existente.estado || '';
-    g('prop-modalidade').value = existente.modalidade || '';
-    g('prop-processo').value = existente.processo || '';
-    g('prop-objeto').value = existente.objeto || '';
-    g('prop-cep').value = existente.cep || '';
-    g('prop-endereco').value = existente.endereco || '';
-    g('prop-observacao').value = existente.observacao || '';
-    propItensTemp = (existente.itens || []).map(function(i){ return JSON.parse(JSON.stringify(i)); });
-    g('ttl-proposta').textContent = 'Editar Proposta';
+function abrirProposta(aid){
+  propAcompId=aid;
+  var ac=(DB.acomp||[]).find(function(x){return x.id===aid;});
+  var ex=(_fullDB.propostas||[]).find(function(p){return p.acompId===aid;});
+  if(ex){
+    propEditId=ex.id;
+    g('prop-orgao').value=ex.orgao||'';g('prop-estado').value=ex.estado||'';
+    g('prop-modalidade').value=ex.modalidade||'';g('prop-processo').value=ex.processo||'';
+    g('prop-objeto').value=ex.objeto||'';g('prop-cep').value=ex.cep||'';
+    g('prop-endereco').value=ex.endereco||'';g('prop-observacao').value=ex.observacao||'';
+    propItensTemp=(ex.itens||[]).map(function(i){return JSON.parse(JSON.stringify(i));});
+    g('ttl-proposta').textContent='Editar Proposta';
   } else {
-    propEditId = null;
-    g('prop-orgao').value = acomp ? (acomp.orgao||'') : '';
-    g('prop-estado').value = acomp ? (acomp.estado||'') : '';
-    g('prop-modalidade').value = acomp ? (acomp.tipo||'Pregao Eletronico') : '';
-    g('prop-processo').value = acomp ? (acomp.processo||'') : '';
-    g('prop-objeto').value = '';
-    g('prop-cep').value = '';
-    g('prop-endereco').value = '';
-    g('prop-observacao').value = '';
-    propItensTemp = [];
-    g('ttl-proposta').textContent = 'Nova Proposta';
+    propEditId=null;
+    g('prop-orgao').value=ac?(ac.orgao||''):'';g('prop-estado').value=ac?(ac.estado||''):'';
+    g('prop-modalidade').value=ac?(ac.tipo||'Pregao Eletronico'):'';
+    g('prop-processo').value=ac?(ac.processo||''):'';
+    g('prop-objeto').value='';g('prop-cep').value='';g('prop-endereco').value='';
+    g('prop-observacao').value='';propItensTemp=[];
+    g('ttl-proposta').textContent='Nova Proposta';
   }
   propRenderItens();
-  g('modal-proposta').classList.add('open');
+  document.getElementById('modal-proposta').classList.add('open');
 }
 
-function propAdicionarItem() {
-  propItensTemp.push({ id:uid(), descricao:'', unidade:'UNID', qtd:1, marcaModelo:'', vunit:0, compra:0, custo:0, link:'' });
+function propAdicionarItem(){
+  propItensTemp.push({id:uid(),descricao:'',unidade:'UNID',qtd:1,marcaModelo:'',vunit:0,compra:0,custo:0,link:''});
   propRenderItens();
-  setTimeout(function(){
-    var inputs = document.querySelectorAll('#prop-itens-container input[data-field="descricao"]');
-    if(inputs.length) inputs[inputs.length-1].focus();
-  }, 50);
+  setTimeout(function(){var ii=document.querySelectorAll('#prop-itens-container input[data-field="descricao"]');if(ii.length)ii[ii.length-1].focus();},50);
 }
+function propRemoverItem(i){propItensTemp.splice(i,1);propRenderItens();}
 
-function propRemoverItem(idx) { propItensTemp.splice(idx, 1); propRenderItens(); }
-
-function propRenderItens() {
-  var c = g('prop-itens-container'); if(!c) return;
-  if(!propItensTemp.length) {
-    c.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhum item. Clique em "+ Adicionar Item".</div>';
-    propAtualizarResumo(); return;
+function propRenderItens(){
+  var c=g('prop-itens-container');if(!c)return;
+  if(!propItensTemp.length){c.innerHTML='<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhum item. Clique em "+ Adicionar Item".</div>';propAtualizarResumo();return;}
+  var h='';
+  for(var i=0;i<propItensTemp.length;i++){
+    var it=propItensTemp[i];
+    var vt=(it.qtd||0)*(it.vunit||0);
+    var lu=(it.vunit||0)-(it.compra||0)-(it.custo||0);
+    var pc=(it.compra||0)>0?(lu/(it.compra||1)*100):0;
+    var cc=pc>=8?'var(--success)':pc>=0?'var(--warning)':'var(--danger)';
+    var desc=(it.descricao||'').replace(/"/g,'&quot;');
+    var mm=(it.marcaModelo||'').replace(/"/g,'&quot;');
+    h+='<div class="proposta-item-row">';
+    h+='<span style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-align:center;">'+(i+1)+'</span>';
+    h+='<input type="text" class="fc" data-field="descricao" value="'+desc+'" placeholder="Descricao..." oninput="propItensTemp['+i+'].descricao=this.value">';
+    h+='<select class="fc" oninput="propItensTemp['+i+'].unidade=this.value"><option'+(it.unidade==='UNID'?' selected':'')+'>UNID</option><option'+(it.unidade==='CX'?' selected':'')+'>CX</option><option'+(it.unidade==='KIT'?' selected':'')+'>KIT</option><option'+(it.unidade==='PCT'?' selected':'')+'>PCT</option><option'+(it.unidade==='M'?' selected':'')+'>M</option><option'+(it.unidade==='L'?' selected':'')+'>L</option></select>';
+    h+='<input type="number" class="fc" value="'+(it.qtd||1)+'" min="1" step="1" oninput="propItensTemp['+i+'].qtd=+this.value;propAtualizarLinha('+i+')">';
+    h+='<input type="text" class="fc" value="'+mm+'" placeholder="Marca/Modelo" oninput="propItensTemp['+i+'].marcaModelo=this.value">';
+    h+='<input type="number" class="fc" value="'+(it.vunit||'')+'" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].vunit=+this.value;propAtualizarLinha('+i+')">';
+    h+='<input type="text" class="fc pi-readonly" id="pi-vtotal-'+i+'" value="'+fmt(vt)+'" readonly>';
+    h+='<input type="number" class="fc" value="'+(it.compra||'')+'" placeholder="0,00" step="0.01" style="color:var(--warning);font-weight:600;" oninput="propItensTemp['+i+'].compra=+this.value;propAtualizarLinha('+i+')">';
+    h+='<input type="number" class="fc" value="'+(it.custo||'')+'" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].custo=+this.value;propAtualizarLinha('+i+')">';
+    h+='<input type="text" class="fc pi-lucro" id="pi-lucro-'+i+'" value="'+fmt(lu)+'" readonly>';
+    h+='<input type="text" class="fc pi-pct" id="pi-pct-'+i+'" value="'+pc.toFixed(1)+'%" readonly style="color:'+cc+';">';
+    h+='<input type="url" class="fc" value="'+(it.link||'')+'" placeholder="https://..." oninput="propItensTemp['+i+'].link=this.value" style="font-size:10px;">';
+    h+='<button onclick="propRemoverItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;">\u2715</button>';
+    h+='</div>';
   }
-  c.innerHTML = propItensTemp.map(function(it, i) {
-    var vtotal = (it.qtd||0) * (it.vunit||0);
-    var lucroUnit = (it.vunit||0) - (it.compra||0) - (it.custo||0);
-    var pctLucro = (it.compra||0) > 0 ? (lucroUnit / (it.compra||1) * 100) : 0;
-    var pctColor = pctLucro >= 8 ? 'var(--success)' : pctLucro >= 0 ? 'var(--warning)' : 'var(--danger)';
-    return '<div class="proposta-item-row">' +
-      '<span style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-align:center;">' + (i+1) + '</span>' +
-      '<input type="text" class="fc" data-field="descricao" value="' + (it.descricao||'').replace(/"/g,'&quot;') + '" placeholder="Descricao..." oninput="propItensTemp['+i+'].descricao=this.value">' +
-      '<select class="fc" oninput="propItensTemp['+i+'].unidade=this.value"><option' + (it.unidade==='UNID'?' selected':'') + '>UNID</option><option' + (it.unidade==='CX'?' selected':'') + '>CX</option><option' + (it.unidade==='KIT'?' selected':'') + '>KIT</option><option' + (it.unidade==='PCT'?' selected':'') + '>PCT</option><option' + (it.unidade==='M'?' selected':'') + '>M</option><option' + (it.unidade==='L'?' selected':'') + '>L</option></select>' +
-      '<input type="number" class="fc" value="' + (it.qtd||1) + '" min="1" step="1" oninput="propItensTemp['+i+'].qtd=+this.value;propAtualizarLinha('+i+')">' +
-      '<input type="text" class="fc" value="' + (it.marcaModelo||'').replace(/"/g,'&quot;') + '" placeholder="Marca / Modelo" oninput="propItensTemp['+i+'].marcaModelo=this.value">' +
-      '<input type="number" class="fc" value="' + (it.vunit||'') + '" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].vunit=+this.value;propAtualizarLinha('+i+')">' +
-      '<input type="text" class="fc pi-readonly" id="pi-vtotal-'+i+'" value="' + fmt(vtotal) + '" readonly>' +
-      '<input type="number" class="fc" value="' + (it.compra||'') + '" placeholder="0,00" step="0.01" style="color:var(--warning);font-weight:600;" oninput="propItensTemp['+i+'].compra=+this.value;propAtualizarLinha('+i+')">' +
-      '<input type="number" class="fc" value="' + (it.custo||'') + '" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].custo=+this.value;propAtualizarLinha('+i+')">' +
-      '<input type="text" class="fc pi-lucro" id="pi-lucro-'+i+'" value="' + fmt(lucroUnit) + '" readonly>' +
-      '<input type="text" class="fc pi-pct" id="pi-pct-'+i+'" value="' + pctLucro.toFixed(1) + '%" readonly style="color:' + pctColor + ';">' +
-      '<input type="url" class="fc" value="' + (it.link||'') + '" placeholder="https://..." oninput="propItensTemp['+i+'].link=this.value" style="font-size:10px;">' +
-      '<button onclick="propRemoverItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;" title="Remover">\u2715</button>' +
-    '</div>';
-  }).join('');
+  c.innerHTML=h;
   propAtualizarResumo();
 }
 
-function propAtualizarLinha(i) {
-  var it = propItensTemp[i]; if(!it) return;
-  var vtotal = (it.qtd||0) * (it.vunit||0);
-  var lucroUnit = (it.vunit||0) - (it.compra||0) - (it.custo||0);
-  var pctLucro = (it.compra||0) > 0 ? (lucroUnit / (it.compra||1) * 100) : 0;
-  var pctColor = pctLucro >= 8 ? 'var(--success)' : pctLucro >= 0 ? 'var(--warning)' : 'var(--danger)';
-  var vtEl = g('pi-vtotal-'+i); if(vtEl) vtEl.value = fmt(vtotal);
-  var luEl = g('pi-lucro-'+i); if(luEl) luEl.value = fmt(lucroUnit);
-  var pcEl = g('pi-pct-'+i); if(pcEl) { pcEl.value = pctLucro.toFixed(1) + '%'; pcEl.style.color = pctColor; }
+function propAtualizarLinha(i){
+  var it=propItensTemp[i];if(!it)return;
+  var vt=(it.qtd||0)*(it.vunit||0);var lu=(it.vunit||0)-(it.compra||0)-(it.custo||0);
+  var pc=(it.compra||0)>0?(lu/(it.compra||1)*100):0;
+  var cc=pc>=8?'var(--success)':pc>=0?'var(--warning)':'var(--danger)';
+  var e1=g('pi-vtotal-'+i);if(e1)e1.value=fmt(vt);
+  var e2=g('pi-lucro-'+i);if(e2)e2.value=fmt(lu);
+  var e3=g('pi-pct-'+i);if(e3){e3.value=pc.toFixed(1)+'%';e3.style.color=cc;}
   propAtualizarResumo();
 }
 
-function propAtualizarResumo() {
-  var resumoEl = g('prop-resumo');
-  if(!propItensTemp.length) { if(resumoEl) resumoEl.style.display = 'none'; return; }
-  if(resumoEl) resumoEl.style.display = '';
-  var tV=0, tC=0, tCu=0, tL=0;
-  propItensTemp.forEach(function(it){ var q=it.qtd||0; tV+=q*(it.vunit||0); tC+=q*(it.compra||0); tCu+=q*(it.custo||0); tL+=q*((it.vunit||0)-(it.compra||0)-(it.custo||0)); });
-  var mg = tC > 0 ? (tL/tC*100) : 0;
-  var mC = mg >= 8 ? 'var(--success)' : mg >= 0 ? 'var(--warning)' : 'var(--danger)';
-  g('prop-r-venda').textContent = fmt(tV);
-  g('prop-r-compra').textContent = fmt(tC);
-  g('prop-r-custo').textContent = fmt(tCu);
-  g('prop-r-lucro').textContent = fmt(tL);
-  var mEl = g('prop-r-margem'); if(mEl) { mEl.textContent = mg.toFixed(1)+'%'; mEl.style.color = mC; }
-  var cntEl = g('prop-itens-count'); if(cntEl) cntEl.textContent = propItensTemp.length + ' iten(s) | Total: ' + fmt(tV);
+function propAtualizarResumo(){
+  var r=g('prop-resumo');if(!propItensTemp.length){if(r)r.style.display='none';return;}
+  if(r)r.style.display='';
+  var tV=0,tC=0,tCu=0,tL=0;
+  for(var i=0;i<propItensTemp.length;i++){var it=propItensTemp[i];var q=it.qtd||0;tV+=q*(it.vunit||0);tC+=q*(it.compra||0);tCu+=q*(it.custo||0);tL+=q*((it.vunit||0)-(it.compra||0)-(it.custo||0));}
+  var mg=tC>0?(tL/tC*100):0;var mc=mg>=8?'var(--success)':mg>=0?'var(--warning)':'var(--danger)';
+  g('prop-r-venda').textContent=fmt(tV);g('prop-r-compra').textContent=fmt(tC);
+  g('prop-r-custo').textContent=fmt(tCu);g('prop-r-lucro').textContent=fmt(tL);
+  var me=g('prop-r-margem');if(me){me.textContent=mg.toFixed(1)+'%';me.style.color=mc;}
+  var ce=g('prop-itens-count');if(ce)ce.textContent=propItensTemp.length+' iten(s) | Total: '+fmt(tV);
 }
 
-function salvarProposta() {
-  var orgao = (g('prop-orgao').value||'').trim();
-  if(!orgao) { toast('Informe o orgao!', 'error'); return; }
-  var itensValidos = propItensTemp.filter(function(it){ return it.descricao && it.vunit > 0; });
-  if(!itensValidos.length) { toast('Adicione ao menos 1 item com descricao e valor.', 'error'); return; }
-  var row = {
-    id: propEditId || uid(), acompId: propAcompId || '', data: today(),
-    orgao: orgao.toUpperCase(), estado: g('prop-estado').value||'',
-    modalidade: g('prop-modalidade').value||'', processo: (g('prop-processo').value||'').toUpperCase(),
-    objeto: (g('prop-objeto').value||'').toUpperCase(), cep: g('prop-cep').value||'',
-    endereco: g('prop-endereco').value||'', observacao: (g('prop-observacao').value||'').toUpperCase(),
-    itens: itensValidos.map(function(it){ return {
-      id:it.id||uid(), descricao:(it.descricao||'').toUpperCase(), unidade:it.unidade||'UNID',
-      qtd:it.qtd||1, marcaModelo:(it.marcaModelo||'').toUpperCase(),
-      vunit:it.vunit||0, compra:it.compra||0, custo:it.custo||0, link:it.link||''
-    };})
-  };
-  if(!_fullDB.propostas) _fullDB.propostas = [];
-  var idx = _fullDB.propostas.findIndex(function(p){ return p.id === row.id; });
-  if(idx !== -1) _fullDB.propostas[idx] = row; else _fullDB.propostas.push(row);
-  save('propostas', _fullDB.propostas);
-  toast(propEditId ? 'Proposta atualizada!' : 'Proposta salva!', 'success');
-  closeModal('proposta', true); renderAcomp(); updateBadges();
+function salvarProposta(){
+  var org=(g('prop-orgao').value||'').trim();if(!org){toast('Informe o orgao!','error');return;}
+  var iv=propItensTemp.filter(function(it){return it.descricao&&it.vunit>0;});
+  if(!iv.length){toast('Adicione ao menos 1 item com descricao e valor.','error');return;}
+  var row={id:propEditId||uid(),acompId:propAcompId||'',data:today(),orgao:org.toUpperCase(),estado:g('prop-estado').value||'',modalidade:g('prop-modalidade').value||'',processo:(g('prop-processo').value||'').toUpperCase(),objeto:(g('prop-objeto').value||'').toUpperCase(),cep:g('prop-cep').value||'',endereco:g('prop-endereco').value||'',observacao:(g('prop-observacao').value||'').toUpperCase(),itens:iv.map(function(it){return{id:it.id||uid(),descricao:(it.descricao||'').toUpperCase(),unidade:it.unidade||'UNID',qtd:it.qtd||1,marcaModelo:(it.marcaModelo||'').toUpperCase(),vunit:it.vunit||0,compra:it.compra||0,custo:it.custo||0,link:it.link||''};})};
+  if(!_fullDB.propostas)_fullDB.propostas=[];
+  var idx=_fullDB.propostas.findIndex(function(p){return p.id===row.id;});
+  if(idx!==-1)_fullDB.propostas[idx]=row;else _fullDB.propostas.push(row);
+  save('propostas',_fullDB.propostas);
+  toast(propEditId?'Proposta atualizada!':'Proposta salva!','success');
+  closeModal('proposta',true);renderAcomp();updateBadges();
 }
 
-function exportarPropostaPDF() {
-  var orgao = (g('prop-orgao').value||'ORGAO').toUpperCase();
-  var estado = g('prop-estado').value||'';
-  var modalidade = (g('prop-modalidade').value||'').toUpperCase();
-  var processo = (g('prop-processo').value||'').toUpperCase();
-  var objeto = (g('prop-objeto').value||'').toUpperCase();
-  var cep = g('prop-cep').value||'';
-  var itens = propItensTemp.filter(function(it){ return it.descricao && it.vunit > 0; });
-  if(!itens.length) { toast('Adicione itens antes de exportar.', 'error'); return; }
-  var totalGeral = itens.reduce(function(s,it){ return s + (it.qtd||0)*(it.vunit||0); }, 0);
-  var dataStr = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
-  var linhasHTML = itens.map(function(it, i) {
-    var vt = (it.qtd||0)*(it.vunit||0);
-    return '<tr><td style="text-align:center;font-weight:700;">'+(i+1)+'</td>' +
-      '<td style="font-size:11px;line-height:1.4;">'+(it.descricao||'').toUpperCase()+'</td>' +
-      '<td style="text-align:center;">'+(it.unidade||'UNID')+'</td>' +
-      '<td style="text-align:center;">'+(it.qtd||1)+'</td>' +
-      '<td style="font-size:11px;">'+(it.marcaModelo||'').toUpperCase()+'</td>' +
-      '<td style="text-align:right;font-family:monospace;">R$ '+(it.vunit||0).toFixed(2).replace('.',',')+'</td>' +
-      '<td style="text-align:right;font-weight:700;font-family:monospace;">R$ '+vt.toFixed(2).replace('.',',')+'</td>' +
-      (it.link ? '<td style="text-align:center;font-size:10px;"><a href="'+it.link+'" target="_blank" style="color:#7c3aed;">LINK</a></td>' : '<td></td>') + '</tr>';
-  }).join('');
-  var decl = '<p>VALIDADE DA PROPOSTA: 365 DIAS / PRAZO DE ENTREGA E GARANTIAS CONFORME EDITAL</p><br>' +
-    '<p>DECLARAMOS CONHECER OS TERMOS DO INSTRUMENTO CONVOCATORIO QUE REGE A PRESENTE LICITACAO.</p><br>' +
-    '<p>DECLARAMOS QUE A NOSSA PROPOSTA ECONOMICA COMPREENDE A INTEGRALIDADE DOS CUSTOS PARA ATENDIMENTO DOS DIREITOS TRABALHISTAS ASSEGURADOS NA CONSTITUICAO FEDERAL, NAS LEIS TRABALHISTAS, NAS NORMAS INFRALEGAIS, NAS CONVENCOES COLETIVAS DE TRABALHO E NOS TERMOS DE AJUSTAMENTO DE CONDUTA VIGENTES NA DATA DE ENTREGA DAS PROPOSTAS.</p><br>' +
-    '<p>DECLARAMOS QUE NOS PRECOS COTADOS, JA ESTAO INCLUSOS AS DESPESAS COM TRANSPORTES E DESLOCAMENTOS E OUTRAS QUAISQUER QUE INCIDAM SOBRE A CONTRATACAO.</p><br>' +
-    '<p>DECLARAMOS PARA TODOS OS EFEITOS LEGAIS QUE, AO APRESENTAR ESTA PROPOSTA, COM OS PRECOS E PRAZOS ACIMA INDICADOS, ESTAMOS DE PLENO ACORDO COM AS CONDICOES GERAIS E ESPECIAIS ESTABELECIDAS PARA ESTA LICITACAO, AS QUAIS NOS SUBMETEMOS INCONDICIONAL E INTEGRALMENTE.</p><br>' +
-    '<p>DECLARAMOS QUE ATE A PRESENTE DATA INEXISTEM FATOS IMPEDITIVOS A PARTICIPACAO DESTA EMPRESA AO PRESENTE CERTAME LICITATORIO, CIENTE DA OBRIGATORIEDADE DE DECLARAR OCORRENCIAS POSTERIORES.</p><br>' +
-    '<p>DECLARAMOS QUE NAO POSSUIMOS EM NOSSO QUADRO FUNCIONAL SERVIDOR PUBLICO OU DIRIGENTE DE ORGAO OU ENTIDADE CONTRATANTE OU RESPONSAVEL PELA LICITACAO.</p><br>' +
-    '<p>DECLARAMOS, AINDA, SOB AS PENAS DA LEI, QUE NAO ESTAMOS CUMPRINDO PENA DE INIDONEIDADE PARA LICITAR E CONTRATAR COM A ADMINISTRACAO PUBLICA, EM QUALQUER DE SUAS ESFERAS.</p>';
-  var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proposta - '+orgao+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:"Segoe UI",Arial,sans-serif;font-size:12px;color:#1a1a2e;padding:30px 40px;max-width:900px;margin:0 auto}.header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #7c3aed}.header h1{font-size:22px;color:#7c3aed;letter-spacing:2px;margin-bottom:8px}.empresa{font-size:13px;font-weight:700;margin-bottom:4px}.empresa-det{font-size:11px;color:#555;line-height:1.6}.secao{margin:20px 0 10px;font-size:13px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;border-bottom:1.5px solid #e5e7eb}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:16px;font-size:12px}.info-grid .label{color:#888;font-size:10px;text-transform:uppercase;font-weight:700}.info-grid .valor{font-weight:600}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11px}th{background:#7c3aed;color:#fff;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}td{padding:7px 10px;border-bottom:1px solid #e5e7eb}tr:nth-child(even) td{background:#f9fafb}.total-row td{background:#f3f0ff!important;font-weight:800;font-size:13px;color:#7c3aed;border-top:2px solid #7c3aed}.declaracoes{margin-top:20px;font-size:10px;color:#666;line-height:1.7;text-align:justify}.assinatura{margin-top:30px;text-align:center;font-size:11px}.assinatura .linha{width:300px;border-top:1px solid #333;margin:8px auto 4px}.no-print-btn{position:fixed;top:12px;right:12px;background:#7c3aed;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;z-index:999}@media print{.no-print-btn{display:none}body{padding:20px 30px}}</style></head><body>';
-  h += '<button class="no-print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>';
-  h += '<div class="header"><h1>PROPOSTA COMERCIAL</h1><div class="empresa">'+HAMATE_DATA.razao+'</div>';
-  h += '<div class="empresa-det">CNPJ: '+HAMATE_DATA.cnpj+' | IE: '+HAMATE_DATA.ie+'<br>'+HAMATE_DATA.endereco+'<br>CEP: '+HAMATE_DATA.cep+' - '+HAMATE_DATA.cidade+'<br>TEL: '+HAMATE_DATA.tel+' | '+HAMATE_DATA.email+'</div>';
-  h += '<div class="empresa-det" style="margin-top:6px;">BANCO: '+HAMATE_DATA.banco+' / AG: '+HAMATE_DATA.agencia+' / CC: '+HAMATE_DATA.conta+' / PIX '+HAMATE_DATA.pix+'</div></div>';
-  h += '<div class="secao">Dados da Licitacao</div><div class="info-grid">';
-  h += '<div><div class="label">Orgao</div><div class="valor">'+orgao+'</div></div>';
-  h += '<div><div class="label">Modalidade</div><div class="valor">'+modalidade+'</div></div>';
-  h += '<div><div class="label">Processo</div><div class="valor">'+processo+'</div></div>';
-  h += '<div><div class="label">UF</div><div class="valor">'+estado+'</div></div>';
-  if(objeto) h += '<div style="grid-column:1/-1"><div class="label">Objeto</div><div class="valor">'+objeto+'</div></div>';
-  if(cep) h += '<div><div class="label">CEP de Entrega</div><div class="valor">'+cep+'</div></div>';
-  h += '</div><div class="secao">Itens da Proposta</div>';
-  h += '<table><thead><tr><th style="width:30px;text-align:center">#</th><th>Descricao</th><th style="text-align:center">Und</th><th style="text-align:center">Qtd</th><th>Marca/Modelo</th><th style="text-align:right">V.Unit.</th><th style="text-align:right">V.Total</th><th style="text-align:center">Link</th></tr></thead>';
-  h += '<tbody>'+linhasHTML+'<tr class="total-row"><td colspan="6" style="text-align:right">VALOR TOTAL</td><td style="text-align:right">R$ '+totalGeral.toFixed(2).replace('.',',')+'</td><td></td></tr></tbody></table>';
-  h += '<div class="declaracoes"><div class="secao" style="font-size:11px">Declaracoes</div>'+decl+'</div>';
-  h += '<div class="assinatura"><p>VITORIA - ES, '+dataStr+'</p><div class="linha"></div><p style="font-weight:700">'+HAMATE_DATA.razao+'</p><p>CNPJ: '+HAMATE_DATA.cnpj+'</p><p>'+HAMATE_DATA.proprietario+' CPF: '+HAMATE_DATA.cpf+'</p></div>';
-  h += '</body></html>';
-  var w = window.open('', '_blank'); w.document.write(h); w.document.close();
-  toast('PDF gerado! Use Ctrl+P para salvar.', 'success');
+function exportarPropostaPDF(){
+  var org=(g('prop-orgao').value||'ORGAO').toUpperCase(),est=g('prop-estado').value||'',mod=(g('prop-modalidade').value||'').toUpperCase(),proc=(g('prop-processo').value||'').toUpperCase(),obj=(g('prop-objeto').value||'').toUpperCase(),cep=g('prop-cep').value||'';
+  var itens=propItensTemp.filter(function(it){return it.descricao&&it.vunit>0;});
+  if(!itens.length){toast('Adicione itens antes de exportar.','error');return;}
+  var tot=itens.reduce(function(s,it){return s+(it.qtd||0)*(it.vunit||0);},0);
+  var ds=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  var lr='';for(var i=0;i<itens.length;i++){var it=itens[i];var vt=(it.qtd||0)*(it.vunit||0);lr+='<tr><td style="text-align:center;font-weight:700;">'+(i+1)+'</td><td style="font-size:11px;line-height:1.4;">'+(it.descricao||'').toUpperCase()+'</td><td style="text-align:center;">'+(it.unidade||'UNID')+'</td><td style="text-align:center;">'+(it.qtd||1)+'</td><td style="font-size:11px;">'+(it.marcaModelo||'').toUpperCase()+'</td><td style="text-align:right;font-family:monospace;">R$ '+(it.vunit||0).toFixed(2).replace('.',',')+'</td><td style="text-align:right;font-weight:700;font-family:monospace;">R$ '+vt.toFixed(2).replace('.',',')+'</td>'+(it.link?'<td style="text-align:center;font-size:10px;"><a href="'+it.link+'" target="_blank" style="color:#7c3aed;">LINK</a></td>':'<td></td>')+'</tr>';}
+  var H=HAMATE_DATA;
+  var dc='<p>VALIDADE DA PROPOSTA: 365 DIAS / PRAZO DE ENTREGA E GARANTIAS CONFORME EDITAL</p><br><p>DECLARAMOS CONHECER OS TERMOS DO INSTRUMENTO CONVOCATORIO QUE REGE A PRESENTE LICITACAO.</p><br><p>DECLARAMOS QUE A NOSSA PROPOSTA ECONOMICA COMPREENDE A INTEGRALIDADE DOS CUSTOS PARA ATENDIMENTO DOS DIREITOS TRABALHISTAS ASSEGURADOS NA CONSTITUICAO FEDERAL, NAS LEIS TRABALHISTAS, NAS NORMAS INFRALEGAIS, NAS CONVENCOES COLETIVAS DE TRABALHO E NOS TERMOS DE AJUSTAMENTO DE CONDUTA VIGENTES NA DATA DE ENTREGA DAS PROPOSTAS.</p><br><p>DECLARAMOS QUE NOS PRECOS COTADOS, JA ESTAO INCLUSOS AS DESPESAS COM TRANSPORTES E DESLOCAMENTOS E OUTRAS QUAISQUER QUE INCIDAM SOBRE A CONTRATACAO.</p><br><p>DECLARAMOS PARA TODOS OS EFEITOS LEGAIS QUE, AO APRESENTAR ESTA PROPOSTA, COM OS PRECOS E PRAZOS ACIMA INDICADOS, ESTAMOS DE PLENO ACORDO COM AS CONDICOES GERAIS E ESPECIAIS ESTABELECIDAS PARA ESTA LICITACAO, AS QUAIS NOS SUBMETEMOS INCONDICIONAL E INTEGRALMENTE.</p><br><p>DECLARAMOS QUE ATE A PRESENTE DATA INEXISTEM FATOS IMPEDITIVOS A PARTICIPACAO DESTA EMPRESA AO PRESENTE CERTAME LICITATORIO.</p><br><p>DECLARAMOS QUE NAO POSSUIMOS EM NOSSO QUADRO FUNCIONAL SERVIDOR PUBLICO OU DIRIGENTE DE ORGAO OU ENTIDADE CONTRATANTE OU RESPONSAVEL PELA LICITACAO.</p><br><p>DECLARAMOS, AINDA, SOB AS PENAS DA LEI, QUE NAO ESTAMOS CUMPRINDO PENA DE INIDONEIDADE PARA LICITAR E CONTRATAR COM A ADMINISTRACAO PUBLICA, EM QUALQUER DE SUAS ESFERAS.</p>';
+  var s='*{margin:0;padding:0;box-sizing:border-box}body{font-family:"Segoe UI",Arial,sans-serif;font-size:12px;color:#1a1a2e;padding:30px 40px;max-width:900px;margin:0 auto}.header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #7c3aed}.header h1{font-size:22px;color:#7c3aed;letter-spacing:2px;margin-bottom:8px}.empresa{font-size:13px;font-weight:700;margin-bottom:4px}.empresa-det{font-size:11px;color:#555;line-height:1.6}.secao{margin:20px 0 10px;font-size:13px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;border-bottom:1.5px solid #e5e7eb}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:16px;font-size:12px}.info-grid .label{color:#888;font-size:10px;text-transform:uppercase;font-weight:700}.info-grid .valor{font-weight:600}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11px}th{background:#7c3aed;color:#fff;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}td{padding:7px 10px;border-bottom:1px solid #e5e7eb}tr:nth-child(even) td{background:#f9fafb}.total-row td{background:#f3f0ff!important;font-weight:800;font-size:13px;color:#7c3aed;border-top:2px solid #7c3aed}.declaracoes{margin-top:20px;font-size:10px;color:#666;line-height:1.7;text-align:justify}.assinatura{margin-top:30px;text-align:center;font-size:11px}.assinatura .linha{width:300px;border-top:1px solid #333;margin:8px auto 4px}.nb{position:fixed;top:12px;right:12px;background:#7c3aed;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;z-index:999}@media print{.nb{display:none}body{padding:20px 30px}}';
+  var p='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proposta - '+org+'</title><style>'+s+'</style></head><body><button class="nb" onclick="window.print()">Imprimir / Salvar PDF</button><div class="header"><h1>PROPOSTA COMERCIAL</h1><div class="empresa">'+H.razao+'</div><div class="empresa-det">CNPJ: '+H.cnpj+' | IE: '+H.ie+'<br>'+H.endereco+'<br>CEP: '+H.cep+' - '+H.cidade+'<br>TEL: '+H.tel+' | '+H.email+'</div><div class="empresa-det" style="margin-top:6px;">BANCO: '+H.banco+' / AG: '+H.agencia+' / CC: '+H.conta+' / PIX '+H.pix+'</div></div><div class="secao">Dados da Licitacao</div><div class="info-grid"><div><div class="label">Orgao</div><div class="valor">'+org+'</div></div><div><div class="label">Modalidade</div><div class="valor">'+mod+'</div></div><div><div class="label">Processo</div><div class="valor">'+proc+'</div></div><div><div class="label">UF</div><div class="valor">'+est+'</div></div>'+(obj?'<div style="grid-column:1/-1"><div class="label">Objeto</div><div class="valor">'+obj+'</div></div>':'')+(cep?'<div><div class="label">CEP Entrega</div><div class="valor">'+cep+'</div></div>':'')+'</div><div class="secao">Itens da Proposta</div><table><thead><tr><th style="width:30px;text-align:center">#</th><th>Descricao</th><th style="text-align:center">Und</th><th style="text-align:center">Qtd</th><th>Marca/Modelo</th><th style="text-align:right">V.Unit.</th><th style="text-align:right">V.Total</th><th style="text-align:center">Link</th></tr></thead><tbody>'+lr+'<tr class="total-row"><td colspan="6" style="text-align:right">VALOR TOTAL</td><td style="text-align:right">R$ '+tot.toFixed(2).replace('.',',')+'</td><td></td></tr></tbody></table><div class="declaracoes"><div class="secao" style="font-size:11px">Declaracoes</div>'+dc+'</div><div class="assinatura"><p>VITORIA - ES, '+ds+'</p><div class="linha"></div><p style="font-weight:700">'+H.razao+'</p><p>CNPJ: '+H.cnpj+'</p><p>'+H.proprietario+' CPF: '+H.cpf+'</p></div></body></html>';
+  var w=window.open('','_blank');w.document.write(p);w.document.close();
+  toast('PDF gerado! Use Ctrl+P para salvar.','success');
 }
 
 // ═══ CONVERSAO PROPOSTA -> CONTRATO ═══
-var _convAcompId = null;
-var _convProposta = null;
-
-function converterEmDisputaComProposta(acompId) {
-  var acomp = (DB.acomp||[]).find(function(x){ return x.id === acompId; });
-  if(!acomp) return;
-  var proposta = (_fullDB.propostas||[]).find(function(p){ return p.acompId === acompId; });
-  if(!proposta || !(proposta.itens||[]).length) {
-    _confirmarAcao({icon:'\u{1F3C6}', titulo:'Converter em Contrato', msg:'Converter <strong>'+(acomp.orgao||'')+'</strong> em Contrato?<br><br>Nenhuma proposta encontrada. O contrato sera criado sem itens pre-cadastrados.', btnLabel:'Converter', btnClass:'btn-primary', onConfirm:function(){ _doCriarDisputaDeAcomp(acomp); }});
+var _convAcompId2=null,_convProposta2=null;
+function converterEmDisputaComProposta(aid){
+  var ac=(DB.acomp||[]).find(function(x){return x.id===aid;});if(!ac)return;
+  var pr=(_fullDB.propostas||[]).find(function(p){return p.acompId===aid;});
+  if(!pr||!(pr.itens||[]).length){
+    _confirmarAcao({icon:'\u{1F3C6}',titulo:'Converter em Contrato',msg:'Converter <strong>'+(ac.orgao||'')+'</strong> em Contrato?<br><br>Nenhuma proposta encontrada. O contrato sera criado sem itens.',btnLabel:'Converter',btnClass:'btn-primary',onConfirm:function(){_doCriarDisputaDeAcomp(ac);}});
     return;
   }
-  _convAcompId = acompId;
-  _convProposta = proposta;
-  g('conv-orgao-info').innerHTML = '\u{1F3E2} ' + (acomp.orgao||'').toUpperCase() + ' <span style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.2);border-radius:100px;padding:1px 7px;font-size:9px;font-weight:700;">Proposta com '+proposta.itens.length+' iten(s)</span>';
-  var container = g('conv-itens-container');
-  container.innerHTML = proposta.itens.map(function(it, i) {
-    var vt = (it.qtd||0)*(it.vunit||0);
-    return '<div class="conv-item-row">' +
-      '<input type="checkbox" checked class="conv-chk" data-idx="'+i+'" onchange="convAtualizarTotal()" style="cursor:pointer;width:16px;height:16px;">' +
-      '<div style="font-size:12px;font-weight:600;">'+(it.descricao||'').toUpperCase()+'<br><span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">'+(it.marcaModelo||'')+'</span></div>' +
-      '<input type="number" class="fc conv-qtd" data-idx="'+i+'" value="'+(it.qtd||1)+'" min="1" step="1" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:center;">' +
-      '<div style="font-size:11px;color:var(--text-tertiary);text-align:right;font-family:var(--font-mono);">'+fmt(it.vunit)+'</div>' +
-      '<input type="number" class="fc conv-vunit" data-idx="'+i+'" value="'+(it.vunit||0).toFixed(2)+'" step="0.01" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:right;font-weight:700;color:var(--success);">' +
-      '<div class="conv-vtotal" id="conv-vt-'+i+'" style="font-size:12px;font-weight:700;text-align:right;font-family:var(--font-mono);color:var(--accent);">'+fmt(vt)+'</div>' +
-    '</div>';
-  }).join('');
-  convAtualizarTotal();
-  g('modal-conv-proposta').classList.add('open');
+  _convAcompId2=aid;_convProposta2=pr;
+  g('conv-orgao-info').innerHTML='\u{1F3E2} '+(ac.orgao||'').toUpperCase()+' <span style="display:inline-flex;align-items:center;gap:3px;margin-left:5px;background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.2);border-radius:100px;padding:1px 7px;font-size:9px;font-weight:700;">Proposta com '+pr.itens.length+' iten(s)</span>';
+  var ct=g('conv-itens-container');
+  var h='';for(var i=0;i<pr.itens.length;i++){var it=pr.itens[i];var vt=(it.qtd||0)*(it.vunit||0);h+='<div class="conv-item-row"><input type="checkbox" checked class="conv-chk" data-idx="'+i+'" onchange="convAtualizarTotal()" style="cursor:pointer;width:16px;height:16px;"><div style="font-size:12px;font-weight:600;">'+(it.descricao||'').toUpperCase()+'<br><span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">'+(it.marcaModelo||'')+'</span></div><input type="number" class="fc conv-qtd" data-idx="'+i+'" value="'+(it.qtd||1)+'" min="1" step="1" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:center;"><div style="font-size:11px;color:var(--text-tertiary);text-align:right;font-family:var(--font-mono);">'+fmt(it.vunit)+'</div><input type="number" class="fc conv-vunit" data-idx="'+i+'" value="'+(it.vunit||0).toFixed(2)+'" step="0.01" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:right;font-weight:700;color:var(--success);"><div class="conv-vtotal" id="conv-vt-'+i+'" style="font-size:12px;font-weight:700;text-align:right;font-family:var(--font-mono);color:var(--accent);">'+fmt(vt)+'</div></div>';}
+  ct.innerHTML=h;convAtualizarTotal();
+  document.getElementById('modal-conv-proposta').classList.add('open');
 }
 
-function convAtualizarTotal() {
-  if(!_convProposta) return;
-  var total = 0;
-  _convProposta.itens.forEach(function(it, i) {
-    var chk = document.querySelector('.conv-chk[data-idx="'+i+'"]');
-    var vuEl = document.querySelector('.conv-vunit[data-idx="'+i+'"]');
-    var qtEl = document.querySelector('.conv-qtd[data-idx="'+i+'"]');
-    var vtEl = g('conv-vt-'+i);
-    if(!chk||!vuEl||!qtEl) return;
-    var ok = chk.checked, vu = +(vuEl.value||0), qt = +(qtEl.value||1);
-    var vt = ok ? qt*vu : 0;
-    if(vtEl) vtEl.textContent = ok ? fmt(vt) : '\u2014';
-    vuEl.disabled = !ok; qtEl.disabled = !ok;
-    total += vt;
-  });
-  g('conv-total').textContent = fmt(total);
-  g('conv-resumo').style.display = total > 0 ? '' : 'none';
+function convAtualizarTotal(){
+  if(!_convProposta2)return;var total=0;
+  for(var i=0;i<_convProposta2.itens.length;i++){
+    var chk=document.querySelector('.conv-chk[data-idx="'+i+'"]');
+    var vu=document.querySelector('.conv-vunit[data-idx="'+i+'"]');
+    var qt=document.querySelector('.conv-qtd[data-idx="'+i+'"]');
+    var ve=g('conv-vt-'+i);
+    if(!chk||!vu||!qt)continue;
+    var ok=chk.checked,v=+(vu.value||0),q=+(qt.value||1),vt=ok?q*v:0;
+    if(ve)ve.textContent=ok?fmt(vt):'\u2014';
+    vu.disabled=!ok;qt.disabled=!ok;total+=vt;
+  }
+  g('conv-total').textContent=fmt(total);
+  g('conv-resumo').style.display=total>0?'':'none';
 }
 
-function confirmarConversaoProposta() {
-  if(!_convProposta || !_convAcompId) return;
-  var acomp = (DB.acomp||[]).find(function(x){ return x.id === _convAcompId; });
-  if(!acomp) return;
-  var sel = [];
-  _convProposta.itens.forEach(function(it, i) {
-    var chk = document.querySelector('.conv-chk[data-idx="'+i+'"]');
-    var vuEl = document.querySelector('.conv-vunit[data-idx="'+i+'"]');
-    var qtEl = document.querySelector('.conv-qtd[data-idx="'+i+'"]');
-    if(!chk||!chk.checked) return;
-    sel.push({ descricao:(it.descricao||'').toUpperCase(), qtd:+(qtEl?qtEl.value:it.qtd)||1, vunit:+(vuEl?vuEl.value:it.vunit)||0, compraPrev:it.compra||0, custoPrev:it.custo||0 });
-  });
-  if(!sel.length) { toast('Selecione ao menos 1 item vencido!', 'error'); return; }
-  closeModal('conv-proposta', true);
-  _acompConvertendoId = _convAcompId;
+function confirmarConversaoProposta(){
+  if(!_convProposta2||!_convAcompId2)return;
+  var ac=(DB.acomp||[]).find(function(x){return x.id===_convAcompId2;});if(!ac)return;
+  var sel=[];
+  for(var i=0;i<_convProposta2.itens.length;i++){
+    var it=_convProposta2.itens[i];
+    var chk=document.querySelector('.conv-chk[data-idx="'+i+'"]');
+    var vu=document.querySelector('.conv-vunit[data-idx="'+i+'"]');
+    var qt=document.querySelector('.conv-qtd[data-idx="'+i+'"]');
+    if(!chk||!chk.checked)continue;
+    sel.push({descricao:(it.descricao||'').toUpperCase(),qtd:+(qt?qt.value:it.qtd)||1,vunit:+(vu?vu.value:it.vunit)||0,compraPrev:it.compra||0,custoPrev:it.custo||0});
+  }
+  if(!sel.length){toast('Selecione ao menos 1 item!','error');return;}
+  closeModal('conv-proposta',true);
+  _acompConvertendoId=_convAcompId2;
   clearD();
-  g('d-data').value = acomp.data || today();
-  g('d-orgao').value = (acomp.orgao||'').toUpperCase();
-  g('d-estado').value = acomp.estado||'';
-  g('d-empresa').value = 'Hamate';
-  g('d-tipo').value = acomp.tipo || 'Pregao Eletronico';
-  g('d-sistema').value = acomp.sistema||'';
-  g('d-processo').value = (acomp.processo||'').toUpperCase();
-  setAnalistaSelect('d-analista', acomp.analista || analistaDoUsuario);
-  lotesTemp = sel.map(function(it){ return { id:uid(), descricao:it.descricao, qtd:it.qtd, vunit:it.vunit, compraPrev:it.compraPrev, custoPrev:it.custoPrev }; });
+  g('d-data').value=ac.data||today();g('d-orgao').value=(ac.orgao||'').toUpperCase();
+  g('d-estado').value=ac.estado||'';g('d-empresa').value='Hamate';
+  g('d-tipo').value=ac.tipo||'Pregao Eletronico';g('d-sistema').value=ac.sistema||'';
+  g('d-processo').value=(ac.processo||'').toUpperCase();
+  setAnalistaSelect('d-analista',ac.analista||analistaDoUsuario);
+  lotesTemp=sel.map(function(it){return{id:uid(),descricao:it.descricao,qtd:it.qtd,vunit:it.vunit,compraPrev:it.compraPrev,custoPrev:it.custoPrev};});
   renderLotes();
-  g('ttl-disputas').textContent = 'Novo Contrato (da Proposta)';
-  g('modal-disputas').classList.add('open');
-  toast('Itens vencidos carregados no contrato! Ajuste e salve.', 'success');
+  g('ttl-disputas').textContent='Novo Contrato (da Proposta)';
+  document.getElementById('modal-disputas').classList.add('open');
+  toast('Itens vencidos carregados! Ajuste e salve.','success');
 }
 
 console.log('v2 OK');
