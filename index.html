@@ -1307,6 +1307,42 @@
   /* modal emp disp */
   .modal-emp-disp { max-width: 900px; width: 96%; }
 
+
+  /* ─── PROPOSTA MODAL ─── */
+  .proposta-itens-grid { display:grid; gap:4px; }
+  .proposta-itens-header {
+    display:grid; grid-template-columns: 30px 1fr 60px 60px 1fr 100px 100px 100px 80px 80px 80px 1fr 30px;
+    gap:4px; padding:0 4px; font-size:9px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;
+  }
+  .proposta-item-row {
+    display:grid; grid-template-columns: 30px 1fr 60px 60px 1fr 100px 100px 100px 80px 80px 80px 1fr 30px;
+    gap:4px; align-items:center;
+  }
+  .proposta-item-row input, .proposta-item-row select { font-size:11px; padding:5px 6px; }
+  .proposta-item-row .pi-readonly { background:var(--bg-inset); color:var(--accent); font-weight:700; font-family:var(--font-mono); font-size:11px; }
+  .proposta-item-row .pi-lucro { background:var(--bg-inset); color:var(--success); font-weight:700; font-family:var(--font-mono); font-size:11px; }
+  .proposta-item-row .pi-pct { background:var(--bg-inset); font-weight:700; font-family:var(--font-mono); font-size:10px; }
+  .proposta-resumo {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px;
+    margin-top:12px; padding:14px; background:var(--bg-surface-soft); border-radius:var(--radius-xl); border:1px solid var(--border-light);
+  }
+  .proposta-resumo-item { text-align:center; }
+  .proposta-resumo-item .label { font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:3px; }
+  .proposta-resumo-item .valor { font-size:16px; font-weight:800; font-family:var(--font-mono); }
+  /* ─── CONVERSION SELECTOR ─── */
+  .conv-item-row {
+    display:grid; grid-template-columns:30px 1fr 60px 100px 100px 100px;
+    gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--border-light);
+  }
+  .conv-item-row:last-child { border-bottom:none; }
+  .conv-header { font-size:10px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase; }
+  .proposta-badge {
+    display:inline-flex; align-items:center; gap:4px; padding:2px 8px;
+    border-radius:100px; font-size:10px; font-weight:700;
+    background:rgba(139,92,246,0.1); color:#8b5cf6; border:1px solid rgba(139,92,246,0.2);
+  }
+  @media print { .no-print { display:none !important; } }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -2951,9 +2987,10 @@ fbAuth.onAuthStateChanged(user => {
         _fullDB.acomp       = data.acomp       || [];
         _fullDB.comentarios = data.comentarios || [];
         _fullDB.tarefas     = data.tarefas     || [];
+        _fullDB.propostas   = data.propostas   || [];
       } else {
         _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
-        _fullDB.comentarios = []; _fullDB.tarefas = [];
+        _fullDB.comentarios = []; _fullDB.tarefas = []; _fullDB.propostas = [];
       }
       atualizarFiltrosAnalista();
       renderAll();
@@ -2985,7 +3022,7 @@ fbAuth.onAuthStateChanged(user => {
     analistaDoUsuario = null;
     filtroAnalista = 'todos';
     _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
-    _fullDB.comentarios = []; _fullDB.tarefas = [];
+    _fullDB.comentarios = []; _fullDB.tarefas = []; _fullDB.propostas = [];
     if (_notifTimer) { clearInterval(_notifTimer); _notifTimer = null; }
     _notifShown = new Set();
     document.getElementById('login-screen').classList.add('open');
@@ -3230,7 +3267,7 @@ const parseAliq = (v) => {
 };
 
 // ─── Repositório completo (todos os analistas) ───────────────────────────────
-let _fullDB = { disputas:[], empenhos:[], acomp:[], comentarios:[], tarefas:[] };
+let _fullDB = { disputas:[], empenhos:[], acomp:[], comentarios:[], tarefas:[], propostas:[] };
 
 // ─── DB: proxy com getters — SEMPRE retorna os dados filtrados para o usuário ─
 // Quando isAdmin=true  → retorna tudo.
@@ -3242,12 +3279,14 @@ const DB = {
   get acomp()       { return isAdmin ? _fullDB.acomp       : _fullDB.acomp.filter(r => r.analista === analistaDoUsuario); },
   get comentarios() { return _fullDB.comentarios; },
   get tarefas()     { return _fullDB.tarefas; },
+  get propostas()   { return _fullDB.propostas; },
   // Setters: usados por código legado que faz DB[k] = array.
   set disputas(v)    { _fullDB.disputas    = v; },
   set empenhos(v)    { _fullDB.empenhos    = v; },
   set acomp(v)       { _fullDB.acomp       = v; },
   set comentarios(v) { _fullDB.comentarios = v; },
   set tarefas(v)     { _fullDB.tarefas     = v; },
+  set propostas(v)   { _fullDB.propostas   = v; },
 };
 
 let graficos = {};
@@ -4751,6 +4790,126 @@ function verExcel(id, tipo) {
   </table></div>`;
   const w = window.open('', '_blank', 'width=900,height=500');
   w.document.write(`<html><head><title>${d.filename}</title><style>body{font-family:sans-serif;padding:16px;background:#f8f9fa;}h3{margin-bottom:12px;}</style></head><body><h3>📊 ${d.filename}</h3>${html}
+
+<!-- MODAL PROPOSTA COMERCIAL -->
+<div class="modal-overlay" id="modal-proposta" style="z-index:2500;">
+  <div class="modal" style="max-width:1400px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;">
+      <div class="modal-title" id="ttl-proposta" style="color:#fff;">Proposta Comercial</div>
+      <button class="modal-close" onclick="closeModal('proposta',true)" style="color:#fff;opacity:.8;">&#10005;</button>
+    </div>
+    <div class="modal-body" style="max-height:calc(96vh - 130px);overflow-y:auto;">
+      <!-- Cabeçalho empresa (fixo HAMATE) -->
+      <div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-xl);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+        <div style="flex-shrink:0;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:900;">H</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:800;color:var(--text-primary);">HAMATE ELETROINFO LTDA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">CNPJ: 63.102.067/0001-57 &middot; IE: 084.666.93-5</div>
+          <div style="font-size:10px;color:var(--text-tertiary);">AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503 &middot; 29.010-004 &middot; VITORIA - ES</div>
+        </div>
+        <div style="text-align:right;font-size:10px;color:var(--text-tertiary);line-height:1.6;">
+          TEL: 61-99612-9484<br>HAMATEELETROINFO@GMAIL.COM<br>BANCO INTER (077) AG:0001 CC:48527325-0
+        </div>
+      </div>
+
+      <!-- Dados do orgao -->
+      <div class="form-grid" style="margin-bottom:16px;">
+        <div class="fg half"><label class="fl">Orgao</label><input type="text" class="fc" id="prop-orgao" placeholder="PREFEITURA DE..."></div>
+        <div class="fg"><label class="fl">UF</label>
+          <select class="fc" id="prop-estado">
+            <option value="">Selecione</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Modalidade</label>
+          <select class="fc" id="prop-modalidade">
+            <option value="">Selecione</option>
+            <option selected>Pregao Eletronico</option>
+            <option>Dispensa</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Processo</label><input type="text" class="fc" id="prop-processo" placeholder="001/2026"></div>
+        <div class="fg full"><label class="fl">Objeto</label><input type="text" class="fc" id="prop-objeto" placeholder="AQUISICAO DE MATERIAIS..."></div>
+        <div class="fg"><label class="fl">CEP de Entrega</label>
+          <div style="display:flex;gap:4px;">
+            <input type="text" class="fc" id="prop-cep" placeholder="00000-000" maxlength="9" style="flex:1;" oninput="mascaraCEP(this)">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="consultarCEPProposta()" style="white-space:nowrap;">Buscar</button>
+          </div>
+        </div>
+        <div class="fg half"><label class="fl">Endereco (auto)</label><input type="text" class="fc" id="prop-endereco" readonly style="background:var(--bg-inset);"></div>
+      </div>
+
+      <!-- Itens -->
+      <div class="fsec" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Itens da Proposta</span>
+        <span id="prop-itens-count" style="font-size:11px;color:var(--text-tertiary);font-weight:400;"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <div class="proposta-itens-header">
+          <span>#</span><span>Descricao</span><span>Und</span><span>Qtd</span><span>Marca/Modelo</span>
+          <span>V.Unit (Venda)</span><span>V.Total</span><span style="color:var(--warning);">Compra Unit.</span>
+          <span style="color:var(--text-tertiary);">Custo Unit.</span><span style="color:var(--success);">Lucro Unit.</span>
+          <span style="color:var(--success);">% Lucro</span><span>Link</span><span></span>
+        </div>
+        <div id="prop-itens-container" class="proposta-itens-grid"></div>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="propAdicionarItem()" style="margin-top:8px;">+ Adicionar Item</button>
+
+      <!-- Resumo financeiro -->
+      <div class="proposta-resumo" id="prop-resumo" style="display:none;">
+        <div class="proposta-resumo-item"><div class="label">Total Venda</div><div class="valor" style="color:var(--accent);" id="prop-r-venda">-</div></div>
+        <div class="proposta-resumo-item"><div class="label">Total Compra</div><div class="valor" style="color:var(--warning);" id="prop-r-compra">-</div></div>
+        <div class="proposta-resumo-item"><div class="label">Total Custo</div><div class="valor" style="color:var(--text-secondary);" id="prop-r-custo">-</div></div>
+        <div class="proposta-resumo-item"><div class="label">Lucro Total</div><div class="valor" style="color:var(--success);" id="prop-r-lucro">-</div></div>
+        <div class="proposta-resumo-item"><div class="label">% Margem</div><div class="valor" id="prop-r-margem" style="color:var(--success);">-</div></div>
+      </div>
+
+      <!-- Observacao -->
+      <div class="fg full" style="margin-top:12px;">
+        <label class="fl">Observacao</label>
+        <textarea class="fc" id="prop-observacao" rows="2" maxlength="300" placeholder="INFORMACOES ADICIONAIS..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-wrap:wrap;gap:8px;">
+      <button class="btn btn-ghost" onclick="closeModal('proposta',true)">Cancelar</button>
+      <button class="btn btn-ghost" onclick="exportarPropostaPDF()" style="color:#7c3aed;border-color:#7c3aed;">Exportar PDF (Limpo)</button>
+      <button class="btn btn-primary" onclick="salvarProposta()" style="background:#7c3aed;">Salvar Proposta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECAO DE ITENS VENCIDOS (conversao proposta -> contrato) -->
+<div class="modal-overlay" id="modal-conv-proposta" style="z-index:2600;">
+  <div class="modal" style="max-width:800px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,var(--success),#047857);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;">
+      <div class="modal-title" style="color:#fff;">Converter em Contrato</div>
+      <button class="modal-close" onclick="closeModal('conv-proposta',true)" style="color:#fff;opacity:.8;">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--info-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--accent);line-height:1.6;">
+        Selecione os itens que foram vencidos na disputa e ajuste os valores finais. Apenas os itens marcados serao criados como lotes no contrato.
+      </div>
+      <div id="conv-orgao-info" style="font-size:13px;font-weight:700;margin-bottom:12px;"></div>
+      <div style="overflow-x:auto;">
+        <div class="conv-item-row conv-header">
+          <span></span><span>Descricao</span><span>Qtd</span><span>V.Unit Proposto</span><span>V.Unit Vencido</span><span>V.Total</span>
+        </div>
+        <div id="conv-itens-container"></div>
+      </div>
+      <div id="conv-resumo" style="margin-top:14px;padding:12px 16px;background:var(--success-soft);border:1px solid var(--success);border-radius:var(--radius-lg);display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;font-weight:700;color:var(--success);">VALOR TOTAL DO CONTRATO:</span>
+          <span id="conv-total" style="font-size:18px;font-weight:900;color:var(--success);font-family:var(--font-mono);"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('conv-proposta',true)">Cancelar</button>
+      <button class="btn btn-success" onclick="confirmarConversaoProposta()">Criar Contrato com Itens Selecionados</button>
+    </div>
+  </div>
+</div>
+
 <!-- SHORTCUTS MODAL -->
 <div class="shortcuts-modal" id="shortcuts-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="shortcuts-modal-box">
@@ -8487,7 +8646,7 @@ function renderAcomp() {
     const zebraTd = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);');
     return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td style="${zebraTd}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
+      <td style="${zebraTd}"><div style="font-weight:600;font-size:13px;">${r.orgao||'—'}${temProposta(r.id)?'<span class="proposta-badge" style="margin-left:6px;">Proposta</span>':''}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
       <td style="${zebraTd}"><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa||'—'}</span></td>
       <td style="${zebraTd}"><div style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</div><span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo||''}</span></td>
       <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
@@ -8500,7 +8659,8 @@ function renderAcomp() {
           <div class="action-dropdown-menu" style="display:none;">
             ${r.link ? '<button class="action-dropdown-item" onclick="closeActionMenus();window.open(\'' + r.link + '\',\'_blank\')"><span class="item-icon">🔗</span>Abrir sistema</button>' : ''}
             <button class="action-dropdown-item" onclick="closeActionMenus();editAcomp('${r.id}')"><span class="item-icon">✏️</span>Editar</button>
-            <button class="action-dropdown-item" onclick="closeActionMenus();converterEmDisputa('${r.id}')" style="color:var(--success);"><span class="item-icon">🏆</span>Converter em Contrato</button>
+            <button class="action-dropdown-item" onclick="closeActionMenus();abrirProposta('${r.id}')"><span class="item-icon">&#x1F4CB;</span>Gerar Proposta</button>
+            <button class="action-dropdown-item" onclick="closeActionMenus();converterEmDisputaComProposta('${r.id}')" style="color:var(--success);"><span class="item-icon">🏆</span>Converter em Contrato</button>
             <div class="action-dropdown-divider"></div>
             <button class="action-dropdown-item danger" onclick="closeActionMenus();delAcomp('${r.id}')"><span class="item-icon">🗑️</span>Excluir</button>
           </div>
@@ -8588,8 +8748,17 @@ function verAcomp(id) {
 
   const editBtn = g('popup-ac-edit-btn');
   if (editBtn) editBtn.onclick = function() { fecharPopup('acomp'); editAcomp(id); };
+    // Proposta button
+  const propBtn = document.createElement('button');
+  propBtn.className = 'btn btn-ghost';
+  propBtn.style.cssText = 'color:#7c3aed;border-color:#7c3aed;';
+  propBtn.textContent = temProposta(id) ? 'Editar Proposta' : 'Gerar Proposta';
+  propBtn.onclick = function() { fecharPopup('acomp'); abrirProposta(id); };
+  const actionsEl = g('popup-ac-conv-btn')?.parentElement;
+  if(actionsEl && !actionsEl.querySelector('.prop-btn-dynamic')) { propBtn.classList.add('prop-btn-dynamic'); actionsEl.insertBefore(propBtn, g('popup-ac-conv-btn')); }
+  
   const convBtn = g('popup-ac-conv-btn');
-  if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputa(id); };
+  if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputaComProposta(id); };
 
   g('popup-acomp').classList.add('open');
 }
@@ -9817,6 +9986,457 @@ setTimeout(function(){
 },2000);
 setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi){bi.oninput=function(){_debouncedBusca(this.value);};}},500);
 
+
+
+// ═══════════════════════════════════════════════════════════
+//   MODULO PROPOSTA COMERCIAL
+// ═══════════════════════════════════════════════════════════
+const HAMATE_DATA = {
+  razao: 'HAMATE ELETROINFO LTDA',
+  cnpj: '63.102.067/0001-57',
+  ie: '084.666.93-5',
+  endereco: 'AV. JERONIMO MONTEIRO, 1000 CENTRO SALA 1501/1503',
+  cep: '29.010-004',
+  cidade: 'VITORIA - ES',
+  tel: '61-99612-9484',
+  email: 'HAMATEELETROINFO@GMAIL.COM',
+  banco: '077 BANCO INTER',
+  agencia: '0001',
+  conta: '48527325-0',
+  pix: '63102067000157',
+  proprietario: 'JACIANO CARVALHO MOREIRA',
+  cpf: '730.834.965-91',
+  rg: '730.834.965-91'
+};
+
+let propItensTemp = [];
+let propEditId = null;
+let propAcompId = null;
+
+// ── Mascara CEP ──
+function mascaraCEP(input) {
+  let v = input.value.replace(/\D/g,'');
+  if(v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
+  input.value = v;
+}
+
+// ── Consulta ViaCEP ──
+function consultarCEPProposta() {
+  const cep = (g('prop-cep').value || '').replace(/\D/g,'');
+  if(cep.length !== 8) { toast('CEP invalido (8 digitos)', 'error'); return; }
+  const endEl = g('prop-endereco');
+  if(endEl) endEl.value = 'Buscando...';
+  fetch('https://viacep.com.br/ws/' + cep + '/json/')
+    .then(r => r.json())
+    .then(data => {
+      if(data.erro) { if(endEl) endEl.value = 'CEP nao encontrado'; return; }
+      const end = (data.logradouro||'') + (data.bairro ? ', ' + data.bairro : '') + ' - ' + (data.localidade||'') + '/' + (data.uf||'');
+      if(endEl) endEl.value = end.toUpperCase();
+      const ufSel = g('prop-estado');
+      if(ufSel && data.uf) ufSel.value = data.uf;
+    })
+    .catch(() => { if(endEl) endEl.value = 'Erro na consulta'; });
+}
+
+// ── Abrir proposta a partir de um acompanhamento ──
+function abrirProposta(acompId) {
+  propAcompId = acompId;
+  const acomp = (DB.acomp||[]).find(x => x.id === acompId);
+
+  // Verifica se ja existe proposta para este acomp
+  const existente = (_fullDB.propostas||[]).find(p => p.acompId === acompId);
+
+  if(existente) {
+    propEditId = existente.id;
+    g('prop-orgao').value = existente.orgao || '';
+    g('prop-estado').value = existente.estado || '';
+    g('prop-modalidade').value = existente.modalidade || '';
+    g('prop-processo').value = existente.processo || '';
+    g('prop-objeto').value = existente.objeto || '';
+    g('prop-cep').value = existente.cep || '';
+    g('prop-endereco').value = existente.endereco || '';
+    g('prop-observacao').value = existente.observacao || '';
+    propItensTemp = (existente.itens || []).map(i => ({...i}));
+    g('ttl-proposta').textContent = 'Editar Proposta';
+  } else {
+    propEditId = null;
+    g('prop-orgao').value = acomp ? (acomp.orgao||'') : '';
+    g('prop-estado').value = acomp ? (acomp.estado||'') : '';
+    g('prop-modalidade').value = acomp ? (acomp.tipo||'Pregao Eletronico') : '';
+    g('prop-processo').value = acomp ? (acomp.processo||'') : '';
+    g('prop-objeto').value = '';
+    g('prop-cep').value = '';
+    g('prop-endereco').value = '';
+    g('prop-observacao').value = '';
+    propItensTemp = [];
+    g('ttl-proposta').textContent = 'Nova Proposta';
+  }
+
+  propRenderItens();
+  g('modal-proposta').classList.add('open');
+}
+
+// ── Adicionar item ──
+function propAdicionarItem() {
+  propItensTemp.push({
+    id: uid(), descricao:'', unidade:'UNID', qtd:1, marcaModelo:'',
+    vunit:0, compra:0, custo:0, link:''
+  });
+  propRenderItens();
+  // Foca no campo descricao do ultimo item
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('#prop-itens-container input[data-field="descricao"]');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+// ── Remover item ──
+function propRemoverItem(idx) {
+  propItensTemp.splice(idx, 1);
+  propRenderItens();
+}
+
+// ── Render itens ──
+function propRenderItens() {
+  const c = g('prop-itens-container');
+  if(!c) return;
+  if(!propItensTemp.length) {
+    c.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:12px;text-align:center;">Nenhum item. Clique em "+ Adicionar Item".</div>';
+    propAtualizarResumo();
+    return;
+  }
+  c.innerHTML = propItensTemp.map((it, i) => {
+    const vtotal = (it.qtd||0) * (it.vunit||0);
+    const lucroUnit = (it.vunit||0) - (it.compra||0) - (it.custo||0);
+    const pctLucro = (it.compra||0) > 0 ? (lucroUnit / (it.compra||1) * 100) : 0;
+    const pctColor = pctLucro >= 8 ? 'var(--success)' : pctLucro >= 0 ? 'var(--warning)' : 'var(--danger)';
+    return '<div class="proposta-item-row">' +
+      '<span style="font-size:11px;font-weight:700;color:var(--text-tertiary);text-align:center;">' + (i+1) + '</span>' +
+      '<input type="text" class="fc" data-field="descricao" value="' + (it.descricao||'') + '" placeholder="Descricao..." oninput="propItensTemp['+i+'].descricao=this.value">' +
+      '<select class="fc" oninput="propItensTemp['+i+'].unidade=this.value"><option' + (it.unidade==='UNID'?' selected':'') + '>UNID</option><option' + (it.unidade==='CX'?' selected':'') + '>CX</option><option' + (it.unidade==='KIT'?' selected':'') + '>KIT</option><option' + (it.unidade==='PCT'?' selected':'') + '>PCT</option><option' + (it.unidade==='M'?' selected':'') + '>M</option><option' + (it.unidade==='L'?' selected':'') + '>L</option></select>' +
+      '<input type="number" class="fc" value="' + (it.qtd||1) + '" min="1" step="1" oninput="propItensTemp['+i+'].qtd=+this.value;propAtualizarLinha('+i+')">' +
+      '<input type="text" class="fc" value="' + (it.marcaModelo||'') + '" placeholder="Marca / Modelo" oninput="propItensTemp['+i+'].marcaModelo=this.value">' +
+      '<input type="number" class="fc" value="' + (it.vunit||'') + '" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].vunit=+this.value;propAtualizarLinha('+i+')">' +
+      '<input type="text" class="fc pi-readonly" id="pi-vtotal-'+i+'" value="' + fmt(vtotal) + '" readonly>' +
+      '<input type="number" class="fc" value="' + (it.compra||'') + '" placeholder="0,00" step="0.01" style="color:var(--warning);font-weight:600;" oninput="propItensTemp['+i+'].compra=+this.value;propAtualizarLinha('+i+')">' +
+      '<input type="number" class="fc" value="' + (it.custo||'') + '" placeholder="0,00" step="0.01" oninput="propItensTemp['+i+'].custo=+this.value;propAtualizarLinha('+i+')">' +
+      '<input type="text" class="fc pi-lucro" id="pi-lucro-'+i+'" value="' + fmt(lucroUnit) + '" readonly>' +
+      '<input type="text" class="fc pi-pct" id="pi-pct-'+i+'" value="' + pctLucro.toFixed(1) + '%" readonly style="color:' + pctColor + ';">' +
+      '<input type="url" class="fc" value="' + (it.link||'') + '" placeholder="https://..." oninput="propItensTemp['+i+'].link=this.value" style="font-size:10px;">' +
+      '<button onclick="propRemoverItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:14px;" title="Remover">&#10005;</button>' +
+    '</div>';
+  }).join('');
+  propAtualizarResumo();
+}
+
+// ── Atualizar campos calculados de uma linha ──
+function propAtualizarLinha(i) {
+  const it = propItensTemp[i]; if(!it) return;
+  const vtotal = (it.qtd||0) * (it.vunit||0);
+  const lucroUnit = (it.vunit||0) - (it.compra||0) - (it.custo||0);
+  const pctLucro = (it.compra||0) > 0 ? (lucroUnit / (it.compra||1) * 100) : 0;
+  const pctColor = pctLucro >= 8 ? 'var(--success)' : pctLucro >= 0 ? 'var(--warning)' : 'var(--danger)';
+  const vtEl = g('pi-vtotal-'+i); if(vtEl) vtEl.value = fmt(vtotal);
+  const luEl = g('pi-lucro-'+i); if(luEl) luEl.value = fmt(lucroUnit);
+  const pcEl = g('pi-pct-'+i); if(pcEl) { pcEl.value = pctLucro.toFixed(1) + '%'; pcEl.style.color = pctColor; }
+  propAtualizarResumo();
+}
+
+// ── Atualizar resumo financeiro ──
+function propAtualizarResumo() {
+  const resumoEl = g('prop-resumo');
+  if(!propItensTemp.length) { if(resumoEl) resumoEl.style.display = 'none'; return; }
+  if(resumoEl) resumoEl.style.display = '';
+  let tVenda=0, tCompra=0, tCusto=0, tLucro=0;
+  propItensTemp.forEach(it => {
+    const q = it.qtd||0;
+    tVenda += q * (it.vunit||0);
+    tCompra += q * (it.compra||0);
+    tCusto += q * (it.custo||0);
+    tLucro += q * ((it.vunit||0) - (it.compra||0) - (it.custo||0));
+  });
+  const margem = tCompra > 0 ? (tLucro / tCompra * 100) : 0;
+  const mColor = margem >= 8 ? 'var(--success)' : margem >= 0 ? 'var(--warning)' : 'var(--danger)';
+  g('prop-r-venda').textContent = fmt(tVenda);
+  g('prop-r-compra').textContent = fmt(tCompra);
+  g('prop-r-custo').textContent = fmt(tCusto);
+  g('prop-r-lucro').textContent = fmt(tLucro);
+  const mEl = g('prop-r-margem');
+  if(mEl) { mEl.textContent = margem.toFixed(1) + '%'; mEl.style.color = mColor; }
+  g('prop-itens-count').textContent = propItensTemp.length + ' iten(s) | Total: ' + fmt(tVenda);
+}
+
+// ── Salvar proposta ──
+function salvarProposta() {
+  const orgao = (g('prop-orgao').value||'').trim();
+  if(!orgao) { toast('Informe o orgao!', 'error'); return; }
+  const itensValidos = propItensTemp.filter(it => it.descricao && it.vunit > 0);
+  if(!itensValidos.length) { toast('Adicione ao menos 1 item com descricao e valor.', 'error'); return; }
+
+  const row = {
+    id: propEditId || uid(),
+    acompId: propAcompId || '',
+    data: today(),
+    orgao: orgao.toUpperCase(),
+    estado: g('prop-estado').value || '',
+    modalidade: g('prop-modalidade').value || '',
+    processo: (g('prop-processo').value||'').toUpperCase(),
+    objeto: (g('prop-objeto').value||'').toUpperCase(),
+    cep: g('prop-cep').value || '',
+    endereco: g('prop-endereco').value || '',
+    observacao: (g('prop-observacao').value||'').toUpperCase(),
+    itens: itensValidos.map(it => ({
+      id: it.id || uid(),
+      descricao: (it.descricao||'').toUpperCase(),
+      unidade: it.unidade || 'UNID',
+      qtd: it.qtd || 1,
+      marcaModelo: (it.marcaModelo||'').toUpperCase(),
+      vunit: it.vunit || 0,
+      compra: it.compra || 0,
+      custo: it.custo || 0,
+      link: it.link || ''
+    }))
+  };
+
+  if(!_fullDB.propostas) _fullDB.propostas = [];
+  const idx = _fullDB.propostas.findIndex(p => p.id === row.id);
+  if(idx !== -1) _fullDB.propostas[idx] = row; else _fullDB.propostas.push(row);
+  save('propostas', _fullDB.propostas);
+
+  toast(propEditId ? 'Proposta atualizada!' : 'Proposta salva!', 'success');
+  closeModal('proposta', true);
+  renderAcomp();
+  updateBadges();
+}
+
+// ── Exportar PDF limpo (sem colunas financeiras) ──
+function exportarPropostaPDF() {
+  const orgao = (g('prop-orgao').value||'ORGAO').toUpperCase();
+  const estado = g('prop-estado').value || '';
+  const modalidade = (g('prop-modalidade').value||'').toUpperCase();
+  const processo = (g('prop-processo').value||'').toUpperCase();
+  const objeto = (g('prop-objeto').value||'').toUpperCase();
+  const cep = g('prop-cep').value || '';
+  const endereco = (g('prop-endereco').value||'').toUpperCase();
+
+  const itens = propItensTemp.filter(it => it.descricao && it.vunit > 0);
+  if(!itens.length) { toast('Adicione itens antes de exportar.', 'error'); return; }
+
+  const totalGeral = itens.reduce((s,it) => s + (it.qtd||0)*(it.vunit||0), 0);
+  const hoje = new Date();
+  const dataStr = hoje.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
+
+  const linhasHTML = itens.map((it, i) => {
+    const vtotal = (it.qtd||0) * (it.vunit||0);
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;">' + (i+1) + '</td>' +
+      '<td style="font-size:11px;line-height:1.4;">' + (it.descricao||'').toUpperCase() + '</td>' +
+      '<td style="text-align:center;">' + (it.unidade||'UNID') + '</td>' +
+      '<td style="text-align:center;">' + (it.qtd||1) + '</td>' +
+      '<td style="font-size:11px;">' + (it.marcaModelo||'').toUpperCase() + '</td>' +
+      '<td style="text-align:right;font-family:monospace;">R$ ' + (it.vunit||0).toFixed(2).replace('.',',') + '</td>' +
+      '<td style="text-align:right;font-weight:700;font-family:monospace;">R$ ' + vtotal.toFixed(2).replace('.',',') + '</td>' +
+      (it.link ? '<td style="text-align:center;font-size:10px;"><a href="'+it.link+'" target="_blank" style="color:#7c3aed;">LINK</a></td>' : '<td></td>') +
+    '</tr>';
+  }).join('');
+
+  const pdfHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proposta - ' + orgao + '</title>' +
+    '<style>' +
+    '* { margin:0; padding:0; box-sizing:border-box; }' +
+    'body { font-family: "Segoe UI", Arial, sans-serif; font-size:12px; color:#1a1a2e; padding:30px 40px; max-width:900px; margin:0 auto; }' +
+    '.header { text-align:center; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #7c3aed; }' +
+    '.header h1 { font-size:22px; color:#7c3aed; letter-spacing:2px; margin-bottom:8px; }' +
+    '.empresa { font-size:13px; font-weight:700; margin-bottom:4px; }' +
+    '.empresa-det { font-size:11px; color:#555; line-height:1.6; }' +
+    '.secao { margin:20px 0 10px; font-size:13px; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:1px; padding-bottom:4px; border-bottom:1.5px solid #e5e7eb; }' +
+    '.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; margin-bottom:16px; font-size:12px; }' +
+    '.info-grid .label { color:#888; font-size:10px; text-transform:uppercase; font-weight:700; }' +
+    '.info-grid .valor { font-weight:600; }' +
+    'table { width:100%; border-collapse:collapse; margin:12px 0; font-size:11px; }' +
+    'th { background:#7c3aed; color:#fff; padding:8px 10px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }' +
+    'td { padding:7px 10px; border-bottom:1px solid #e5e7eb; }' +
+    'tr:nth-child(even) td { background:#f9fafb; }' +
+    '.total-row td { background:#f3f0ff !important; font-weight:800; font-size:13px; color:#7c3aed; border-top:2px solid #7c3aed; }' +
+    '.declaracoes { margin-top:20px; font-size:10px; color:#666; line-height:1.7; text-align:justify; }' +
+    '.assinatura { margin-top:30px; text-align:center; font-size:11px; }' +
+    '.assinatura .linha { width:300px; border-top:1px solid #333; margin:8px auto 4px; }' +
+    '.no-print-btn { position:fixed; top:12px; right:12px; background:#7c3aed; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; z-index:999; }' +
+    '@media print { .no-print-btn { display:none; } body { padding:20px 30px; } }' +
+    '</style></head><body>' +
+    '<button class="no-print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>' +
+    '<div class="header">' +
+      '<h1>PROPOSTA COMERCIAL</h1>' +
+      '<div class="empresa">' + HAMATE_DATA.razao + '</div>' +
+      '<div class="empresa-det">' +
+        'CNPJ: ' + HAMATE_DATA.cnpj + ' | IE: ' + HAMATE_DATA.ie + '<br>' +
+        HAMATE_DATA.endereco + '<br>' +
+        'CEP: ' + HAMATE_DATA.cep + ' - ' + HAMATE_DATA.cidade + '<br>' +
+        'TEL: ' + HAMATE_DATA.tel + ' | ' + HAMATE_DATA.email +
+      '</div>' +
+      '<div class="empresa-det" style="margin-top:6px;">' +
+        'BANCO: ' + HAMATE_DATA.banco + ' / AG: ' + HAMATE_DATA.agencia + ' / CC: ' + HAMATE_DATA.conta + ' / PIX ' + HAMATE_DATA.pix +
+      '</div>' +
+    '</div>' +
+    '<div class="secao">Dados da Licitacao</div>' +
+    '<div class="info-grid">' +
+      '<div><div class="label">Orgao</div><div class="valor">' + orgao + '</div></div>' +
+      '<div><div class="label">Modalidade</div><div class="valor">' + modalidade + '</div></div>' +
+      '<div><div class="label">Processo</div><div class="valor">' + processo + '</div></div>' +
+      '<div><div class="label">UF</div><div class="valor">' + estado + '</div></div>' +
+      (objeto ? '<div style="grid-column:1/-1;"><div class="label">Objeto</div><div class="valor">' + objeto + '</div></div>' : '') +
+      (cep ? '<div><div class="label">CEP de Entrega</div><div class="valor">' + cep + '</div></div>' : '') +
+    '</div>' +
+    '<div class="secao">Itens da Proposta</div>' +
+    '<table>' +
+      '<thead><tr><th style="width:30px;text-align:center;">#</th><th>Descricao</th><th style="text-align:center;">Und</th><th style="text-align:center;">Qtd</th><th>Marca/Modelo</th><th style="text-align:right;">V.Unit.</th><th style="text-align:right;">V.Total</th><th style="text-align:center;">Cole o link abaixo</th></tr></thead>' +
+      '<tbody>' + linhasHTML +
+        '<tr class="total-row"><td colspan="6" style="text-align:right;">VALOR TOTAL</td><td style="text-align:right;">R$ ' + totalGeral.toFixed(2).replace('.',',') + '</td><td></td></tr>' +
+      '</tbody>' +
+    '</table>' +
+    '<div class="declaracoes">' +
+      '<div class="secao" style="font-size:11px;">Declaracoes</div>' +
+      '<p>VALIDADE DA PROPOSTA: 365 DIAS / PRAZO DE ENTREGA E GARANTIAS CONFORME EDITAL</p><br>' +
+      '<p>DECLARAMOS CONHECER OS TERMOS DO INSTRUMENTO CONVOCATORIO QUE REGE A PRESENTE LICITACAO.</p><br>' +
+      '<p>DECLARAMOS QUE A NOSSA PROPOSTA ECONOMICA COMPREENDE A INTEGRALIDADE DOS CUSTOS PARA ATENDIMENTO DOS DIREITOS TRABALHISTAS ASSEGURADOS NA CONSTITUICAO FEDERAL, NAS LEIS TRABALHISTAS, NAS NORMAS INFRALEGAIS, NAS CONVENCOES COLETIVAS DE TRABALHO E NOS TERMOS DE AJUSTAMENTO DE CONDUTA VIGENTES NA DATA DE ENTREGA DAS PROPOSTAS.</p><br>' +
+      '<p>DECLARAMOS QUE NOS PRECOS COTADOS, JA ESTAO INCLUSOS AS DESPESAS COM TRANSPORTES E DESLOCAMENTOS E OUTRAS QUAISQUER QUE INCIDAM SOBRE A CONTRATACAO.</p><br>' +
+      '<p>DECLARAMOS PARA TODOS OS EFEITOS LEGAIS QUE, AO APRESENTAR ESTA PROPOSTA, COM OS PRECOS E PRAZOS ACIMA INDICADOS, ESTAMOS DE PLENO ACORDO COM AS CONDICOES GERAIS E ESPECIAIS ESTABELECIDAS PARA ESTA LICITACAO, AS QUAIS NOS SUBMETEMOS INCONDICIONAL E INTEGRALMENTE.</p><br>' +
+      '<p>DECLARAMOS QUE ATE A PRESENTE DATA INEXISTEM FATOS IMPEDITIVOS A PARTICIPACAO DESTA EMPRESA AO PRESENTE CERTAME LICITATORIO, CIENTE DA OBRIGATORIEDADE DE DECLARAR OCORRENCIAS POSTERIORES.</p><br>' +
+      '<p>DECLARAMOS QUE NAO POSSUIMOS EM NOSSO QUADRO FUNCIONAL SERVIDOR PUBLICO OU DIRIGENTE DE ORGAO OU ENTIDADE CONTRATANTE OU RESPONSAVEL PELA LICITACAO, E NAO POSSUIMOS EM NOSSO QUADRO SOCIETARIO SERVIDOR PUBLICO DA ATIVA, OU EMPREGADO DE EMPRESA PUBLICA OU DE SOCIEDADE DE ECONOMIA MISTA.</p><br>' +
+      '<p>DECLARAMOS, AINDA, SOB AS PENAS DA LEI, QUE NAO ESTAMOS CUMPRINDO PENA DE INIDONEIDADE PARA LICITAR E CONTRATAR COM A ADMINISTRACAO PUBLICA, EM QUALQUER DE SUAS ESFERAS FEDERAL, ESTADUAL E MUNICIPAL, INCLUSIVE NO DISTRITO FEDERAL.</p>' +
+    '</div>' +
+    '<div class="assinatura">' +
+      '<p>VITORIA - ES, ' + dataStr + '</p>' +
+      '<div class="linha"></div>' +
+      '<p style="font-weight:700;">' + HAMATE_DATA.razao + '</p>' +
+      '<p>CNPJ: ' + HAMATE_DATA.cnpj + '</p>' +
+      '<p>' + HAMATE_DATA.proprietario + ' CPF: ' + HAMATE_DATA.cpf + '</p>' +
+    '</div>' +
+  '</body></html>';
+
+  const w = window.open('', '_blank');
+  w.document.write(pdfHTML);
+  w.document.close();
+  toast('PDF gerado! Use Ctrl+P para salvar.', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//   CONVERSAO PROPOSTA -> CONTRATO (com selecao de itens)
+// ═══════════════════════════════════════════════════════════
+let _convAcompId = null;
+let _convProposta = null;
+
+function converterEmDisputaComProposta(acompId) {
+  const acomp = (DB.acomp||[]).find(x => x.id === acompId);
+  if(!acomp) return;
+
+  const proposta = (_fullDB.propostas||[]).find(p => p.acompId === acompId);
+
+  if(!proposta || !(proposta.itens||[]).length) {
+    // Sem proposta: fluxo original
+    _confirmarAcao({icon:'\\u{1F3C6}', titulo:'Converter em Contrato', msg:'Converter o acompanhamento <strong>' + (acomp.orgao||'') + '</strong> em Contrato?<br><br>Nenhuma proposta foi encontrada para este acompanhamento, entao o contrato sera criado sem itens pre-cadastrados.', btnLabel:'\\u{1F3C6} Converter', btnClass:'btn-primary', onConfirm: function() { _doCriarDisputaDeAcomp(acomp); }});
+    return;
+  }
+
+  // Com proposta: mostra seletor de itens vencidos
+  _convAcompId = acompId;
+  _convProposta = proposta;
+
+  g('conv-orgao-info').innerHTML = '<span style="color:var(--accent);">\\u{1F3E2}</span> ' + (acomp.orgao||'').toUpperCase() + ' <span class="proposta-badge">Proposta com ' + proposta.itens.length + ' iten(s)</span>';
+
+  const container = g('conv-itens-container');
+  container.innerHTML = proposta.itens.map(function(it, i) {
+    const vtotal = (it.qtd||0) * (it.vunit||0);
+    return '<div class="conv-item-row">' +
+      '<input type="checkbox" checked class="conv-chk" data-idx="' + i + '" onchange="convAtualizarTotal()" style="cursor:pointer;width:16px;height:16px;">' +
+      '<div style="font-size:12px;font-weight:600;">' + (it.descricao||'').toUpperCase() + '<br><span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">' + (it.marcaModelo||'') + '</span></div>' +
+      '<input type="number" class="fc conv-qtd" data-idx="' + i + '" value="' + (it.qtd||1) + '" min="1" step="1" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:center;">' +
+      '<div style="font-size:11px;color:var(--text-tertiary);text-align:right;font-family:var(--font-mono);">' + fmt(it.vunit) + '</div>' +
+      '<input type="number" class="fc conv-vunit" data-idx="' + i + '" value="' + (it.vunit||0).toFixed(2) + '" step="0.01" oninput="convAtualizarTotal()" style="font-size:12px;padding:5px;text-align:right;font-weight:700;color:var(--success);">' +
+      '<div class="conv-vtotal" id="conv-vt-' + i + '" style="font-size:12px;font-weight:700;text-align:right;font-family:var(--font-mono);color:var(--accent);">' + fmt(vtotal) + '</div>' +
+    '</div>';
+  }).join('');
+
+  convAtualizarTotal();
+  g('modal-conv-proposta').classList.add('open');
+}
+
+function convAtualizarTotal() {
+  if(!_convProposta) return;
+  let total = 0;
+  _convProposta.itens.forEach(function(it, i) {
+    const chk = document.querySelector('.conv-chk[data-idx="' + i + '"]');
+    const vunitEl = document.querySelector('.conv-vunit[data-idx="' + i + '"]');
+    const qtdEl = document.querySelector('.conv-qtd[data-idx="' + i + '"]');
+    const vtEl = g('conv-vt-' + i);
+    if(!chk || !vunitEl || !qtdEl) return;
+    const checked = chk.checked;
+    const vunit = +(vunitEl.value||0);
+    const qtd = +(qtdEl.value||1);
+    const vt = checked ? qtd * vunit : 0;
+    if(vtEl) vtEl.textContent = checked ? fmt(vt) : '—';
+    if(vunitEl) vunitEl.disabled = !checked;
+    if(qtdEl) qtdEl.disabled = !checked;
+    total += vt;
+  });
+  g('conv-total').textContent = fmt(total);
+  g('conv-resumo').style.display = total > 0 ? '' : 'none';
+}
+
+function confirmarConversaoProposta() {
+  if(!_convProposta || !_convAcompId) return;
+  const acomp = (DB.acomp||[]).find(x => x.id === _convAcompId);
+  if(!acomp) return;
+
+  // Coleta itens selecionados com valores ajustados
+  var itensSelecionados = [];
+  _convProposta.itens.forEach(function(it, i) {
+    var chk = document.querySelector('.conv-chk[data-idx="' + i + '"]');
+    var vunitEl = document.querySelector('.conv-vunit[data-idx="' + i + '"]');
+    var qtdEl = document.querySelector('.conv-qtd[data-idx="' + i + '"]');
+    if(!chk || !chk.checked) return;
+    itensSelecionados.push({
+      descricao: (it.descricao||'').toUpperCase(),
+      qtd: +(qtdEl ? qtdEl.value : it.qtd) || 1,
+      vunit: +(vunitEl ? vunitEl.value : it.vunit) || 0,
+      compraPrev: it.compra || 0,
+      custoPrev: it.custo || 0
+    });
+  });
+
+  if(!itensSelecionados.length) { toast('Selecione ao menos 1 item vencido!', 'error'); return; }
+
+  closeModal('conv-proposta', true);
+
+  // Abre o form de disputa pre-preenchido
+  _acompConvertendoId = _convAcompId;
+  clearD();
+  g('d-data').value = acomp.data || today();
+  g('d-orgao').value = (acomp.orgao||'').toUpperCase();
+  g('d-estado').value = acomp.estado || '';
+  g('d-empresa').value = 'Hamate';
+  g('d-tipo').value = acomp.tipo || 'Pregao Eletronico';
+  g('d-sistema').value = acomp.sistema || '';
+  g('d-processo').value = (acomp.processo||'').toUpperCase();
+  setAnalistaSelect('d-analista', acomp.analista || analistaDoUsuario);
+
+  // Pre-popula lotes com itens vencidos
+  lotesTemp = itensSelecionados.map(function(it) {
+    return { id: uid(), descricao: it.descricao, qtd: it.qtd, vunit: it.vunit, compraPrev: it.compraPrev, custoPrev: it.custoPrev };
+  });
+  renderLotes();
+
+  g('ttl-disputas').textContent = 'Novo Contrato (da Proposta)';
+  g('modal-disputas').classList.add('open');
+  toast('Itens vencidos carregados no contrato! Ajuste e salve.', 'success');
+}
+
+// ── Badge de proposta no acompanhamento ──
+function temProposta(acompId) {
+  return (_fullDB.propostas||[]).some(function(p) { return p.acompId === acompId; });
+}
+function getPropostaDoAcomp(acompId) {
+  return (_fullDB.propostas||[]).find(function(p) { return p.acompId === acompId; });
+}
 
 console.log('v2 OK');
 </script>
