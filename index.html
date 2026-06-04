@@ -1309,21 +1309,385 @@
 
 
 
-/* ===== FIX MENU DE AÇÕES DOS CONTRATOS ATIVOS ===== */
-.action-dropdown-btn {
-  pointer-events: auto !important;
-  min-width: 34px !important;
-  min-height: 28px !important;
-  position: relative !important;
-  z-index: 20 !important;
+/* =====================================================================
+   LICITATIONBIZNIS PRODUCTION UI 4.0
+   Layout SaaS Enterprise + Painel Contextual Direito
+   Mantém a lógica original, IDs, Firebase e fluxos existentes.
+   ===================================================================== */
+:root {
+  --lb-sidebar-w: 292px;
+  --lb-context-w: 360px;
+  --lb-topbar-h: 72px;
+  --lb-gap: 16px;
+  --lb-green: #2d6a4f;
+  --lb-green-2: #40916c;
+  --lb-green-3: #1b4332;
+  --lb-surface-blur: blur(18px) saturate(1.12);
+  --lb-radius-panel: 24px;
+  --lb-radius-card: 18px;
+  --lb-shadow-panel: 0 24px 70px rgba(15, 23, 42, .13), 0 2px 10px rgba(15, 23, 42, .05);
 }
-.action-dropdown-menu {
-  z-index: 2147483000 !important;
-  pointer-events: auto !important;
-  min-width: 190px !important;
+
+body[data-theme="light"] {
+  --bg-app: #eef4f8;
+  --bg-surface: rgba(255,255,255,.94);
+  --bg-surface-hover: #f8fafc;
+  --bg-surface-soft: #f1f5f9;
+  --bg-inset: #e2e8f0;
+  --bg-sidebar: #10271e;
+  --border-light: rgba(148, 163, 184, .28);
+  --border-medium: rgba(100, 116, 139, .38);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+  --accent: var(--lb-green);
+  --accent-hover: var(--lb-green-3);
+  --accent-muted: rgba(45, 106, 79, .10);
+  --accent-ring: rgba(45, 106, 79, .18);
+  --shadow-xs: 0 1px 2px rgba(15,23,42,.04);
+  --shadow-sm: 0 10px 30px rgba(15,23,42,.06);
+  --shadow-md: 0 18px 50px rgba(15,23,42,.09);
+  --shadow-lg: 0 24px 70px rgba(15,23,42,.14);
+  --shadow-xl: 0 34px 90px rgba(15,23,42,.18);
 }
-.action-dropdown-item {
-  pointer-events: auto !important;
+
+body[data-theme="dark"] {
+  --bg-app: #08111d;
+  --bg-surface: rgba(15, 23, 42, .90);
+  --bg-surface-hover: rgba(30,41,59,.92);
+  --bg-surface-soft: rgba(30, 41, 59, .84);
+  --bg-inset: rgba(15,23,42,.80);
+  --bg-sidebar: #07140f;
+  --border-light: rgba(148, 163, 184, .18);
+  --border-medium: rgba(148, 163, 184, .28);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --accent: #74c69d;
+  --accent-hover: #95d5b2;
+  --accent-muted: rgba(116, 198, 157, .12);
+  --accent-ring: rgba(116, 198, 157, .20);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-sm: 0 10px 30px rgba(0,0,0,.28);
+  --shadow-md: 0 18px 60px rgba(0,0,0,.36);
+  --shadow-lg: 0 28px 80px rgba(0,0,0,.44);
+  --shadow-xl: 0 40px 100px rgba(0,0,0,.52);
+}
+
+body.lb-enterprise-ui,
+body {
+  display: block !important;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 14% 8%, rgba(45,106,79,.16), transparent 34%),
+    radial-gradient(circle at 86% 4%, rgba(37,99,235,.10), transparent 30%),
+    linear-gradient(135deg, var(--bg-app), #f8fafc 52%, #eef4f8) !important;
+  overflow-x: hidden;
+}
+body[data-theme="dark"] {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(116,198,157,.13), transparent 34%),
+    radial-gradient(circle at 90% 4%, rgba(59,130,246,.12), transparent 30%),
+    linear-gradient(135deg, #07111d, #0f172a 52%, #08111d) !important;
+}
+
+/* Topbar */
+header {
+  position: fixed !important;
+  top: var(--lb-gap) !important;
+  left: calc(var(--lb-sidebar-w) + 22px) !important;
+  right: calc(var(--lb-context-w) + 32px) !important;
+  height: var(--lb-topbar-h) !important;
+  z-index: 500 !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 22px !important;
+  background: color-mix(in srgb, var(--bg-surface) 90%, transparent) !important;
+  backdrop-filter: var(--lb-surface-blur) !important;
+  -webkit-backdrop-filter: var(--lb-surface-blur) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 0 18px !important;
+  gap: 10px !important;
+}
+header .logo { display: none !important; }
+header::before {
+  content: "Centro de Controle";
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -.55px;
+  color: var(--text-primary);
+  margin-right: 10px;
+  white-space: nowrap;
+}
+header::after {
+  content: "Licitações, contratos, empenhos e propostas";
+  position: absolute;
+  left: 18px;
+  bottom: 10px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+header .spacer { flex: 1 1 auto; min-width: 20px; }
+#busca-global-input {
+  width: min(28vw, 360px) !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+  padding: 0 42px !important;
+  font-size: 13px !important;
+  background: var(--bg-surface-soft) !important;
+  border: 1px solid var(--border-light) !important;
+}
+#busca-global-input:focus { width: min(32vw, 420px) !important; background: var(--bg-surface) !important; }
+.busca-kbd-hint { right: 12px !important; border-radius: 8px !important; padding: 2px 7px !important; }
+.hbtn, .user-chip, .push-notif-btn {
+  height: 42px !important;
+  border-radius: 14px !important;
+  background: var(--bg-surface-soft) !important;
+  border: 1px solid var(--border-light) !important;
+}
+.hbtn { width: 42px !important; }
+.user-chip { padding: 5px 12px 5px 5px !important; }
+.user-avatar { width: 30px !important; height: 30px !important; background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2)) !important; }
+#user-role-badge { height: 32px; display: inline-flex; align-items: center; background: var(--accent-muted); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+
+/* Sidebar a partir das tabs originais */
+.tabs {
+  position: fixed !important;
+  inset: var(--lb-gap) auto var(--lb-gap) var(--lb-gap) !important;
+  width: var(--lb-sidebar-w) !important;
+  height: calc(100vh - (var(--lb-gap) * 2)) !important;
+  z-index: 450 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 132px 14px 18px !important;
+  overflow: hidden auto !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  border-radius: 26px !important;
+  background: linear-gradient(180deg, rgba(27,67,50,.98), rgba(8, 28, 21, .98)) !important;
+  box-shadow: 0 24px 70px rgba(6, 30, 21, .30) !important;
+  scrollbar-width: thin;
+}
+.tabs::before {
+  content: "LB";
+  position: absolute;
+  top: 22px;
+  left: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -.8px;
+  background: linear-gradient(135deg, #52b788, #2d6a4f);
+  box-shadow: 0 16px 40px rgba(82,183,136,.28);
+}
+.tabs::after {
+  content: "LicitationBiznis\A Gestão inteligente de licitações";
+  white-space: pre;
+  position: absolute;
+  top: 25px;
+  left: 86px;
+  right: 18px;
+  color: rgba(255,255,255,.96);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -.25px;
+}
+.tab-btn {
+  width: 100% !important;
+  height: 44px !important;
+  justify-content: flex-start !important;
+  padding: 0 13px !important;
+  margin: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 15px !important;
+  color: rgba(255,255,255,.72) !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.1px !important;
+  background: transparent !important;
+  transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease !important;
+}
+.tab-btn:hover { transform: translateX(3px); color: #fff !important; background: rgba(255,255,255,.08) !important; border-color: rgba(255,255,255,.12) !important; }
+.tab-btn.active { color: #fff !important; background: linear-gradient(135deg, rgba(82,183,136,.30), rgba(255,255,255,.10)) !important; border-color: rgba(149,213,178,.32) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 26px rgba(0,0,0,.16) !important; }
+.tab-badge { margin-left: auto !important; background: rgba(255,255,255,.10) !important; border-color: rgba(255,255,255,.16) !important; color: rgba(255,255,255,.82) !important; }
+.tab-btn.active .tab-badge { background: #fff !important; color: var(--lb-green-3) !important; }
+
+/* Área central */
+.content {
+  width: auto !important;
+  max-width: none !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: calc(var(--lb-topbar-h) + 46px) calc(var(--lb-context-w) + 34px) 40px calc(var(--lb-sidebar-w) + 24px) !important;
+}
+.tab-pane.active { animation: lbPaneIn .22s ease both; }
+@keyframes lbPaneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.toolbar, .card, .chart-card, .stat-card, .dash-kpi, .acomp-card, .table-wrapper, .table-wrap, .painel-section, .compra-item-card, .lote-selector-card, .modal, .detail-popup, .shortcuts-modal-box, .confirm-modal-box, .wizard {
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--lb-radius-card) !important;
+  box-shadow: var(--shadow-sm) !important;
+  backdrop-filter: var(--lb-surface-blur);
+  -webkit-backdrop-filter: var(--lb-surface-blur);
+}
+.toolbar { position: sticky; top: calc(var(--lb-topbar-h) + 30px); z-index: 300; padding: 12px !important; gap: 8px !important; }
+.summary-row, .dash-kpi-row { gap: 14px !important; }
+.card, .dash-kpi, .stat-card { padding: 18px 20px !important; }
+.card-label, .dash-kpi .lbl, .stat-card .label, .painel-section-title, .chart-card h3, th { color: var(--text-tertiary) !important; font-size: 10px !important; letter-spacing: .65px !important; }
+.card-value, .dash-kpi .val, .stat-card .value { font-size: clamp(18px, 1.4vw, 24px) !important; font-weight: 800 !important; letter-spacing: -.8px !important; }
+.btn, .btn-primary, .btn-ghost, .btn-success, .btn-danger, .page-btn, .copy-btn, .action-dropdown-btn, .modal-close, .login-btn { border-radius: 12px !important; font-weight: 700 !important; }
+.btn-primary, .login-btn { background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2)) !important; box-shadow: 0 10px 22px rgba(45,106,79,.22) !important; }
+.table-wrapper { max-height: calc(100vh - 330px) !important; overflow: auto !important; }
+table { border-collapse: separate !important; border-spacing: 0 !important; }
+th { background: color-mix(in srgb, var(--bg-surface) 95%, transparent) !important; padding: 13px 11px !important; }
+td { padding: 12px 11px !important; border-bottom-color: var(--border-light) !important; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent-muted) 70%, transparent) !important; }
+tr.lb-selected-row td { background: color-mix(in srgb, var(--accent-muted) 88%, transparent) !important; box-shadow: inset 3px 0 0 var(--accent); }
+.badge, .dias-badge, .estado-badge, .status-pago, .status-pendente, .vinculo-badge { border-radius: 999px !important; padding: 4px 9px !important; font-weight: 800 !important; }
+.fc, .login-select, .wizard-step input, .wizard-step select, .filter-group, .search-box input { border-radius: 12px !important; min-height: 38px; }
+.form-grid { gap: 14px !important; }
+.modal-overlay, .detail-popup-overlay, .wizard-overlay, .confirm-modal-overlay, .shortcuts-modal { background: rgba(2, 6, 23, .52) !important; backdrop-filter: blur(12px) saturate(1.15) !important; }
+.modal-header, .modal-footer { background: color-mix(in srgb, var(--bg-surface) 94%, transparent) !important; }
+.modal-title, .detail-popup-title, .shortcuts-modal-title { font-size: 18px !important; letter-spacing: -.45px; }
+.login-overlay { background: radial-gradient(circle at 15% 12%, rgba(82,183,136,.28), transparent 30%), radial-gradient(circle at 82% 10%, rgba(37,99,235,.16), transparent 28%), linear-gradient(135deg, #071a13, #0f172a) !important; }
+.login-card { max-width: 420px !important; padding: 38px 34px !important; border-radius: 28px !important; background: rgba(255,255,255,.94) !important; border: 1px solid rgba(255,255,255,.55) !important; box-shadow: 0 34px 90px rgba(0,0,0,.36) !important; }
+body[data-theme="dark"] .login-card { background: rgba(15,23,42,.92) !important; }
+.login-title { font-size: 24px !important; letter-spacing: -.8px !important; }
+.login-sub { font-size: 13px !important; }
+
+/* Menu de ações por linha */
+.action-dropdown-btn { pointer-events: auto !important; min-width: 34px !important; min-height: 28px !important; position: relative !important; z-index: 20 !important; }
+.action-dropdown-menu { z-index: 2147483000 !important; pointer-events: auto !important; min-width: 190px !important; }
+.action-dropdown-item { pointer-events: auto !important; }
+
+/* Painel contextual direito */
+#lb-context-panel {
+  position: fixed;
+  top: var(--lb-gap);
+  right: var(--lb-gap);
+  bottom: var(--lb-gap);
+  width: var(--lb-context-w);
+  z-index: 470;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--lb-radius-panel);
+  background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
+  box-shadow: var(--lb-shadow-panel);
+  backdrop-filter: var(--lb-surface-blur);
+  -webkit-backdrop-filter: var(--lb-surface-blur);
+  overflow: hidden;
+}
+.lb-context-head {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.lb-context-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2));
+  box-shadow: 0 14px 30px rgba(45,106,79,.24);
+  flex: 0 0 42px;
+}
+.lb-context-title { font-size: 16px; font-weight: 850; letter-spacing: -.45px; line-height: 1.2; }
+.lb-context-sub { margin-top: 4px; font-size: 11px; color: var(--text-tertiary); line-height: 1.35; }
+.lb-context-close {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-surface-soft);
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.lb-context-body { padding: 14px; overflow: auto; flex: 1; }
+.lb-context-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 28px;
+}
+.lb-context-empty strong { color: var(--text-primary); font-size: 15px; margin-bottom: 8px; }
+.lb-context-section {
+  border: 1px solid var(--border-light);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-surface-soft) 68%, transparent);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.lb-context-section h4 {
+  margin: 0 0 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--text-tertiary);
+}
+.lb-context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lb-context-kv { border-radius: 13px; background: color-mix(in srgb, var(--bg-surface) 80%, transparent); border: 1px solid var(--border-light); padding: 9px; min-width: 0; }
+.lb-context-kv span { display: block; font-size: 9px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .45px; margin-bottom: 3px; }
+.lb-context-kv strong { display: block; font-size: 12px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-context-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.lb-context-actions .btn { width: 100%; justify-content: flex-start; min-height: 38px; }
+.lb-context-alert { display: flex; gap: 8px; align-items: flex-start; padding: 9px 10px; border-radius: 13px; font-size: 12px; line-height: 1.35; border: 1px solid var(--border-light); background: var(--bg-surface); margin-bottom: 7px; }
+.lb-context-alert.warn { color: var(--warning); background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 38%, transparent); }
+.lb-context-alert.danger { color: var(--danger); background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 38%, transparent); }
+.lb-context-alert.ok { color: var(--success); background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 38%, transparent); }
+.lb-context-foot { padding: 12px 14px; border-top: 1px solid var(--border-light); font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; justify-content: space-between; }
+.lb-context-chip { border-radius: 999px; padding: 4px 8px; background: var(--accent-muted); color: var(--accent); font-weight: 800; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+
+@media (max-width: 1320px) {
+  :root { --lb-sidebar-w: 250px; --lb-context-w: 330px; }
+  header::after { display: none; }
+  .tab-btn { font-size: 12px !important; }
+}
+@media (max-width: 1040px) {
+  :root { --lb-context-w: 0px; }
+  header { right: 16px !important; }
+  .content { padding-right: 20px !important; }
+  #lb-context-panel { width: min(380px, calc(100vw - 24px)); transform: translateX(calc(100% + 20px)); transition: transform .22s ease; }
+  body.lb-context-open #lb-context-panel { transform: translateX(0); }
+}
+@media (max-width: 860px) {
+  :root { --lb-sidebar-w: 0px; --lb-topbar-h: 64px; }
+  .tabs { left: 10px !important; right: 10px !important; bottom: 10px !important; top: auto !important; width: auto !important; height: 76px !important; flex-direction: row !important; padding: 10px !important; border-radius: 22px !important; overflow-x: auto !important; overflow-y: hidden !important; }
+  .tabs::before, .tabs::after { display: none !important; }
+  .tab-btn { min-width: 128px !important; height: 54px !important; justify-content: center !important; text-align: center !important; }
+  header { left: 10px !important; right: 10px !important; top: 10px !important; height: var(--lb-topbar-h) !important; border-radius: 20px !important; }
+  header::before { font-size: 15px; }
+  #busca-global-input { width: 150px !important; }
+  #busca-global-input:focus { width: 190px !important; }
+  .content { padding: 92px 10px 106px 10px !important; }
+  .toolbar { top: 84px; }
+  .user-chip span, #user-role-badge { display: none !important; }
+}
+@media (max-width: 560px) {
+  header::before { display: none; }
+  header { gap: 6px !important; padding: 0 10px !important; }
+  #busca-global-input { width: 150px !important; }
+  .hbtn { width: 38px !important; height: 38px !important; }
+  .form-grid, .compra-grid, .detail-grid, .detail-grid-3 { grid-template-columns: 1fr !important; }
+  .modal, .detail-popup { width: 98% !important; }
+  .lb-context-grid { grid-template-columns: 1fr; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -9838,81 +10202,301 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 
 
 
-// ===== FIX DEFINITIVO: MENU "..." DOS CONTRATOS ATIVOS / EMPENHOS / ACOMPANHAMENTOS =====
+// =====================================================================
+// LICITATIONBIZNIS PRODUCTION UI 4.0
+// SaaS Enterprise + Painel Contextual Direito + Fix menu de ações
+// =====================================================================
 (function(){
-  function lbCloseActionMenus(){
+  function esc(v){
+    return String(v === undefined || v === null || v === '' ? '—' : v)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function safeFmt(v){
+    try { return typeof fmt === 'function' ? fmt(v || 0) : (v || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+    catch(e){ return 'R$ ' + (Number(v || 0).toFixed(2)).replace('.', ','); }
+  }
+
+  function getDB(){ return window.DB || {disputas:[], empenhos:[], acomp:[]}; }
+  function byId(arr, id){ return (arr || []).find(function(x){ return String(x.id) === String(id); }); }
+
+  function ensurePanel(){
+    var panel = document.getElementById('lb-context-panel');
+    if (panel) return panel;
+
+    panel = document.createElement('aside');
+    panel.id = 'lb-context-panel';
+    panel.setAttribute('aria-label', 'Painel contextual de ações rápidas');
+    panel.innerHTML =
+      '<div class="lb-context-head">' +
+        '<div class="lb-context-icon" id="lb-context-icon">LB</div>' +
+        '<div style="min-width:0;">' +
+          '<div class="lb-context-title" id="lb-context-title">Ações rápidas</div>' +
+          '<div class="lb-context-sub" id="lb-context-sub">Selecione um registro para ver resumo, alertas e atalhos.</div>' +
+        '</div>' +
+        '<button class="lb-context-close" type="button" onclick="window.lbContextClear && window.lbContextClear()" title="Limpar seleção">×</button>' +
+      '</div>' +
+      '<div class="lb-context-body" id="lb-context-body">' + emptyHtml() + '</div>' +
+      '<div class="lb-context-foot"><span>Modo contextual</span><span class="lb-context-chip">Produção</span></div>';
+    document.body.appendChild(panel);
+    return panel;
+  }
+
+  function emptyHtml(){
+    return '<div class="lb-context-empty"><strong>Nenhum registro selecionado</strong><span>Clique em um contrato, empenho ou acompanhamento para abrir as ações rápidas neste painel.</span></div>';
+  }
+
+  function setHead(icon, title, sub){
+    ensurePanel();
+    document.getElementById('lb-context-icon').textContent = icon || 'LB';
+    document.getElementById('lb-context-title').textContent = title || 'Ações rápidas';
+    document.getElementById('lb-context-sub').textContent = sub || 'Selecione um registro.';
+    document.body.classList.add('lb-context-open');
+  }
+
+  function kv(label, value){
+    return '<div class="lb-context-kv"><span>' + esc(label) + '</span><strong title="' + esc(value) + '">' + esc(value) + '</strong></div>';
+  }
+
+  function action(label, fn, kind){
+    var cls = kind === 'ghost' ? 'btn btn-ghost' : kind === 'danger' ? 'btn btn-danger' : kind === 'success' ? 'btn btn-success' : 'btn btn-primary';
+    return '<button type="button" class="' + cls + '" onclick="' + fn + '">' + label + '</button>';
+  }
+
+  function alertLine(text, type){
+    return '<div class="lb-context-alert ' + (type || '') + '"><span>' + (type === 'danger' ? '!' : type === 'ok' ? '✓' : '•') + '</span><div>' + esc(text) + '</div></div>';
+  }
+
+  function calcDisputaValores(r){
+    var emps = (getDB().empenhos || []).filter(function(e){ return e.disputaId === r.id; });
+    var vem = emps.reduce(function(s,e){ return s + (Number(e.vem) || 0); }, 0);
+    var compras = emps.reduce(function(s,e){ return s + ((e.compras || []).reduce(function(ss,c){ return ss + (Number(c.vtotal) || 0); }, 0)); }, 0);
+    var recebido = emps.reduce(function(s,e){ return s + (Number(e.recebido) || 0); }, 0);
+    return {empenhos: emps.length, vem: vem, compras: compras, recebido: recebido};
+  }
+
+  function showDisputa(id){
+    var db = getDB();
+    var r = byId(db.disputas, id);
+    if (!r) return;
+    var v = calcDisputaValores(r);
+    setHead('▣', r.orgao || 'Contrato ativo', 'Pregão/Processo: ' + (r.pregao || r.processo || '—'));
+    var alerts = '';
+    if (!v.empenhos) alerts += alertLine('Contrato sem empenho vinculado.', 'warn');
+    if ((r.lotes || []).length === 0) alerts += alertLine('Nenhum lote/item cadastrado no contrato.', 'warn');
+    if (!alerts) alerts = alertLine('Nenhuma pendência crítica identificada no resumo.', 'ok');
+
+    document.getElementById('lb-context-body').innerHTML =
+      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
+        kv('Órgão', r.orgao) + kv('Estado', r.estado) + kv('Analista', r.analista) + kv('Status', r.status || 'Ativo') +
+        kv('Valor empenhado', safeFmt(v.vem)) + kv('Recebido', safeFmt(v.recebido)) +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
+        action('Ver detalhes', "abrirPopupDisputa('" + esc(id) + "')", 'ghost') +
+        action('Editar contrato', "editD('" + esc(id) + "')", 'ghost') +
+        action('Duplicar', "duplicarDisputa('" + esc(id) + "')", 'ghost') +
+        action('Finalizar', "finalizarDisputa('" + esc(id) + "')", 'success') +
+        action('Excluir', "delRow('disputas','" + esc(id) + "')", 'danger') +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
+  }
+
+  function showEmpenho(id){
+    var db = getDB();
+    var r = byId(db.empenhos, id);
+    if (!r) return;
+    var compras = (r.compras || []).reduce(function(s,c){ return s + (Number(c.vtotal) || 0); }, 0);
+    var lucro = (r.compras || []).reduce(function(s,c){ return s + (Number(c.luc) || 0); }, 0);
+    var recebido = Number(r.recebido || 0);
+    var dias = 0;
+    try { dias = typeof diasSemPagamento === 'function' ? diasSemPagamento(r) : 0; } catch(e) {}
+    var saldo = Number(r.vem || 0) - compras;
+    setHead('◧', r.num || 'Empenho', (r.orgao || '—') + ' · ' + safeFmt(r.vem || 0));
+    var alerts = '';
+    if (saldo > 0) alerts += alertLine('Existe saldo a comprar: ' + safeFmt(saldo), 'warn');
+    if (dias >= 60) alerts += alertLine('Pagamento com atraso superior a 60 dias.', 'danger');
+    if (!alerts) alerts = alertLine('Empenho sem alerta crítico no resumo.', 'ok');
+
+    var novaCompra = '';
+    try {
+      novaCompra = (typeof empenhoTemSaldo === 'function' && empenhoTemSaldo(id))
+        ? action('Nova compra', "abrirCompra('" + esc(id) + "')", 'success')
+        : '<button type="button" class="btn btn-ghost" disabled style="opacity:.55;">Nova compra indisponível</button>';
+    } catch(e) { novaCompra = action('Nova compra', "abrirCompra('" + esc(id) + "')", 'success'); }
+
+    document.getElementById('lb-context-body').innerHTML =
+      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
+        kv('Empenho', r.num) + kv('Órgão', r.orgao) + kv('Analista', r.analista) + kv('Dias sem pgto.', dias) +
+        kv('Valor', safeFmt(r.vem)) + kv('Compras', safeFmt(compras)) + kv('Recebido', safeFmt(recebido)) + kv('Lucro', safeFmt(lucro)) +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
+        action('Ver detalhes', "abrirPopupEmpenho('" + esc(id) + "')", 'ghost') +
+        action('Editar empenho', "editE('" + esc(id) + "')", 'ghost') +
+        novaCompra +
+        action('Excluir', "delRow('empenhos','" + esc(id) + "')", 'danger') +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
+  }
+
+  function showAcomp(id){
+    var db = getDB();
+    var r = byId(db.acomp, id);
+    if (!r) return;
+    setHead('◎', r.orgao || 'Acompanhamento', (r.processo || r.pregao || '—') + ' · ' + (r.status || '—'));
+    var vencido = false;
+    try { vencido = !!(r.retorno && new Date(r.retorno) < new Date()); } catch(e) {}
+    var alerts = vencido ? alertLine('Retorno vencido ou pendente de atualização.', 'danger') : alertLine('Acompanhamento sem alerta crítico no resumo.', 'ok');
+    document.getElementById('lb-context-body').innerHTML =
+      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
+        kv('Órgão', r.orgao) + kv('Processo', r.processo) + kv('Analista', r.analista) + kv('Sistema', r.sistema) +
+        kv('Status', r.status) + kv('Retorno', r.retorno) +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
+        (r.link ? action('Abrir sistema externo', "window.open('" + esc(r.link) + "','_blank')", 'ghost') : '') +
+        action('Editar acompanhamento', "editAcomp('" + esc(id) + "')", 'ghost') +
+        action('Converter em contrato', "converterEmDisputa('" + esc(id) + "')", 'success') +
+        action('Excluir', "delAcomp('" + esc(id) + "')", 'danger') +
+      '</div></div>' +
+      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
+  }
+
+  function clearPanel(){
+    ensurePanel();
+    setHead('LB', 'Ações rápidas', 'Selecione um registro para ver resumo, alertas e atalhos.');
+    document.getElementById('lb-context-body').innerHTML = emptyHtml();
+    document.querySelectorAll('tr.lb-selected-row').forEach(function(tr){ tr.classList.remove('lb-selected-row'); });
+    document.body.classList.remove('lb-context-open');
+  }
+
+  function getRowInfo(row){
+    if (!row) return null;
+    var oc = row.getAttribute('onclick') || '';
+    var m = oc.match(/abrirPopupDisputa\('([^']+)'\)/);
+    if (m) return {type:'disputa', id:m[1]};
+    m = oc.match(/abrirPopupEmpenho\('([^']+)'\)/);
+    if (m) return {type:'empenho', id:m[1]};
+    m = oc.match(/editAcomp\('([^']+)'\)/) || oc.match(/abrirPopupAcomp\('([^']+)'\)/);
+    if (m) return {type:'acomp', id:m[1]};
+    return null;
+  }
+
+  function selectRow(row, info){
+    document.querySelectorAll('tr.lb-selected-row').forEach(function(tr){ tr.classList.remove('lb-selected-row'); });
+    if (row) row.classList.add('lb-selected-row');
+    if (info.type === 'disputa') showDisputa(info.id);
+    if (info.type === 'empenho') showEmpenho(info.id);
+    if (info.type === 'acomp') showAcomp(info.id);
+  }
+
+  function enhanceTabs(){
+    var tabs = document.querySelector('.tabs');
+    if (!tabs || tabs.dataset.lbEnhanced) return;
+    tabs.dataset.lbEnhanced = '1';
+    tabs.setAttribute('aria-label', 'Navegação principal do LicitationBiznis');
+    var map = [['painel','◫'], ['dashboard','◩'], ['contratos','▣'], ['empenhos','◧'], ['acompanhamentos','◎'], ['proposta','◈'], ['compras','◌'], ['config','⚙']];
+    tabs.querySelectorAll('.tab-btn').forEach(function(btn){
+      var key = (btn.textContent || btn.title || '').trim().toLowerCase();
+      var found = map.find(function(p){ return key.indexOf(p[0]) !== -1; });
+      var icon = found ? found[1] : '•';
+      if (!btn.querySelector('.lb-nav-icon')) {
+        var span = document.createElement('span');
+        span.className = 'lb-nav-icon';
+        span.textContent = icon;
+        span.style.cssText = 'width:24px;height:24px;border-radius:9px;display:inline-grid;place-items:center;background:rgba(255,255,255,.10);margin-right:8px;font-size:13px;flex:0 0 24px;';
+        btn.insertBefore(span, btn.firstChild);
+      }
+    });
+  }
+
+  function closeActionMenus(){
     document.querySelectorAll('.action-dropdown-menu').forEach(function(menu){
       menu.style.display = 'none';
       menu.dataset.lbOpen = '0';
     });
   }
 
-  function lbOpenActionMenu(event, btn){
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
+  function openActionMenu(event, btn){
+    if (event) { event.preventDefault(); event.stopPropagation(); }
     if (!btn) return false;
-
     var wrap = btn.closest ? btn.closest('.action-dropdown') : null;
     var menu = wrap ? wrap.querySelector('.action-dropdown-menu') : btn.nextElementSibling;
     if (!menu) return false;
-
     var alreadyOpen = menu.dataset.lbOpen === '1' || menu.style.display === 'block';
-    lbCloseActionMenus();
+    closeActionMenus();
     if (alreadyOpen) return false;
-
     menu.style.display = 'block';
     menu.dataset.lbOpen = '1';
     menu.style.position = 'fixed';
     menu.style.zIndex = '2147483000';
     menu.style.pointerEvents = 'auto';
-
     var rect = btn.getBoundingClientRect();
     var menuW = Math.max(menu.offsetWidth || 190, 190);
     var menuH = Math.max(menu.scrollHeight || menu.offsetHeight || 180, 120);
-
     var left = rect.right - menuW;
     var top = rect.bottom + 6;
-
     if (left < 8) left = 8;
     if (left + menuW > window.innerWidth - 8) left = window.innerWidth - menuW - 8;
     if (top + menuH > window.innerHeight - 8) top = rect.top - menuH - 6;
     if (top < 8) top = 8;
-
     menu.style.left = left + 'px';
     menu.style.top = top + 'px';
-
     return false;
   }
 
-  // Sobrescreve as funções antigas, mantendo o mesmo nome usado nos onclicks já existentes.
-  window.openActionMenu = lbOpenActionMenu;
-  window.closeActionMenus = lbCloseActionMenus;
+  window.lbContextClear = clearPanel;
+  window.lbShowDisputaContext = showDisputa;
+  window.lbShowEmpenhoContext = showEmpenho;
+  window.lbShowAcompContext = showAcomp;
+  window.openActionMenu = openActionMenu;
+  window.closeActionMenus = closeActionMenus;
 
-  // Delegação de evento: garante funcionamento mesmo quando a linha/tabela é renderizada depois.
   document.addEventListener('click', function(event){
     var btn = event.target && event.target.closest ? event.target.closest('.action-dropdown-btn') : null;
-    if (btn) {
-      lbOpenActionMenu(event, btn);
-      return;
-    }
-
-    var insideMenu = event.target && event.target.closest ? event.target.closest('.action-dropdown-menu') : null;
-    if (!insideMenu) lbCloseActionMenus();
+    if (btn) { openActionMenu(event, btn); return; }
+    var menu = event.target && event.target.closest ? event.target.closest('.action-dropdown-menu') : null;
+    if (!menu) closeActionMenus();
   }, true);
 
-  document.addEventListener('keydown', function(event){
-    if (event.key === 'Escape') lbCloseActionMenus();
-  });
+  document.addEventListener('click', function(event){
+    var interactive = event.target && event.target.closest ? event.target.closest('button,a,input,select,textarea,label,.action-dropdown,.modal,.detail-popup,.wizard,.confirm-modal-box') : null;
+    if (interactive) return;
+    var row = event.target && event.target.closest ? event.target.closest('tr[onclick]') : null;
+    var info = getRowInfo(row);
+    if (!info) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    selectRow(row, info);
+  }, true);
 
-  window.addEventListener('resize', lbCloseActionMenus);
+  document.addEventListener('dblclick', function(event){
+    var row = event.target && event.target.closest ? event.target.closest('tr[onclick]') : null;
+    var info = getRowInfo(row);
+    if (!info) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (info.type === 'disputa' && typeof abrirPopupDisputa === 'function') abrirPopupDisputa(info.id);
+    if (info.type === 'empenho' && typeof abrirPopupEmpenho === 'function') abrirPopupEmpenho(info.id);
+    if (info.type === 'acomp' && typeof editAcomp === 'function') editAcomp(info.id);
+  }, true);
+
+  document.addEventListener('keydown', function(event){ if (event.key === 'Escape') closeActionMenus(); });
+  window.addEventListener('resize', closeActionMenus);
   window.addEventListener('scroll', function(event){
     var target = event.target;
     if (target && target.closest && target.closest('.action-dropdown-menu')) return;
-    lbCloseActionMenus();
+    closeActionMenus();
   }, true);
+
+  function init(){
+    document.body.classList.add('lb-enterprise-ui');
+    ensurePanel();
+    enhanceTabs();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 
 console.log('v2 OK');
