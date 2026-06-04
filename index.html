@@ -1307,6 +1307,422 @@
   /* modal emp disp */
   .modal-emp-disp { max-width: 900px; width: 96%; }
 
+
+
+/* =====================================================================
+   LICITATIONBIZNIS 3.0 - LAYOUT EXECUTIVE SAAS
+   Camada visual aplicada sem remover a lógica original do sistema.
+   ===================================================================== */
+:root {
+  --lb-sidebar-w: 292px;
+  --lb-topbar-h: 72px;
+  --lb-ink: #0f172a;
+  --lb-muted: #64748b;
+  --lb-line: rgba(148, 163, 184, .22);
+  --lb-card: rgba(255, 255, 255, .88);
+  --lb-card-solid: #ffffff;
+  --lb-app: #eef4f8;
+  --lb-green: #2d6a4f;
+  --lb-green-2: #40916c;
+  --lb-green-3: #1b4332;
+  --lb-accent: #2563eb;
+  --lb-gold: #b7791f;
+  --lb-danger: #dc2626;
+  --lb-radius: 18px;
+  --lb-radius-sm: 12px;
+  --lb-shadow: 0 18px 50px rgba(15, 23, 42, .08), 0 2px 10px rgba(15, 23, 42, .04);
+  --lb-shadow-soft: 0 10px 30px rgba(15, 23, 42, .06);
+}
+
+body[data-theme="light"] {
+  --bg-app: var(--lb-app);
+  --bg-surface: rgba(255,255,255,.92);
+  --bg-surface-hover: #f8fafc;
+  --bg-surface-soft: #f1f5f9;
+  --border-light: rgba(148, 163, 184, .25);
+  --border-medium: rgba(100, 116, 139, .35);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+  --accent: var(--lb-green);
+  --accent-hover: var(--lb-green-3);
+  --accent-muted: rgba(45, 106, 79, .10);
+  --accent-ring: rgba(45, 106, 79, .18);
+  --shadow-xs: 0 1px 2px rgba(15,23,42,.04);
+  --shadow-sm: var(--lb-shadow-soft);
+  --shadow-md: var(--lb-shadow);
+  --shadow-lg: 0 24px 70px rgba(15, 23, 42, .14);
+  --shadow-xl: 0 34px 90px rgba(15, 23, 42, .18);
+}
+
+body[data-theme="dark"] {
+  --bg-app: #08111d;
+  --bg-surface: rgba(15, 23, 42, .86);
+  --bg-surface-hover: rgba(30,41,59,.92);
+  --bg-surface-soft: rgba(30, 41, 59, .84);
+  --bg-sidebar: #08111d;
+  --border-light: rgba(148, 163, 184, .18);
+  --border-medium: rgba(148, 163, 184, .28);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --accent: #74c69d;
+  --accent-hover: #95d5b2;
+  --accent-muted: rgba(116, 198, 157, .12);
+  --accent-ring: rgba(116, 198, 157, .20);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-sm: 0 10px 30px rgba(0,0,0,.28);
+  --shadow-md: 0 18px 60px rgba(0,0,0,.36);
+  --shadow-lg: 0 28px 80px rgba(0,0,0,.44);
+  --shadow-xl: 0 40px 100px rgba(0,0,0,.52);
+}
+
+body {
+  display: block !important;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(45,106,79,.16), transparent 34%),
+    radial-gradient(circle at 85% 6%, rgba(37,99,235,.10), transparent 30%),
+    linear-gradient(135deg, var(--bg-app), #f8fafc 52%, #eef4f8) !important;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+body[data-theme="dark"] {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(116,198,157,.13), transparent 34%),
+    radial-gradient(circle at 90% 4%, rgba(59,130,246,.12), transparent 30%),
+    linear-gradient(135deg, #07111d, #0f172a 52%, #08111d) !important;
+}
+
+/* Topbar executiva */
+header {
+  position: fixed !important;
+  top: 16px !important;
+  left: calc(var(--lb-sidebar-w) + 22px) !important;
+  right: 22px !important;
+  height: var(--lb-topbar-h) !important;
+  z-index: 500 !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 22px !important;
+  background: color-mix(in srgb, var(--bg-surface) 88%, transparent) !important;
+  backdrop-filter: blur(22px) saturate(1.25) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.25) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 0 18px !important;
+  gap: 10px !important;
+}
+header .logo { display: none !important; }
+header::before {
+  content: "Centro de Controle";
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -.55px;
+  color: var(--text-primary);
+  margin-right: 10px;
+  white-space: nowrap;
+}
+header::after {
+  content: "Licitações, contratos, empenhos e propostas";
+  position: absolute;
+  left: 18px;
+  bottom: 10px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+header .spacer { flex: 1 1 auto; min-width: 20px; }
+
+#busca-global-input {
+  width: min(32vw, 380px) !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+  padding: 0 42px !important;
+  font-size: 13px !important;
+  background: var(--bg-surface-soft) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+#busca-global-input:focus {
+  width: min(36vw, 440px) !important;
+  background: var(--bg-surface) !important;
+}
+.busca-kbd-hint {
+  right: 12px !important;
+  border-radius: 8px !important;
+  padding: 2px 7px !important;
+}
+.hbtn, .user-chip, .push-notif-btn {
+  height: 42px !important;
+  border-radius: 14px !important;
+  background: var(--bg-surface-soft) !important;
+  border: 1px solid var(--border-light) !important;
+}
+.hbtn { width: 42px !important; }
+.user-chip { padding: 5px 12px 5px 5px !important; }
+.user-avatar { width: 30px !important; height: 30px !important; background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2)) !important; }
+#user-role-badge { height: 32px; display: inline-flex; align-items: center; background: var(--accent-muted); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+
+/* Sidebar a partir das tabs originais */
+.tabs {
+  position: fixed !important;
+  inset: 16px auto 16px 16px !important;
+  width: var(--lb-sidebar-w) !important;
+  height: calc(100vh - 32px) !important;
+  z-index: 450 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 132px 14px 18px !important;
+  overflow: hidden auto !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  border-radius: 26px !important;
+  background:
+    linear-gradient(180deg, rgba(27,67,50,.98), rgba(8, 28, 21, .98)) !important;
+  box-shadow: 0 24px 70px rgba(6, 30, 21, .30) !important;
+  scrollbar-width: thin;
+}
+.tabs::before {
+  content: "LB";
+  position: absolute;
+  top: 22px;
+  left: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -.8px;
+  background: linear-gradient(135deg, #52b788, #2d6a4f);
+  box-shadow: 0 16px 40px rgba(82,183,136,.28);
+}
+.tabs::after {
+  content: "LicitationBiznis\A Gestão inteligente de licitações";
+  white-space: pre;
+  position: absolute;
+  top: 25px;
+  left: 86px;
+  right: 18px;
+  color: rgba(255,255,255,.96);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -.25px;
+}
+.tab-btn {
+  width: 100% !important;
+  height: 44px !important;
+  justify-content: flex-start !important;
+  padding: 0 13px !important;
+  margin: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 15px !important;
+  color: rgba(255,255,255,.72) !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.1px !important;
+  background: transparent !important;
+  transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease !important;
+}
+.tab-btn:hover {
+  transform: translateX(3px);
+  color: #fff !important;
+  background: rgba(255,255,255,.08) !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+.tab-btn.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(82,183,136,.30), rgba(255,255,255,.10)) !important;
+  border-color: rgba(149,213,178,.32) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 26px rgba(0,0,0,.16) !important;
+}
+.tab-badge {
+  margin-left: auto !important;
+  background: rgba(255,255,255,.10) !important;
+  border-color: rgba(255,255,255,.16) !important;
+  color: rgba(255,255,255,.82) !important;
+}
+.tab-btn.active .tab-badge { background: #fff !important; color: var(--lb-green-3) !important; }
+
+/* Área de trabalho */
+.content {
+  width: auto !important;
+  max-width: none !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: calc(var(--lb-topbar-h) + 46px) 24px 40px calc(var(--lb-sidebar-w) + 24px) !important;
+}
+.tab-pane.active { animation: lbPaneIn .22s ease both; }
+@keyframes lbPaneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.toolbar, .card, .chart-card, .stat-card, .dash-kpi, .acomp-card, .table-wrapper, .table-wrap, .painel-section, .compra-item-card, .lote-selector-card, .modal, .detail-popup, .shortcuts-modal-box, .confirm-modal-box, .wizard {
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--lb-radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+.toolbar {
+  position: sticky;
+  top: calc(var(--lb-topbar-h) + 30px);
+  z-index: 300;
+  padding: 12px !important;
+  gap: 8px !important;
+}
+.summary-row, .dash-kpi-row { gap: 14px !important; }
+.card, .dash-kpi, .stat-card { padding: 18px 20px !important; }
+.card::before, .dash-kpi::before, .stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 999px 0 0 999px;
+  background: linear-gradient(180deg, var(--accent), var(--lb-green-2));
+  opacity: .75;
+}
+.card-label, .dash-kpi .lbl, .stat-card .label, .painel-section-title, .chart-card h3, th {
+  color: var(--text-tertiary) !important;
+  font-size: 10px !important;
+  letter-spacing: .65px !important;
+}
+.card-value, .dash-kpi .val, .stat-card .value {
+  font-size: clamp(18px, 1.4vw, 24px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.8px !important;
+}
+
+.btn, .btn-primary, .btn-ghost, .btn-success, .btn-danger, .page-btn, .copy-btn, .action-dropdown-btn, .modal-close, .login-btn {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease, border-color .14s ease !important;
+}
+.btn:hover, .btn-primary:hover, .btn-ghost:hover, .btn-success:hover, .page-btn:hover:not(:disabled), .copy-btn:hover, .action-dropdown-btn:hover, .login-btn:hover {
+  transform: translateY(-1px);
+}
+.btn-primary, .login-btn {
+  background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2)) !important;
+  box-shadow: 0 10px 22px rgba(45,106,79,.22) !important;
+}
+.btn-ghost { background: var(--bg-surface) !important; }
+
+.table-wrapper {
+  max-height: calc(100vh - 330px) !important;
+  overflow: auto !important;
+}
+table { border-collapse: separate !important; border-spacing: 0 !important; }
+th {
+  background: color-mix(in srgb, var(--bg-surface) 95%, transparent) !important;
+  padding: 13px 11px !important;
+}
+td {
+  padding: 12px 11px !important;
+  border-bottom-color: var(--border-light) !important;
+}
+tbody tr:hover td { background: color-mix(in srgb, var(--accent-muted) 70%, transparent) !important; }
+.badge, .dias-badge, .estado-badge, .status-pago, .status-pendente, .vinculo-badge {
+  border-radius: 999px !important;
+  padding: 4px 9px !important;
+  font-weight: 800 !important;
+}
+
+.fc, .login-select, .wizard-step input, .wizard-step select, .filter-group, .search-box input {
+  border-radius: 12px !important;
+  min-height: 38px;
+}
+.form-grid { gap: 14px !important; }
+.fsec, .fsec-collapsible, .detail-section { padding-top: 6px; }
+
+.modal-overlay, .detail-popup-overlay, .wizard-overlay, .confirm-modal-overlay, .shortcuts-modal {
+  background: rgba(2, 6, 23, .52) !important;
+  backdrop-filter: blur(12px) saturate(1.15) !important;
+}
+.modal-header, .modal-footer {
+  background: color-mix(in srgb, var(--bg-surface) 94%, transparent) !important;
+}
+.modal-title, .detail-popup-title, .shortcuts-modal-title { font-size: 18px !important; letter-spacing: -.45px; }
+
+/* Login com identidade mais premium */
+.login-overlay {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(82,183,136,.28), transparent 30%),
+    radial-gradient(circle at 82% 10%, rgba(37,99,235,.16), transparent 28%),
+    linear-gradient(135deg, #071a13, #0f172a) !important;
+}
+.login-card {
+  max-width: 420px !important;
+  padding: 38px 34px !important;
+  border-radius: 28px !important;
+  background: rgba(255,255,255,.94) !important;
+  border: 1px solid rgba(255,255,255,.55) !important;
+  box-shadow: 0 34px 90px rgba(0,0,0,.36) !important;
+}
+body[data-theme="dark"] .login-card { background: rgba(15,23,42,.92) !important; }
+.login-title { font-size: 24px !important; letter-spacing: -.8px !important; }
+.login-sub { font-size: 13px !important; }
+
+.toast {
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+#offline-banner {
+  border-radius: 999px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+@media (max-width: 1180px) {
+  :root { --lb-sidebar-w: 246px; }
+  .tab-btn { font-size: 12px !important; }
+  header::after { display: none; }
+}
+@media (max-width: 860px) {
+  :root { --lb-sidebar-w: 0px; --lb-topbar-h: 64px; }
+  .tabs {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    top: auto !important;
+    width: auto !important;
+    height: 76px !important;
+    flex-direction: row !important;
+    padding: 10px !important;
+    border-radius: 22px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  .tabs::before, .tabs::after { display: none !important; }
+  .tab-btn {
+    min-width: 128px !important;
+    height: 54px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  header {
+    left: 10px !important;
+    right: 10px !important;
+    top: 10px !important;
+    height: var(--lb-topbar-h) !important;
+    border-radius: 20px !important;
+  }
+  header::before { font-size: 15px; }
+  #busca-global-input { width: 150px !important; }
+  #busca-global-input:focus { width: 190px !important; }
+  .content { padding: 92px 10px 106px 10px !important; }
+  .toolbar { top: 84px; }
+  .user-chip span, #user-role-badge { display: none !important; }
+}
+@media (max-width: 560px) {
+  header::before { display: none; }
+  header { gap: 6px !important; padding: 0 10px !important; }
+  #busca-global-input { width: 150px !important; }
+  .hbtn { width: 38px !important; height: 38px !important; }
+  .form-grid, .compra-grid, .detail-grid, .detail-grid-3 { grid-template-columns: 1fr !important; }
+  .modal, .detail-popup { width: 98% !important; }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -4872,6 +5288,50 @@ function verExcel(id, tipo) {
     </div>
   </div>
 </div>
+
+
+<script id="lb-modern-layout-js">
+(function(){
+  function enhanceLayout(){
+    document.body.classList.add('lb-modern-layout');
+    const tabs = document.querySelector('.tabs');
+    if (tabs && !tabs.dataset.lbEnhanced) {
+      tabs.dataset.lbEnhanced = '1';
+      tabs.setAttribute('aria-label', 'Navegação principal do LicitationBiznis');
+      const map = [
+        ['painel','◫'], ['dashboard','◩'], ['contratos','▣'], ['empenhos','◧'],
+        ['acompanhamentos','◎'], ['proposta','◈'], ['compras','◌'], ['config','⚙']
+      ];
+      tabs.querySelectorAll('.tab-btn').forEach(btn => {
+        const raw = (btn.textContent || btn.title || '').trim();
+        const key = raw.toLowerCase();
+        if (!btn.dataset.lbIcon) {
+          const found = map.find(([k]) => key.includes(k));
+          const icon = found ? found[1] : '•';
+          btn.dataset.lbIcon = icon;
+          btn.style.setProperty('--lb-icon', '"' + icon + '"');
+          const firstText = Array.from(btn.childNodes).find(n => n.nodeType === 3 && n.textContent.trim());
+          if (firstText && !btn.querySelector('.lb-nav-icon')) {
+            const span = document.createElement('span');
+            span.className = 'lb-nav-icon';
+            span.textContent = icon;
+            span.style.cssText = 'width:24px;height:24px;border-radius:9px;display:inline-grid;place-items:center;background:rgba(255,255,255,.10);margin-right:8px;font-size:13px;flex:0 0 24px;';
+            btn.insertBefore(span, btn.firstChild);
+          }
+        }
+      });
+    }
+    const header = document.querySelector('header');
+    if (header && !header.dataset.lbEnhanced) {
+      header.dataset.lbEnhanced = '1';
+      header.setAttribute('aria-label', 'Barra superior');
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enhanceLayout);
+  else enhanceLayout();
+})();
+</script>
+
 </body></html>`);
 }
 
