@@ -1310,22 +1310,20 @@
 
 
 /* =====================================================================
-   LICITATIONBIZNIS PRODUCTION UI 4.0
-   Layout SaaS Enterprise + Painel Contextual Direito
-   Mantém a lógica original, IDs, Firebase e fluxos existentes.
+   LICITATIONBIZNIS SAAS ENTERPRISE 1.0
+   Apenas estrutura geral: menu lateral, header fixo, busca global e módulos separados.
+   Sem painel contextual direito.
    ===================================================================== */
 :root {
   --lb-sidebar-w: 292px;
-  --lb-context-w: 360px;
   --lb-topbar-h: 72px;
   --lb-gap: 16px;
   --lb-green: #2d6a4f;
   --lb-green-2: #40916c;
   --lb-green-3: #1b4332;
-  --lb-surface-blur: blur(18px) saturate(1.12);
   --lb-radius-panel: 24px;
   --lb-radius-card: 18px;
-  --lb-shadow-panel: 0 24px 70px rgba(15, 23, 42, .13), 0 2px 10px rgba(15, 23, 42, .05);
+  --lb-surface-blur: blur(18px) saturate(1.12);
 }
 
 body[data-theme="light"] {
@@ -1374,7 +1372,7 @@ body[data-theme="dark"] {
   --shadow-xl: 0 40px 100px rgba(0,0,0,.52);
 }
 
-body.lb-enterprise-ui,
+body.lb-saas-enterprise,
 body {
   display: block !important;
   min-height: 100vh;
@@ -1391,12 +1389,12 @@ body[data-theme="dark"] {
     linear-gradient(135deg, #07111d, #0f172a 52%, #08111d) !important;
 }
 
-/* Topbar */
+/* Header fixo */
 header {
   position: fixed !important;
   top: var(--lb-gap) !important;
   left: calc(var(--lb-sidebar-w) + 22px) !important;
-  right: calc(var(--lb-context-w) + 32px) !important;
+  right: 22px !important;
   height: var(--lb-topbar-h) !important;
   z-index: 500 !important;
   border: 1px solid var(--border-light) !important;
@@ -1428,8 +1426,10 @@ header::after {
   pointer-events: none;
 }
 header .spacer { flex: 1 1 auto; min-width: 20px; }
+
+/* Busca global no header */
 #busca-global-input {
-  width: min(28vw, 360px) !important;
+  width: min(34vw, 420px) !important;
   height: 42px !important;
   border-radius: 14px !important;
   padding: 0 42px !important;
@@ -1437,7 +1437,11 @@ header .spacer { flex: 1 1 auto; min-width: 20px; }
   background: var(--bg-surface-soft) !important;
   border: 1px solid var(--border-light) !important;
 }
-#busca-global-input:focus { width: min(32vw, 420px) !important; background: var(--bg-surface) !important; }
+#busca-global-input:focus {
+  width: min(38vw, 480px) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 0 0 3px var(--accent-ring) !important;
+}
 .busca-kbd-hint { right: 12px !important; border-radius: 8px !important; padding: 2px 7px !important; }
 .hbtn, .user-chip, .push-notif-btn {
   height: 42px !important;
@@ -1450,7 +1454,7 @@ header .spacer { flex: 1 1 auto; min-width: 20px; }
 .user-avatar { width: 30px !important; height: 30px !important; background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2)) !important; }
 #user-role-badge { height: 32px; display: inline-flex; align-items: center; background: var(--accent-muted); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
 
-/* Sidebar a partir das tabs originais */
+/* Menu lateral a partir das tabs originais */
 .tabs {
   position: fixed !important;
   inset: var(--lb-gap) auto var(--lb-gap) var(--lb-gap) !important;
@@ -1518,17 +1522,18 @@ header .spacer { flex: 1 1 auto; min-width: 20px; }
 .tab-badge { margin-left: auto !important; background: rgba(255,255,255,.10) !important; border-color: rgba(255,255,255,.16) !important; color: rgba(255,255,255,.82) !important; }
 .tab-btn.active .tab-badge { background: #fff !important; color: var(--lb-green-3) !important; }
 
-/* Área central */
+/* Conteúdo central amplo */
 .content {
   width: auto !important;
   max-width: none !important;
   min-height: 100vh;
   margin: 0 !important;
-  padding: calc(var(--lb-topbar-h) + 46px) calc(var(--lb-context-w) + 34px) 40px calc(var(--lb-sidebar-w) + 24px) !important;
+  padding: calc(var(--lb-topbar-h) + 46px) 24px 40px calc(var(--lb-sidebar-w) + 24px) !important;
 }
 .tab-pane.active { animation: lbPaneIn .22s ease both; }
 @keyframes lbPaneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Separação visual dos módulos */
 .toolbar, .card, .chart-card, .stat-card, .dash-kpi, .acomp-card, .table-wrapper, .table-wrap, .painel-section, .compra-item-card, .lote-selector-card, .modal, .detail-popup, .shortcuts-modal-box, .confirm-modal-box, .wizard {
   background: color-mix(in srgb, var(--bg-surface) 92%, transparent) !important;
   border: 1px solid var(--border-light) !important;
@@ -1549,7 +1554,6 @@ table { border-collapse: separate !important; border-spacing: 0 !important; }
 th { background: color-mix(in srgb, var(--bg-surface) 95%, transparent) !important; padding: 13px 11px !important; }
 td { padding: 12px 11px !important; border-bottom-color: var(--border-light) !important; }
 tbody tr:hover td { background: color-mix(in srgb, var(--accent-muted) 70%, transparent) !important; }
-tr.lb-selected-row td { background: color-mix(in srgb, var(--accent-muted) 88%, transparent) !important; box-shadow: inset 3px 0 0 var(--accent); }
 .badge, .dias-badge, .estado-badge, .status-pago, .status-pendente, .vinculo-badge { border-radius: 999px !important; padding: 4px 9px !important; font-weight: 800 !important; }
 .fc, .login-select, .wizard-step input, .wizard-step select, .filter-group, .search-box input { border-radius: 12px !important; min-height: 38px; }
 .form-grid { gap: 14px !important; }
@@ -1562,110 +1566,15 @@ body[data-theme="dark"] .login-card { background: rgba(15,23,42,.92) !important;
 .login-title { font-size: 24px !important; letter-spacing: -.8px !important; }
 .login-sub { font-size: 13px !important; }
 
-/* Menu de ações por linha */
+/* Mantém menu de ações visível e clicável */
 .action-dropdown-btn { pointer-events: auto !important; min-width: 34px !important; min-height: 28px !important; position: relative !important; z-index: 20 !important; }
 .action-dropdown-menu { z-index: 2147483000 !important; pointer-events: auto !important; min-width: 190px !important; }
 .action-dropdown-item { pointer-events: auto !important; }
 
-/* Painel contextual direito */
-#lb-context-panel {
-  position: fixed;
-  top: var(--lb-gap);
-  right: var(--lb-gap);
-  bottom: var(--lb-gap);
-  width: var(--lb-context-w);
-  z-index: 470;
-  display: flex;
-  flex-direction: column;
-  color: var(--text-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--lb-radius-panel);
-  background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
-  box-shadow: var(--lb-shadow-panel);
-  backdrop-filter: var(--lb-surface-blur);
-  -webkit-backdrop-filter: var(--lb-surface-blur);
-  overflow: hidden;
-}
-.lb-context-head {
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.lb-context-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 15px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--lb-green), var(--lb-green-2));
-  box-shadow: 0 14px 30px rgba(45,106,79,.24);
-  flex: 0 0 42px;
-}
-.lb-context-title { font-size: 16px; font-weight: 850; letter-spacing: -.45px; line-height: 1.2; }
-.lb-context-sub { margin-top: 4px; font-size: 11px; color: var(--text-tertiary); line-height: 1.35; }
-.lb-context-close {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  background: var(--bg-surface-soft);
-  color: var(--text-tertiary);
-  cursor: pointer;
-}
-.lb-context-body { padding: 14px; overflow: auto; flex: 1; }
-.lb-context-empty {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  color: var(--text-tertiary);
-  padding: 28px;
-}
-.lb-context-empty strong { color: var(--text-primary); font-size: 15px; margin-bottom: 8px; }
-.lb-context-section {
-  border: 1px solid var(--border-light);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--bg-surface-soft) 68%, transparent);
-  padding: 12px;
-  margin-bottom: 12px;
-}
-.lb-context-section h4 {
-  margin: 0 0 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .7px;
-  color: var(--text-tertiary);
-}
-.lb-context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.lb-context-kv { border-radius: 13px; background: color-mix(in srgb, var(--bg-surface) 80%, transparent); border: 1px solid var(--border-light); padding: 9px; min-width: 0; }
-.lb-context-kv span { display: block; font-size: 9px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .45px; margin-bottom: 3px; }
-.lb-context-kv strong { display: block; font-size: 12px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lb-context-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
-.lb-context-actions .btn { width: 100%; justify-content: flex-start; min-height: 38px; }
-.lb-context-alert { display: flex; gap: 8px; align-items: flex-start; padding: 9px 10px; border-radius: 13px; font-size: 12px; line-height: 1.35; border: 1px solid var(--border-light); background: var(--bg-surface); margin-bottom: 7px; }
-.lb-context-alert.warn { color: var(--warning); background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 38%, transparent); }
-.lb-context-alert.danger { color: var(--danger); background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 38%, transparent); }
-.lb-context-alert.ok { color: var(--success); background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 38%, transparent); }
-.lb-context-foot { padding: 12px 14px; border-top: 1px solid var(--border-light); font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; justify-content: space-between; }
-.lb-context-chip { border-radius: 999px; padding: 4px 8px; background: var(--accent-muted); color: var(--accent); font-weight: 800; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
-
-@media (max-width: 1320px) {
-  :root { --lb-sidebar-w: 250px; --lb-context-w: 330px; }
+@media (max-width: 1180px) {
+  :root { --lb-sidebar-w: 250px; }
   header::after { display: none; }
   .tab-btn { font-size: 12px !important; }
-}
-@media (max-width: 1040px) {
-  :root { --lb-context-w: 0px; }
-  header { right: 16px !important; }
-  .content { padding-right: 20px !important; }
-  #lb-context-panel { width: min(380px, calc(100vw - 24px)); transform: translateX(calc(100% + 20px)); transition: transform .22s ease; }
-  body.lb-context-open #lb-context-panel { transform: translateX(0); }
 }
 @media (max-width: 860px) {
   :root { --lb-sidebar-w: 0px; --lb-topbar-h: 64px; }
@@ -1687,7 +1596,6 @@ body[data-theme="dark"] .login-card { background: rgba(15,23,42,.92) !important;
   .hbtn { width: 38px !important; height: 38px !important; }
   .form-grid, .compra-grid, .detail-grid, .detail-grid-3 { grid-template-columns: 1fr !important; }
   .modal, .detail-popup { width: 98% !important; }
-  .lb-context-grid { grid-template-columns: 1fr; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -10203,196 +10111,14 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 
 
 // =====================================================================
-// LICITATIONBIZNIS PRODUCTION UI 4.0
-// SaaS Enterprise + Painel Contextual Direito + Fix menu de ações
+// LICITATIONBIZNIS SAAS ENTERPRISE 1.0
+// Apenas estrutura geral: menu lateral, header fixo e busca global preservada
 // =====================================================================
 (function(){
-  function esc(v){
-    return String(v === undefined || v === null || v === '' ? '—' : v)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
-  function safeFmt(v){
-    try { return typeof fmt === 'function' ? fmt(v || 0) : (v || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-    catch(e){ return 'R$ ' + (Number(v || 0).toFixed(2)).replace('.', ','); }
-  }
-
-  function getDB(){ return window.DB || {disputas:[], empenhos:[], acomp:[]}; }
-  function byId(arr, id){ return (arr || []).find(function(x){ return String(x.id) === String(id); }); }
-
-  function ensurePanel(){
-    var panel = document.getElementById('lb-context-panel');
-    if (panel) return panel;
-
-    panel = document.createElement('aside');
-    panel.id = 'lb-context-panel';
-    panel.setAttribute('aria-label', 'Painel contextual de ações rápidas');
-    panel.innerHTML =
-      '<div class="lb-context-head">' +
-        '<div class="lb-context-icon" id="lb-context-icon">LB</div>' +
-        '<div style="min-width:0;">' +
-          '<div class="lb-context-title" id="lb-context-title">Ações rápidas</div>' +
-          '<div class="lb-context-sub" id="lb-context-sub">Selecione um registro para ver resumo, alertas e atalhos.</div>' +
-        '</div>' +
-        '<button class="lb-context-close" type="button" onclick="window.lbContextClear && window.lbContextClear()" title="Limpar seleção">×</button>' +
-      '</div>' +
-      '<div class="lb-context-body" id="lb-context-body">' + emptyHtml() + '</div>' +
-      '<div class="lb-context-foot"><span>Modo contextual</span><span class="lb-context-chip">Produção</span></div>';
-    document.body.appendChild(panel);
-    return panel;
-  }
-
-  function emptyHtml(){
-    return '<div class="lb-context-empty"><strong>Nenhum registro selecionado</strong><span>Clique em um contrato, empenho ou acompanhamento para abrir as ações rápidas neste painel.</span></div>';
-  }
-
-  function setHead(icon, title, sub){
-    ensurePanel();
-    document.getElementById('lb-context-icon').textContent = icon || 'LB';
-    document.getElementById('lb-context-title').textContent = title || 'Ações rápidas';
-    document.getElementById('lb-context-sub').textContent = sub || 'Selecione um registro.';
-    document.body.classList.add('lb-context-open');
-  }
-
-  function kv(label, value){
-    return '<div class="lb-context-kv"><span>' + esc(label) + '</span><strong title="' + esc(value) + '">' + esc(value) + '</strong></div>';
-  }
-
-  function action(label, fn, kind){
-    var cls = kind === 'ghost' ? 'btn btn-ghost' : kind === 'danger' ? 'btn btn-danger' : kind === 'success' ? 'btn btn-success' : 'btn btn-primary';
-    return '<button type="button" class="' + cls + '" onclick="' + fn + '">' + label + '</button>';
-  }
-
-  function alertLine(text, type){
-    return '<div class="lb-context-alert ' + (type || '') + '"><span>' + (type === 'danger' ? '!' : type === 'ok' ? '✓' : '•') + '</span><div>' + esc(text) + '</div></div>';
-  }
-
-  function calcDisputaValores(r){
-    var emps = (getDB().empenhos || []).filter(function(e){ return e.disputaId === r.id; });
-    var vem = emps.reduce(function(s,e){ return s + (Number(e.vem) || 0); }, 0);
-    var compras = emps.reduce(function(s,e){ return s + ((e.compras || []).reduce(function(ss,c){ return ss + (Number(c.vtotal) || 0); }, 0)); }, 0);
-    var recebido = emps.reduce(function(s,e){ return s + (Number(e.recebido) || 0); }, 0);
-    return {empenhos: emps.length, vem: vem, compras: compras, recebido: recebido};
-  }
-
-  function showDisputa(id){
-    var db = getDB();
-    var r = byId(db.disputas, id);
-    if (!r) return;
-    var v = calcDisputaValores(r);
-    setHead('▣', r.orgao || 'Contrato ativo', 'Pregão/Processo: ' + (r.pregao || r.processo || '—'));
-    var alerts = '';
-    if (!v.empenhos) alerts += alertLine('Contrato sem empenho vinculado.', 'warn');
-    if ((r.lotes || []).length === 0) alerts += alertLine('Nenhum lote/item cadastrado no contrato.', 'warn');
-    if (!alerts) alerts = alertLine('Nenhuma pendência crítica identificada no resumo.', 'ok');
-
-    document.getElementById('lb-context-body').innerHTML =
-      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
-        kv('Órgão', r.orgao) + kv('Estado', r.estado) + kv('Analista', r.analista) + kv('Status', r.status || 'Ativo') +
-        kv('Valor empenhado', safeFmt(v.vem)) + kv('Recebido', safeFmt(v.recebido)) +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
-        action('Ver detalhes', "abrirPopupDisputa('" + esc(id) + "')", 'ghost') +
-        action('Editar contrato', "editD('" + esc(id) + "')", 'ghost') +
-        action('Duplicar', "duplicarDisputa('" + esc(id) + "')", 'ghost') +
-        action('Finalizar', "finalizarDisputa('" + esc(id) + "')", 'success') +
-        action('Excluir', "delRow('disputas','" + esc(id) + "')", 'danger') +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
-  }
-
-  function showEmpenho(id){
-    var db = getDB();
-    var r = byId(db.empenhos, id);
-    if (!r) return;
-    var compras = (r.compras || []).reduce(function(s,c){ return s + (Number(c.vtotal) || 0); }, 0);
-    var lucro = (r.compras || []).reduce(function(s,c){ return s + (Number(c.luc) || 0); }, 0);
-    var recebido = Number(r.recebido || 0);
-    var dias = 0;
-    try { dias = typeof diasSemPagamento === 'function' ? diasSemPagamento(r) : 0; } catch(e) {}
-    var saldo = Number(r.vem || 0) - compras;
-    setHead('◧', r.num || 'Empenho', (r.orgao || '—') + ' · ' + safeFmt(r.vem || 0));
-    var alerts = '';
-    if (saldo > 0) alerts += alertLine('Existe saldo a comprar: ' + safeFmt(saldo), 'warn');
-    if (dias >= 60) alerts += alertLine('Pagamento com atraso superior a 60 dias.', 'danger');
-    if (!alerts) alerts = alertLine('Empenho sem alerta crítico no resumo.', 'ok');
-
-    var novaCompra = '';
-    try {
-      novaCompra = (typeof empenhoTemSaldo === 'function' && empenhoTemSaldo(id))
-        ? action('Nova compra', "abrirCompra('" + esc(id) + "')", 'success')
-        : '<button type="button" class="btn btn-ghost" disabled style="opacity:.55;">Nova compra indisponível</button>';
-    } catch(e) { novaCompra = action('Nova compra', "abrirCompra('" + esc(id) + "')", 'success'); }
-
-    document.getElementById('lb-context-body').innerHTML =
-      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
-        kv('Empenho', r.num) + kv('Órgão', r.orgao) + kv('Analista', r.analista) + kv('Dias sem pgto.', dias) +
-        kv('Valor', safeFmt(r.vem)) + kv('Compras', safeFmt(compras)) + kv('Recebido', safeFmt(recebido)) + kv('Lucro', safeFmt(lucro)) +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
-        action('Ver detalhes', "abrirPopupEmpenho('" + esc(id) + "')", 'ghost') +
-        action('Editar empenho', "editE('" + esc(id) + "')", 'ghost') +
-        novaCompra +
-        action('Excluir', "delRow('empenhos','" + esc(id) + "')", 'danger') +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
-  }
-
-  function showAcomp(id){
-    var db = getDB();
-    var r = byId(db.acomp, id);
-    if (!r) return;
-    setHead('◎', r.orgao || 'Acompanhamento', (r.processo || r.pregao || '—') + ' · ' + (r.status || '—'));
-    var vencido = false;
-    try { vencido = !!(r.retorno && new Date(r.retorno) < new Date()); } catch(e) {}
-    var alerts = vencido ? alertLine('Retorno vencido ou pendente de atualização.', 'danger') : alertLine('Acompanhamento sem alerta crítico no resumo.', 'ok');
-    document.getElementById('lb-context-body').innerHTML =
-      '<div class="lb-context-section"><h4>Resumo</h4><div class="lb-context-grid">' +
-        kv('Órgão', r.orgao) + kv('Processo', r.processo) + kv('Analista', r.analista) + kv('Sistema', r.sistema) +
-        kv('Status', r.status) + kv('Retorno', r.retorno) +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Ações rápidas</h4><div class="lb-context-actions">' +
-        (r.link ? action('Abrir sistema externo', "window.open('" + esc(r.link) + "','_blank')", 'ghost') : '') +
-        action('Editar acompanhamento', "editAcomp('" + esc(id) + "')", 'ghost') +
-        action('Converter em contrato', "converterEmDisputa('" + esc(id) + "')", 'success') +
-        action('Excluir', "delAcomp('" + esc(id) + "')", 'danger') +
-      '</div></div>' +
-      '<div class="lb-context-section"><h4>Alertas</h4>' + alerts + '</div>';
-  }
-
-  function clearPanel(){
-    ensurePanel();
-    setHead('LB', 'Ações rápidas', 'Selecione um registro para ver resumo, alertas e atalhos.');
-    document.getElementById('lb-context-body').innerHTML = emptyHtml();
-    document.querySelectorAll('tr.lb-selected-row').forEach(function(tr){ tr.classList.remove('lb-selected-row'); });
-    document.body.classList.remove('lb-context-open');
-  }
-
-  function getRowInfo(row){
-    if (!row) return null;
-    var oc = row.getAttribute('onclick') || '';
-    var m = oc.match(/abrirPopupDisputa\('([^']+)'\)/);
-    if (m) return {type:'disputa', id:m[1]};
-    m = oc.match(/abrirPopupEmpenho\('([^']+)'\)/);
-    if (m) return {type:'empenho', id:m[1]};
-    m = oc.match(/editAcomp\('([^']+)'\)/) || oc.match(/abrirPopupAcomp\('([^']+)'\)/);
-    if (m) return {type:'acomp', id:m[1]};
-    return null;
-  }
-
-  function selectRow(row, info){
-    document.querySelectorAll('tr.lb-selected-row').forEach(function(tr){ tr.classList.remove('lb-selected-row'); });
-    if (row) row.classList.add('lb-selected-row');
-    if (info.type === 'disputa') showDisputa(info.id);
-    if (info.type === 'empenho') showEmpenho(info.id);
-    if (info.type === 'acomp') showAcomp(info.id);
-  }
-
   function enhanceTabs(){
     var tabs = document.querySelector('.tabs');
-    if (!tabs || tabs.dataset.lbEnhanced) return;
-    tabs.dataset.lbEnhanced = '1';
+    if (!tabs || tabs.dataset.lbSaasEnhanced) return;
+    tabs.dataset.lbSaasEnhanced = '1';
     tabs.setAttribute('aria-label', 'Navegação principal do LicitationBiznis');
     var map = [['painel','◫'], ['dashboard','◩'], ['contratos','▣'], ['empenhos','◧'], ['acompanhamentos','◎'], ['proposta','◈'], ['compras','◌'], ['config','⚙']];
     tabs.querySelectorAll('.tab-btn').forEach(function(btn){
@@ -10444,10 +10170,6 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
     return false;
   }
 
-  window.lbContextClear = clearPanel;
-  window.lbShowDisputaContext = showDisputa;
-  window.lbShowEmpenhoContext = showEmpenho;
-  window.lbShowAcompContext = showAcomp;
   window.openActionMenu = openActionMenu;
   window.closeActionMenus = closeActionMenus;
 
@@ -10458,40 +10180,11 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
     if (!menu) closeActionMenus();
   }, true);
 
-  document.addEventListener('click', function(event){
-    var interactive = event.target && event.target.closest ? event.target.closest('button,a,input,select,textarea,label,.action-dropdown,.modal,.detail-popup,.wizard,.confirm-modal-box') : null;
-    if (interactive) return;
-    var row = event.target && event.target.closest ? event.target.closest('tr[onclick]') : null;
-    var info = getRowInfo(row);
-    if (!info) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-    selectRow(row, info);
-  }, true);
-
-  document.addEventListener('dblclick', function(event){
-    var row = event.target && event.target.closest ? event.target.closest('tr[onclick]') : null;
-    var info = getRowInfo(row);
-    if (!info) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (info.type === 'disputa' && typeof abrirPopupDisputa === 'function') abrirPopupDisputa(info.id);
-    if (info.type === 'empenho' && typeof abrirPopupEmpenho === 'function') abrirPopupEmpenho(info.id);
-    if (info.type === 'acomp' && typeof editAcomp === 'function') editAcomp(info.id);
-  }, true);
-
   document.addEventListener('keydown', function(event){ if (event.key === 'Escape') closeActionMenus(); });
   window.addEventListener('resize', closeActionMenus);
-  window.addEventListener('scroll', function(event){
-    var target = event.target;
-    if (target && target.closest && target.closest('.action-dropdown-menu')) return;
-    closeActionMenus();
-  }, true);
 
   function init(){
-    document.body.classList.add('lb-enterprise-ui');
-    ensurePanel();
+    document.body.classList.add('lb-saas-enterprise');
     enhanceTabs();
   }
 
