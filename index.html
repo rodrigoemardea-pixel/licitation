@@ -196,6 +196,17 @@ body.sidebar-hidden header{left:12px!important}
 @media(max-width:860px){.sidebar-logout-wrap{display:none!important}}
 
 
+
+/* === POPUP/MODAL TABS === */
+.popup-tabs{display:flex;gap:0;border-bottom:2px solid var(--border-light);margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.popup-tabs::-webkit-scrollbar{display:none}
+.popup-tab{padding:10px 20px;cursor:pointer;font-size:12.5px;font-weight:650;color:var(--text-tertiary);border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap;user-select:none;letter-spacing:-.1px}
+.popup-tab:hover{color:var(--text-primary);background:var(--bg-surface-soft);border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.popup-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.popup-tab .tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;font-size:10px;font-weight:700;margin-left:6px;background:var(--bg-surface-soft);color:var(--text-tertiary)}
+.popup-tab.active .tab-count{background:var(--accent-muted);color:var(--accent)}
+.ptab-pane{display:none;animation:paneIn .2s ease}
+.ptab-pane.active{display:block}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -913,8 +924,14 @@ body.sidebar-hidden header{left:12px!important}
       <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
       <button class="modal-close" onclick="closeModal('disputas')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-grid">
+        <div class="modal-body">
+      <div class="popup-tabs" id="modal-d-tabs">
+        <div class="popup-tab active" data-tab="dados" onclick="switchPopupTab('modal-d-tabs-content','dados')">Dados do Contrato</div>
+        <div class="popup-tab" data-tab="itens" onclick="switchPopupTab('modal-d-tabs-content','itens')">Itens / Lotes</div>
+        <div class="popup-tab" data-tab="obs" onclick="switchPopupTab('modal-d-tabs-content','obs')">Observações</div>
+      </div>
+      <div id="modal-d-tabs-content">
+        <div class="ptab-pane active" data-tab="dados"><div class="form-grid">
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="d-data"></div>
         <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="d-orgao" placeholder="Prefeitura..."></div>
         <div class="fg"><label class="fl">Estado</label>
@@ -951,7 +968,8 @@ body.sidebar-hidden header{left:12px!important}
         <input type="hidden" id="d-contrato-nome">
 
         <!-- LOTES / ITENS OBRIGATÓRIO -->
-        <div class="full">
+        </div>
+        <div class="ptab-pane" data-tab="itens"><div class="form-grid"><div class="full">
           <div class="fsec">📦 Itens / Lotes do Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></div>
           <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
             <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Descrição</span>
@@ -973,14 +991,17 @@ body.sidebar-hidden header{left:12px!important}
           <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
         </div>
         <!-- OBSERVAÇÃO (último campo) -->
-        <div class="fg full">
+        </div></div>
+        <div class="ptab-pane" data-tab="obs"><div class="form-grid"><div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
         </div>
 
       </div>
+    </div></div>
+      </div>
     </div>
-    <div class="modal-footer">
+<div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('disputas')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveD()">Salvar</button>
     </div>
@@ -994,8 +1015,14 @@ body.sidebar-hidden header{left:12px!important}
       <div class="modal-title" id="ttl-empenhos">Novo Empenho</div>
       <button class="modal-close" onclick="closeModal('empenhos')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-grid">
+        <div class="modal-body">
+      <div class="popup-tabs" id="modal-e-tabs">
+        <div class="popup-tab active" data-tab="dados" onclick="switchPopupTab('modal-e-tabs-content','dados')">Dados do Empenho</div>
+        <div class="popup-tab" data-tab="itens" onclick="switchPopupTab('modal-e-tabs-content','itens')">Itens / Lotes</div>
+        <div class="popup-tab" data-tab="obs" onclick="switchPopupTab('modal-e-tabs-content','obs')">Observações</div>
+      </div>
+      <div id="modal-e-tabs-content">
+        <div class="ptab-pane active" data-tab="dados"><div class="form-grid">
         <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
@@ -1014,7 +1041,8 @@ body.sidebar-hidden header{left:12px!important}
           <div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">Apenas órgãos com saldo de itens a empenhar são listados</div>
         </div>
 
-        <!-- SELETOR DE LOTE (aparece após selecionar contrato) -->
+        </div>
+        <div class="ptab-pane" data-tab="itens"><div class="form-grid"><!-- SELETOR DE LOTE (aparece após selecionar contrato) -->
         <div class="fg full" id="lote-selector-wrap" style="display:none;">
           <label class="fl">📦 Itens/Lotes do Empenho <span style="color:var(--text-tertiary);font-size:9px;">(selecione um ou mais)</span></label>
           <div id="lote-selector-container"></div>
@@ -1025,13 +1053,44 @@ body.sidebar-hidden header{left:12px!important}
           </div>
         </div>
 
-        <!-- CAMPO OBSERVAÇÃO -->
+        </div></div>
+        <div class="ptab-pane" data-tab="obs"><div class="form-grid"><!-- CAMPO OBSERVAÇÃO -->
         <div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-
+        <!-- PDF DO EMPENHO (Supabase) -->
+        <div class="fg full">
+          <label class="fl">📄 PDF do Empenho</label>
+          <div id="e-ne-upload-area"
+            onclick="document.getElementById('e-ne-file').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+            ondragleave="this.style.borderColor='var(--border)'"
+            ondrop="handleEmpenhoFileDrop(event)"
+            style="border:2px dashed var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
+            <span style="font-size:1.4rem;">📁</span>
+            <div>
+              <div id="e-ne-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do empenho aqui</div>
+              <div style="font-size:11px;color:var(--text-tertiary);">PDF · máx. 50MB</div>
+            </div>
+          </div>
+          <input type="file" id="e-ne-file" accept="application/pdf" style="display:none" onchange="handleEmpenhoFile(this.files[0])">
+          <div id="e-ne-progress" style="display:none;margin-top:8px;">
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="e-ne-progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:3px;"></div>
+            </div>
+            <div id="e-ne-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
+          </div>
+          <div id="e-ne-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
+            <span>📄</span>
+            <span id="e-ne-link" style="font-size:13px;font-weight:600;color:var(--accent);flex:1;cursor:pointer;"
+              onclick="window.open(document.getElementById('e-ne-url').value,'_blank')"></span>
+            <button onclick="removerEmpenhoFile()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
+          </div>
+        </div>
+          <input type="hidden" id="e-ne-url">
+          <input type="hidden" id="e-ne-nome">
 
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
         <input type="hidden" id="e-dcomp">
@@ -1056,7 +1115,10 @@ body.sidebar-hidden header{left:12px!important}
         <input type="hidden" id="tbtn-e-rec">
       </div>
     </div>
-    <div class="modal-footer">
+    </div></div>
+      </div>
+    </div>
+<div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('empenhos')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveE()">Salvar</button>
     </div>
@@ -2344,6 +2406,11 @@ function switchTab(tab,btn){
   g('tab-'+tab).classList.add('active');
   
   if(tab === 'disputas') {
+    // Date range filter
+    const de  = document.getElementById('filtro-data-de-disputas')?.value;
+    const ate = document.getElementById('filtro-data-ate-disputas')?.value;
+    if (de  && r.data && r.data < de)  return false;
+    if (ate && r.data && r.data > ate) return false;
     renderD();
   } else if(tab === 'empenhos') {
     renderE();
@@ -2352,6 +2419,14 @@ function switchTab(tab,btn){
   }
 }
 
+
+// ===== POPUP/MODAL TAB SYSTEM =====
+function switchPopupTab(containerId, tabName) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.popup-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+  container.querySelectorAll('.ptab-pane').forEach(p => p.classList.toggle('active', p.dataset.tab === tabName));
+}
 // ========== PAGINATION ==========
 const PAGE_SIZE = 50;
 let _page = { disputas: 1, empenhos: 1 };
@@ -2589,290 +2664,110 @@ function getLotesComSaldo(disputaId, excludeEmpenhoId) {
 function abrirPopupDisputa(id) {
   const r = DB.disputas.find(x => x.id === id);
   if (!r) return;
-  const { imp, luc, pct } = dVals(r);
   const contrato = getValorContrato(r);
   const lotes = getLotesComSaldo(id);
   const emps = DB.empenhos.filter(e => e.disputaId === id);
-  
-  // Lucro realizado = soma do lucro das compras que têm data de pagamento preenchida
-  const lucroRealizado = emps.reduce((s,e) => {
-    return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0);
-  }, 0);
-  // Totais financeiros consolidados do contrato
+  const lucroRealizado = emps.reduce((s,e) => s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0), 0);
   const totalComprasDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.vtotal||0), 0), 0);
   const totalCustosDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.custo||0), 0), 0);
   const totalLucroDisp = emps.reduce((s,e) => s + (e.compras||[]).reduce((ss,c) => ss + (c.luc||0), 0), 0);
   const totalAReceberDisp = emps.reduce((s,e) => s + (e.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0), 0);
-  // Lucro previsto = soma de (vlTotal - compraPrev*qtd - custoPrev*qtd) de cada lote
-  const lucroPrevisto = lotes.reduce((s,l) => {
-    const qtd   = l.qtd || 0;
-    const total = qtd * (l.vunit||0);
-    return s + total - (l.compraPrev||0)*qtd - (l.custoPrev||0)*qtd;
-  }, 0);
+  const lucroPrevisto = lotes.reduce((s,l) => { const q=l.qtd||0; return s+q*(l.vunit||0)-(l.compraPrev||0)*q-(l.custoPrev||0)*q; }, 0);
+  const _mkField = (lbl,val,sty) => '<div class="detail-field"><div class="detail-field-label">'+lbl+'</div><div class="detail-field-value"'+(sty?' style="'+sty+'"':'')+'>'+val+'</div></div>';
+  const _mkCard = (lbl,val,cor) => '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid '+cor+';border-radius:10px;padding:12px 14px;text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">'+lbl+'</div><div style="font-size:15px;font-weight:800;color:'+cor+';font-family:var(--font-mono);">'+val+'</div></div>';
 
-  const lotesHTML = lotes.length ? `
-    <div class="detail-section">📦 ITENS / LOTES</div>
-    <table class="lotes-status-table">
-      <thead><tr><th>Descrição</th><th>Qtd</th><th>Vl.Unit</th><th>Empenhado</th><th>Enviado (Compras)</th><th>Restante</th><th>Progresso</th><th>Empenhos</th><th>Pago?</th></tr></thead>
-      <tbody>${lotes.map(l => {
-        const pctVal = l.qtd > 0 ? Math.min(100, Math.round(l.qtdEnviada / l.qtd * 100)) : 0;
-        const cls = l.qtdRestante <= 0 ? 'saldo-zero' : l.qtdEnviada > 0 ? 'saldo-parcial' : 'saldo-ok';
-        const empsLote = emps.filter(e => {
-          if(e.itens && e.itens.length) return e.itens.some(i=>i.loteId===l.id);
-          return e.loteId === l.id;
-        });
-        // Calcula qtd enviada via compras registradas nos empenhos deste lote
-        const qtdViaCompras = empsLote.reduce((s, e) => {
-          const itensEmp = e.itens && e.itens.length ? e.itens : (e.loteId === l.id ? [{id:'leg', loteId:l.id}] : []);
-          const itemEmp = itensEmp.find(i=>i.loteId===l.id);
-          if(!itemEmp) return s;
-          return s + (e.compras||[]).reduce((ss,c) => ss + (c.itemId === itemEmp.id ? (c.qtd||0) : 0), 0);
-        }, 0);
-        // Verifica se algum item deste lote tem compra com data de pagamento preenchida
-        const algumPago = empsLote.some(e => {
-          const itensEmp = e.itens && e.itens.length ? e.itens : (e.loteId === l.id ? [{id:'leg', loteId:l.id}] : []);
-          const itemEmp = itensEmp.find(i=>i.loteId===l.id);
-          if(!itemEmp) return false;
-          return (e.compras||[]).some(c => c.itemId === itemEmp.id && c.dpag);
-        });
-        const statusPag = empsLote.length === 0 ? '—' : algumPago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>';
-        const temSaldo = (l.qtdRestante || 0) > 0;
-        const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
-        return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
-          '<td class="mono">' + (l.qtd||0) + '</td>' +
-          '<td class="mono">' + fmt(l.vunit) + '</td>' +
-          '<td class="mono" style="color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:600;">' + qtdViaCompras + '</td>' +
-          '<td class="mono ' + cls + '">' + (l.qtdRestante > 0 ? l.qtdRestante : '✓ COMPLETO') + '</td>' +
-          '<td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pctVal + '%"></div></div></td>' +
-          '<td>' + (empsLote.map(e => '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;color:var(--accent);font-size:10px;font-weight:600;margin-right:4px;">#' + e.num + '</span>').join('') || '—') + '</td>' +
-          '<td>' + statusPag + '</td>' +
-          '</tr>';
-      }).join('')}</tbody>
-    </table>` : '<p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Nenhum item cadastrado.</p>';
+  // TAB DADOS
+  let tabDados = '<div class="detail-grid-3">' +
+    _mkField('EMPRESA',r.empresa||'\u2014') + _mkField('ANALISTA',r.analista||'\u2014') +
+    _mkField('UF / TIPO / RP',(r.estado||'\u2014')+' \u00b7 '+(r.tipo||'')+' \u00b7 RP '+(r.rp||'\u2014')) +
+    _mkField('VALOR DO CONTRATO',fmt(contrato||r.venda),'color:var(--accent)') +
+    _mkField('LUCRO PREVISTO',fmt(lucroPrevisto),'color:var(--warning);font-weight:700') +
+    _mkField('LUCRO REALIZADO',fmt(lucroRealizado),'color:var(--success);font-weight:700') +
+    '</div><div class="detail-section" style="margin-top:14px;">RESUMO FINANCEIRO</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">' +
+    _mkCard('TOTAL COMPRAS',fmt(totalComprasDisp),'var(--warning)') +
+    _mkCard('TOTAL CUSTOS',fmt(totalCustosDisp),'var(--text-tertiary)') +
+    _mkCard('LUCRO TOTAL',fmt(totalLucroDisp),totalLucroDisp>=0?'var(--success)':'var(--danger)') +
+    _mkCard('A RECEBER',fmt(totalAReceberDisp),'var(--accent)') + '</div>';
+  if(r.contratoData) tabDados += _mkField('DT. CONTRATO',fmtD(r.contratoData),'font-weight:700');
+  if(r.contratoVencimento){const vs=r.contratoVencimento;const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00');if(!isNaN(venc)){const dias=Math.floor((venc-new Date())/864e5);const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)';const lbl=dias<0?'VENCIDO h\u00e1 '+Math.abs(dias)+'d':'Vence em '+dias+'d';tabDados+=_mkField('VENCIMENTO',venc.toLocaleDateString('pt-BR')+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+lbl+'</span>','color:'+cor+';font-weight:700');}}
+  if(r.contratoUrl) tabDados += '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\''+r.contratoUrl+'\',\''+((r.contratoNome||'contrato.pdf').replace(/'/g,''))+'\' )" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">'+(r.contratoNome||'Ver contrato')+'</button></div></div>';
 
-  // Todas as compras de todos os empenhos desto contrato
-  const todasCompras = [];
-  emps.forEach(e => {
-    const itensEmp = (e.itens && e.itens.length ? e.itens :
-      (e.loteId ? [{ id:'leg1', loteId:e.loteId, descricao:e.produto||'', qtd:e.qtd||1, vunit:e.vunit||0 }] : []))
-      .map(item => {
-        // Sempre busca descrição ao vivo do lote do contrato
-        const loteAtual = (r.lotes||[]).find(l => l.id === item.loteId);
-        return loteAtual ? { ...item, descricao: loteAtual.descricao } : item;
-      });
-    (e.compras||[]).forEach(c => {
-      const itemRef = itensEmp.find(i => i.id === c.itemId);
-      todasCompras.push({ ...c, _empNum: e.num||'—', _produto: (itemRef?.descricao||e.produto||'—').toUpperCase() });
-    });
-  });
+  // TAB ITENS
+  let tabItens = '';
+  if(lotes.length){
+    tabItens = '<table class="lotes-status-table"><thead><tr><th>Descri\u00e7\u00e3o</th><th>Qtd</th><th>Vl.Unit</th><th>Empenhado</th><th>Compras</th><th>Restante</th><th>Progresso</th><th>Empenhos</th><th>Pago?</th></tr></thead><tbody>';
+    lotes.forEach(l=>{const pv=l.qtd>0?Math.min(100,Math.round(l.qtdEnviada/l.qtd*100)):0;const el=emps.filter(e=>{if(e.itens&&e.itens.length)return e.itens.some(i=>i.loteId===l.id);return e.loteId===l.id;});const qvc=el.reduce((s,e)=>{const it=e.itens&&e.itens.length?e.itens:(e.loteId===l.id?[{id:'x',loteId:l.id}]:[]);const ii=it.find(i=>i.loteId===l.id);return ii?s+(e.compras||[]).reduce((ss,c)=>ss+(c.itemId===ii.id?(c.qtd||0):0),0):s;},0);const pg=el.some(e=>{const it=e.itens&&e.itens.length?e.itens:(e.loteId===l.id?[{id:'x',loteId:l.id}]:[]);const ii=it.find(i=>i.loteId===l.id);return ii&&(e.compras||[]).some(c=>c.itemId===ii.id&&c.dpag);});const sp=el.length===0?'\u2014':pg?'<span class="status-pago">PAGO</span>':'<span class="status-pendente">PENDENTE</span>';const ts=(l.qtdRestante||0)>0;const rc=ts?'onclick="novoEmpenhoComItem(\''+id+'\',\''+l.id+'\' )" style="cursor:pointer;background:var(--info-soft);"':'';tabItens+='<tr '+rc+'><td><strong>'+(l.descricao||'\u2014').toUpperCase()+'</strong>'+(ts?' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>':'')+'</td><td class="mono">'+(l.qtd||0)+'</td><td class="mono">'+fmt(l.vunit)+'</td><td class="mono" style="color:var(--accent);font-weight:600;">'+l.qtdEnviada+'</td><td class="mono" style="color:var(--success);font-weight:600;">'+qvc+'</td><td class="mono '+(l.qtdRestante<=0?'saldo-zero':l.qtdEnviada>0?'saldo-parcial':'saldo-ok')+'">'+(l.qtdRestante>0?l.qtdRestante:'COMPLETO')+'</td><td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:'+pv+'%"></div></div></td><td>'+(el.map(e=>'<span onclick="abrirPopupEmpenho(\''+e.id+'\' )" style="cursor:pointer;color:var(--accent);font-size:10px;font-weight:600;margin-right:4px;">#'+e.num+'</span>').join('')||'\u2014')+'</td><td>'+sp+'</td></tr>';});
+    tabItens+='</tbody></table>';
+  } else { tabItens='<div style="color:var(--text-tertiary);font-size:12px;padding:20px;text-align:center;">Nenhum item cadastrado.</div>'; }
 
-  const comprasDisputaHTML = todasCompras.length ? `
-    <div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;">
-      <span>🛒 TODAS AS COMPRAS DO CONTRATO</span>
-      <button class="btn btn-ghost btn-sm" onclick="exportarComprasDisputa('${id}')" style="color:var(--success);border-color:var(--success);font-weight:700;">⬇ Exportar Selecionadas</button>
-    </div>
-    <table class="lotes-status-table" style="margin-top:8px;">
-      <thead><tr>
-        <th style="width:30px;"><input type="checkbox" id="chk-all-disp-${id}" onchange="toggleTodasComprasDisputa('${id}',this.checked)" title="Selecionar todas"></th>
-        <th>Nº Emp.</th><th>Produto</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Link</th>
-      </tr></thead>
-      <tbody>${todasCompras.map(c => {
-        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" style="color:var(--accent);font-size:11px;">🔗 ver</a>` : '—';
-        return '<tr>' +
-        '<td style="text-align:center;"><input type="checkbox" class="chk-compra-disp-'+id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
-          '<td class="mono" style="font-weight:700;font-size:11px;">#'+c._empNum+'</td>' +
-          '<td style="font-size:11px;font-weight:600;">'+c._produto+'</td>' +
-          '<td style="font-size:11px;">'+(c.plataforma||'—')+'</td>' +
-          '<td class="mono">'+(c.qtd||0)+'</td>' +
-          '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
-          '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
-          '<td>'+linkBtn+'</td>' +
-          '</tr>';
-      }).join('')}
-      </tbody>
-    </table>` : '';
+  // TAB COMPRAS
+  const tc=[];emps.forEach(e=>{const ie=(e.itens&&e.itens.length?e.itens:(e.loteId?[{id:'l1',loteId:e.loteId,descricao:e.produto||''}]:[])).map(i=>{const la=(r.lotes||[]).find(l=>l.id===i.loteId);return la?{...i,descricao:la.descricao}:i;});(e.compras||[]).forEach(c=>{const ir=ie.find(i=>i.id===c.itemId);tc.push({...c,_en:e.num||'\u2014',_pr:(ir?.descricao||e.produto||'\u2014').toUpperCase()});});});
+  let tabCompras='';
+  if(tc.length){tabCompras='<div style="display:flex;justify-content:flex-end;margin-bottom:10px;"><button class="btn btn-ghost btn-sm" onclick="exportarComprasDisputa(\''+id+'\' )" style="color:var(--success);border-color:var(--success);font-weight:700;">Exportar Selecionadas</button></div><table class="lotes-status-table"><thead><tr><th style="width:30px;"><input type="checkbox" id="chk-all-disp-'+id+'" onchange="toggleTodasComprasDisputa(\''+id+'\',this.checked)"></th><th>Emp.</th><th>Produto</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Link</th></tr></thead><tbody>';tc.forEach(c=>{const lk=c.link?'<a href="'+c.link+'" target="_blank" style="color:var(--accent);font-size:11px;">ver</a>':'\u2014';tabCompras+='<tr><td style="text-align:center;"><input type="checkbox" class="chk-compra-disp-'+id+'" data-cid="'+c.id+'"></td><td class="mono" style="font-weight:700;font-size:11px;">#'+c._en+'</td><td style="font-size:11px;font-weight:600;">'+c._pr+'</td><td style="font-size:11px;">'+(c.plataforma||'\u2014')+'</td><td class="mono">'+(c.qtd||0)+'</td><td class="mono">'+fmt(c.vtotal||0)+'</td><td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td><td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td><td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td><td>'+lk+'</td></tr>';});tabCompras+='</tbody></table>';}
+  else{tabCompras='<div style="color:var(--text-tertiary);font-size:12px;padding:20px;text-align:center;">Nenhuma compra registrada.</div>';}
 
-  g('popup-d-title').textContent = (r.orgao || 'DISPUTA').toUpperCase();
-  g('popup-d-sub').textContent = (r.processo||'') + ' · ' + (r.sistema||'') + ' · ' + fmtD(r.data);
+  // TAB OBS
+  const tabObs = (r.observacao?'<div style="font-size:13px;color:var(--text-secondary);line-height:1.6;background:var(--bg-surface-soft);padding:12px 16px;border-radius:var(--radius-md);white-space:pre-wrap;margin-bottom:16px;">'+r.observacao.toUpperCase()+'</div>':'<div style="color:var(--text-tertiary);font-size:12px;margin-bottom:16px;">Nenhuma observa\u00e7\u00e3o.</div>') + renderComentarios('disputa',id);
+
+  g('popup-d-title').textContent = (r.orgao||'CONTRATO').toUpperCase();
+  g('popup-d-sub').textContent = (r.processo||'')+' \u00b7 '+(r.sistema||'')+' \u00b7 '+fmtD(r.data);
   g('popup-d-body').innerHTML =
-    '<div class="detail-grid-3">' +
-      '<div class="detail-field"><div class="detail-field-label">EMPRESA</div><div class="detail-field-value">' + (r.empresa||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">UF / TIPO / RP</div><div class="detail-field-value">' + (r.estado||'—') + ' · ' + (r.tipo||'') + ' · RP ' + (r.rp||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">VALOR DO CONTRATO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(contrato || r.venda) + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">LUCRO PREVISTO</div><div class="detail-field-value" style="color:var(--warning);font-weight:700;">' + fmt(lucroPrevisto) + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
-      '</div>' +
-      '<div class="detail-section" style="margin-top:14px;">💰 RESUMO FINANCEIRO</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--warning);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL COMPRAS</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">' + fmt(totalComprasDisp) + '</div>' +
-      '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--text-tertiary);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL CUSTOS</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--text-secondary);font-family:var(--font-mono);">' + fmt(totalCustosDisp) + '</div>' +
-      '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--success);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">LUCRO TOTAL</div>' +
-      '<div style="font-size:15px;font-weight:800;color:' + (totalLucroDisp >= 0 ? 'var(--success)' : 'var(--danger)') + ';font-family:var(--font-mono);">' + fmt(totalLucroDisp) + '</div>' +
-      '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--accent);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">A RECEBER</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">' + fmt(totalAReceberDisp) + '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="detail-grid-3">' +
-      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
-
-      (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
-      (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
-      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
-    '</div>' +
-    (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
-    lotesHTML +
-    comprasDisputaHTML +
-    renderComentarios('disputa', id);
-
-  g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
-  g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
-  // Botão reabrir — só aparece se o contrato está finalizada
-  const reabrirBtn = g('popup-d-reabrir-btn');
-  if (reabrirBtn) {
-    if (r.finalizada) {
-      reabrirBtn.style.display = '';
-      reabrirBtn.onclick = () => { fecharPopup('disputa'); reabrirDisputa(id); };
-    } else {
-      reabrirBtn.style.display = 'none';
-    }
-  }
+    '<div class="popup-tabs" id="dtabs"><div class="popup-tab active" data-tab="dados" onclick="switchPopupTab(\'popup-d-body\',\'dados\')">Dados</div><div class="popup-tab" data-tab="itens" onclick="switchPopupTab(\'popup-d-body\',\'itens\')">Itens <span class="tab-count">'+lotes.length+'</span></div><div class="popup-tab" data-tab="compras" onclick="switchPopupTab(\'popup-d-body\',\'compras\')">Compras <span class="tab-count">'+tc.length+'</span></div><div class="popup-tab" data-tab="obs" onclick="switchPopupTab(\'popup-d-body\',\'obs\')">Observa\u00e7\u00f5es</div></div>' +
+    '<div class="ptab-pane active" data-tab="dados">'+tabDados+'</div>' +
+    '<div class="ptab-pane" data-tab="itens">'+tabItens+'</div>' +
+    '<div class="ptab-pane" data-tab="compras">'+tabCompras+'</div>' +
+    '<div class="ptab-pane" data-tab="obs">'+tabObs+'</div>';
+  g('popup-d-edit-btn').onclick=()=>{fecharPopup('disputa');editD(id);};
+  g('popup-d-new-emp-btn').onclick=()=>novoEmpenhoParaDisputa(id);
+  const rb=g('popup-d-reabrir-btn');if(rb){if(r.finalizada){rb.style.display='';rb.onclick=()=>{fecharPopup('disputa');reabrirDisputa(id);};}else{rb.style.display='none';}}
   g('popup-disputa').classList.add('open');
 }
-
 function abrirPopupEmpenho(id) {
   const r = DB.empenhos.find(x => x.id === id);
   if (!r) return;
-  const { tot, imp, luc, pct, rec } = eVals(r);
   const dias = diasSemPagamento(r);
   const disp = r.disputaId ? DB.disputas.find(d => d.id === r.disputaId) : null;
-  
-  // Itens do empenho — descrição sempre buscada ao vivo do contrato para refletir edições
-  const itensRaw = r.itens && r.itens.length ? r.itens : 
-    (r.loteId ? [{ id:'leg1', loteId:r.loteId, descricao:r.produto||'', qtd:r.qtd||1, vunit:r.vunit||0 }] : []);
-  const itens = itensRaw.map(item => {
-    if (item.loteId && disp) {
-      const loteAtual = (disp.lotes||[]).find(l => l.id === item.loteId);
-      if (loteAtual) return { ...item, descricao: loteAtual.descricao, vunit: loteAtual.vunit };
-    }
-    return item;
-  });
-  
-  const compras = r.compras || [];
-  
-  const itensHTML = itens.length ? `
-    <div class="detail-section">📦 ITENS DO EMPENHO</div>
-    <table class="lotes-status-table">
-      <thead><tr><th>Item</th><th>Qtd</th><th>Vl.Unit</th><th>Vl.Total</th><th>Compras</th><th>Pago?</th></tr></thead>
-      <tbody>${itens.map(item => {
-        const comprasItem = compras.filter(c=>c.itemId===item.id);
-        const totalPago = comprasItem.filter(c=>c.dpag).reduce((s,c)=>s+c.luc,0);
-        const totalRec = comprasItem.reduce((s,c)=>s+c.rec,0);
-        const pago = comprasItem.some(c=>c.dpag);
-        return '<tr>' +
-          '<td><strong>'+(item.descricao||'—').toUpperCase()+'</strong></td>' +
-          '<td class="mono">'+(item.qtd||0)+'</td>' +
-          '<td class="mono">'+fmt(item.vunit)+'</td>' +
-          '<td class="mono" style="color:var(--accent);font-weight:700;">'+fmt((item.qtd||0)*(item.vunit||0))+'</td>' +
-          '<td class="mono">'+comprasItem.length+'</td>' +
-          '<td>'+(pago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>')+'</td>' +
-          '</tr>';
-      }).join('')}</tbody>
-    </table>` : '';
-  
-  const comprasHTML = compras.length ? `
-    <div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>🛒 COMPRAS INDIVIDUAIS</span>
-      <button class="btn btn-ghost btn-sm" onclick="exportarComprasSelecionadas('${r.id}')" style="color:var(--success);border-color:var(--success);font-weight:700;">⬇ Exportar Selecionadas</button>
-    </div>
-    <table class="lotes-status-table" id="tabela-compras-${r.id}">
-      <thead><tr>
-        <th style="width:30px;"><input type="checkbox" id="chk-all-compras-${r.id}" onchange="toggleTodasCompras('${r.id}',this.checked)" title="Selecionar todas"></th>
-        <th>Item</th><th>Plataforma</th><th>Dt.Compra</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th>
-      </tr></thead>
-      <tbody>${compras.map(c => {
-        const itemRef = itens.find(i=>i.id===c.itemId);
-        const pago = c.recebido > 0;
-        const linkBtn = c.link ? `<a href="${c.link}" target="_blank" title="${c.link}" style="font-size:10px;color:var(--accent);">🔗</a>` : '';
-        return '<tr>' +
-          '<td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
-          '<td style="font-size:10px;">'+((itemRef?.descricao||'—').toUpperCase())+'</td>' +
-          '<td style="font-size:10px;font-weight:600;">'+(c.plataforma||'—')+' '+linkBtn+'</td>' +
-          '<td class="mono" style="color:var(--text-secondary);">'+(fmtD(c.dcompra)||'—')+'</td>' +
-          '<td class="mono">'+(c.qtd||0)+'</td>' +
-          '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
-          '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
-          '<td>'+(pago?'<span class="status-pago">✅ '+fmt(c.recebido)+'</span>':'<span class="status-pendente">—</span>')+'</td>'+
-          '<td class="mono">'+(fmtD(c.dpag)||'—')+'</td>' +
-          '<td onclick="event.stopPropagation()">' +
-            '<button class="btn btn-ghost btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\',\''+c.id+'\')" title="Editar">✏️</button>' +
-            '<button class="btn btn-ghost btn-sm" onclick="duplicarCompra(\''+r.id+'\',\''+c.id+'\')" title="Duplicar compra" style="color:var(--accent);border-color:var(--accent);">📄</button>' +
-            '<button class="btn btn-danger btn-sm" onclick="delCompra(\''+r.id+'\',\''+c.id+'\')" title="Excluir">🗑</button>' +
-          '</td>' +
-          '</tr>';
-      }).join('')}</tbody>
-      <tfoot>
-        <tr style="background:var(--bg-inset);font-weight:700;border-top:2px solid var(--border);">
-          <td colspan="5" style="padding:6px 8px;font-size:11px;color:var(--text-secondary);text-align:right;letter-spacing:.05em;">TOTAL</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--warning);" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--success);font-weight:800;" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
-          <td colspan="3"></td>
-        </tr>
-      </tfoot>
-    </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
+  const itensRaw = r.itens&&r.itens.length?r.itens:(r.loteId?[{id:'l1',loteId:r.loteId,descricao:r.produto||'',qtd:r.qtd||1,vunit:r.vunit||0}]:[]);
+  const itens = itensRaw.map(item=>{if(item.loteId&&disp){const la=(disp.lotes||[]).find(l=>l.id===item.loteId);if(la)return{...item,descricao:la.descricao,vunit:la.vunit};}return item;});
+  const compras = r.compras||[];
+  const impReal = compras.reduce((s,c)=>s+(c.custo||0),0);
+  const _f=(lbl,val,sty)=>'<div class="detail-field"><div class="detail-field-label">'+lbl+'</div><div class="detail-field-value"'+(sty?' style="'+sty+'"':'')+'>'+val+'</div></div>';
 
-  // Impostos calculados a partir das compras realizadas (soma dos custos)
-  const impRealizado = compras.reduce((s,c) => s + (c.custo||0), 0);
+  // TAB DADOS
+  let tabDados='<div class="detail-grid-3">'+_f('ANALISTA',r.analista||'\u2014')+_f('STATUS',empenhoEstaPago(r)?'<span class="status-pago">PAGO</span>':'<span class="status-pendente">PENDENTE</span>')+_f('DIAS SEM PAG.',r.recebido>0?'PAGO':dias+' DIAS')+'</div>';
+  if(r.neUrl) tabDados+=_f('PDF DO EMPENHO','<a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">'+(r.neNome||'PDF')+'</a>');
+  if(disp) tabDados+='<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">CONTRATO VINCULADO</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">'+disp.orgao.toUpperCase()+' \u00b7 '+disp.processo+'</div></div>';
+  tabDados+='<div class="detail-grid">'+_f('VAL. EMPENHO',fmt(r.vem),'color:var(--accent)')+_f('IMPOSTOS',fmt(impReal)+(compras.length===0?' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>':''),'color:var(--warning)')+_f('LUCRO REALIZADO',fmt(compras.filter(c=>c.dpag).reduce((s,c)=>s+(c.luc||0),0)),'color:var(--success)')+'</div>';
 
-  g('popup-e-title').textContent = 'EMPENHO #' + (r.num || '—');
-  g('popup-e-sub').textContent = (r.orgao||'').toUpperCase() + ' · ' + fmtD(r.data);
-  g('popup-e-body').innerHTML =
-    '<div class="detail-grid-3">' +
-      '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
-    '</div>' +
+  // TAB ITENS
+  let tabItens='';
+  if(itens.length){tabItens='<table class="lotes-status-table"><thead><tr><th>Item</th><th>Qtd</th><th>Vl.Unit</th><th>Vl.Total</th><th>Compras</th><th>Pago?</th></tr></thead><tbody>';itens.forEach(item=>{const ci=compras.filter(c=>c.itemId===item.id);const pg=ci.some(c=>c.dpag);tabItens+='<tr><td><strong>'+(item.descricao||'\u2014').toUpperCase()+'</strong></td><td class="mono">'+(item.qtd||0)+'</td><td class="mono">'+fmt(item.vunit)+'</td><td class="mono" style="color:var(--accent);font-weight:700;">'+fmt((item.qtd||0)*(item.vunit||0))+'</td><td class="mono">'+ci.length+'</td><td>'+(pg?'<span class="status-pago">PAGO</span>':'<span class="status-pendente">PENDENTE</span>')+'</td></tr>';});tabItens+='</tbody></table>';}
+  else{tabItens='<div style="color:var(--text-tertiary);font-size:12px;padding:20px;text-align:center;">Nenhum item.</div>';}
 
-    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
-    (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">CONTRATO VINCULADO</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
-    '<div class="detail-grid">' +
-      '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
-      '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
+  // TAB COMPRAS
+  const _ts=empenhoTemSaldo(r.id);
+  let tabCompras='<div style="margin-bottom:12px;"><button class="btn '+(_ts?'btn-primary':'btn-ghost')+' btn-sm" onclick="'+(_ts?"fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\'"+r.id+"\')":'')+ '" style="width:100%;'+(!_ts?'opacity:0.45;cursor:not-allowed;pointer-events:none;':'')+'">'+(_ts?'NOVA COMPRA':'ITENS COMPLETAMENTE COMPRADOS')+'</button></div>';
+  if(compras.length){tabCompras+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn btn-ghost btn-sm" onclick="exportarComprasSelecionadas(\''+r.id+'\' )" style="color:var(--success);border-color:var(--success);font-weight:700;">Exportar</button></div>';tabCompras+='<table class="lotes-status-table"><thead><tr><th style="width:30px;"><input type="checkbox" id="chk-all-compras-'+r.id+'" onchange="toggleTodasCompras(\''+r.id+'\',this.checked)"></th><th>Item</th><th>Plataforma</th><th>Dt.Compra</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>A\u00e7\u00f5es</th></tr></thead><tbody>';
+  compras.forEach(c=>{const ir=itens.find(i=>i.id===c.itemId);const lk=c.link?'<a href="'+c.link+'" target="_blank" style="font-size:10px;color:var(--accent);">link</a>':'';tabCompras+='<tr><td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'"></td><td style="font-size:10px;">'+((ir?.descricao||'\u2014').toUpperCase())+'</td><td style="font-size:10px;font-weight:600;">'+(c.plataforma||'\u2014')+' '+lk+'</td><td class="mono">'+(fmtD(c.dcompra)||'\u2014')+'</td><td class="mono">'+(c.qtd||0)+'</td><td class="mono">'+fmt(c.vtotal||0)+'</td><td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td><td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td><td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td><td>'+(c.recebido>0?'<span class="status-pago">'+fmt(c.recebido)+'</span>':'\u2014')+'</td><td class="mono">'+(fmtD(c.dpag)||'\u2014')+'</td><td onclick="event.stopPropagation()"><button class="btn btn-ghost btn-sm" onclick="fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\''+r.id+'\',\''+c.id+'\')" title="Editar">Ed</button> <button class="btn btn-ghost btn-sm" onclick="duplicarCompra(\''+r.id+'\',\''+c.id+'\')" style="color:var(--accent);">Dup</button> <button class="btn btn-danger btn-sm" onclick="delCompra(\''+r.id+'\',\''+c.id+'\')">Del</button></td></tr>';});
+  tabCompras+='</tbody><tfoot><tr style="background:var(--bg-inset);font-weight:700;"><td colspan="5" style="text-align:right;font-size:11px;">TOTAL</td><td class="mono" style="color:var(--accent);">'+fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))+'</td><td class="mono" style="color:var(--warning);">'+fmt(compras.reduce((s,c)=>s+(c.custo||0),0))+'</td><td class="mono" style="color:var(--success);font-weight:800;">'+fmt(compras.reduce((s,c)=>s+(c.luc||0),0))+'</td><td class="mono" style="color:var(--accent);font-weight:800;">'+fmt(compras.reduce((s,c)=>s+(c.rec||0),0))+'</td><td colspan="3"></td></tr></tfoot></table>';}
+  else{tabCompras+='<div style="color:var(--text-tertiary);font-size:12px;padding:16px;text-align:center;">Nenhuma compra.</div>';}
 
-      '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success)">' + fmt(compras.filter(c=>c.dpag).reduce((s,c)=>s+c.luc,0)) + '</div></div>' +
+  // TAB OBS
+  const tabObs=(r.observacao?'<div style="font-size:13px;color:var(--text-secondary);line-height:1.6;background:var(--bg-surface-soft);padding:12px 16px;border-radius:var(--radius-md);white-space:pre-wrap;margin-bottom:16px;">'+r.observacao.toUpperCase()+'</div>':'<div style="color:var(--text-tertiary);font-size:12px;margin-bottom:16px;">Nenhuma observa\u00e7\u00e3o.</div>')+renderComentarios('empenho',id);
 
-      '<div class="detail-field"><div class="detail-field-label">DIAS SEM PAG.</div><div class="detail-field-value">' + (r.recebido > 0 ? '✓ PAGO' : dias + ' DIAS') + '</div></div>' +
-    '</div>' +
-    itensHTML +
-    '<div style="margin-top:12px;">' +
-      (function(){ const _temP = empenhoTemSaldo(r.id); return '<button class="btn ' + (_temP ? 'btn-primary' : 'btn-ghost') + ' btn-sm" onclick="' + (_temP ? 'fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\'' + r.id + '\')' : '') + '" style="width:100%;' + (!_temP ? 'opacity:0.45;cursor:not-allowed;pointer-events:none;' : '') + '" title="' + (!_temP ? 'Todos os itens já foram completamente comprados' : '') + '">＋ ' + (_temP ? 'NOVA COMPRA PARA ESTE EMPENHO' : 'ITENS JÁ COMPLETAMENTE COMPRADOS') + '</button>'; })() +
-    '</div>' +
-    comprasHTML +
-    (r.observacao ? '<div class="detail-field" style="margin-top:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
-    renderComentarios('empenho', id);
-
-  g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
-  const tarefaBtnE = g('popup-e-tarefa-btn');
-  if (tarefaBtnE) tarefaBtnE.onclick = () => abrirModalTarefas('empenho', id, 'Empenho #' + (r.num||'—') + ' · ' + (r.orgao||''));
+  g('popup-e-title').textContent='EMPENHO #'+(r.num||'\u2014');
+  g('popup-e-sub').textContent=(r.orgao||'').toUpperCase()+' \u00b7 '+fmtD(r.data);
+  g('popup-e-body').innerHTML=
+    '<div class="popup-tabs"><div class="popup-tab active" data-tab="dados" onclick="switchPopupTab(\'popup-e-body\',\'dados\')">Dados</div><div class="popup-tab" data-tab="itens" onclick="switchPopupTab(\'popup-e-body\',\'itens\')">Itens <span class="tab-count">'+itens.length+'</span></div><div class="popup-tab" data-tab="compras" onclick="switchPopupTab(\'popup-e-body\',\'compras\')">Compras <span class="tab-count">'+compras.length+'</span></div><div class="popup-tab" data-tab="obs" onclick="switchPopupTab(\'popup-e-body\',\'obs\')">Observa\u00e7\u00f5es</div></div>'+
+    '<div class="ptab-pane active" data-tab="dados">'+tabDados+'</div>'+
+    '<div class="ptab-pane" data-tab="itens">'+tabItens+'</div>'+
+    '<div class="ptab-pane" data-tab="compras">'+tabCompras+'</div>'+
+    '<div class="ptab-pane" data-tab="obs">'+tabObs+'</div>';
+  g('popup-e-edit-btn').onclick=()=>{fecharPopup('empenho');fecharPopup('disputa');editE(id);};
+  const tb=g('popup-e-tarefa-btn');if(tb)tb.onclick=()=>abrirModalTarefas('empenho',id,'Empenho #'+(r.num||'\u2014')+' \u00b7 '+(r.orgao||''));
   g('popup-empenho').classList.add('open');
 }
-
 function fecharPopup(tipo) {
   g('popup-' + tipo).classList.remove('open');
   _restoreTab();
