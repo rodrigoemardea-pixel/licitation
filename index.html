@@ -1031,22 +1031,8 @@ body.sidebar-hidden header{left:12px!important}
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-        <!-- PDF DO EMPENHO (Supabase) -->
-        <div class="fg full">
-          <label class="fl">📄 PDF do Empenho</label>
-          <div id="e-ne-upload-area"
-            onclick="document.getElementById('e-ne-file').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
-            ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleEmpenhoFileDrop(event)"
-            style="border:2px dashed var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
-            <span style="font-size:1.4rem;">📁</span>
-            <div>
-              <div id="e-ne-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do empenho aqui</div>
-              <div style="font-size:11px;color:var(--text-tertiary);">PDF · máx. 50MB</div>
-            </div>
-          </div>
-          
+
+
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
         <input type="hidden" id="e-dcomp">
         <input type="hidden" id="e-vunit" value="0">
@@ -2358,11 +2344,6 @@ function switchTab(tab,btn){
   g('tab-'+tab).classList.add('active');
   
   if(tab === 'disputas') {
-    // Date range filter
-    const de  = document.getElementById('filtro-data-de-disputas')?.value;
-    const ate = document.getElementById('filtro-data-ate-disputas')?.value;
-    if (de  && r.data && r.data < de)  return false;
-    if (ate && r.data && r.data > ate) return false;
     renderD();
   } else if(tab === 'empenhos') {
     renderE();
