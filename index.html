@@ -2738,6 +2738,14 @@ function abrirPopupEmpenho(id) {
     renderComentarios('empenho', id);
 
   g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
+  const delBtnE = g('popup-e-del-btn');
+  if (delBtnE) {
+    delBtnE.onclick = () => {
+      fecharPopup('empenho');
+      fecharPopup('disputa');
+      delRow('empenhos', id);
+    };
+  }
   g('popup-empenho').classList.add('open');
 }
 
@@ -7209,6 +7217,7 @@ boot();
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
+      <button class="btn btn-danger" id="popup-e-del-btn">Excluir</button>
     </div>
   </div>
 </div>
