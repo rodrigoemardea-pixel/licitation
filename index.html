@@ -53,7 +53,7 @@ body{font-family:var(--font-sans);color:var(--text-primary);min-height:100vh;fon
 .tab-btn.active::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:#52b788;border-radius:0 3px 3px 0}
 .tab-badge{margin-left:auto!important;background:rgba(255,255,255,.08)!important;border:none!important;color:rgba(255,255,255,.6)!important;font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;min-width:18px;text-align:center}
 .tab-btn.active .tab-badge{background:rgba(82,183,136,.25)!important;color:#95d5b2!important}
-header{display:none!important}
+header{position:fixed!important;top:var(--lb-gap)!important;left:calc(var(--lb-sidebar-w) + var(--lb-gap) + 8px)!important;right:var(--lb-gap)!important;height:var(--lb-topbar-h)!important;z-index:500!important;display:flex;align-items:center;gap:8px!important;padding:0 16px!important;border-radius:var(--radius-xl)!important;border:1px solid var(--border-light)!important;background:var(--glass-bg)!important;backdrop-filter:var(--glass-blur)!important;-webkit-backdrop-filter:var(--glass-blur)!important;box-shadow:var(--shadow-sm)!important;transition:background .3s}
 header .logo{display:none!important}
 header::before{content:"Centro de Controle";font-size:16px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);white-space:nowrap;margin-right:8px}
 header::after{display:none}
@@ -70,11 +70,11 @@ header::after{display:none}
 .busca-kbd-hint{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-xs);padding:1px 6px;font-size:10px;color:var(--text-placeholder);pointer-events:none;font-family:var(--font-mono)}
 #busca-global-input:focus+.busca-kbd-hint{opacity:0}
 .push-notif-btn{height:38px;background:transparent;border:1px solid transparent;border-radius:var(--radius-md);padding:0 10px;font-size:11px;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:var(--font-sans)}.push-notif-btn:hover{background:var(--bg-surface-soft);border-color:var(--border-light);color:var(--text-primary)}.push-notif-btn.active{background:var(--success-soft);border-color:var(--success);color:var(--success)}
-.content{width:auto!important;max-width:none!important;min-height:100vh;margin:0!important;padding:20px 20px 40px calc(var(--lb-sidebar-w) + var(--lb-gap) + 20px)!important}
+.content{width:auto!important;max-width:none!important;min-height:100vh;margin:0!important;padding:calc(var(--lb-topbar-h) + var(--lb-gap) + 20px) 20px 40px calc(var(--lb-sidebar-w) + var(--lb-gap) + 20px)!important}
 .tab-pane{display:none}.tab-pane.active{display:block;animation:paneIn .25s var(--ease-out) both}
 @keyframes paneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .toolbar,.card,.chart-card,.stat-card,.dash-kpi,.acomp-card,.table-wrapper,.table-wrap,.painel-section,.compra-item-card,.lote-selector-card,.modal,.detail-popup,.shortcuts-modal-box,.confirm-modal-box,.wizard{background:var(--glass-bg)!important;border:1px solid var(--border-light)!important;border-radius:var(--radius-xl)!important;box-shadow:var(--shadow-sm)!important;backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);transition:box-shadow .2s,transform .2s,border-color .2s}
-.toolbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;padding:10px 14px!important;position:sticky;top:8px;z-index:300}.toolbar .btn-primary{padding:6px 14px;font-size:12px}
+.toolbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;padding:10px 14px!important;position:sticky;top:calc(var(--lb-topbar-h) + var(--lb-gap) + 8px);z-index:300}.toolbar .btn-primary{padding:6px 14px;font-size:12px}
 .toolbar-separator{width:1px;height:18px;background:var(--border-light);flex-shrink:0;margin:0 2px}
 .filter-group{display:flex;align-items:center;gap:6px;background:var(--bg-surface-soft);padding:3px 10px;border-radius:99px;border:1px solid var(--border-light);transition:all .2s}.filter-group label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:var(--text-tertiary)}.filter-group select{background:none;border:none;font-size:11px;color:var(--text-primary);cursor:pointer;outline:none;font-family:var(--font-sans);appearance:none;padding-right:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237a8694' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center}.filter-group.active{background:var(--accent-muted);border-color:var(--accent)}.filter-group.active label{color:var(--accent)}.filter-group.active select{color:var(--accent);font-weight:600}
 .active-filters-badge{display:none;align-items:center;gap:4px;background:var(--accent-muted);color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}.active-filters-badge.visible{display:inline-flex}.active-filters-badge:hover{background:var(--accent);color:#fff}
@@ -167,12 +167,12 @@ input[type="text"].fc,textarea.fc,.fc[type="text"],input.fc:not([type="date"]):n
 #alerta-empenhos-banner,#alerta-contratos-banner{border-radius:var(--radius-xl);padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;font-size:12px;font-weight:500;border:1px solid}
 #busca-global-result{border-radius:var(--radius-xl)}
 @media(max-width:1100px){:root{--lb-sidebar-w:240px}.form-grid{grid-template-columns:repeat(3,1fr)}.dashboard-grid{grid-template-columns:1fr}}
-@media(max-width:860px){:root{--lb-sidebar-w:0px;--lb-topbar-h:56px}.tabs{left:8px!important;right:8px!important;bottom:8px!important;top:auto!important;width:auto!important;height:68px!important;flex-direction:row!important;padding:8px!important;border-radius:var(--radius-xl)!important;overflow-x:auto!important;overflow-y:hidden!important}.tabs::before,.tabs::after{display:none!important}.tab-btn{min-width:120px!important;height:50px!important;justify-content:center!important;text-align:center!important;font-size:11px!important}.tab-btn.active::before{display:none}header{left:8px!important;right:8px!important;top:8px!important;border-radius:var(--radius-lg)!important}header::before{font-size:14px}#busca-global-input{width:140px!important}#busca-global-input:focus{width:180px!important}.content{padding:10px 10px 96px 10px!important}.toolbar{top:74px}.user-chip span,#user-role-badge{display:none!important}}
-@media(max-width:700px){.form-grid{grid-template-columns:1fr}.summary-row{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.content{padding:8px 8px 96px 8px!important}}
+@media(max-width:860px){:root{--lb-sidebar-w:0px;--lb-topbar-h:56px}.tabs{left:8px!important;right:8px!important;bottom:8px!important;top:auto!important;width:auto!important;height:68px!important;flex-direction:row!important;padding:8px!important;border-radius:var(--radius-xl)!important;overflow-x:auto!important;overflow-y:hidden!important}.tabs::before,.tabs::after{display:none!important}.tab-btn{min-width:120px!important;height:50px!important;justify-content:center!important;text-align:center!important;font-size:11px!important}.tab-btn.active::before{display:none}header{left:8px!important;right:8px!important;top:8px!important;border-radius:var(--radius-lg)!important}header::before{font-size:14px}#busca-global-input{width:140px!important}#busca-global-input:focus{width:180px!important}.content{padding:84px 10px 96px 10px!important}.toolbar{top:74px}.user-chip span,#user-role-badge{display:none!important}}
+@media(max-width:700px){.form-grid{grid-template-columns:1fr}.summary-row{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.content{padding:80px 8px 96px 8px!important}}
 @media(max-width:560px){header::before{display:none}header{gap:5px!important;padding:0 8px!important}.hbtn{width:34px!important;height:34px!important}.form-grid,.compra-grid,.detail-grid,.detail-grid-3{grid-template-columns:1fr!important}.modal,.detail-popup{width:98%!important}}
 
 /* === SIDEBAR TOGGLE === */
-.sidebar-toggle{display:none}
+.sidebar-toggle{position:fixed;top:12px;left:var(--lb-sidebar-w);z-index:501;width:24px;height:24px;background:var(--bg-surface-solid);border:1px solid var(--border-light);border-left:none;border-radius:0 var(--radius-sm) var(--radius-sm) 0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-tertiary);transition:left .2s ease}
 .sidebar-toggle:hover{color:var(--text-primary);background:var(--bg-surface-hover)}
 body.sidebar-hidden .tabs{transform:translateX(-100%);pointer-events:none}
 body.sidebar-hidden .sidebar-toggle{left:0}
@@ -196,10 +196,6 @@ body.sidebar-hidden header{left:12px!important}
 @media(max-width:860px){.sidebar-logout-wrap{display:none!important}}
 
 
-
-/* === BUSCA NO SIDEBAR === */
-.sidebar-top-bar input:focus{background:rgba(255,255,255,.14)!important;border-color:rgba(82,183,136,.5)!important;box-shadow:0 0 0 2px rgba(82,183,136,.2)!important}
-.sidebar-top-bar button:hover{background:rgba(255,255,255,.12)!important;color:#fff!important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -222,31 +218,51 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-
-
-
-<div class="tabs">
-  <!-- BUSCA + NOTIFICACOES NO SIDEBAR -->
-  <div class="sidebar-top-bar" style="display:flex;align-items:center;gap:6px;padding:0 6px 10px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);">
-    <div style="position:relative;flex:1;">
-      <input type="text" id="busca-global-input" placeholder="Buscar..." oninput="buscaGlobal(this.value)" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-md);color:#fff;padding:7px 10px 7px 30px;font-size:12px;outline:none;font-family:var(--font-sans);transition:all .2s;" autocomplete="off">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <div id="busca-global-result" style="display:none;position:absolute;left:0;top:38px;width:320px;max-height:400px;overflow-y:auto;background:var(--bg-surface-solid);border:1px solid var(--border-light);border-radius:12px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
-    </div>
-    <div style="position:relative;">
-      <button id="notif-bell" onclick="toggleNotificacoes()" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.6);font-size:14px;flex-shrink:0;transition:all .2s;position:relative;" title="Notificacoes">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:8px;font-weight:700;width:14px;height:14px;line-height:14px;text-align:center;">0</span>
-      </button>
-      <div id="notif-panel" style="display:none;position:fixed;right:20px;top:60px;width:320px;max-height:440px;overflow-y:auto;background:var(--bg-surface-solid);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:10px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-weight:700;font-size:13px;color:var(--text-primary);">Notificacoes</div>
-          <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">Limpar tudo</button>
-        </div>
-        <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento</div></div>
-      </div>
+<header>
+  <div class="logo">
+    <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+    <div>
+      <div class="logo-text">LicitationBiznis</div>
+      <div class="logo-sub">Gestão de Licitações</div>
     </div>
   </div>
+  <div class="spacer"></div>
+
+  <!-- BUSCA GLOBAL -->
+  <div style="position:relative;margin-right:4px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:100px;color:var(--text-primary);padding:6px 30px 6px 30px;font-size:12px;width:200px;outline:none;transition:all 0.18s;" autocomplete="off">
+    <span class="busca-kbd-hint">/</span>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:400px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
+  </div>
+
+  <!-- SININHO DE NOTIFICAÇÕES -->
+  <div style="position:relative;">
+    <button id="notif-bell" onclick="toggleNotificacoes()" class="hbtn" style="position:relative;" title="Notificações">
+      🔔
+      <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+    </button>
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:320px;max-height:440px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-weight:700;font-size:13px;color:var(--text-primary);">🔔 Notificações</div>
+        <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">🗑 Limpar tudo</button>
+      </div>
+      <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
+    </div>
+  </div>
+
+  <div id="user-role-badge" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;"></div>
+
+  <!-- USUÁRIO + SAIR -->
+  <div id="user-menu-wrap">
+    <div class="user-chip" title="Usuário logado">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span id="user-nome" style="font-size:12px;font-weight:500;color:var(--text-secondary);">—</span>
+    </div>
+  </div>
+</header>
+<button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-hidden')" title="Mostrar/ocultar menu">&#9776;</button>
+
+<div class="tabs">
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
   <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
   <button class="tab-btn" onclick="switchTab('acompanhamentos',this);renderAcomp();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Acompanhamentos <span class="tab-badge" id="badge-acomp" style="background:var(--warning);color:#000;">0</span></button>
@@ -261,14 +277,10 @@ body.sidebar-hidden header{left:12px!important}
       <div class="sidebar-avatar" id="sidebar-user-avatar">?</div>
       <span id="sidebar-user-nome">—</span>
     </div>
-    <button class="sidebar-logout-btn" onclick="fazerLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</button>
+    <button class="sidebar-logout-btn" onclick="fazerLogout()">&#9211; Sair</button>
   </div>
 </div>
 
-
-<div id="user-role-badge" style="display:none;"></div>
-<span id="user-nome" style="display:none;"></span>
-<div id="user-avatar" style="display:none;"></div>
 <div class="content">
 
   <!-- TELA DE BOAS-VINDAS (aparece só quando não há dados) -->
