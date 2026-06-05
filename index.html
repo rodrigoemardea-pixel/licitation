@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- Firebase SDKs -->
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -33,7 +33,7 @@
 <title>LicitationBiznis · Gestão de Licitações</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- Chart.js para gráficos -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* LICITATIONBIZNIS 2026 PROFESSIONAL EDITION */
@@ -54,7 +54,7 @@ body{font-family:var(--font-sans);color:var(--text-primary);min-height:100vh;fon
 .tab-badge{margin-left:auto!important;background:rgba(255,255,255,.08)!important;border:none!important;color:rgba(255,255,255,.6)!important;font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;min-width:18px;text-align:center}
 .tab-btn.active .tab-badge{background:rgba(82,183,136,.25)!important;color:#95d5b2!important}
 header{position:fixed!important;top:var(--lb-gap)!important;left:calc(var(--lb-sidebar-w) + var(--lb-gap) + 8px)!important;right:var(--lb-gap)!important;height:var(--lb-topbar-h)!important;z-index:500!important;display:flex;align-items:center;gap:8px!important;padding:0 16px!important;border-radius:var(--radius-xl)!important;border:1px solid var(--border-light)!important;background:var(--glass-bg)!important;backdrop-filter:var(--glass-blur)!important;-webkit-backdrop-filter:var(--glass-blur)!important;box-shadow:var(--shadow-sm)!important;transition:background .3s}
-header .logo{display:none!important}
+
 header::before{display:none}
 header::after{display:none}
 .spacer{flex:1 1 auto;min-width:12px}
@@ -69,7 +69,7 @@ header::after{display:none}
 #busca-global-input:focus{width:min(36vw,440px)!important;background:var(--bg-surface-solid)!important;box-shadow:0 0 0 3px var(--accent-ring),0 4px 16px rgba(0,0,0,.06)!important}
 .busca-kbd-hint{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-xs);padding:1px 6px;font-size:10px;color:var(--text-placeholder);pointer-events:none;font-family:var(--font-mono)}
 #busca-global-input:focus+.busca-kbd-hint{opacity:0}
-.push-notif-btn{height:38px;background:transparent;border:1px solid transparent;border-radius:var(--radius-md);padding:0 10px;font-size:11px;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:var(--font-sans)}.push-notif-btn:hover{background:var(--bg-surface-soft);border-color:var(--border-light);color:var(--text-primary)}.push-notif-btn.active{background:var(--success-soft);border-color:var(--success);color:var(--success)}
+
 .content{width:auto!important;max-width:none!important;min-height:100vh;margin:0!important;padding:calc(var(--lb-topbar-h) + var(--lb-gap) + 20px) 20px 40px calc(var(--lb-sidebar-w) + var(--lb-gap) + 20px)!important}
 .tab-pane{display:none}.tab-pane.active{display:block;animation:paneIn .25s var(--ease-out) both}
 @keyframes paneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -159,7 +159,7 @@ input[type="text"].fc,textarea.fc,.fc[type="text"],input.fc:not([type="date"]):n
 .saldo-ok{color:var(--success);font-weight:700}.saldo-zero{color:var(--text-tertiary)}.saldo-parcial{color:var(--warning);font-weight:700}.lote-selector-card{border:1px solid var(--border-light);border-radius:var(--radius-md);padding:8px 10px;cursor:pointer;transition:all .13s;background:var(--bg-surface-solid)}.lote-selector-card:hover:not(.sem-saldo){border-color:var(--accent);background:var(--accent-muted)}.lote-selector-card.selected{border-color:var(--accent);background:var(--accent-muted)}.lote-selector-card.sem-saldo{opacity:.4;cursor:not-allowed}.lote-saldo-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}.lote-saldo-ok{background:var(--success-soft);color:var(--success)}.lote-saldo-zero{background:var(--bg-surface-soft);color:var(--text-tertiary)}.lote-qtd-input-wrap{display:flex;align-items:center;gap:6px;margin-top:6px}.lote-qtd-input-wrap label{font-size:11px;font-weight:600;color:var(--text-tertiary);white-space:nowrap}.lote-qtd-input-wrap input[type=number]{width:72px;padding:5px 8px;font-size:13px;font-weight:600;border:1.5px solid var(--accent);border-radius:var(--radius-sm);background:var(--bg-surface-solid);color:var(--accent);font-family:var(--font-mono);outline:none;transition:box-shadow .15s;text-align:center}.lote-qtd-input-wrap input[type=number]:focus{box-shadow:0 0 0 3px var(--accent-ring)}
 .lote-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}.lotes-status-table{width:100%;font-size:12px;border-collapse:collapse}.lotes-status-table th{padding:6px 8px;text-align:left;background:var(--bg-surface-soft);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary)}.lotes-status-table td{padding:6px 8px;border-bottom:1px solid var(--border-light)}.lotes-totais{font-size:12px;font-weight:600;padding:6px 0}
 .painel-section{margin-bottom:20px}.painel-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-tertiary);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
-.hstat-val{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--success)}.hstat-label{font-size:9px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px}.header-stats{display:flex;gap:20px}.hstat{text-align:right}
+
 .login-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999;background:radial-gradient(circle at 15% 12%,rgba(82,183,136,.2),transparent 35%),radial-gradient(circle at 80% 10%,rgba(37,99,235,.12),transparent 30%),linear-gradient(135deg,#071a13,#0f172a)!important}.login-overlay.open{display:flex}.login-card{background:rgba(255,255,255,.92)!important;border:1px solid rgba(255,255,255,.4)!important;border-radius:var(--radius-3xl)!important;padding:40px 36px!important;width:90%;max-width:400px!important;box-shadow:0 32px 80px rgba(0,0,0,.3)!important;animation:modalIn .3s var(--ease-spring)}.login-title{font-size:22px!important;font-weight:800;letter-spacing:-.6px!important;color:var(--text-primary);margin-bottom:3px;text-align:center}.login-sub{font-size:13px!important;color:var(--text-tertiary);text-align:center;margin-bottom:26px}.login-label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary);margin-bottom:5px}.login-select{width:100%;padding:10px 13px;font-size:13px}.login-btn{width:100%;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-sans);border:none;border-radius:var(--radius-md)}.login-btn:hover{transform:translateY(-1px)}.login-btn:disabled{opacity:.55;cursor:not-allowed}.login-footer{text-align:center;font-size:11px;color:var(--text-tertiary);margin-top:14px}
 #offline-banner{display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bg-surface-solid);border:1px solid var(--border-medium);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:600;z-index:99999;box-shadow:var(--shadow-lg);gap:7px;align-items:center;color:var(--text-primary)}
 @keyframes slideUpBanner{from{transform:translateX(-50%) translateY(16px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
@@ -195,17 +195,15 @@ body.sidebar-hidden header{left:12px!important}
 .sidebar-logout-btn:hover{background:rgba(220,38,38,.22);color:#fff;transform:translateX(2px)}
 @media(max-width:860px){.sidebar-logout-wrap{display:none!important}}
 
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 </head>
 <body data-theme="light">
 
-<!-- TELA DE LOGIN -->
 <div class="login-overlay open" id="login-screen">
   <div class="login-card">
-    <!-- Logo removido -->
+    
     <div class="login-title">LicitationBiznis</div>
     <div class="login-sub">Gestão de Licitações</div>
     <form id="login-form" onsubmit="event.preventDefault();fazerLogin();" autocomplete="on">
@@ -221,23 +219,16 @@ body.sidebar-hidden header{left:12px!important}
 </div>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
-    <div>
-      <div class="logo-text">LicitationBiznis</div>
-      <div class="logo-sub">Gestão de Licitações</div>
-    </div>
-  </div>
   <div class="spacer"></div>
 
-  <!-- BUSCA GLOBAL -->
+  
   <div style="position:relative;margin-right:4px;">
     <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:100px;color:var(--text-primary);padding:6px 30px 6px 30px;font-size:12px;width:200px;outline:none;transition:all 0.18s;" autocomplete="off">
     <span class="busca-kbd-hint">/</span>
     <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:400px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
   </div>
 
-  <!-- SININHO DE NOTIFICAÇÕES -->
+  
   <div style="position:relative;">
     <button id="notif-bell" onclick="toggleNotificacoes()" class="hbtn" style="position:relative;" title="Notificações">
       🔔
@@ -254,7 +245,7 @@ body.sidebar-hidden header{left:12px!important}
 
   <div id="user-role-badge" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;"></div>
 
-  <!-- USUÁRIO + SAIR -->
+  
   <div id="user-menu-wrap">
     <div class="user-chip" title="Usuário logado">
       <div class="user-avatar" id="user-avatar">?</div>
@@ -281,7 +272,7 @@ body.sidebar-hidden header{left:12px!important}
 
 <div class="content">
 
-  <!-- TELA DE BOAS-VINDAS (aparece só quando não há dados) -->
+  
   <div id="tela-boasvindas" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:var(--bg-surface); border-radius:24px; padding:40px; max-width:480px; width:90%; text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3); border:1px solid var(--border-light);">
       <div style="font-size:48px; margin-bottom:16px;">📦</div>
@@ -302,14 +293,14 @@ body.sidebar-hidden header{left:12px!important}
       </button>
     </div>
   </div>
-  <!-- PAINEL -->
+  
   <div class="tab-pane active" id="tab-painel">
     <div id="painel-body">
       <div style="text-align:center;padding:40px;color:var(--text-tertiary);">Carregando painel...</div>
     </div>
   </div>
 
-  <!-- ACOMPANHAMENTOS -->
+  
   <div class="tab-pane" id="tab-acompanhamentos">
     <div class="summary-row" id="sum-acomp"></div>
     <div class="toolbar">
@@ -367,10 +358,10 @@ body.sidebar-hidden header{left:12px!important}
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  
   <div class="tab-pane" id="tab-dashboard">
     
-    <!-- Filtro rápido -->
+    
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
       <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">📊 Visão Geral</span>
       <div class="filter-group">
@@ -393,7 +384,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- KPIs principais -->
+    
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
       <div class="card" style="border-left:4px solid var(--accent);">
         <div class="card-label">Contratos Ativos</div>
@@ -413,14 +404,14 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- Alertas / Status -->
+    
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;">
-      <!-- Comparativo mês -->
+      
       <div class="card" style="grid-column:span 2;">
         <h3 style="font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;">📅 Comparativo: Mês Atual vs Anterior</h3>
         <div style="height:180px;"><canvas id="grafico-comparativo"></canvas></div>
       </div>
-      <!-- Status de atraso -->
+      
       <div class="card">
         <div class="card-label">Empenhos em Atraso</div>
         <div style="font-size:18px;font-weight:700;margin:8px 0;" id="dk-atraso">—</div>
@@ -428,7 +419,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- Gráficos principais -->
+    
     <div class="dashboard-grid" style="margin-bottom:20px;">
       <div class="chart-card">
         <h3>Recebido &amp; Lucro por Mês</h3>
@@ -451,7 +442,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- Tabela: Empenhos urgentes -->
+    
     <div class="chart-card" style="margin-top:20px;">
       <h3>Empenhos Pendentes há mais de 30 dias</h3>
       <div style="overflow-x:auto;">
@@ -470,7 +461,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- Ranking órgãos -->
+    
     <div class="chart-card" style="margin-top:20px;">
       <h3>🏅 Ranking de Órgãos (por valor contratado)</h3>
       <div style="overflow-x:auto;">
@@ -489,7 +480,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- VISÃO DE CAIXA 30/60/90 dias -->
+    
     <div class="chart-card" style="margin-top:20px;">
       <h3>Previsão de Caixa — Empenhos Pendentes</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
@@ -529,7 +520,7 @@ body.sidebar-hidden header{left:12px!important}
       </div>
     </div>
 
-    <!-- TOP ÓRGÃOS DEVEDORES + TAXA DE RECEBIMENTO -->
+    
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
       <div class="chart-card">
         <h3>Top Órgãos Devedores</h3>
@@ -563,7 +554,7 @@ body.sidebar-hidden header{left:12px!important}
 
   </div>
 
-  <!-- DISPUTAS VENCIDAS -->
+  
   <div class="tab-pane active" id="tab-disputas">
     <div class="summary-row" id="sum-disputas"></div>
     <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
@@ -677,7 +668,7 @@ body.sidebar-hidden header{left:12px!important}
 
   </div>
 
-  <!-- EMPENHOS -->
+  
   <div class="tab-pane" id="tab-empenhos">
     <div id="alerta-empenhos-banner" style="display:none;" class="alerta-banner" onclick="filtrarAtraso60()">
       🚨 <span id="alerta-empenhos-txt"></span> — clique para filtrar
@@ -746,7 +737,7 @@ body.sidebar-hidden header{left:12px!important}
     </div>
   </div>
 
-  <!-- TAB EMPENHOS FINALIZADOS -->
+  
   <div class="tab-pane" id="tab-emp-finalizados">
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
@@ -781,7 +772,7 @@ body.sidebar-hidden header{left:12px!important}
     </div>
   </div>
 
-  <!-- TAB FINALIZADAS -->
+  
   <div class="tab-pane" id="tab-finalizadas">
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
@@ -818,7 +809,6 @@ body.sidebar-hidden header{left:12px!important}
 
 </div>
 
-<!-- MODAL ACOMPANHAMENTOS -->
 <div class="modal-overlay" id="modal-acomp">
   <div class="modal">
     <div class="modal-header">
@@ -886,8 +876,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-
-<!-- POPUP DETALHES ACOMPANHAMENTO -->
 <div class="detail-popup-overlay" id="popup-acomp">
   <div class="detail-popup">
     <div class="detail-popup-header">
@@ -906,7 +894,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- MODAL DISPUTAS (com campo Observação) -->
 <div class="modal-overlay" id="modal-disputas">
   <div class="modal">
     <div class="modal-header">
@@ -950,7 +937,7 @@ body.sidebar-hidden header{left:12px!important}
         <input type="hidden" id="d-contrato-url">
         <input type="hidden" id="d-contrato-nome">
 
-        <!-- LOTES / ITENS OBRIGATÓRIO -->
+        
         <div class="full">
           <div class="fsec">📦 Itens / Lotes do Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></div>
           <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
@@ -972,7 +959,7 @@ body.sidebar-hidden header{left:12px!important}
           </div>
           <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
         </div>
-        <!-- OBSERVAÇÃO (último campo) -->
+        
         <div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
@@ -987,7 +974,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- MODAL EMPENHOS (com campo Observação) -->
 <div class="modal-overlay" id="modal-empenhos">
   <div class="modal">
     <div class="modal-header">
@@ -999,13 +985,13 @@ body.sidebar-hidden header{left:12px!important}
         <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
-        <!-- Analista: visível para admin, preenchido automaticamente para analistas comuns -->
+        
         <div class="fg" id="fg-e-analista">
           <label class="fl">👤 Analista</label>
           <select class="fc" id="e-analista"><option value="">Selecione</option></select>
         </div>
 
-        <!-- ÓRGÃO = DISPUTA (campo único) -->
+        
         <div class="fg full">
           <label class="fl">🏢 Órgão / Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></label>
           <select class="fc" id="e-disputa-id" onchange="onDisputaSelecionada(this.value)" style="font-size:13px;">
@@ -1014,7 +1000,7 @@ body.sidebar-hidden header{left:12px!important}
           <div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">Apenas órgãos com saldo de itens a empenhar são listados</div>
         </div>
 
-        <!-- SELETOR DE LOTE (aparece após selecionar contrato) -->
+        
         <div class="fg full" id="lote-selector-wrap" style="display:none;">
           <label class="fl">📦 Itens/Lotes do Empenho <span style="color:var(--text-tertiary);font-size:9px;">(selecione um ou mais)</span></label>
           <div id="lote-selector-container"></div>
@@ -1025,15 +1011,13 @@ body.sidebar-hidden header{left:12px!important}
           </div>
         </div>
 
-        <!-- CAMPO OBSERVAÇÃO -->
+        
         <div class="fg full">
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-
-
-        <!-- Campos ocultos necessários para salvar (não exibidos) -->
+        
         <input type="hidden" id="e-dcomp">
         <input type="hidden" id="e-vunit" value="0">
         <input type="hidden" id="e-qtd" value="1">
@@ -1063,7 +1047,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- WIZARD DE ENTRADA RÁPIDA -->
 <div class="wizard-overlay" id="wizard-quick">
   <div class="wizard">
     <h2>Entrada Rápida</h2>
@@ -1099,7 +1082,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- MODAL EMPENHOS DA DISPUTA -->
 <div class="modal-overlay" id="modal-empenhos-disputa">
   <div class="modal modal-emp-disp">
     <div class="modal-header">
@@ -1123,7 +1105,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- MODAL COMPRA INDIVIDUAL -->
 <div class="modal-overlay" id="modal-compra">
   <div class="modal" style="max-width:900px;">
     <div class="modal-header">
@@ -1180,7 +1161,7 @@ body.sidebar-hidden header{left:12px!important}
             </label>
             <input type="number" step="0.01" class="fc" id="c-custo" oninput="calcCompra()">
           </div>
-          <!-- Mini painel custo calculado -->
+          
           <div class="fg full" id="c-custo-calc-painel" style="display:none;">
             <div style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:10px;font-size:12px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
@@ -1189,13 +1170,13 @@ body.sidebar-hidden header{left:12px!important}
                 <label id="c-calc-icms-lbl" style="display:flex;align-items:center;gap:4px;cursor:pointer;display:none;"><input type="radio" name="c-calc-tipo" value="icms" id="c-calc-icms" onchange="calcCustoRecalcular()"> ICMS</label>
                 <span id="c-calc-empresa-info" style="font-size:11px;color:var(--text-tertiary);margin-left:auto;"></span>
               </div>
-              <!-- Simples -->
+              
               <div id="c-calc-bloco-simples" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                 <span style="font-size:11px;color:var(--text-secondary);">% Custo:</span>
                 <input type="number" class="fc" id="c-calc-pct" value="9" step="0.1" oninput="calcCustoRecalcular()" style="width:70px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center;">
                 <span style="font-size:13px;font-weight:700;color:var(--warning);">%</span>
               </div>
-              <!-- ICMS -->
+              
               <div id="c-calc-bloco-icms" style="display:none;margin-bottom:8px;">
                 <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
                   <span id="c-calc-estado-label" style="font-size:12px;font-weight:700;color:var(--accent);"></span>
@@ -1207,7 +1188,7 @@ body.sidebar-hidden header{left:12px!important}
                   <input type="number" class="fc" id="c-calc-credito" placeholder="0,00" step="0.01" oninput="calcCustoRecalcular()" style="width:100px;padding:4px 8px;font-size:13px;">
                 </div>
               </div>
-              <!-- Resultado e botão aplicar -->
+              
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <span style="font-size:11px;color:var(--text-secondary);">Custo calculado:</span>
                 <span id="c-calc-resultado" style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</span>
@@ -1254,9 +1235,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- CONFIRM -->
-
-<!-- ======= MODAL CALCULADORA ======= -->
 <div class="modal-overlay" id="modal-calc" style="z-index:3000;align-items:stretch;padding:16px;">
   <div class="modal" style="max-width:100%;width:100%;max-height:100%;height:100%;display:flex;flex-direction:column;border-radius:16px;">
     <div class="modal-header">
@@ -1265,7 +1243,7 @@ body.sidebar-hidden header{left:12px!important}
     </div>
     <div class="modal-body" style="flex:1;overflow-y:auto;padding:16px 20px;">
 
-      <!-- PASSO 1: Seleção do contrato -->
+      
       <div id="calc-passo1">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
           <div>
@@ -1277,7 +1255,7 @@ body.sidebar-hidden header{left:12px!important}
         <div id="calc-lista-disputas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;max-height:calc(100vh - 280px);overflow-y:auto;padding-right:2px;"></div>
       </div>
 
-      <!-- PASSO 2: Calculadora -->
+      
       <div id="calc-passo2" style="display:none;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <button onclick="calcVoltarPasso1()" style="background:none;border:1px solid var(--border-light);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--text-secondary);">← Voltar</button>
@@ -1287,16 +1265,16 @@ body.sidebar-hidden header{left:12px!important}
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
 
-          <!-- COLUNA ESQUERDA: lista de itens + tabela -->
+          
           <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;">
 
-            <!-- Seleção do Item -->
+            
             <div>
               <div class="fsec" style="margin-bottom:6px;">📦 Itens disponíveis — clique para adicionar</div>
               <div id="calc-itens-lista" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px;"></div>
             </div>
 
-            <!-- Formulário de adição -->
+            
             <div id="calc-form-item" style="background:var(--bg-surface-2,#f8fafc);border:2px solid var(--accent);border-radius:10px;padding:12px;display:none;">
               <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent);" id="calc-form-item-titulo">Adicionar item</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -1315,7 +1293,7 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-            <!-- Tabela de itens adicionados -->
+            
             <div id="calc-itens-adicionados-wrap" style="display:none;flex:1;">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                 <div class="fsec" style="margin:0;">🛒 Itens no Cálculo</div>
@@ -1341,12 +1319,12 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-          </div><!-- /coluna esquerda -->
+          </div>
 
-          <!-- COLUNA DIREITA: tipo, parâmetros, resultado -->
+          
           <div style="display:flex;flex-direction:column;gap:12px;">
 
-            <!-- Tipo de cálculo (só Gadita) -->
+            
             <div id="calc-tipo-gadita" style="display:none;">
               <div class="fsec" style="margin-bottom:8px;">Tipo de Cálculo</div>
               <div style="display:flex;gap:8px;">
@@ -1359,7 +1337,7 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-            <!-- Parâmetros: Simples -->
+            
             <div id="calc-bloco-simples" style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
               <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros</div>
               <div class="fg">
@@ -1371,7 +1349,7 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-            <!-- Parâmetros: ICMS -->
+            
             <div id="calc-bloco-icms-info" style="display:none;background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
               <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros ICMS</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
@@ -1396,7 +1374,7 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-            <!-- RESULTADO TOTAL -->
+            
             <div id="calc-resultado-wrap" style="display:none;background:linear-gradient(135deg,var(--success-soft),rgba(16,185,129,0.05));border:2px solid var(--success);border-radius:14px;padding:16px;flex:1;">
               <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--success);margin-bottom:12px;letter-spacing:1px;">📊 Resultado Total</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -1417,9 +1395,9 @@ body.sidebar-hidden header{left:12px!important}
                   <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
                 </div>
               </div>
-              <!-- Detalhamento ICMS -->
+              
               <div id="calc-icms-detalhes" style="font-size:11px;color:var(--text-secondary);border-top:1px solid rgba(16,185,129,0.3);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;"></div>
-              <!-- Botão retornar custo para lote (aparece só quando chamado do form do contrato) -->
+              
               <div id="calc-retornar-wrap" style="display:none;margin-top:14px;border-top:1px solid rgba(16,185,129,0.3);padding-top:12px;">
                 <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">↩️ Retornar resultado para o item no contrato:</div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1429,16 +1407,15 @@ body.sidebar-hidden header{left:12px!important}
               </div>
             </div>
 
-          </div><!-- /coluna direita -->
+          </div>
 
-        </div><!-- /grid 2 colunas -->
+        </div>
 
-            </div><!-- /calc-passo2 -->
-    </div><!-- /modal-body -->
+            </div>
+    </div>
   </div>
 </div>
 
-<!-- MELHORIA 8: Modal de confirmação estilizado -->
 <div class="confirm-modal-overlay" id="modal-confirm">
   <div class="confirm-modal-box">
     <span class="confirm-modal-icon" id="confirm-modal-icon">🗑️</span>
@@ -1451,7 +1428,6 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<!-- MELHORIA 15: Banner de status offline -->
 <div id="offline-banner">
   <span id="offline-icon">📡</span>
   <span id="offline-msg">Sem conexão — trabalhando offline</span>
@@ -1462,8 +1438,6 @@ body.sidebar-hidden header{left:12px!important}
 <script>
 // ==================== CONFIGURAÇÕES ====================
 const KEYS={disputas:'lic_ent_d',empenhos:'lic_ent_e'};
-const isElectron = false;
-
 // ===== PERSISTÊNCIA FIREBASE FIRESTORE =====
 let _ignorarProximoSnapshot = false;
 let _salvarTimeout = null;
@@ -1496,8 +1470,6 @@ const save = (k, v) => {
     _ignorarProximoSnapshot = false;
   });
 };
-
-const load = k => []; // não usado mais (dados vêm do Firestore)
 
 // ===== USUÁRIO LOGADO =====
 let usuarioLogado = null;
@@ -2001,75 +1973,6 @@ const DB = {
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
-// ══════════════════════════════════════════════════════════
-//   LIMPEZA AUTOMÁTICA — Remove PDFs após 120 dias finalizados
-// ══════════════════════════════════════════════════════════
-async function limparPDFsAntigos() {
-  const DIAS_LIMITE = 120;
-  const hoje = new Date();
-  let alterou = false;
-
-  // Extrai o path do Supabase a partir da URL pública
-  function extrairPath(url) {
-    if (!url) return null;
-    // URL: .../storage/v1/object/public/contratos/PATH
-    const match = url.match(/\/object\/public\/contratos\/(.+)$/);
-    return match ? match[1] : null;
-  }
-
-  async function deletarSupabase(path) {
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-        {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${SUPABASE_ANON}` }
-        }
-      );
-      return res.ok;
-    } catch(e) {
-      console.warn('Erro ao deletar arquivo:', path, e);
-      return false;
-    }
-  }
-
-  // Verifico contratos finalizadas há +120 dias
-  for (const d of DB.disputas) {
-    if (!d.finalizada || !d.dataFinalizacao) continue;
-    const diasFinalizada = Math.floor((hoje - new Date(d.dataFinalizacao + 'T12:00')) / 86400000);
-    if (diasFinalizada < DIAS_LIMITE) continue;
-
-    if (d.contratoUrl) {
-      const path = extrairPath(d.contratoUrl);
-      if (path) {
-        const ok = await deletarSupabase(path);
-        if (ok) { d.contratoUrl = ''; d.contratoNome = ''; alterou = true; }
-      }
-    }
-  }
-
-  // Verifica empenhos finalizados há +120 dias
-  for (const e of DB.empenhos) {
-    if (!e.finalizado || !e.dataFinalizacao) continue;
-    const diasFinalizado = Math.floor((hoje - new Date(e.dataFinalizacao + 'T12:00')) / 86400000);
-    if (diasFinalizado < DIAS_LIMITE) continue;
-
-    if (e.neUrl) {
-      const path = extrairPath(e.neUrl);
-      if (path) {
-        const ok = await deletarSupabase(path);
-        if (ok) { e.neUrl = ''; e.neNome = ''; alterou = true; }
-      }
-    }
-  }
-
-  if (alterou) {
-    save('disputas', DB.disputas);
-    save('empenhos', DB.empenhos);
-    console.log('🧹 Limpeza automática: PDFs antigos removidos do Supabase.');
-  }
-}
-
 function inicializarApp(dadosSalvos) {
   const temDados = dadosSalvos &&
     (dadosSalvos.initialized ||
@@ -2085,14 +1988,6 @@ function inicializarApp(dadosSalvos) {
     const tela = document.getElementById('tela-boasvindas');
     if (tela) tela.style.display = 'flex';
     renderAll();
-  }
-
-  // Roda limpeza em background, sem travar a UI, 1x por dia
-  const ultimaLimpeza = localStorage.getItem('_ultima_limpeza_pdfs');
-  const hoje = new Date().toISOString().slice(0, 10);
-  if (ultimaLimpeza !== hoje) {
-    localStorage.setItem('_ultima_limpeza_pdfs', hoje);
-    setTimeout(() => limparPDFsAntigos(), 5000); // aguarda 5s após carregar
   }
 }
 
@@ -2219,19 +2114,6 @@ let filtroSituacaoDisputas = 'todos';
 let filtroComprasEmpenhos = 'todos';
 
 // ========== FUNÇÕES DE FILTRO ==========
-function filtrarPorAnalista() {
-  // Não-admins não podem mudar o filtro de analista
-  if (!isAdmin) {
-    filtroAnalista = analistaDoUsuario;
-    const el = g('filtro-analista');
-    if (el) el.value = analistaDoUsuario;
-    return;
-  }
-  filtroAnalista = g('filtro-analista').value;
-  renderAll();
-  atualizarDashboard();
-}
-
 // Marca filter-groups como ativos quando têm valor não-padrão
 function markActiveFilters(scopeEl) {
   const root = scopeEl ? (typeof scopeEl === 'string' ? document.getElementById(scopeEl) : scopeEl) : document;
@@ -2533,29 +2415,6 @@ const badgeD=s=>{const m={'Em recurso':'by',Habilitado:'bb',Homologado:'bp',Cont
 const mTag=r=>Object.keys(r.M||{}).length?`<span class="badge by" style="font-size:8px;padding:2px 4px;margin-left:2px;">M</span>`:'';
 
 // ========== FUNÇÕES DE DUPLICAÇÃO ==========
-function duplicarDisputa(id){
-  const original = DB.disputas.find(x => x.id === id);
-  if (!original) return;
-  const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid(); copia.compra = 0; copia.venda = 0; copia.aliq = 0.145; copia.M = {};
-  _fullDB.disputas.push(copia);
-  save('disputas', _fullDB.disputas);
-  toast('Contrato duplicado com sucesso!', 'success');
-  renderAll();
-}
-
-function duplicarEmpenho(id){
-  const original = DB.empenhos.find(x => x.id === id);
-  if (!original) return;
-  const copia = JSON.parse(JSON.stringify(original));
-  copia.id = uid(); copia.vunit = 0; copia.qtd = 1; copia.vem = 0;
-  copia.aliq = 0.13; copia.recebido = 0; copia.dreceb = ''; copia.disputaId = null; copia.M = {};
-  _fullDB.empenhos.push(copia);
-  save('empenhos', _fullDB.empenhos);
-  toast('Empenho duplicado com sucesso!', 'success');
-  renderAll();
-}
-
 // ===== LOTES HELPERS =====
 function calcQtdEnviada(disputaId, loteId, excludeEmpenhoId) {
   return DB.empenhos
@@ -2981,12 +2840,6 @@ function toggleLoteCard(el) {
   const av = g('lote-aviso'); if(av) av.style.display = 'none';
   atualizarVemTotal();
 }
-
-function selecionarLoteCard(el) {
-  // Mantém compatibilidade com código antigo
-  toggleLoteCard(el);
-}
-
 function atualizarVemTotal() {
   const disputaId = gv('e-disputa-id');
   const disp = disputaId ? DB.disputas.find(d=>d.id===disputaId) : null;
@@ -3006,13 +2859,6 @@ function atualizarVemTotal() {
     calcE();
   }
 }
-
-function selecionarLote(loteId, maxQtd, vunit) {
-  // Mantém compatibilidade - agora faz toggle
-  const card = g('lcard-'+loteId);
-  if(card) toggleLoteCard(card);
-}
-
 function atualizarVemPorLoteEl(input) {
   atualizarVemPorLote(input.dataset.lid, +input.dataset.vunit, +input.dataset.maxqtd);
 }
@@ -3028,15 +2874,6 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
 }
 
 var _expandedDisputas = new Set();
-function toggleEmpenhosDisputa(disputaId) {
-  if (_expandedDisputas.has(disputaId)) {
-    _expandedDisputas.delete(disputaId);
-  } else {
-    _expandedDisputas.add(disputaId);
-  }
-  renderD();
-}
-
 function renderD(){
   const allRows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
@@ -3237,7 +3074,6 @@ function sumD(){
 
 }
 
-
 // Verifica se um empenho ainda tem saldo de itens para comprar
 function empenhoTemSaldo(empenhoId) {
   const emp = DB.empenhos.find(x => x.id === empenhoId);
@@ -3251,7 +3087,6 @@ function empenhoTemSaldo(empenhoId) {
     return qtdComprada < (item.qtd || 0);
   });
 }
-
 
 function atualizarHeaderEmpenhosAgrupado() {
   const headerRow = document.querySelector('#tab-empenhos table thead tr');
@@ -3652,7 +3487,6 @@ function atualizarDashboard() {
       </td></tr>`;
   }).join('') : '<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text-tertiary);">Poucos dados ainda</td></tr>';
 
-
   const porMes = {};
   empenhosFiltrados.forEach(e => {
     (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').forEach(c=>{
@@ -3778,7 +3612,6 @@ function atualizarDashboard() {
     options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{position:'top',labels:{font:{size:10}}}}, scales:{y:{ticks:{callback:v=>'R$'+v.toLocaleString('pt-BR')}}} }
   });
 }
-
 
 let disputaAtiva = null;
 
@@ -4943,7 +4776,6 @@ function delCompra(empenhoId, compraId) {
 // Os itens do empenho são referências aos lotes do contrato com quantidade e valor específicos
 // Já implementado via lotesSelecionados - mas precisamos permitir múltiplos
 
-
 // ========== CALCULADORA RÁPIDA ==========
 const ICMS_ESTADOS = {
   AC:7,AL:7,AM:7,AP:7,BA:7,CE:7,DF:7,ES:7,GO:7,MA:7,MT:7,
@@ -5363,7 +5195,6 @@ function calcRecalcular() {
   }
 }
 
-
 // ========== CÁLCULO DE CUSTO NO MODAL DE COMPRA ==========
 function calcCustoAutomatico() {
   const emp = DB.empenhos.find(x => x.id === compraEmpenhoId);
@@ -5442,7 +5273,6 @@ function calcCustoAplicar() {
   g('c-custo-calc-painel').style.display = 'none';
   calcCompra(); // recalcula lucro com novo custo
 }
-
 
 // ========== DISPUTAS FINALIZADAS ==========
 function finalizarDisputa(id) {
@@ -5697,152 +5527,7 @@ function validarFormEmpenho() {
   return ok;
 }
 
-// ===== MELHORIA 15: Notificações push aprimoradas =====
-function togglePushNotificacoes() {
-  if (!('Notification' in window)) {
-    toast('Seu navegador não suporta notificações push.', 'error');
-    return;
-  }
-  if (Notification.permission === 'granted') {
-    // Já ativo: mostra opções (testar ou desativar via settings)
-    _mostrarMenuPush();
-  } else if (Notification.permission === 'denied') {
-    toast('❌ Notificações bloqueadas. Para liberar: clique no 🔒 cadeado na barra de endereço → Notificações → Permitir.', 'error');
-  } else {
-    Notification.requestPermission().then(perm => {
-      atualizarBtnPush();
-      if (perm === 'granted') {
-        toast('🔔 Notificações push ativadas!', 'success');
-        new Notification('🔔 LicitationBiznis', { body: 'Pronto! Você receberá alertas de retornos e empenhos atrasados.' });
-      } else {
-        toast('Permissão negada. Você pode ativar depois pelo cadeado na barra de endereço.', 'info');
-      }
-    });
-  }
-}
-
-function _mostrarMenuPush() {
-  // Remove menu anterior se existir
-  const old = document.getElementById('push-menu-popup');
-  if (old) { old.remove(); return; }
-
-  const btn = g('btn-push-notif');
-  const rect = btn.getBoundingClientRect();
-
-  const menu = document.createElement('div');
-  menu.id = 'push-menu-popup';
-  menu.style.cssText = `position:fixed;top:${rect.bottom + 6}px;right:${window.innerWidth - rect.right}px;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:99999;min-width:220px;overflow:hidden;animation:modalIn 0.15s ease;`;
-  menu.innerHTML = `
-    <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);letter-spacing:0.5px;">🔔 Notificações Push</div>
-    <div onclick="new Notification('🔔 LicitationBiznis', {body:'Teste de notificação — tudo funcionando!'});document.getElementById('push-menu-popup')?.remove();toast('Notificação de teste enviada!','success');"
-      style="padding:10px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"
-      onmouseover="this.style.background='var(--bg-surface-hover)'" onmouseout="this.style.background=''">
-      📣 Enviar notificação de teste
-    </div>
-    <div onclick="window.open('','_blank');document.getElementById('push-menu-popup')?.remove();toast('Para desativar: clique no 🔒 cadeado → Notificações → Bloquear','info');"
-      style="padding:10px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;color:var(--text-secondary);border-top:1px solid var(--border-light);"
-      onmouseover="this.style.background='var(--bg-surface-hover)'" onmouseout="this.style.background=''">
-      🔒 Desativar (via configurações do browser)
-    </div>
-    <div style="padding:8px 14px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border-light);line-height:1.5;">
-      Browsers não permitem desativar por código.<br>Use o cadeado 🔒 na barra de endereço.
-    </div>`;
-
-  document.body.appendChild(menu);
-
-  // Fecha ao clicar fora
-  setTimeout(() => {
-    document.addEventListener('click', function _close(e) {
-      if (!menu.contains(e.target) && e.target !== btn) {
-        menu.remove();
-        document.removeEventListener('click', _close);
-      }
-    });
-  }, 50);
-}
-
-function atualizarBtnPush() {
-  const btn = g('btn-push-notif');
-  const label = g('push-notif-label');
-  if (!btn || !label) return;
-  if (!('Notification' in window)) { btn.style.display = 'none'; return; }
-  if (Notification.permission === 'granted') {
-    btn.classList.add('active');
-    label.textContent = 'Push ativo';
-    btn.title = 'Notificações push ativas — clique para testar';
-  } else if (Notification.permission === 'denied') {
-    btn.classList.remove('active');
-    label.textContent = 'Push bloqueado';
-    btn.style.color = 'var(--danger)';
-    btn.style.borderColor = 'var(--danger)';
-  } else {
-    btn.classList.remove('active');
-    label.textContent = 'Ativar push';
-  }
-}
-
-// Inicializa o estado do botão push ao carregar
-setTimeout(atualizarBtnPush, 500);
-
-// ===== MELHORIA BÔNUS: Abertura automática às 8h30 em dias úteis =====
-// Isso funciona com Service Worker — implementado como verificação ao abrir a página
-(function verificarAberturaAutomatica() {
-  const agora = new Date();
-  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg..5=Sex, 6=Sab
-  const ehDiaUtil = diaSemana >= 1 && diaSemana <= 5;
-  const hora = agora.getHours();
-  const min = agora.getMinutes();
-  
-  // Salva o horário do próximo agendamento no localStorage
-  function proximoAgendamento() {
-    const agora = new Date();
-    const alvo = new Date(agora);
-    alvo.setSeconds(0); alvo.setMilliseconds(0);
-    
-    // Acha o próximo dia útil às 8:30
-    alvo.setHours(8, 30, 0, 0);
-    if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
-    // Pula fim de semana
-    while (alvo.getDay() === 0 || alvo.getDay() === 6) alvo.setDate(alvo.getDate() + 1);
-    return alvo;
-  }
-  
-  // Agenda verificação para o próximo 8:30 dia útil
-  function agendarProximaVerificacao() {
-    const prox = proximoAgendamento();
-    const msAte = prox - new Date();
-    console.log(`⏰ Próxima verificação automática: ${prox.toLocaleString('pt-BR')}`);
-    setTimeout(() => {
-      // Ao disparar, envia notificação push se permitido
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('📋 LicitationBiznis — Bom dia!', {
-          body: 'Hora de verificar seus acompanhamentos e empenhos do dia.',
-          icon: '',
-          requireInteraction: false
-        });
-      }
-      // Re-agenda para o próximo dia
-      agendarProximaVerificacao();
-    }, msAte);
-  }
-  
-  // Inicia agendamento (funciona enquanto a aba estiver aberta)
-  agendarProximaVerificacao();
-  
-  // Mostra dica de como configurar abertura automática
-  const ultimaDicaAbertura = localStorage.getItem('dicaAberturaAuto');
-  const hoje = new Date().toISOString().slice(0,10);
-  if (ehDiaUtil && hora === 8 && min >= 28 && min <= 35 && ultimaDicaAbertura !== hoje) {
-    localStorage.setItem('dicaAberturaAuto', hoje);
-    setTimeout(() => toast('⏰ Bom dia! Sessão de trabalho iniciada às 8h30.', 'success'), 2000);
-  }
-})();
-
 // ===== TOGGLE TEMA =====
-/* tema fixo light */
-
-function toggleTema() { /* removido */ }
-
 // ===== RESUMO DIÁRIO =====
 function saudacao() {
   const h = new Date().getHours();
@@ -5917,36 +5602,8 @@ function mostrarResumoDiario() {
   document.getElementById('resumo-nao-mostrar').checked = false;
   document.getElementById('modal-resumo-diario').classList.add('open');
 }
-
-function fecharResumoDiario() {
-  const hoje = new Date().toISOString().slice(0,10);
-  const naoMostrar = document.getElementById('resumo-nao-mostrar')?.checked || false;
-  localStorage.setItem('resumoDiario', JSON.stringify({ data: hoje, naoMostrar }));
-  document.getElementById('modal-resumo-diario').classList.remove('open');
-}
-
-function salvarPreferenciasResumo() {
-  // Salva em tempo real ao marcar checkbox
-}
-
 // ===== TAREFAS =====
 let _tarefaContexto = { tipo: '', id: '', nome: '' };
-
-function abrirModalTarefas(tipo, id, nome) {
-  _tarefaContexto = { tipo, id, nome };
-  document.getElementById('tarefa-popup-title').textContent = '📌 Tarefas — ' + nome;
-  document.getElementById('tarefa-popup-sub').textContent = tipo === 'empenho' ? 'Empenho' : 'Contrato';
-  document.getElementById('tarefa-input-desc').value = '';
-  document.getElementById('tarefa-input-resp').value = '';
-  document.getElementById('tarefa-input-prazo').value = '';
-  renderTarefas();
-  document.getElementById('modal-tarefas').classList.add('open');
-}
-
-function fecharModalTarefas() {
-  document.getElementById('modal-tarefas').classList.remove('open');
-}
-
 function renderTarefas() {
   const { tipo, id } = _tarefaContexto;
   const lista = document.getElementById('tarefa-lista');
@@ -5974,53 +5631,6 @@ function renderTarefas() {
     </div>`;
   }).join('');
 }
-
-function salvarTarefa() {
-  const desc = document.getElementById('tarefa-input-desc').value.trim();
-  if (!desc) { toast('Descreva a tarefa!', 'error'); return; }
-  const nova = {
-    id: 'tar_' + Date.now(),
-    tipo: _tarefaContexto.tipo,
-    refId: _tarefaContexto.id,
-    desc,
-    responsavel: document.getElementById('tarefa-input-resp').value,
-    prazo: document.getElementById('tarefa-input-prazo').value,
-    concluida: false,
-    criadaEm: new Date().toISOString()
-  };
-  if (!_fullDB.tarefas) _fullDB.tarefas = [];
-  _fullDB.tarefas.push(nova);
-  save('tarefas', _fullDB.tarefas);
-  document.getElementById('tarefa-input-desc').value = '';
-  document.getElementById('tarefa-input-prazo').value = '';
-  renderTarefas();
-  toast('Tarefa adicionada!', 'success');
-}
-
-function toggleTarefa(id) {
-  const t = (_fullDB.tarefas||[]).find(x => x.id === id);
-  if (!t) return;
-  t.concluida = !t.concluida;
-  save('tarefas', _fullDB.tarefas);
-  renderTarefas();
-}
-
-function excluirTarefa(id) {
-  PDel = { tab: 'tarefas', id };
-  const iconEl = g('confirm-modal-icon'); if(iconEl) iconEl.textContent = '📌';
-  const titleEl = g('confirm-modal-title'); if(titleEl) titleEl.textContent = 'Excluir tarefa';
-  const el = g('confirm-msg'); if(el) el.innerHTML = 'Tem certeza que deseja excluir esta tarefa?';
-  const btn = g('confirm-del-btn');
-  if(btn) btn.onclick = () => {
-    _fullDB.tarefas = (_fullDB.tarefas||[]).filter(x => x.id !== id);
-    save('tarefas', _fullDB.tarefas);
-    renderTarefas();
-    toast('Tarefa excluída', 'info');
-    PDel = null; closeConfirm();
-  };
-  g('modal-confirm').classList.add('open');
-}
-
 // ===== NOTIFICAÇÕES =====
 let _notifDismissed = new Set(JSON.parse(localStorage.getItem('notifDismissed') || '[]'));
 
@@ -6235,7 +5845,6 @@ function sumFinalizadas(rows) {
     '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>';
 }
 
-
 // ========== EMPENHOS FINALIZADOS ==========
 function _doFinalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
@@ -6421,7 +6030,6 @@ function sumEmpFinalizados(rows) {
     '<div class="card" style="border-left:3px solid '+cor+';"><div class="card-label">% Lucro</div><div class="card-value" style="color:'+cor+';">' + fmtPct(pct) + '</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro total / total comprado</div></div>';
 }
 
-
 // ========== EXPORTAR COMPRAS SELECIONADAS ==========
 function toggleTodasCompras(empId, checked) {
   document.querySelectorAll('.chk-compra-' + empId).forEach(chk => chk.checked = checked);
@@ -6492,7 +6100,6 @@ function exportarComprasSelecionadas(empId) {
   XLSX.writeFile(wb, nomeArquivo, { cellStyles: true });
   toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
 }
-
 
 // ========== EXPORTAR COMPRAS DA DISPUTA ==========
 function toggleTodasComprasDisputa(dispId, checked) {
@@ -6573,200 +6180,23 @@ function exportarComprasDisputa(dispId) {
   toast('Excel exportado: ' + nomeArquivo + ' ✅', 'success');
 }
 
-
-// ========== PROPOSTA FILE HANDLING - CLOUDINARY ==========
-// Cloudinary removido (uploads via Supabase)
-
-// ══════════════════════════════════════════════
-//   SUPABASE STORAGE — Upload de contratos PDF
-// ══════════════════════════════════════════════
-const SUPABASE_URL    = 'https://yhuzzaqhjjsybyhglaig.supabase.co';
-const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlodXp6YXFoampzeWJ5aGdsYWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NDE4ODgsImV4cCI6MjA4ODAxNzg4OH0.rtz7tqMpL4KLc32EtRXZ6HBl_okjTCuXuhFA8PT5aKU';
-const SUPABASE_BUCKET = 'contratos';
-
-async function handleContratoFile(file) {
-  if (!file) return;
-  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
-  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
-  await uploadContratoSupabase(file);
-}
-
-function handleContratoDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  const area = document.getElementById('d-contrato-upload-area');
-  if (area) area.style.borderColor = 'var(--border)';
-  handleContratoFile(file);
-}
-
-async function uploadContratoSupabase(file) {
-  const progress     = g('d-contrato-progress');
-  const progressBar  = g('d-contrato-progress-bar');
-  const progressLabel= g('d-contrato-progress-label');
-  const uploadLabel  = g('d-contrato-upload-label');
-  const preview      = g('d-contrato-preview');
-  const area         = g('d-contrato-upload-area');
-
-  if (progress) progress.style.display = 'block';
-  if (progressBar) progressBar.style.width = '10%';
-  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent)';
-
-  // Nome único para evitar conflitos
-  const ext      = file.name.split('.').pop();
-  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path     = `${Date.now()}_${baseName}`;
-
-  try {
-    if (progressBar) progressBar.style.width = '40%';
-
-    const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/pdf',
-          'x-upsert': 'true'
-        },
-        body: file
-      }
-    );
-
-    if (progressBar) progressBar.style.width = '90%';
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(err);
-    }
-
-    // URL pública permanente
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
-    const nome = file.name;
-
-    if (progressBar) progressBar.style.width = '100%';
-    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
-    if (area) area.style.borderColor = 'var(--border)';
-
-    const urlField  = g('d-contrato-url');  if(urlField)  urlField.value  = url;
-    const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = nome;
-    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('d-contrato-link');
-      if (link) link.textContent = '📄 ' + nome;
-    }
-    toast('Contrato enviado com sucesso!', 'success');
-    return url;
-
-  } catch(e) {
-    console.error('Supabase upload error:', e);
-    if (progress) progress.style.display = 'none';
-    if (area) area.style.borderColor = 'var(--border)';
-    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
-    toast('Erro ao enviar contrato: ' + e.message, 'error');
-    return null;
-  }
-}
-
-function baixarContrato(url, nome) {
-  if (!url) return;
-  // Supabase serve PDFs com Content-Type correto — abre direto em nova aba
-  window.open(url, '_blank');
-}
-
-function removerContratoUpload() {
-  const urlField = g('d-contrato-url'); if(urlField) urlField.value = '';
-  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = '';
-  const preview = g('d-contrato-preview'); if(preview) preview.style.display = 'none';
-  const label = g('d-contrato-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do contrato aqui';
-  const fileInput = g('d-contrato-file'); if(fileInput) fileInput.value = '';
-}
-
+// ========== ARQUIVOS PDF (visualização simples, upload removido) ==========
 // ══════════════════════════════════════════
 //   SUPABASE — Upload PDF do Empenho
 // ══════════════════════════════════════════
-async function handleEmpenhoFile(file) {
-  if (!file) return;
-  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
-  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
-  await uploadEmpenhoSupabase(file);
+
+function baixarContrato(url, nome) {
+  if (url) window.open(url, '_blank');
 }
-
-function handleEmpenhoFileDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  const area = g('e-ne-upload-area');
-  if (area) area.style.borderColor = 'var(--border)';
-  handleEmpenhoFile(file);
+function baixarProposta(id) {
+  const r = DB.disputas.find(x => x.id === id);
+  if (r && r.propostaUrl) window.open(r.propostaUrl, '_blank');
 }
-
-async function uploadEmpenhoSupabase(file) {
-  const progress      = g('e-ne-progress');
-  const progressBar   = g('e-ne-progress-bar');
-  const progressLabel = g('e-ne-progress-label');
-  const uploadLabel   = g('e-ne-upload-label');
-  const preview       = g('e-ne-preview');
-  const area          = g('e-ne-upload-area');
-
-  if (progress) progress.style.display = 'block';
-  if (progressBar) progressBar.style.width = '10%';
-  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent)';
-
-  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `empenhos/${Date.now()}_${baseName}`;
-
-  try {
-    if (progressBar) progressBar.style.width = '40%';
-    const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/pdf',
-          'x-upsert': 'true'
-        },
-        body: file
-      }
-    );
-    if (progressBar) progressBar.style.width = '90%';
-    if (!res.ok) { const err = await res.text(); throw new Error(err); }
-
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
-    const nome = file.name;
-
-    if (progressBar) progressBar.style.width = '100%';
-    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
-    if (area) area.style.borderColor = 'var(--border)';
-
-    const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = url;
-    const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = nome;
-    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('e-ne-link');
-      if (link) link.textContent = '📄 ' + nome;
-    }
-    toast('PDF do empenho enviado com sucesso!', 'success');
-    return url;
-  } catch(e) {
-    console.error('Supabase empenho upload error:', e);
-    if (progress) progress.style.display = 'none';
-    if (area) area.style.borderColor = 'var(--border)';
-    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
-    toast('Erro ao enviar PDF: ' + e.message, 'error');
-    return null;
-  }
-}
-
-function removerEmpenhoFile() {
-  const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = '';
-  const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = '';
-  const preview   = g('e-ne-preview'); if(preview) preview.style.display = 'none';
-  const label     = g('e-ne-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do empenho aqui';
-  const fileInput = g('e-ne-file'); if(fileInput) fileInput.value = '';
+function carregarContratoDisputa(r) {
+  const urlEl = g('d-contrato-url'); if (urlEl) urlEl.value = r.contratoUrl || '';
+  const nomeEl = g('d-contrato-nome'); if (nomeEl) nomeEl.value = r.contratoNome || '';
+  const dataEl = g('d-contrato-data'); if (dataEl) dataEl.value = r.contratoData || '';
+  const vencEl = g('d-contrato-vencimento'); if (vencEl) vencEl.value = r.contratoVencimento || '';
 }
 
 function calcVencimentoContrato() {
@@ -6793,43 +6223,6 @@ function atualizarCorVencimento() {
   vencField.style.color = diffDias < 0 ? 'var(--danger)' : diffDias <= 30 ? 'var(--warning)' : 'var(--success)';
   vencField.style.fontWeight = '700';
 }
-
-function carregarContratoDisputa(r) {
-  const urlField = g('d-contrato-url'); if(urlField) urlField.value = r.contratoUrl || '';
-  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = r.contratoNome || '';
-  const dataField = g('d-contrato-data'); if(dataField) dataField.value = r.contratoData || '';
-  const vencField = g('d-contrato-vencimento');
-  // Vencimento: converte DD/MM/YYYY para YYYY-MM-DD se necessário (registros antigos)
-  if (vencField) {
-    const v = r.contratoVencimento || '';
-    if (v.includes('/')) {
-      const parts = v.split('/');
-      vencField.value = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : '';
-    } else {
-      vencField.value = v;
-    }
-  }
-  // Recalcula cor do vencimento
-  if (r.contratoData || r.contratoVencimento) atualizarCorVencimento();
-  // Mostra preview se já houver contrato salvo
-  if (r.contratoUrl) {
-    const preview = g('d-contrato-preview');
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('d-contrato-link');
-      if (link) { link.textContent = '📄 ' + (r.contratoNome || 'Contrato'); }
-    }
-    const label = g('d-contrato-upload-label');
-    if (label) label.textContent = '✅ ' + (r.contratoNome || 'Contrato carregado');
-  }
-}
-
-function baixarProposta(disputaId) {
-  const d = DB.disputas.find(x => x.id === disputaId);
-  if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  window.open(d.propostaUrl, '_blank');
-}
-
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
 function novoEmpenhoComItem(disputaId, loteId) {
   fecharPopup('disputa');
@@ -6859,7 +6252,6 @@ function novoEmpenhoComItem(disputaId, loteId) {
     }
   }, 120);
 }
-
 
 // ========== ACOMPANHAMENTOS ==========
 let EID_acomp = null;
@@ -7216,7 +6608,6 @@ function dispararNotificacao(r) {
   updateBadges();
 }
 
-
 function mostrarPopupAlerta(r) {
   const old = document.getElementById('notif-popup');
   if (old) old.remove();
@@ -7320,7 +6711,7 @@ function atualizarPainel() {
       <div style="font-size:13px;color:var(--text-secondary);">${agora.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
     </div>
 
-    <!-- KPIs -->
+    
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
       <div class="card" style="border-left:4px solid var(--accent);cursor:pointer;" onclick="switchTab('disputas',document.querySelector('[onclick*=\\'disputas\\']'))">
         <div class="card-label">Contratos Ativos</div>
@@ -7350,7 +6741,7 @@ function atualizarPainel() {
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
 
-      <!-- Próximos Retornos -->
+      
       <div class="card">
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
           ⏰ Próximos Retornos
@@ -7370,7 +6761,7 @@ function atualizarPainel() {
         }).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:12px 0;text-align:center;">Nenhum retorno agendado 🎉</div>'}
       </div>
 
-      <!-- Por Analista -->
+      
       <div class="card">
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;">👥 Por Analista</div>
         ${Object.entries(porAnalista).map(([nome, dados]) => `
@@ -7396,7 +6787,7 @@ function atualizarPainel() {
       </div>
     </div>
 
-    <!-- Empenhos em Atraso -->
+    
     ${(emp30.length || emp60.length || emp90.length) ? `
     <div class="card" style="margin-bottom:24px;border-left:4px solid var(--danger);">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
@@ -7443,7 +6834,7 @@ function atualizarPainel() {
       </table></div>` : ''}
     </div>` : ''}
 
-    <!-- Atividades recentes -->
+    
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div class="card">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">🏆 Últimos Contratos</div>
@@ -7545,7 +6936,6 @@ function renderEAgrupado(rows, tb) {
       </tr>${linhas}`;
   }).join('');
 }
-
 
 // ========== COMENTÁRIOS INTERNOS ==========
 function renderComentarios(tipo, itemId) {
@@ -7718,7 +7108,6 @@ function carregarArquivosEmpenho(r) {
 // Empenhos atrasados: verifica 1x por dia na carga inicial (via setTimeout no onSnapshot)
 // Alertas de retorno: gerenciados pelo checarRetornos (a cada 30s)
 
-
 // ========== DROPDOWN DE AÇÕES ==========
 function openActionMenu(event, btn) {
   event.stopPropagation();
@@ -7769,16 +7158,6 @@ document.addEventListener('scroll', closeActionMenus, true);
 // Alt shortcuts removidos
 
 // ========== SEÇÕES COLAPSÁVEIS NOS MODAIS ==========
-function toggleSection(headerId) {
-  const header = document.getElementById(headerId);
-  if (!header) return;
-  const content = header.nextElementSibling;
-  if (!content) return;
-  const isCollapsed = content.classList.contains('collapsed');
-  content.classList.toggle('collapsed', !isCollapsed);
-  header.classList.toggle('collapsed', !isCollapsed);
-}
-
 // ========== MENU DO USUÁRIO ==========
 // toggleUserMenu removido
 function boot() {
@@ -7794,14 +7173,10 @@ function boot() {
   inicializarApp({ disputas: [], empenhos: [], initialized: true });
 }
 
-
 boot();
 
 </script>
 
-<!-- POPUP DETALHES DISPUTA -->
-
-<!-- POPUP DETALHES DISPUTA -->
 <div class="detail-popup-overlay" id="popup-disputa">
   <div class="detail-popup">
     <div class="detail-popup-header">
@@ -7821,11 +7196,6 @@ boot();
   </div>
 </div>
 
-
-<!-- POPUP DETALHES EMPENHO -->
-
-
-<!-- POPUP DETALHES EMPENHO -->
 <div class="detail-popup-overlay" id="popup-empenho">
   <div class="detail-popup">
     <div class="detail-popup-header">
@@ -7843,7 +7213,6 @@ boot();
   </div>
 </div>
 
-
 <script>
 // FIX: define confirmar() que closeModal chama mas nao existe
 function confirmar(titulo, msg, onConfirm) {
@@ -7852,15 +7221,6 @@ function confirmar(titulo, msg, onConfirm) {
 
 function _debounce(fn,ms){var t;return function(){clearTimeout(t);var a=arguments,ctx=this;t=setTimeout(function(){fn.apply(ctx,a);},ms);};}
 var _debouncedBusca=_debounce(function(v){buscaGlobal(v);},200);
-
-function inlineEditAnalista(id,tipo){
-  var r=DB[tipo].find(function(x){return x.id===id;});if(!r)return;
-  var cid='inline-an-'+tipo+'-'+id;var cell=document.getElementById(cid);if(!cell)return;
-  var nomes=[];(DB.disputas||[]).concat(DB.empenhos||[]).forEach(function(x){if(x.analista&&nomes.indexOf(x.analista)<0)nomes.push(x.analista);});nomes.sort();
-  var opts='<option value="">-</option>';nomes.forEach(function(n){opts+='<option value="'+n+'"'+(n===r.analista?' selected':'')+'>'+n+'</option>';});
-  cell.innerHTML='<select class="inline-edit-select" onchange="commitInlineAnalista(this.dataset.rid,this.dataset.rtipo,this.value)" data-rid="'+id+'" data-rtipo="'+tipo+'" onblur="setTimeout(renderAll,200)">'+opts+'</select>';
-  cell.querySelector('select').focus();
-}
 function commitInlineAnalista(id,tipo,val){
   var r=_fullDB[tipo].find(function(x){return x.id===id;});if(!r)return;
   r.analista=val;save(tipo,_fullDB[tipo]);toast('Analista: '+val,'success');setTimeout(renderAll,80);
