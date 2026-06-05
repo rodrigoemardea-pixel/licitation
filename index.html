@@ -195,24 +195,6 @@ body.sidebar-hidden header{left:12px!important}
 .sidebar-logout-btn:hover{background:rgba(220,38,38,.22);color:#fff;transform:translateX(2px)}
 @media(max-width:860px){.sidebar-logout-wrap{display:none!important}}
 
-
-
-/* === LB 2026: cadastros em tela com abas, resumo fixo e ações padronizadas === */
-.modal-overlay.lb-cadastro-screen{align-items:stretch!important;justify-content:stretch!important;padding:14px!important;background:rgba(8,18,14,.50)!important}
-.modal-overlay.lb-cadastro-screen .modal{width:100%!important;max-width:none!important;height:calc(100vh - 28px)!important;max-height:none!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:var(--radius-2xl)!important}
-.modal-overlay.lb-cadastro-screen .modal-body{flex:1!important;overflow:auto!important;padding:14px 18px 22px!important}
-.lb-cad-tabs{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:6px;margin:-2px 0 12px;padding:8px;background:color-mix(in srgb,var(--bg-surface-solid) 94%,transparent);border:1px solid var(--border-light);border-radius:var(--radius-xl);backdrop-filter:var(--glass-blur)}
-.lb-cad-tab{height:34px;padding:0 13px;border-radius:var(--radius-md);border:1px solid transparent;background:transparent;color:var(--text-secondary);font-family:var(--font-sans);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
-.lb-cad-tab:hover{background:var(--bg-surface-soft);color:var(--text-primary)}.lb-cad-tab.active{background:var(--accent-muted);border-color:var(--accent);color:var(--accent)}
-.lb-cad-summary{position:sticky;top:54px;z-index:18;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px;padding:10px;background:color-mix(in srgb,var(--bg-surface-solid) 92%,transparent);border:1px solid var(--border-light);border-radius:var(--radius-xl);backdrop-filter:var(--glass-blur)}
-.lb-sum-card{background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:9px 11px;min-height:58px}.lb-sum-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.45px;color:var(--text-tertiary);margin-bottom:2px}.lb-sum-value{font-family:var(--font-mono);font-size:14px;font-weight:900;color:var(--text-primary);line-height:1.15}.lb-sum-value.ok{color:var(--success)}.lb-sum-value.warn{color:var(--warning)}.lb-sum-value.danger{color:var(--danger)}.lb-sum-value.info{color:var(--accent)}
-.lb-tab-hidden{display:none!important}.lb-tab-panel{grid-column:1/-1;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-xl);padding:12px;margin-top:2px}.lb-paste-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}.lb-paste-hint{font-size:11px;color:var(--text-tertiary)}
-.lb-status-pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 9px;font-size:10px;font-weight:800;border:1px solid var(--border-light);white-space:nowrap}.lb-status-ok{background:var(--success-soft);color:var(--success);border-color:rgba(22,163,74,.18)}.lb-status-warn{background:var(--warning-soft);color:var(--warning);border-color:rgba(202,138,4,.18)}.lb-status-danger{background:var(--danger-soft);color:var(--danger);border-color:rgba(220,38,38,.18)}.lb-status-info{background:var(--info-soft);color:var(--info);border-color:rgba(37,99,235,.16)}.lb-status-neutral{background:var(--bg-surface-soft);color:var(--text-secondary)}
-.lb-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px}.lb-action-menu-btn{min-width:34px;height:28px;border:1px solid var(--border-light);border-radius:var(--radius-sm);background:var(--bg-surface-solid);color:var(--text-secondary);font-weight:800;cursor:pointer}.lb-action-menu-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-muted)}
-.action-dropdown-item .item-icon{display:none!important}.action-dropdown-item{gap:0!important;font-size:12.5px!important}.tab-btn svg{display:none!important}.hbtn{font-size:13px!important}
-.detail-popup-overlay.open{align-items:stretch!important;justify-content:stretch!important;padding:14px!important}.detail-popup-overlay.open .detail-popup{width:100%!important;max-width:none!important;height:calc(100vh - 28px)!important;max-height:none!important;border-radius:var(--radius-2xl)!important}.detail-popup-header{position:sticky;top:0;z-index:20;background:var(--bg-surface-solid);padding-bottom:10px;border-bottom:1px solid var(--border-light)}
-@media(max-width:860px){.modal-overlay.lb-cadastro-screen{padding:8px!important}.lb-cad-tabs{overflow-x:auto}.lb-cad-tab{min-width:max-content}.lb-cad-summary{top:50px;grid-template-columns:repeat(2,1fr)}.detail-popup-overlay.open{padding:8px!important}}
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -668,7 +650,6 @@ body.sidebar-hidden header{left:12px!important}
           <th class="money" style="min-width:105px;width:105px;">Vl. Contrato</th>
           <th class="money" style="min-width:95px;width:95px;">Lucro Prev.</th>
           <th style="min-width:80px;text-align:center;">Progresso</th>
-          <th style="min-width:145px;text-align:right;">Status / Ações</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
         <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
@@ -743,8 +724,7 @@ body.sidebar-hidden header{left:12px!important}
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
           <th>Analista</th>
           
-          <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">Dias</th>
-          <th style="min-width:145px;text-align:right;">Status / Ações</th>
+          <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
         <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
@@ -914,16 +894,14 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<div class="modal-overlay lb-cadastro-screen" id="modal-disputas">
+<div class="modal-overlay" id="modal-disputas">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
       <button class="modal-close" onclick="closeModal('disputas')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="lb-cad-tabs" id="lb-tabs-contrato"><button type="button" class="lb-cad-tab active" data-tab="dados" onclick="lbSwitchCadastroTab('contrato','dados')">Dados do contrato</button><button type="button" class="lb-cad-tab" data-tab="itens" onclick="lbSwitchCadastroTab('contrato','itens')">Itens do contrato</button><button type="button" class="lb-cad-tab" data-tab="compras" onclick="lbSwitchCadastroTab('contrato','compras')">Empenhos e compras</button><button type="button" class="lb-cad-tab" data-tab="obs" onclick="lbSwitchCadastroTab('contrato','obs')">Observações</button></div>
-      <div class="lb-cad-summary" id="lb-resumo-contrato"></div>
-      <div class="form-grid" id="lb-form-contrato">
+      <div class="form-grid">
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="d-data"></div>
         <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="d-orgao" placeholder="Prefeitura..."></div>
         <div class="fg"><label class="fl">Estado</label>
@@ -973,7 +951,7 @@ body.sidebar-hidden header{left:12px!important}
             <span></span>
           </div>
           <div id="lotes-container"></div>
-          <div class="lb-paste-tools"><button type="button" class="btn btn-ghost btn-sm" onclick="adicionarLote()">＋ Adicionar Item/Lote</button><button type="button" class="btn btn-ghost btn-sm" onclick="lbColarItensExcel()">Colar itens do Excel</button><span class="lb-paste-hint">Copie colunas: descrição, qtd, valor unitário, compra prevista, custo previsto. Também aceita Ctrl+V sobre a grade.</span></div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="adicionarLote()" style="margin-top:6px;">＋ Adicionar Item/Lote</button>
           <div class="lotes-totais" id="lotes-totais" style="display:none;margin-top:8px;">
             <span>Itens: <strong id="lt-count">0</strong></span>
             <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent);">R$ 0,00</strong></span>
@@ -996,16 +974,14 @@ body.sidebar-hidden header{left:12px!important}
   </div>
 </div>
 
-<div class="modal-overlay lb-cadastro-screen" id="modal-empenhos">
+<div class="modal-overlay" id="modal-empenhos">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="ttl-empenhos">Novo Empenho</div>
       <button class="modal-close" onclick="closeModal('empenhos')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="lb-cad-tabs" id="lb-tabs-empenho"><button type="button" class="lb-cad-tab active" data-tab="dados" onclick="lbSwitchCadastroTab('empenho','dados')">Dados do empenho</button><button type="button" class="lb-cad-tab" data-tab="itens" onclick="lbSwitchCadastroTab('empenho','itens')">Itens do empenho</button><button type="button" class="lb-cad-tab" data-tab="compras" onclick="lbSwitchCadastroTab('empenho','compras')">Compras</button><button type="button" class="lb-cad-tab" data-tab="obs" onclick="lbSwitchCadastroTab('empenho','obs')">Observações</button></div>
-      <div class="lb-cad-summary" id="lb-resumo-empenho"></div>
-      <div class="form-grid" id="lb-form-empenho">
+      <div class="form-grid">
         <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
         <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
@@ -2903,7 +2879,7 @@ function renderD(){
   const tb=g('tbody-disputas');
   // Show skeleton while data is being prepared
   if (!tb) return;
-  if(!allRows.length){ tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">🏆</div><p>Nenhum contrato encontrado</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
+  if(!allRows.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="icon">🏆</div><p>Nenhum contrato encontrado</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
   // Reset page if out of bounds
   const totalPages = Math.ceil(allRows.length / PAGE_SIZE);
   if (_page.disputas > totalPages) _page.disputas = 1;
@@ -3130,8 +3106,7 @@ function atualizarHeaderEmpenhosAgrupado() {
       <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
       <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
       <th>Analista</th>
-      <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">Dias</th>
-      <th style="min-width:145px;text-align:right;">Status / Ações</th>
+      <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
     `;
   }
 }
@@ -3143,7 +3118,7 @@ function renderE(){
   atualizarHeaderEmpenhosAgrupado();
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado).sort((a,b)=>diasSemPagamento(b)-diasSemPagamento(a));
   const tb=g('tbody-empenhos');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
   if(_agrupado) { renderEAgrupado(rows, tb); sumE(); verificarAlertas(); return; }
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
@@ -7176,236 +7151,6 @@ function closeActionMenus() {
 
 // Close on scroll
 document.addEventListener('scroll', closeActionMenus, true);
-
-// === LB 2026: abas de cadastro, resumos fixos, status automático, menus padronizados e colagem Excel ===
-(function(){
-  const dinheiro = v => typeof fmt === 'function' ? fmt(v || 0) : Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-  const numBR = v => {
-    if (v === null || v === undefined) return 0;
-    let s = String(v).trim();
-    if (!s) return 0;
-    s = s.replace(/[R$\s]/g,'');
-    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g,'').replace(',', '.');
-    else if (s.includes(',')) s = s.replace(',', '.');
-    const n = parseFloat(s);
-    return isNaN(n) ? 0 : n;
-  };
-  window.lbCalcularStatusContrato = function(r){
-    if (!r) return {label:'Sem dados', cls:'lb-status-neutral'};
-    if (r.finalizada) return {label:'Finalizado', cls:'lb-status-ok'};
-    const lotes = r.lotes || [];
-    const emps = DB.empenhos.filter(e => e.disputaId === r.id);
-    if (!lotes.length) return {label:'Sem itens', cls:'lb-status-danger'};
-    const qtdTotal = lotes.reduce((s,l)=>s+(l.qtd||0),0);
-    const qtdEmp = lotes.reduce((s,l)=>s+calcQtdEnviada(r.id,l.id),0);
-    const temCompra = emps.some(e => (e.compras||[]).length);
-    const todosPagos = emps.length && emps.every(e => empenhoEstaPago(e));
-    if (qtdEmp <= 0) return {label:'Sem empenho', cls:'lb-status-warn'};
-    if (qtdEmp < qtdTotal) return {label: temCompra ? 'Parcial com compra' : 'Parcialmente empenhado', cls:'lb-status-info'};
-    if (!temCompra) return {label:'Empenhado sem compra', cls:'lb-status-warn'};
-    if (todosPagos) return {label:'Pago, aguardando finalizar', cls:'lb-status-ok'};
-    return {label:'Aguardando pagamento', cls:'lb-status-info'};
-  };
-  window.lbCalcularStatusEmpenho = function(r){
-    if (!r) return {label:'Sem dados', cls:'lb-status-neutral'};
-    if (r.finalizado) return {label:'Finalizado', cls:'lb-status-ok'};
-    const compras = r.compras || [];
-    if (!compras.length) return {label:'Sem compra', cls:'lb-status-warn'};
-    if (empenhoEstaPago(r)) return {label:'Pago', cls:'lb-status-ok'};
-    const dias = diasSemPagamento(r);
-    if (dias >= 90) return {label:'Atraso crítico', cls:'lb-status-danger'};
-    if (dias >= 60) return {label:'Atraso +60d', cls:'lb-status-danger'};
-    if (dias >= 30) return {label:'Atraso +30d', cls:'lb-status-warn'};
-    const itens = r.itens || [];
-    const compraQtd = compras.reduce((s,c)=>s+(c.qtd||0),0);
-    const qtdEmp = itens.reduce((s,i)=>s+(i.qtd||0),0);
-    if (qtdEmp && compraQtd < qtdEmp) return {label:'Compra parcial', cls:'lb-status-info'};
-    return {label:'Aguardando pagamento', cls:'lb-status-info'};
-  };
-  window.lbStatusBadge = function(st){ return '<span class="lb-status-pill '+st.cls+'">'+st.label+'</span>'; };
-
-  function assignTabByChild(containerId, groups){
-    const root = document.getElementById(containerId); if(!root) return;
-    [...root.children].forEach(ch => { if(!ch.dataset.lbTab) ch.dataset.lbTab = 'dados'; });
-    Object.entries(groups).forEach(([tab, ids]) => ids.forEach(id => {
-      const el = document.getElementById(id); const holder = el ? el.closest('.fg,.full,.half,.fsec') || el.parentElement : null;
-      if (holder && root.contains(holder)) holder.dataset.lbTab = tab;
-    }));
-  }
-  window.lbSetupCadastroTabs = function(){
-    assignTabByChild('lb-form-contrato', {
-      dados:['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-rp','d-processo','d-sistema','d-analista','d-contrato-data','d-contrato-vencimento','d-contrato-url','d-contrato-nome'],
-      itens:['lotes-container','lotes-totais','lotes-aviso'],
-      obs:['d-observacao']
-    });
-    const lc = document.getElementById('lotes-container');
-    const lotePanel = lc ? lc.closest('.full') : null;
-    if (lotePanel) lotePanel.dataset.lbTab = 'itens';
-    const obsD = document.getElementById('d-observacao')?.closest('.fg'); if(obsD) obsD.dataset.lbTab = 'obs';
-    const formD = document.getElementById('lb-form-contrato');
-    if (formD && !document.getElementById('lb-contrato-compras-panel')) {
-      const panel = document.createElement('div'); panel.id='lb-contrato-compras-panel'; panel.className='lb-tab-panel'; panel.dataset.lbTab='compras';
-      formD.appendChild(panel);
-    }
-    assignTabByChild('lb-form-empenho', {
-      dados:['e-num','e-data','e-analista','e-disputa-id'],
-      itens:['lote-selector-wrap','lote-selector-container','lote-aviso','lote-valor-total-wrap'],
-      obs:['e-observacao']
-    });
-    const loteE = document.getElementById('lote-selector-wrap'); if(loteE) loteE.dataset.lbTab = 'itens';
-    const obsE = document.getElementById('e-observacao')?.closest('.fg'); if(obsE) obsE.dataset.lbTab = 'obs';
-    const formE = document.getElementById('lb-form-empenho');
-    if (formE && !document.getElementById('lb-empenho-compras-panel')) {
-      const panel = document.createElement('div'); panel.id='lb-empenho-compras-panel'; panel.className='lb-tab-panel'; panel.dataset.lbTab='compras';
-      formE.appendChild(panel);
-    }
-    lbSwitchCadastroTab('contrato','dados'); lbSwitchCadastroTab('empenho','dados');
-  };
-  window.lbSwitchCadastroTab = function(tipo, tab){
-    const form = document.getElementById(tipo === 'contrato' ? 'lb-form-contrato' : 'lb-form-empenho');
-    const tabs = document.getElementById(tipo === 'contrato' ? 'lb-tabs-contrato' : 'lb-tabs-empenho');
-    if (!form) return;
-    [...form.children].forEach(ch => ch.classList.toggle('lb-tab-hidden', (ch.dataset.lbTab || 'dados') !== tab));
-    if (tabs) tabs.querySelectorAll('.lb-cad-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    if (tipo === 'contrato') lbAtualizarResumoContratoCadastro(); else lbAtualizarResumoEmpenhoCadastro();
-  };
-  window.lbAtualizarResumoContratoCadastro = function(){
-    const box = document.getElementById('lb-resumo-contrato'); if(!box) return;
-    const total = (lotesTemp||[]).reduce((s,l)=>s+(l.qtd||0)*(l.vunit||0),0);
-    const compraPrev = (lotesTemp||[]).reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
-    const custoPrev = (lotesTemp||[]).reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
-    const lucroPrev = total - compraPrev - custoPrev;
-    const margem = compraPrev > 0 ? (lucroPrev / compraPrev * 100) : 0;
-    const r = EID.disputas ? DB.disputas.find(x=>x.id===EID.disputas) : null;
-    const st = r ? lbCalcularStatusContrato(r) : {label:'Novo contrato', cls:'lb-status-info'};
-    box.innerHTML = `
-      <div class="lb-sum-card"><div class="lb-sum-label">Status automático</div><div class="lb-sum-value">${lbStatusBadge(st)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Itens</div><div class="lb-sum-value info">${(lotesTemp||[]).length}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Valor contrato</div><div class="lb-sum-value info">${dinheiro(total)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Compra prevista</div><div class="lb-sum-value warn">${dinheiro(compraPrev)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Custo previsto</div><div class="lb-sum-value warn">${dinheiro(custoPrev)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Lucro previsto</div><div class="lb-sum-value ${lucroPrev>=0?'ok':'danger'}">${dinheiro(lucroPrev)}</div><div style="font-size:10px;color:var(--text-tertiary);">${margem.toFixed(1).replace('.',',')}%</div></div>`;
-    lbRenderContratoComprasPanel();
-  };
-  window.lbAtualizarResumoEmpenhoCadastro = function(){
-    const box = document.getElementById('lb-resumo-empenho'); if(!box) return;
-    const total = Object.entries(lotesSelecionados||{}).reduce((s,[id,q])=>{
-      const disp = DB.disputas.find(d=>d.id===gv('e-disputa-id'));
-      const lote = disp ? (disp.lotes||[]).find(l=>l.id===id) : null;
-      return s + (lote ? (lote.vunit||0)*(q||0) : 0);
-    },0);
-    const emp = EID.empenhos ? DB.empenhos.find(x=>x.id===EID.empenhos) : null;
-    const compras = emp ? (emp.compras||[]) : [];
-    const totalCompras = compras.reduce((s,c)=>s+(c.vtotal||0),0);
-    const lucro = compras.reduce((s,c)=>s+(c.luc||0),0);
-    const receber = compras.filter(c=>!c.dpag).reduce((s,c)=>s+(c.rec||0),0);
-    const st = emp ? lbCalcularStatusEmpenho(emp) : {label:'Novo empenho', cls:'lb-status-info'};
-    box.innerHTML = `
-      <div class="lb-sum-card"><div class="lb-sum-label">Status automático</div><div class="lb-sum-value">${lbStatusBadge(st)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Valor empenho</div><div class="lb-sum-value info">${dinheiro(total || (emp&&emp.vem) || 0)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Compras</div><div class="lb-sum-value warn">${dinheiro(totalCompras)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">Lucro</div><div class="lb-sum-value ${lucro>=0?'ok':'danger'}">${dinheiro(lucro)}</div></div>
-      <div class="lb-sum-card"><div class="lb-sum-label">A receber</div><div class="lb-sum-value info">${dinheiro(receber)}</div></div>`;
-    lbRenderEmpenhoComprasPanel(emp);
-  };
-  window.lbRenderContratoComprasPanel = function(){
-    const panel = document.getElementById('lb-contrato-compras-panel'); if(!panel) return;
-    const id = EID.disputas;
-    if (!id) { panel.innerHTML = '<div class="detail-section">Empenhos e compras</div><p style="font-size:12px;color:var(--text-tertiary);">Salve o contrato para acompanhar empenhos e compras vinculados.</p>'; return; }
-    const emps = DB.empenhos.filter(e=>e.disputaId===id);
-    const compras = emps.flatMap(e=>(e.compras||[]).map(c=>({...c,_emp:e.num||'—'})));
-    panel.innerHTML = `<div class="detail-section">Empenhos e compras vinculados</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:10px;">
-        <div class="lb-sum-card"><div class="lb-sum-label">Empenhos</div><div class="lb-sum-value info">${emps.length}</div></div>
-        <div class="lb-sum-card"><div class="lb-sum-label">Compras</div><div class="lb-sum-value warn">${compras.length}</div></div>
-        <div class="lb-sum-card"><div class="lb-sum-label">A receber</div><div class="lb-sum-value info">${dinheiro(compras.filter(c=>!c.dpag).reduce((s,c)=>s+(c.rec||0),0))}</div></div>
-      </div>` + (emps.length ? `<table class="lotes-status-table"><thead><tr><th>Empenho</th><th>Status</th><th>Valor</th><th>Compras</th><th>Ação</th></tr></thead><tbody>${emps.map(e=>`<tr><td class="mono">${e.num||'—'}</td><td>${lbStatusBadge(lbCalcularStatusEmpenho(e))}</td><td class="mono">${dinheiro(e.vem)}</td><td>${(e.compras||[]).length}</td><td><button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho('${e.id}')">Abrir</button></td></tr>`).join('')}</tbody></table>` : '<p style="font-size:12px;color:var(--text-tertiary);">Nenhum empenho vinculado.</p>');
-  };
-  window.lbRenderEmpenhoComprasPanel = function(emp){
-    const panel = document.getElementById('lb-empenho-compras-panel'); if(!panel) return;
-    if (!emp) { panel.innerHTML = '<div class="detail-section">Compras</div><p style="font-size:12px;color:var(--text-tertiary);">Salve o empenho para registrar compras.</p>'; return; }
-    const compras = emp.compras || [];
-    panel.innerHTML = `<div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;"><span>Compras do empenho</span><button type="button" class="btn btn-primary btn-sm" onclick="abrirCompra('${emp.id}')">Nova compra</button></div>` +
-      (compras.length ? `<table class="lotes-status-table"><thead><tr><th>Plataforma</th><th>Qtd</th><th>Valor compra</th><th>Lucro</th><th>Pagamento</th></tr></thead><tbody>${compras.map(c=>`<tr><td>${c.plataforma||'—'}</td><td class="mono">${c.qtd||0}</td><td class="mono">${dinheiro(c.vtotal)}</td><td class="mono">${dinheiro(c.luc)}</td><td>${c.dpag?'<span class="status-pago">Pago</span>':'<span class="status-pendente">Pendente</span>'}</td></tr>`).join('')}</tbody></table>` : '<p style="font-size:12px;color:var(--text-tertiary);">Nenhuma compra cadastrada.</p>');
-  };
-  window.lbColarItensExcel = async function(){
-    try {
-      const txt = await navigator.clipboard.readText();
-      lbImportarItensExcel(txt);
-    } catch(e) {
-      toast('Copie as linhas do Excel e pressione Ctrl+V sobre a grade de itens.', 'info');
-    }
-  };
-  window.lbImportarItensExcel = function(txt){
-    if (!txt || !txt.trim()) return;
-    const linhas = txt.trim().split(/\r?\n/).map(l=>l.split('\t'));
-    const novos = [];
-    linhas.forEach(cols=>{
-      if (!cols.length) return;
-      const desc = (cols[0]||'').trim();
-      if (!desc || /^descri/i.test(desc)) return;
-      novos.push({ id: uid(), descricao: desc.toUpperCase(), qtd: Math.max(1, numBR(cols[1])||1), vunit: numBR(cols[2]), compraPrev: numBR(cols[3]), custoPrev: numBR(cols[4]) });
-    });
-    if (!novos.length) { toast('Nenhum item válido encontrado na colagem.', 'error'); return; }
-    lotesTemp = (lotesTemp||[]).concat(novos);
-    renderLotes();
-    lbSwitchCadastroTab('contrato','itens');
-    toast(novos.length + ' item(ns) importado(s) do Excel.', 'success');
-  };
-  document.addEventListener('paste', e=>{
-    const modal = document.getElementById('modal-disputas');
-    if (!modal || !modal.classList.contains('open')) return;
-    const activeBtn = document.querySelector('#lb-tabs-contrato .lb-cad-tab.active');
-    if (!activeBtn || activeBtn.dataset.tab !== 'itens') return;
-    const txt = e.clipboardData?.getData('text/plain') || '';
-    if (txt.includes('\t') || txt.split(/\r?\n/).length > 1) { e.preventDefault(); lbImportarItensExcel(txt); }
-  });
-  function makeActionMenu(html){ return `<div class="action-dropdown" onclick="event.stopPropagation()"><button type="button" class="lb-action-menu-btn" onclick="openActionMenu(event,this)">...</button><div class="action-dropdown-menu" style="display:none;">${html}</div></div>`; }
-  window.lbMenuContrato = function(id){ return makeActionMenu(`
-    <button class="action-dropdown-item" onclick="abrirPopupDisputa('${id}')">Ver detalhes</button>
-    <button class="action-dropdown-item" onclick="editD('${id}')">Editar</button>
-    <button class="action-dropdown-item" onclick="novoEmpenhoParaDisputa('${id}')">Novo empenho</button>
-    <div class="action-dropdown-divider"></div><button class="action-dropdown-item danger" onclick="delRow('disputas','${id}')">Excluir</button>`); };
-  window.lbMenuEmpenho = function(id){ return makeActionMenu(`
-    <button class="action-dropdown-item" onclick="abrirPopupEmpenho('${id}')">Ver detalhes</button>
-    <button class="action-dropdown-item" onclick="editE('${id}')">Editar</button>
-    <button class="action-dropdown-item" onclick="abrirCompra('${id}')">Nova compra</button>
-    <button class="action-dropdown-item" onclick="finalizarEmpenho('${id}')">Finalizar</button>
-    <div class="action-dropdown-divider"></div><button class="action-dropdown-item danger" onclick="delRow('empenhos','${id}')">Excluir</button>`); };
-  function decorateRows(tab){
-    if (tab === 'disputas') {
-      document.querySelectorAll('#tbody-disputas tr').forEach(tr=>{
-        if (tr.dataset.lbDecorated || !tr.getAttribute('onclick')) return;
-        const m = tr.getAttribute('onclick').match(/abrirPopupDisputa\('([^']+)'\)/); if(!m) return;
-        const r = DB.disputas.find(x=>x.id===m[1]); if(!r) return;
-        const td=document.createElement('td'); td.style.textAlign='right'; td.onclick=e=>e.stopPropagation(); td.innerHTML='<div class="lb-row-actions">'+lbStatusBadge(lbCalcularStatusContrato(r))+lbMenuContrato(r.id)+'</div>'; tr.appendChild(td); tr.dataset.lbDecorated='1';
-      });
-    }
-    if (tab === 'empenhos') {
-      document.querySelectorAll('#tbody-empenhos tr').forEach(tr=>{
-        if (tr.dataset.lbDecorated || !tr.getAttribute('onclick')) return;
-        const m = tr.getAttribute('onclick').match(/abrirPopupEmpenho\('([^']+)'\)/); if(!m) return;
-        const r = DB.empenhos.find(x=>x.id===m[1]); if(!r) return;
-        const td=document.createElement('td'); td.style.textAlign='right'; td.onclick=e=>e.stopPropagation(); td.innerHTML='<div class="lb-row-actions">'+lbStatusBadge(lbCalcularStatusEmpenho(r))+lbMenuEmpenho(r.id)+'</div>'; tr.appendChild(td); tr.dataset.lbDecorated='1';
-      });
-    }
-  }
-  const patch = () => {
-    if (window.__lbCadPatch) return; window.__lbCadPatch = true;
-    const _renderD = renderD; window.renderD = renderD = function(){ const r=_renderD.apply(this,arguments); decorateRows('disputas'); return r; };
-    const _renderE = renderE; window.renderE = renderE = function(){ const r=_renderE.apply(this,arguments); decorateRows('empenhos'); return r; };
-    const _renderLotes = renderLotes; window.renderLotes = renderLotes = function(){ const r=_renderLotes.apply(this,arguments); lbSetupCadastroTabs(); lbAtualizarResumoContratoCadastro(); return r; };
-    const _atualizarTotalContrato = atualizarTotalContrato; window.atualizarTotalContrato = atualizarTotalContrato = function(){ const r=_atualizarTotalContrato.apply(this,arguments); lbAtualizarResumoContratoCadastro(); return r; };
-    const _atualizarVemTotal = atualizarVemTotal; window.atualizarVemTotal = atualizarVemTotal = function(){ const r=_atualizarVemTotal.apply(this,arguments); lbAtualizarResumoEmpenhoCadastro(); return r; };
-    const _openModal = openModal; window.openModal = openModal = function(tab){ const r=_openModal.apply(this,arguments); if(tab==='disputas'){lbSetupCadastroTabs();lbSwitchCadastroTab('contrato','dados');lbAtualizarResumoContratoCadastro();} return r; };
-    const _editD = editD; window.editD = editD = function(id){ const r=_editD.apply(this,arguments); lbSetupCadastroTabs();lbSwitchCadastroTab('contrato','dados');lbAtualizarResumoContratoCadastro(); return r; };
-    const _editE = editE; window.editE = editE = function(id){ const r=_editE.apply(this,arguments); lbSetupCadastroTabs();lbSwitchCadastroTab('empenho','dados');setTimeout(lbAtualizarResumoEmpenhoCadastro,80); return r; };
-    const _novoEmp = novoEmpenhoParaDisputa; window.novoEmpenhoParaDisputa = novoEmpenhoParaDisputa = function(id){ const r=_novoEmp.apply(this,arguments); lbSetupCadastroTabs();lbSwitchCadastroTab('empenho','dados');setTimeout(lbAtualizarResumoEmpenhoCadastro,80); return r; };
-    const _novoEmpItem = novoEmpenhoComItem; window.novoEmpenhoComItem = novoEmpenhoComItem = function(d,l){ const r=_novoEmpItem.apply(this,arguments); lbSetupCadastroTabs();lbSwitchCadastroTab('empenho','itens');setTimeout(lbAtualizarResumoEmpenhoCadastro,160); return r; };
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ()=>{ lbSetupCadastroTabs(); patch(); }); else { lbSetupCadastroTabs(); patch(); }
-})();
-
 
 // ========== BOOT =====
 // Com Firebase, o boot é feito pelo onAuthStateChanged acima.
