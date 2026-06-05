@@ -2738,10 +2738,21 @@ function abrirPopupDisputa(id) {
     comprasDisputaHTML +
     renderComentarios('disputa', id);
 
-  g('popup-d-edit-btn').onclick = () => { fecharPopup('disputa'); editD(id); };
-  g('popup-d-new-emp-btn').onclick = () => novoEmpenhoParaDisputa(id);
-  // Botão reabrir — só aparece se o contrato está finalizada
+  const editBtnD = g('popup-d-edit-btn');
+  const newEmpBtnD = g('popup-d-new-emp-btn');
   const reabrirBtn = g('popup-d-reabrir-btn');
+
+  if (editBtnD) {
+    editBtnD.onclick = () => { fecharPopup('disputa'); editD(id); };
+    editBtnD.style.display = r.finalizada ? 'none' : '';
+  }
+
+  if (newEmpBtnD) {
+    newEmpBtnD.onclick = () => novoEmpenhoParaDisputa(id);
+    newEmpBtnD.style.display = r.finalizada ? 'none' : '';
+  }
+
+  // Botão reabrir — só aparece se o contrato está finalizado
   if (reabrirBtn) {
     if (r.finalizada) {
       reabrirBtn.style.display = '';
@@ -2868,8 +2879,6 @@ function abrirPopupEmpenho(id) {
     renderComentarios('empenho', id);
 
   g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
-  const tarefaBtnE = g('popup-e-tarefa-btn');
-  if (tarefaBtnE) tarefaBtnE.onclick = () => abrirModalTarefas('empenho', id, 'Empenho #' + (r.num||'—') + ' · ' + (r.orgao||''));
   g('popup-empenho').classList.add('open');
 }
 
@@ -7830,7 +7839,6 @@ boot();
     <div class="detail-actions">
       <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
       <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
-      <button class="btn btn-ghost" id="popup-e-tarefa-btn" style="color:var(--purple);border-color:var(--purple);">Tarefas</button>
     </div>
   </div>
 </div>
