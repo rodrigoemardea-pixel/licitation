@@ -55,7 +55,7 @@ body{font-family:var(--font-sans);color:var(--text-primary);min-height:100vh;fon
 .tab-btn.active .tab-badge{background:rgba(82,183,136,.25)!important;color:#95d5b2!important}
 header{position:fixed!important;top:var(--lb-gap)!important;left:calc(var(--lb-sidebar-w) + var(--lb-gap) + 8px)!important;right:var(--lb-gap)!important;height:var(--lb-topbar-h)!important;z-index:500!important;display:flex;align-items:center;gap:8px!important;padding:0 16px!important;border-radius:var(--radius-xl)!important;border:1px solid var(--border-light)!important;background:var(--glass-bg)!important;backdrop-filter:var(--glass-blur)!important;-webkit-backdrop-filter:var(--glass-blur)!important;box-shadow:var(--shadow-sm)!important;transition:background .3s}
 header .logo{display:none!important}
-header::before{content:"Centro de Controle";font-size:16px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);white-space:nowrap;margin-right:8px}
+header::before{display:none}
 header::after{display:none}
 .spacer{flex:1 1 auto;min-width:12px}
 .hbtn{width:38px;height:38px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-tertiary);font-size:14px;flex-shrink:0;transition:all .2s}
@@ -273,11 +273,7 @@ body.sidebar-hidden header{left:12px!important}
   <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Emp. Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
 
   <div class="sidebar-logout-wrap">
-    <div class="sidebar-user-mini">
-      <div class="sidebar-avatar" id="sidebar-user-avatar">?</div>
-      <span id="sidebar-user-nome">—</span>
-    </div>
-    <button class="sidebar-logout-btn" onclick="fazerLogout()">&#9211; Sair</button>
+    <button class="sidebar-logout-btn" onclick="fazerLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</button>
   </div>
 </div>
 
