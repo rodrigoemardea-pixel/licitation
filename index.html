@@ -949,8 +949,6 @@ body.sidebar-hidden header{left:12px!important}
           <label class="fl">Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
           <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()">
         </div>
-        <input type="hidden" id="d-contrato-url">
-        <input type="hidden" id="d-contrato-nome">
 
         <!-- LOTES / ITENS OBRIGATÓRIO -->
         <div class="full">
@@ -1033,37 +1031,7 @@ body.sidebar-hidden header{left:12px!important}
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
 
-        <!-- PDF DO EMPENHO (Supabase) -->
-        <div class="fg full">
-          <label class="fl">📄 PDF do Empenho</label>
-          <div id="e-ne-upload-area"
-            onclick="document.getElementById('e-ne-file').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
-            ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleEmpenhoFileDrop(event)"
-            style="border:2px dashed var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
-            <span style="font-size:1.4rem;">📁</span>
-            <div>
-              <div id="e-ne-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do empenho aqui</div>
-              <div style="font-size:11px;color:var(--text-tertiary);">PDF · máx. 50MB</div>
-            </div>
-          </div>
-          <input type="file" id="e-ne-file" accept="application/pdf" style="display:none" onchange="handleEmpenhoFile(this.files[0])">
-          <div id="e-ne-progress" style="display:none;margin-top:8px;">
-            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-              <div id="e-ne-progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:3px;"></div>
-            </div>
-            <div id="e-ne-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
-          </div>
-          <div id="e-ne-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
-            <span>📄</span>
-            <span id="e-ne-link" style="font-size:13px;font-weight:600;color:var(--accent);flex:1;cursor:pointer;"
-              onclick="window.open(document.getElementById('e-ne-url').value,'_blank')"></span>
-            <button onclick="removerEmpenhoFile()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
-          </div>
-        </div>
-          <input type="hidden" id="e-ne-url">
-          <input type="hidden" id="e-ne-nome">
+
 
         <!-- Campos ocultos necessários para salvar (não exibidos) -->
         <input type="hidden" id="e-dcomp">
@@ -2016,74 +1984,8 @@ const DB = {
 let graficos = {};
 
 // ===== INICIALIZAÇÃO =====
-// ══════════════════════════════════════════════════════════
-//   LIMPEZA AUTOMÁTICA — Remove PDFs após 120 dias finalizados
-// ══════════════════════════════════════════════════════════
-async function limparPDFsAntigos() {
-  const DIAS_LIMITE = 120;
-  const hoje = new Date();
-  let alterou = false;
+async function limparPDFsAntigos() { /* removido */ }
 
-  // Extrai o path do Supabase a partir da URL pública
-  function extrairPath(url) {
-    if (!url) return null;
-    // URL: .../storage/v1/object/public/contratos/PATH
-    const match = url.match(/\/object\/public\/contratos\/(.+)$/);
-    return match ? match[1] : null;
-  }
-
-  async function deletarSupabase(path) {
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-        {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${SUPABASE_ANON}` }
-        }
-      );
-      return res.ok;
-    } catch(e) {
-      console.warn('Erro ao deletar arquivo:', path, e);
-      return false;
-    }
-  }
-
-  // Verifico contratos finalizadas há +120 dias
-  for (const d of DB.disputas) {
-    if (!d.finalizada || !d.dataFinalizacao) continue;
-    const diasFinalizada = Math.floor((hoje - new Date(d.dataFinalizacao + 'T12:00')) / 86400000);
-    if (diasFinalizada < DIAS_LIMITE) continue;
-
-    if (d.contratoUrl) {
-      const path = extrairPath(d.contratoUrl);
-      if (path) {
-        const ok = await deletarSupabase(path);
-        if (ok) { d.contratoUrl = ''; d.contratoNome = ''; alterou = true; }
-      }
-    }
-  }
-
-  // Verifica empenhos finalizados há +120 dias
-  for (const e of DB.empenhos) {
-    if (!e.finalizado || !e.dataFinalizacao) continue;
-    const diasFinalizado = Math.floor((hoje - new Date(e.dataFinalizacao + 'T12:00')) / 86400000);
-    if (diasFinalizado < DIAS_LIMITE) continue;
-
-    if (e.neUrl) {
-      const path = extrairPath(e.neUrl);
-      if (path) {
-        const ok = await deletarSupabase(path);
-        if (ok) { e.neUrl = ''; e.neNome = ''; alterou = true; }
-      }
-    }
-  }
-
-  if (alterou) {
-    save('disputas', DB.disputas);
-    save('empenhos', DB.empenhos);
-    console.log('🧹 Limpeza automática: PDFs antigos removidos do Supabase.');
-  }
-}
 
 function inicializarApp(dadosSalvos) {
   const temDados = dadosSalvos &&
@@ -2747,11 +2649,11 @@ function abrirPopupDisputa(id) {
       '</div>' +
       '</div>' +
       '<div class="detail-grid-3">' +
-      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
+
 
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
-      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
+
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -2869,7 +2771,7 @@ function abrirPopupEmpenho(id) {
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
 
-    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
+
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">CONTRATO VINCULADO</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
@@ -4142,11 +4044,8 @@ document.addEventListener('keydown', (e) => {
 function clearD(){
   _acompConvertendoId = null; // limpa conversão pendente
   resetFields('d');
-  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-proposta-url','d-proposta-nome','d-contrato-url','d-contrato-nome','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
+  ['d-data','d-orgao','d-estado','d-empresa','d-tipo','d-processo','d-sistema','d-analista','d-observacao','d-contrato-data','d-contrato-vencimento'].forEach(id=>{const e=g(id);if(e)e.value='';});
 
-  const cp = g('d-contrato-preview'); if(cp) { cp.style.display='none'; }
-  const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
-  const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet';
   setAnalistaSelect('d-analista', analistaDoUsuario || 'Márdea');
   calcD();
@@ -4265,13 +4164,6 @@ function editD(id){
 
   g('d-observacao').value=r.observacao||'';
 
-  // Carrega proposta se existir
-  const urlEl = g('d-proposta-url'); if(urlEl) urlEl.value = r.propostaUrl || '';
-  const nomeEl = g('d-proposta-nome'); if(nomeEl) nomeEl.value = r.propostaNome || '';
-  // Carrega edital se existir
-  carregarArquivosDisputa(r);
-  // Carrega contrato
-  carregarContratoDisputa(r);
 
   // Carrega lotes (garante que todos tenham ID e preserva campos de previsão)
   lotesTemp = (r.lotes || []).map(l => ({ id: l.id || uid(), descricao: l.descricao||'', qtd: l.qtd||1, vunit: l.vunit||0, compraPrev: l.compraPrev||0, custoPrev: l.custoPrev||0 }));
@@ -4289,7 +4181,7 @@ function clearE(){
   if(aiVem) { aiVem.style.display='block'; aiVem.value=''; }
   if(miVem) { miVem.style.display='none'; miVem.value=''; }
   const btnVem = g('tbtn-e-vem'); if(btnVem){ btnVem.classList.remove('on'); btnVem.innerHTML='<span class="dot"></span>Auto'; }
-  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao','e-ne-url','e-ne-nome'].forEach(id=>{const e=g(id);if(e)e.value='';}); const neP=g('e-ne-preview'); if(neP){neP.style.display='none';} const neL=g('e-ne-upload-label'); if(neL) neL.textContent='Clique ou arraste o PDF do empenho aqui'; const neF=g('e-ne-file'); if(neF) neF.value=''; _ocrExtractedData=null;
+  ['e-num','e-data','e-analista','e-dcomp','e-vunit','e-qtd','e-vem','e-recebido','e-dreceb','e-tot-m','e-imp-m','e-luc-m','e-pct-m','e-rec-m','e-observacao'].forEach(id=>{const e=g(id);if(e)e.value='';});
   g('e-aliq').value='13'; g('e-qtd').value='1'; 
   calcE();
 }
@@ -4377,8 +4269,6 @@ function saveE(){
     dreceb: gv('e-dreceb'),
     observacao: gv('e-observacao').toUpperCase(),
 
-    neUrl: gv('e-ne-url') || '',
-    neNome: gv('e-ne-nome') || '',
     disputaId: disputaId,
     compras: (EID.empenhos ? (DB.empenhos.find(x=>x.id===EID.empenhos)?.compras || []) : []), // preserva compras
     M
@@ -4401,8 +4291,6 @@ function editE(id){
   if (_eAnSel) _eAnSel.disabled = !isAdmin;
   g('e-observacao').value=r.observacao||'';
 
-  // Carrega NE
-  carregarArquivosEmpenho(r);
   g('e-dcomp').value=r.dcomp||''; 
   g('e-aliq').value= (r.aliq*100).toFixed(1).replace('.',',');
   g('e-recebido').value=r.recebido||''; g('e-dreceb').value=r.dreceb||''; 
@@ -6559,200 +6447,14 @@ function exportarComprasDisputa(dispId) {
 }
 
 
-// ========== PROPOSTA FILE HANDLING - CLOUDINARY ==========
-// Cloudinary removido (uploads via Supabase)
 
-// ══════════════════════════════════════════════
-//   SUPABASE STORAGE — Upload de contratos PDF
-// ══════════════════════════════════════════════
-const SUPABASE_URL    = 'https://yhuzzaqhjjsybyhglaig.supabase.co';
-const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlodXp6YXFoampzeWJ5aGdsYWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NDE4ODgsImV4cCI6MjA4ODAxNzg4OH0.rtz7tqMpL4KLc32EtRXZ6HBl_okjTCuXuhFA8PT5aKU';
-const SUPABASE_BUCKET = 'contratos';
+/* Supabase removido */
 
-async function handleContratoFile(file) {
-  if (!file) return;
-  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
-  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
-  await uploadContratoSupabase(file);
-}
+/* Upload de contrato PDF removido */
 
-function handleContratoDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  const area = document.getElementById('d-contrato-upload-area');
-  if (area) area.style.borderColor = 'var(--border)';
-  handleContratoFile(file);
-}
 
-async function uploadContratoSupabase(file) {
-  const progress     = g('d-contrato-progress');
-  const progressBar  = g('d-contrato-progress-bar');
-  const progressLabel= g('d-contrato-progress-label');
-  const uploadLabel  = g('d-contrato-upload-label');
-  const preview      = g('d-contrato-preview');
-  const area         = g('d-contrato-upload-area');
+/* Upload de empenho PDF removido */
 
-  if (progress) progress.style.display = 'block';
-  if (progressBar) progressBar.style.width = '10%';
-  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent)';
-
-  // Nome único para evitar conflitos
-  const ext      = file.name.split('.').pop();
-  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path     = `${Date.now()}_${baseName}`;
-
-  try {
-    if (progressBar) progressBar.style.width = '40%';
-
-    const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/pdf',
-          'x-upsert': 'true'
-        },
-        body: file
-      }
-    );
-
-    if (progressBar) progressBar.style.width = '90%';
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(err);
-    }
-
-    // URL pública permanente
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
-    const nome = file.name;
-
-    if (progressBar) progressBar.style.width = '100%';
-    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
-    if (area) area.style.borderColor = 'var(--border)';
-
-    const urlField  = g('d-contrato-url');  if(urlField)  urlField.value  = url;
-    const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = nome;
-    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('d-contrato-link');
-      if (link) link.textContent = '📄 ' + nome;
-    }
-    toast('Contrato enviado com sucesso!', 'success');
-    return url;
-
-  } catch(e) {
-    console.error('Supabase upload error:', e);
-    if (progress) progress.style.display = 'none';
-    if (area) area.style.borderColor = 'var(--border)';
-    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
-    toast('Erro ao enviar contrato: ' + e.message, 'error');
-    return null;
-  }
-}
-
-function baixarContrato(url, nome) {
-  if (!url) return;
-  // Supabase serve PDFs com Content-Type correto — abre direto em nova aba
-  window.open(url, '_blank');
-}
-
-function removerContratoUpload() {
-  const urlField = g('d-contrato-url'); if(urlField) urlField.value = '';
-  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = '';
-  const preview = g('d-contrato-preview'); if(preview) preview.style.display = 'none';
-  const label = g('d-contrato-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do contrato aqui';
-  const fileInput = g('d-contrato-file'); if(fileInput) fileInput.value = '';
-}
-
-// ══════════════════════════════════════════
-//   SUPABASE — Upload PDF do Empenho
-// ══════════════════════════════════════════
-async function handleEmpenhoFile(file) {
-  if (!file) return;
-  if (file.type !== 'application/pdf') { toast('Apenas arquivos PDF são aceitos', 'error'); return; }
-  if (file.size > 50 * 1024 * 1024) { toast('Arquivo muito grande (máx. 50MB)', 'error'); return; }
-  await uploadEmpenhoSupabase(file);
-}
-
-function handleEmpenhoFileDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  const area = g('e-ne-upload-area');
-  if (area) area.style.borderColor = 'var(--border)';
-  handleEmpenhoFile(file);
-}
-
-async function uploadEmpenhoSupabase(file) {
-  const progress      = g('e-ne-progress');
-  const progressBar   = g('e-ne-progress-bar');
-  const progressLabel = g('e-ne-progress-label');
-  const uploadLabel   = g('e-ne-upload-label');
-  const preview       = g('e-ne-preview');
-  const area          = g('e-ne-upload-area');
-
-  if (progress) progress.style.display = 'block';
-  if (progressBar) progressBar.style.width = '10%';
-  if (uploadLabel) uploadLabel.textContent = 'Enviando...';
-  if (area) area.style.borderColor = 'var(--accent)';
-
-  const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `empenhos/${Date.now()}_${baseName}`;
-
-  try {
-    if (progressBar) progressBar.style.width = '40%';
-    const res = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${path}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/pdf',
-          'x-upsert': 'true'
-        },
-        body: file
-      }
-    );
-    if (progressBar) progressBar.style.width = '90%';
-    if (!res.ok) { const err = await res.text(); throw new Error(err); }
-
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${path}`;
-    const nome = file.name;
-
-    if (progressBar) progressBar.style.width = '100%';
-    setTimeout(() => { if (progress) progress.style.display = 'none'; }, 500);
-    if (area) area.style.borderColor = 'var(--border)';
-
-    const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = url;
-    const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = nome;
-    if (uploadLabel) uploadLabel.textContent = '✅ ' + nome;
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('e-ne-link');
-      if (link) link.textContent = '📄 ' + nome;
-    }
-    toast('PDF do empenho enviado com sucesso!', 'success');
-    return url;
-  } catch(e) {
-    console.error('Supabase empenho upload error:', e);
-    if (progress) progress.style.display = 'none';
-    if (area) area.style.borderColor = 'var(--border)';
-    if (uploadLabel) uploadLabel.textContent = '❌ Erro no envio — tente novamente';
-    toast('Erro ao enviar PDF: ' + e.message, 'error');
-    return null;
-  }
-}
-
-function removerEmpenhoFile() {
-  const urlField  = g('e-ne-url');  if(urlField)  urlField.value  = '';
-  const nomeField = g('e-ne-nome'); if(nomeField) nomeField.value = '';
-  const preview   = g('e-ne-preview'); if(preview) preview.style.display = 'none';
-  const label     = g('e-ne-upload-label'); if(label) label.textContent = 'Clique ou arraste o PDF do empenho aqui';
-  const fileInput = g('e-ne-file'); if(fileInput) fileInput.value = '';
-}
 
 function calcVencimentoContrato() {
   const dataVal = g('d-contrato-data')?.value;
@@ -6779,41 +6481,9 @@ function atualizarCorVencimento() {
   vencField.style.fontWeight = '700';
 }
 
-function carregarContratoDisputa(r) {
-  const urlField = g('d-contrato-url'); if(urlField) urlField.value = r.contratoUrl || '';
-  const nomeField = g('d-contrato-nome'); if(nomeField) nomeField.value = r.contratoNome || '';
-  const dataField = g('d-contrato-data'); if(dataField) dataField.value = r.contratoData || '';
-  const vencField = g('d-contrato-vencimento');
-  // Vencimento: converte DD/MM/YYYY para YYYY-MM-DD se necessário (registros antigos)
-  if (vencField) {
-    const v = r.contratoVencimento || '';
-    if (v.includes('/')) {
-      const parts = v.split('/');
-      vencField.value = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : '';
-    } else {
-      vencField.value = v;
-    }
-  }
-  // Recalcula cor do vencimento
-  if (r.contratoData || r.contratoVencimento) atualizarCorVencimento();
-  // Mostra preview se já houver contrato salvo
-  if (r.contratoUrl) {
-    const preview = g('d-contrato-preview');
-    if (preview) {
-      preview.style.display = 'flex';
-      const link = g('d-contrato-link');
-      if (link) { link.textContent = '📄 ' + (r.contratoNome || 'Contrato'); }
-    }
-    const label = g('d-contrato-upload-label');
-    if (label) label.textContent = '✅ ' + (r.contratoNome || 'Contrato carregado');
-  }
-}
 
-function baixarProposta(disputaId) {
-  const d = DB.disputas.find(x => x.id === disputaId);
-  if (!d || !d.propostaUrl) { toast('Nenhum arquivo disponível.', 'error'); return; }
-  window.open(d.propostaUrl, '_blank');
-}
+
+
 
 // ========== ABRIR NOVO EMPENHO COM ITEM PRÉ-PREENCHIDO ==========
 function novoEmpenhoComItem(disputaId, loteId) {
@@ -7655,37 +7325,11 @@ function commitInlineDate(id, tipo, newVal) {
 }
 
 // Helpers para carregar/salvar edital e NE nos modais
-function carregarArquivosDisputa(r) {
-  const editalUrl = g('d-edital-url'); const editalNome = g('d-edital-nome');
-  const editalPreview = g('d-edital-preview'); const editalDrop = g('d-edital-dropzone');
-  if (editalUrl) editalUrl.value = r.editalUrl || '';
-  if (editalNome) editalNome.value = r.editalNome || '';
-  if (r.editalUrl && editalPreview) {
-    editalPreview.style.display = 'block';
-    editalPreview.innerHTML = `<div class="file-badge"><a href="${r.editalUrl}" target="_blank" style="color:inherit;text-decoration:none;">📑 ${r.editalNome || 'Edital'}</a><span class="file-badge-remove" onclick="limparArquivoStorage('d-edital','📑 Clique ou arraste o PDF do edital (máx. 15MB)')">✕</span></div>`;
-  } else if (editalPreview) { editalPreview.style.display = 'none'; }
-}
+function carregarArquivosDisputa(r) { /* removido */ }
 
-function carregarArquivosEmpenho(r) {
-  const neUrl = g('e-ne-url'); const neNome = g('e-ne-nome');
-  const nePreview = g('e-ne-preview');
-  // Carregar preview do PDF se já existir
-  if (r.neUrl && neUrl) {
-    neUrl.value = r.neUrl;
-    if (neNome) neNome.value = r.neNome || '';
-    const lbl = g('e-ne-upload-label'); if(lbl) lbl.textContent = '✅ ' + (r.neNome || 'PDF carregado');
-    if (nePreview) {
-      nePreview.style.display = 'flex';
-      const lnk = g('e-ne-link'); if(lnk) lnk.textContent = '📄 ' + (r.neNome || 'PDF do empenho');
-    }
-  }
-  if (neUrl) neUrl.value = r.neUrl || '';
-  if (neNome) neNome.value = r.neNome || '';
-  if (r.neUrl && nePreview) {
-    nePreview.style.display = 'block';
-    nePreview.innerHTML = `<div class="file-badge"><a href="${r.neUrl}" target="_blank" style="color:inherit;text-decoration:none;">🖼 ${r.neNome || 'Nota de Empenho'}</a><span class="file-badge-remove" onclick="limparArquivoStorage('e-ne','🖼 Clique ou arraste a Nota de Empenho (imagem ou PDF)')">✕</span></div>`;
-  } else if (nePreview) { nePreview.style.display = 'none'; }
-}
+
+function carregarArquivosEmpenho(r) { /* removido */ }
+
 
 // Empenhos atrasados: verifica 1x por dia na carga inicial (via setTimeout no onSnapshot)
 // Alertas de retorno: gerenciados pelo checarRetornos (a cada 30s)
