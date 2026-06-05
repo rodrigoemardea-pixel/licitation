@@ -3243,10 +3243,35 @@ function empenhoTemSaldo(empenhoId) {
   });
 }
 
+
+function atualizarHeaderEmpenhosAgrupado() {
+  const headerRow = document.querySelector('#tab-empenhos table thead tr');
+  if (!headerRow) return;
+  if (_agrupado) {
+    headerRow.innerHTML = `
+      <th style="min-width:130px;">Empenho</th>
+      <th class="money" style="min-width:130px;text-align:right;">Val. Empenho</th>
+      <th class="money" style="min-width:130px;text-align:right;">Valor Compra</th>
+      <th class="money" style="min-width:110px;text-align:right;">Lucro</th>
+      <th class="money" style="min-width:130px;text-align:right;">A Receber</th>
+      <th style="min-width:90px;text-align:center;">⏱️ Dias</th>
+    `;
+  } else {
+    headerRow.innerHTML = `
+      <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
+      <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
+      <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
+      <th>Analista</th>
+      <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
+    `;
+  }
+}
+
 function renderE(){
   // Sincroniza estilo do botão de agrupamento
   const _btnAgr = g('btn-agrupar-orgao');
   if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
+  atualizarHeaderEmpenhosAgrupado();
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
@@ -7453,48 +7478,64 @@ function toggleAgrupamento() {
 function renderEAgrupado(rows, tb) {
   const grupos = {};
   rows.forEach(r => {
-    const org = r.orgao||'—';
-    if(!grupos[org]) grupos[org] = { empenhos:[], totalVem:0, totalRec:0, totalLucro:0, maxDias:0 };
+    const org = r.orgao || '—';
+    if (!grupos[org]) {
+      grupos[org] = { empenhos: [], analistas: new Set() };
+    }
     grupos[org].empenhos.push(r);
-    grupos[org].totalVem += r.vem||0;
-    grupos[org].totalRec += (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
-    grupos[org].totalLucro += (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
-    grupos[org].maxDias = Math.max(grupos[org].maxDias, diasSemPagamento(r));
+    if (r.analista) grupos[org].analistas.add(r.analista);
   });
-  const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
-  tb.innerHTML = sorted.map(([org, g_]) => {
-    const corDias = g_.maxDias>=90?'var(--danger)':g_.maxDias>=60?'var(--warning)':g_.maxDias>=30?'var(--text-secondary)':'var(--success)';
-    const rows_ = g_.empenhos.map((r, idx) => {
-      const zebraGrpTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
+
+  const sorted = Object.entries(grupos).sort((a, b) => {
+    const totalA = a[1].empenhos.reduce((s, r) => s + (r.vem || 0), 0);
+    const totalB = b[1].empenhos.reduce((s, r) => s + (r.vem || 0), 0);
+    return totalB - totalA;
+  });
+
+  tb.innerHTML = sorted.map(([org, grupo]) => {
+    const analistasHTML = [...grupo.analistas].map(nome =>
+      `<span class="badge ${_badgeClass(nome)}" style="font-size:10px;margin-left:6px;">${nome}</span>`
+    ).join('');
+
+    const linhas = grupo.empenhos.map((r, idx) => {
+      const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
       const dias = diasSemPagamento(r);
-      const diasBadge = dias>0?`<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':' '}${dias}d</span>`:'—';
-      const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
-      const _vlCompraR = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
-      const _vlLucroR  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
-      const _vlRecR    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+      const diasBadge = dias > 0
+        ? `<span class="dias-badge ${dias>=90?'dias-90':dias>=60?'dias-60':dias>=30?'dias-30':'dias-ok'}">${dias>=90?'🔴 ':dias>=60?'🟠 ':dias>=30?'🟡 ':''}${dias}d</span>`
+        : '<span class="dias-badge dias-ok">✓</span>';
+      const compras = r.compras || [];
+      const vals = eVals(r);
+      const valorCompra = compras.length
+        ? compras.reduce((s, c) => s + (c.vtotal || 0), 0)
+        : vals.tot;
+      const lucroEmp = compras.length
+        ? compras.reduce((s, c) => s + (c.luc || 0), 0)
+        : vals.luc;
+      const aReceberEmp = compras.length
+        ? compras.filter(c => !c.dpag || c.dpag === '').reduce((s, c) => s + (c.rec || 0), 0)
+        : vals.rec;
+
       return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
-        <td style="${zebraGrpTd}"></td>
-        <td class="mono" style="font-size:11px;font-weight:600;padding-left:20px;${zebraGrpTd}">${r.num||'—'}</td>
-        <td style="${zebraGrpTd}"></td>
-        <td style="${zebraGrpTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
-        <td class="mono" style="color:var(--accent);font-weight:700;${zebraGrpTd}">${fmt(r.vem)}</td>
-        <td class="mono" style="color:var(--text-secondary);font-size:11px;${zebraGrpTd}">${_vlCompraR>0?fmt(_vlCompraR):'—'}</td>
-        <td class="mono" style="color:var(--success);font-size:11px;${zebraGrpTd}">${_vlLucroR>0?fmt(_vlLucroR):'—'}</td>
-        <td class="mono" style="color:var(--accent);font-size:11px;${zebraGrpTd}">${_vlRecR>0?fmt(_vlRecR):'—'}</td>
-        <td style="${zebraGrpTd}">${diasBadge}</td>
+        <td class="mono hi" style="font-size:11px;font-weight:700;padding-left:20px;${zebraTd}">${r.num || '—'}</td>
+        <td class="mono" style="text-align:right;color:var(--accent);font-weight:700;${zebraTd}">${fmt(r.vem)}</td>
+        <td class="mono" style="text-align:right;color:var(--text-secondary);font-size:11px;${zebraTd}">${valorCompra > 0 ? fmt(valorCompra) : '—'}</td>
+        <td class="mono" style="text-align:right;color:${lucroEmp >= 0 ? 'var(--success)' : 'var(--danger)'};font-weight:700;${zebraTd}">${fmt(lucroEmp)}</td>
+        <td class="mono" style="text-align:right;color:var(--warning);font-weight:700;${zebraTd}">${aReceberEmp > 0 ? fmt(aReceberEmp) : '—'}</td>
+        <td style="text-align:center;${zebraTd}">${diasBadge}</td>
       </tr>`;
     }).join('');
-    return `<tr style="background:var(--bg-inset);">
-        <td colspan="10" style="padding:8px 12px;">
-          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
-            <span>🏢 ${org}</span>
-            <span style="font-size:11px;color:var(--text-tertiary);">${g_.empenhos.length} empenho(s)</span>
 
+    return `<tr style="background:var(--bg-inset);">
+        <td colspan="6" style="padding:8px 12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
+            <span>🏢 ${org}${analistasHTML}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);">${grupo.empenhos.length} empenho(s)</span>
           </div>
         </td>
-      </tr>${rows_}`;
+      </tr>${linhas}`;
   }).join('');
 }
+
 
 // ========== COMENTÁRIOS INTERNOS ==========
 function renderComentarios(tipo, itemId) {
