@@ -262,8 +262,6 @@ body.sidebar-hidden header{left:12px!important}
 </header>
 <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-hidden')" title="Mostrar/ocultar menu">&#9776;</button>
 
-
-
 <div class="tabs">
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
   <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
@@ -591,13 +589,6 @@ body.sidebar-hidden header{left:12px!important}
           <option value="todos">Todos</option>
         </select>
       </div>
-
-
-
-
-
-
-
 
       <div class="filter-group">
         <label>📄 Empenhos:</label>
@@ -950,55 +941,16 @@ body.sidebar-hidden header{left:12px!important}
         <div class="fg"><label class="fl">Analista</label>
           <select class="fc" id="d-analista"><option value="">Selecione</option><option selected>Márdea</option><option>Rodrigo</option><option>Krícia</option></select>
         </div>
-
-        
-
-
-
-
-        <!-- CONTRATO: data + vencimento centralizados -->
-        <div class="fg half" style="justify-self:center;">
-          <label class="fl">📅 Data do Contrato</label>
+        <div class="fg">
+          <label class="fl">Data do Contrato</label>
           <input type="date" class="fc" id="d-contrato-data" onchange="calcVencimentoContrato()">
         </div>
-        <div class="fg half" style="justify-self:center;">
-          <label class="fl">📆 Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
-          <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()" placeholder="Calculado automaticamente">
+        <div class="fg half">
+          <label class="fl">Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
+          <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()">
         </div>
-        <div class="fg full">
-          <label class="fl">📄 PDF do Contrato</label>
-          <div id="d-contrato-upload-area"
-            onclick="document.getElementById('d-contrato-file').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
-            ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleContratoDrop(event)"
-            style="border:2px dashed var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.2s;background:var(--bg-surface);">
-            <span style="font-size:1.5rem;">📁</span>
-            <div>
-              <div id="d-contrato-upload-label" style="font-size:13px;font-weight:600;color:var(--text-secondary);">Clique ou arraste o PDF do contrato aqui</div>
-              <div style="font-size:11px;color:var(--text-tertiary);">Apenas PDF · máx. 50MB</div>
-            </div>
-          </div>
-          <input type="file" id="d-contrato-file" accept="application/pdf" style="display:none" onchange="handleContratoFile(this.files[0])">
-          <div id="d-contrato-progress" style="display:none;margin-top:8px;">
-            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-              <div id="d-contrato-progress-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:3px;"></div>
-            </div>
-            <div id="d-contrato-progress-label" style="font-size:11px;color:var(--text-tertiary);margin-top:3px;text-align:center;">Enviando...</div>
-          </div>
-          <div id="d-contrato-preview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;align-items:center;gap:8px;">
-            <span>📄</span>
-            <span id="d-contrato-link" style="font-size:13px;font-weight:600;color:var(--accent);flex:1;cursor:pointer;"
-              onclick="window.open(document.getElementById('d-contrato-url').value,'_blank')"></span>
-            <button onclick="removerContratoUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>
-          </div>
-        </div>
-
         <input type="hidden" id="d-contrato-url">
         <input type="hidden" id="d-contrato-nome">
-
-        
-
 
         <!-- LOTES / ITENS OBRIGATÓRIO -->
         <div class="full">
@@ -1021,6 +973,11 @@ body.sidebar-hidden header{left:12px!important}
             <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
           </div>
           <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
+        </div>
+        <!-- OBSERVAÇÃO (último campo) -->
+        <div class="fg full">
+          <label class="fl">Observação (max 200 caracteres)</label>
+          <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
         </div>
 
       </div>
@@ -1075,8 +1032,6 @@ body.sidebar-hidden header{left:12px!important}
           <label class="fl">Observação (max 200 caracteres)</label>
           <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
         </div>
-
-
 
         <!-- PDF DO EMPENHO (Supabase) -->
         <div class="fg full">
@@ -6205,8 +6160,6 @@ function popularFiltroMesFinalizadas() {
     }).join('');
 }
 
-
-
 function renderFinalizadas() {
   popularFiltroMesFinalizadas();
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
@@ -7787,8 +7740,6 @@ document.addEventListener('scroll', closeActionMenus, true);
 // Apenas inicializa o app com dados vazios (serão carregados após login).
 // Alt shortcuts removidos
 
-
-
 // ========== SEÇÕES COLAPSÁVEIS NOS MODAIS ==========
 function toggleSection(headerId) {
   const header = document.getElementById(headerId);
@@ -7945,9 +7896,6 @@ function validarIntegridade(sil){
 setTimeout(function(){if(!window._ic){window._ic=1;validarIntegridade(true);}},4000);
 
 setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi){bi.oninput=function(){_debouncedBusca(this.value);};}},500);
-
-
-
 
 // =====================================================================
 // LICITATIONBIZNIS SAAS ENTERPRISE 1.0
