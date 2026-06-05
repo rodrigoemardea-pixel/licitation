@@ -952,29 +952,17 @@ body.sidebar-hidden header{left:12px!important}
         </div>
 
         
-        <!-- CAMPO OBSERVAÇÃO (200 caracteres) -->
-        <div class="fg full">
-          <label class="fl">Observação (max 200 caracteres)</label>
-          <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
-        </div>
 
-        <!-- CAMPO PROPOSTA -->
-        <div class="fg full">
-          <label class="fl">📎 Link da Proposta (Google Drive, OneDrive, Dropbox...)</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input type="url" class="fc" id="d-proposta-url" placeholder="https://drive.google.com/..." style="flex:2;min-width:200px;">
-            <input type="text" class="fc" id="d-proposta-nome" placeholder="Nome (ex: Proposta Fruta de Leite)" style="flex:1;min-width:150px;">
-          </div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">💡 Google Drive: clique direito → Compartilhar → qualquer pessoa com o link → copie o link</div>
-        </div>
 
-        <!-- CONTRATO: data + PDF + vencimento -->
-        <div class="fg">
+
+
+        <!-- CONTRATO: data + vencimento centralizados -->
+        <div class="fg half" style="justify-self:center;">
           <label class="fl">📅 Data do Contrato</label>
           <input type="date" class="fc" id="d-contrato-data" onchange="calcVencimentoContrato()">
         </div>
-        <div class="fg">
-          <label class="fl">📆 Vencimento do Contrato <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano, ou defina manualmente)</span></label>
+        <div class="fg half" style="justify-self:center;">
+          <label class="fl">📆 Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
           <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()" placeholder="Calculado automaticamente">
         </div>
         <div class="fg full">
