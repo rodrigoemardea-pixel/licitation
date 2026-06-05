@@ -208,12 +208,14 @@ body.sidebar-hidden header{left:12px!important}
     <!-- Logo removido -->
     <div class="login-title">LicitationBiznis</div>
     <div class="login-sub">Gestão de Licitações</div>
+    <form id="login-form" onsubmit="event.preventDefault();fazerLogin();" autocomplete="on">
     <label class="login-label">E-mail</label>
-    <input type="email" id="login-email" class="login-select" placeholder="seu@email.com" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter')fazerLogin()">
+    <input type="email" id="login-email" name="email" class="login-select" placeholder="seu@email.com" style="margin-bottom:14px;" autocomplete="username" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
     <label class="login-label">Senha</label>
-    <input type="password" id="login-senha" class="login-select" placeholder="••••••••" style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')fazerLogin()">
+    <input type="password" id="login-senha" name="password" class="login-select" placeholder="••••••••" style="margin-bottom:6px;" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
     <div id="login-erro" style="color:#f87171;font-size:12px;min-height:18px;margin-bottom:10px;text-align:center;"></div>
-    <button class="login-btn" id="login-btn" onclick="fazerLogin()">Entrar →</button>
+    <button type="submit" class="login-btn" id="login-btn">Entrar →</button>
+    </form>
     <div class="login-footer">Acesso restrito · Dados em nuvem</div>
   </div>
 </div>
@@ -1535,6 +1537,8 @@ let usuarioLogado = null;
 const ADMIN_EMAILS = new Set([
   'rodrigoemardea@gmail.com',  // Admin geral
 ]);
+// Nomes que o admin pode atribuir (ele gerencia, nao opera)
+const ADMIN_ANALISTAS_PERMITIDOS = ['Márdea', 'Rodrigo'];
 
 // ▶ MAPEAMENTO e-mail → nome do analista (EXATAMENTE igual ao cadastrado nos registros).
 const EMAIL_TO_ANALISTA = {
@@ -1606,14 +1610,16 @@ function atualizarFiltrosAnalista() {
     }
   });
 
-  // Também atualiza selects de criação/edição (d-analista, ac-analista)
+  // Atualiza selects de criacao/edicao (d-analista, ac-analista, e-analista)
+  // Admin: mostra apenas analistas permitidos (exclui o proprio admin)
   const formIds = ['d-analista', 'ac-analista'];
+  const nomesFormFinal = isAdmin ? [...new Set(ADMIN_ANALISTAS_PERMITIDOS)].sort() : sorted;
   formIds.forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
     const current = sel.value;
     while (sel.options.length > 1) sel.remove(1);
-    sorted.forEach(nome => {
+    nomesFormFinal.forEach(nome => {
       const opt = document.createElement('option');
       opt.value = nome;
       opt.textContent = nome;
@@ -1621,6 +1627,19 @@ function atualizarFiltrosAnalista() {
     });
     if (current && [...sel.options].some(o => o.value === current)) sel.value = current;
   });
+  // Atualiza e-analista (empenho) com mesma logica
+  const eAnSel2 = document.getElementById('e-analista');
+  if (eAnSel2) {
+    const curE = eAnSel2.value;
+    while (eAnSel2.options.length > 1) eAnSel2.remove(1);
+    nomesFormFinal.forEach(nome => {
+      const opt = document.createElement('option');
+      opt.value = nome;
+      opt.textContent = nome;
+      eAnSel2.appendChild(opt);
+    });
+    if (curE && [...eAnSel2.options].some(o => o.value === curE)) eAnSel2.value = curE;
+  }
 }
 
 function aplicarPermissoes() {
@@ -4144,7 +4163,7 @@ function clearD(){
   const cl = g('d-contrato-upload-label'); if(cl) cl.textContent='Clique ou arraste o PDF do contrato aqui';
   const ca = g('d-contrato-upload-area'); if(ca) ca.style.borderColor='var(--border)';
   g('d-empresa').value='Hamate'; g('d-tipo').value='Pregão Eletrônico'; g('d-rp').value='NÃO'; g('d-sistema').value='Licitanet';
-  setAnalistaSelect('d-analista', analistaDoUsuario || 'Márdea');
+  setAnalistaSelect('d-analista', (isAdmin ? 'Márdea' : analistaDoUsuario) || 'Márdea');
   calcD();
 }
 function _validarLotesSaldo(disputaId) {
@@ -6923,7 +6942,7 @@ function clearAcomp() {
   ['ac-data','ac-orgao','ac-estado','ac-sistema','ac-analista','ac-status','ac-empresa','ac-tipo','ac-processo','ac-link','ac-retorno','ac-observacao'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  setAnalistaSelect('ac-analista', analistaDoUsuario || 'Márdea');
+  setAnalistaSelect('ac-analista', (isAdmin ? 'Márdea' : analistaDoUsuario) || 'Márdea');
   document.getElementById('ac-status').value = 'pendente';
   document.getElementById('ac-sistema').value = 'Licitanet';
   document.getElementById('ttl-acomp').textContent = 'Novo Acompanhamento';
