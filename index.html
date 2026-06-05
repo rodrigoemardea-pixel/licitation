@@ -362,6 +362,7 @@ body.sidebar-hidden header{left:12px!important}
           <th>Sistema</th>
           <th>Status</th>
           <th>⏰ Retorno</th>
+          <th style="width:50px;text-align:center;"></th>
         </tr></thead>
         <tbody id="tbody-acomp"></tbody>
       </table>
@@ -6990,7 +6991,7 @@ function renderAcomp() {
   }).sort((a,b) => (a.retorno||'').localeCompare(b.retorno||''));
 
   if (!rows.length) {
-    tb.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
     const el = document.getElementById('sum-acomp'); if(el) el.innerHTML='';
     return;
   }
