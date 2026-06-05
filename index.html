@@ -184,6 +184,17 @@ body.sidebar-hidden header{left:12px!important}
 .tabs{padding-top:12px!important}
 /* === HIDE LB-NAV-ICON === */
 .lb-nav-icon{display:none!important}
+/* === AJUSTE HEADER USUÁRIO / LOGOUT NO MENU === */
+#user-role-badge{display:none!important}
+#user-menu-wrap{display:flex;align-items:center;gap:6px;position:relative}
+#user-menu-wrap .user-chip{cursor:default;padding-right:12px}
+.sidebar-logout-wrap{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:6px}
+.sidebar-user-mini{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-md);background:rgba(255,255,255,.04);color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;min-height:38px}
+.sidebar-user-mini .sidebar-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#40916c,#2d6a4f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;text-transform:uppercase;flex-shrink:0}
+.sidebar-logout-btn{width:100%;height:40px;border:none;border-radius:var(--radius-md);background:rgba(220,38,38,.12);color:#fca5a5;font-family:var(--font-sans);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .18s var(--ease-smooth)}
+.sidebar-logout-btn:hover{background:rgba(220,38,38,.22);color:#fff;transform:translateX(2px)}
+@media(max-width:860px){.sidebar-logout-wrap{display:none!important}}
+
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -242,11 +253,12 @@ body.sidebar-hidden header{left:12px!important}
   <div id="user-role-badge" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;"></div>
 
   <!-- USUÁRIO + SAIR -->
-  <div style="display:flex;align-items:center;gap:6px;" id="user-menu-wrap">
+  <div id="user-menu-wrap">
     <button onclick="toggleTema()" class="hbtn" title="Alternar tema">🌙</button>
-    <div class="user-avatar" id="user-avatar">?</div>
-    <span id="user-nome" style="font-size:12px;font-weight:500;color:var(--text-secondary);">—</span>
-    <button onclick="fazerLogout()" title="Sair" style="background:none;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:4px 10px;cursor:pointer;font-size:11px;color:var(--danger);font-family:var(--font-sans);transition:all .12s;" onmouseover="this.style.background='var(--danger-soft)'" onmouseout="this.style.background='none'">Sair</button>
+    <div class="user-chip" title="Usuário logado">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span id="user-nome" style="font-size:12px;font-weight:500;color:var(--text-secondary);">—</span>
+    </div>
   </div>
 </header>
 <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-hidden')" title="Mostrar/ocultar menu">&#9776;</button>
@@ -1759,6 +1771,10 @@ fbAuth.onAuthStateChanged(user => {
     const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
     document.getElementById('user-nome').textContent = nomeFormatado;
     document.getElementById('user-avatar').textContent = nomeFormatado.charAt(0).toUpperCase();
+    const sidebarNomeEl = document.getElementById('sidebar-user-nome');
+    const sidebarAvatarEl = document.getElementById('sidebar-user-avatar');
+    if (sidebarNomeEl) sidebarNomeEl.textContent = nomeFormatado;
+    if (sidebarAvatarEl) sidebarAvatarEl.textContent = nomeFormatado.charAt(0).toUpperCase();
     usuarioLogado = nomeFormatado;
     // Permissões: verifica se é admin ou usuário comum
     isAdmin = ADMIN_EMAILS.has(user.email);
@@ -1836,6 +1852,10 @@ fbAuth.onAuthStateChanged(user => {
     const senhaEl = document.getElementById('login-senha');
     if(emailEl) emailEl.value = '';
     if(senhaEl) senhaEl.value = '';
+    const sidebarNomeEl = document.getElementById('sidebar-user-nome');
+    const sidebarAvatarEl = document.getElementById('sidebar-user-avatar');
+    if (sidebarNomeEl) sidebarNomeEl.textContent = '—';
+    if (sidebarAvatarEl) sidebarAvatarEl.textContent = '?';
     const btn = document.getElementById('login-btn');
     if(btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
