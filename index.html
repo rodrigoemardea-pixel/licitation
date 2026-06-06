@@ -3202,15 +3202,41 @@ function sumE(){
     '<div class="card" style="border-left:3px solid var(--purple);"><div class="card-label">⏳ A Receber</div><div class="card-value" style="color:var(--purple);">'+fmt(aReceber)+'</div></div>';
 
   // Update tfoot empenhos
+  // Os totais do rodapé devem refletir exatamente os registros exibidos na tela.
+  // Na visão agrupada, as colunas exibidas são: Empenho, Val. Empenho, Valor Compra, Lucro, A Receber e Dias.
   const tfRowE = document.getElementById('tfoot-empenhos-row');
-  if (tfRowE && a.length > 0) {
+  if (tfRowE && a.length > 0 && _agrupado) {
+    const totalValorEmpenhoTela = a.reduce((s, r) => s + (r.vem || 0), 0);
+    const totalValorCompraTela = a.reduce((s, r) => {
+      const compras = r.compras || [];
+      const vals = eVals(r);
+      return s + (compras.length ? compras.reduce((ss, c) => ss + (c.vtotal || 0), 0) : vals.tot);
+    }, 0);
+    const totalLucroTela = a.reduce((s, r) => {
+      const compras = r.compras || [];
+      const vals = eVals(r);
+      return s + (compras.length ? compras.reduce((ss, c) => ss + (c.luc || 0), 0) : vals.luc);
+    }, 0);
+    const totalAReceberTela = a.reduce((s, r) => {
+      const compras = r.compras || [];
+      const vals = eVals(r);
+      return s + (compras.length ? compras.filter(c => !c.dpag || c.dpag === '').reduce((ss, c) => ss + (c.rec || 0), 0) : vals.rec);
+    }, 0);
+
     tfRowE.style.display = '';
-    const el = id => document.getElementById(id);
-    if(el('tfoot-e-vem'))      el('tfoot-e-vem').textContent      = fmt(te);
-    if(el('tfoot-e-compra'))   el('tfoot-e-compra').textContent   = fmt(totalComprado);
-    if(el('tfoot-e-lucro'))    el('tfoot-e-lucro').textContent    = fmt(lucroEmpenhado);
-    if(el('tfoot-e-areceber')) el('tfoot-e-areceber').textContent = fmt(aReceber);
-  } else if (tfRowE) { tfRowE.style.display = 'none'; }
+    tfRowE.innerHTML = `
+      <td style="text-align:right;padding:10px 12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;background:var(--bg-surface-soft);">TOTAIS</td>
+      <td class="mono" style="text-align:right;color:var(--accent);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
+      <td class="mono" style="text-align:right;color:var(--text-secondary);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-compra">${fmt(totalValorCompraTela)}</td>
+      <td class="mono" style="text-align:right;color:${totalLucroTela >= 0 ? 'var(--success)' : 'var(--danger)'};font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-lucro">${fmt(totalLucroTela)}</td>
+      <td class="mono" style="text-align:right;color:var(--warning);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-areceber">${fmt(totalAReceberTela)}</td>
+      <td style="background:var(--bg-surface-soft);"></td>
+    `;
+  } else if (tfRowE) {
+    // Na visão simples essas colunas financeiras não são exibidas; por isso o rodapé fica oculto para evitar uma linha vazia.
+    tfRowE.style.display = 'none';
+    tfRowE.innerHTML = '';
+  }
 }
 
 function renderAll(){ 
