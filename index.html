@@ -2635,6 +2635,18 @@ function abrirPopupDisputa(id) {
       reabrirBtn.style.display = 'none';
     }
   }
+  // Botão excluir — só aparece em contratos ATIVOS (não finalizados) SEM empenho vinculado
+  const delBtnD = g('popup-d-del-btn');
+  if (delBtnD) {
+    const temEmpenho = DB.empenhos.some(e => e.disputaId === id);
+    if (!r.finalizada && !temEmpenho) {
+      delBtnD.style.display = '';
+      delBtnD.onclick = () => { fecharPopup('disputa'); delRow('disputas', id); };
+    } else {
+      delBtnD.style.display = 'none';
+      delBtnD.onclick = null;
+    }
+  }
   g('popup-disputa').classList.add('open');
 }
 
