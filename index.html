@@ -341,7 +341,7 @@ body.sidebar-hidden header{left:12px!important}
           <option value="recurso">Em Recurso</option>
         </select>
       </div>
-      <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="renderAcomp()"></div>
+      <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="_debRenderAcomp()"></div>
     </div>
     <div class="table-wrap">
       <table>
@@ -636,7 +636,7 @@ body.sidebar-hidden header{left:12px!important}
         </select>
       </div>
       
-      <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar contratos..." oninput="filterTable('disputas',this.value)"></div>
+      <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar contratos..." oninput="_debFilterTable('disputas',this.value)"></div>
       <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
@@ -711,7 +711,7 @@ body.sidebar-hidden header{left:12px!important}
         </select>
       </div>
 
-      <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="filterTable('empenhos',this.value)"></div>
+      <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="_debFilterTable('empenhos',this.value)"></div>
       <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
       <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
       <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
@@ -744,7 +744,7 @@ body.sidebar-hidden header{left:12px!important}
   <div class="tab-pane" id="tab-emp-finalizados">
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
-      <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="renderEmpFinalizados()"></div>
+      <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="_debRenderEmpFin()"></div>
       <div class="filter-group" id="fg-analista-emp-fin">
         <label>👤 Analista:</label>
         <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
@@ -779,7 +779,7 @@ body.sidebar-hidden header{left:12px!important}
   <div class="tab-pane" id="tab-finalizadas">
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
-      <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="renderFinalizadas()"></div>
+      <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="_debRenderFinaliz()"></div>
       <div class="filter-group" id="fg-analista-finalizadas">
         <label>👤 Analista:</label>
         <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
@@ -1728,8 +1728,8 @@ fbAuth.onAuthStateChanged(user => {
         _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
       atualizarFiltrosAnalista();
-      renderAll();
-      atualizarPainel();
+      reconciliarFinalizacoes();
+      renderActive();
       aplicarPermissoes();
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
@@ -2012,7 +2012,7 @@ function iniciarSemDados() {
   save('disputas', DB.disputas);
   save('empenhos', DB.empenhos);
   document.getElementById('tela-boasvindas').style.display = 'none';
-  renderAll();
+  renderActive();
   toast('Sistema iniciado! Cadastre sua primeiro contrato.', 'info');
 }
 
@@ -2239,14 +2239,7 @@ function switchTab(tab,btn){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   g('tab-'+tab).classList.add('active');
-  
-  if(tab === 'disputas') {
-    renderD();
-  } else if(tab === 'empenhos') {
-    renderE();
-  } else if(tab === 'finalizadas') {
-    renderFinalizadas();
-  }
+  renderActive();
 }
 
 // ========== PAGINATION ==========
@@ -3266,11 +3259,10 @@ function sumE(){
   }
 }
 
-function renderAll(){ 
-  // Auto-finalizar empenhos pagos e disputas que atendem critérios
+// === PASSO 1: Reconciliação de finalização (removida do caminho quente) ===
+function reconciliarFinalizacoes() {
   DB.empenhos.forEach(e => {
     if (empenhoEstaPago(e)) {
-      // Auto-finalizar só se qtd enviada cobrir toda a qtd contratada
       const disp = e.disputaId ? DB.disputas.find(d => d.id === e.disputaId) : null;
       const itensEmp = (e.itens && e.itens.length) ? e.itens : [];
       const qtdOk = itensEmp.length === 0 || itensEmp.every(item => {
@@ -3283,21 +3275,41 @@ function renderAll(){
         e.finalizado = true;
         e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
       }
-    } else if (e.finalizado && e.dataFinalizacao && !e._manualFinalizado) {
-      // só reabre auto se não foi finalizado manualmente
     }
   });
-  // Auto-finalizar disputas
   DB.disputas.forEach(d => { if (!d.finalizada || d.finalizadaAuto) verificarAutoFinalizarDisputa(d.id); });
-  renderD(); 
-  renderE(); 
-  renderEmpFinalizados();
-  renderFinalizadas();
-  updateBadges(); 
+}
+
+// === PASSO 1: Renderizações leves (sempre executam) ===
+function renderShell() {
+  updateBadges();
   updateHeader();
   popularFiltroMes();
   atualizarNotificacoes();
-  // Atualiza painel e acomp se estiverem visíveis
+}
+
+// === PASSO 1: Renderiza apenas a aba visível ===
+function renderActive() {
+  renderShell();
+  switch (_activeTab) {
+    case 'painel':           atualizarPainel(); break;
+    case 'dashboard':        atualizarDashboard(); break;
+    case 'disputas':         renderD(); break;
+    case 'empenhos':         renderE(); break;
+    case 'finalizadas':      renderFinalizadas(); break;
+    case 'emp-finalizados':  renderEmpFinalizados(); break;
+    case 'acompanhamentos':  renderAcomp(); break;
+  }
+}
+
+// === PASSO 1: renderAll mantido apenas para boot/import ===
+function renderAll(){
+  reconciliarFinalizacoes();
+  renderD();
+  renderE();
+  renderEmpFinalizados();
+  renderFinalizadas();
+  renderShell();
   if (_activeTab === 'painel') atualizarPainel();
   if (_activeTab === 'acompanhamentos') renderAcomp();
 }
@@ -3760,7 +3772,7 @@ function delEmpenhoDisputa(id) {
   _fullDB.empenhos = _fullDB.empenhos.filter(r => r.id !== id);
   save('empenhos', _fullDB.empenhos);
   toast('Empenho excluído', 'info');
-  renderAll();
+  renderActive();
   if(disputaAtiva) verEmpenhosDisputa(disputaAtiva);
 }
 
@@ -4000,7 +4012,7 @@ function wizardFinish() {
   }
   
   closeWizard();
-  renderAll();
+  renderActive();
 }
 
 // ========== ATALHOS DE TECLADO ==========
@@ -4158,7 +4170,7 @@ function saveD(){
   } else {
     toast(EID.disputas?'Contrato atualizado':'Contrato salvo','success');
   }
-  closeModal('disputas', true); renderAll();
+  closeModal('disputas', true); reconciliarFinalizacoes(); renderActive();
 }
 function editD(id){
   const r=DB.disputas.find(x=>x.id===id); if(!r) return;
@@ -4295,7 +4307,7 @@ function saveE(){
   const _isNew = !EID.empenhos;
   toast(_isNew ? 'EMPENHO SALVO' : 'EMPENHO ATUALIZADO', 'success');
   closeModal('empenhos', true);
-  renderAll();
+  reconciliarFinalizacoes(); renderActive();
   // Após salvar, abre o popup de detalhe do empenho
   setTimeout(() => abrirPopupEmpenho(row.id), 150);
 }
@@ -4427,7 +4439,7 @@ function confirmDel(){
   _fullDB[PDel.tab] = _fullDB[PDel.tab].filter(r => r.id !== PDel.id);
   save(PDel.tab, _fullDB[PDel.tab]);
   closeConfirm();
-  renderAll();
+  renderActive();
   toast('Excluído com sucesso','info');
 }
 
@@ -4471,7 +4483,7 @@ function deletarSelecionados(tab) {
       }
       _fullDB[tab] = _fullDB[tab].filter(r => !ids.includes(r.id));
       save(tab, _fullDB[tab]);
-      renderAll();
+      renderActive();
       const chkAll = g('chk-all-' + tab);
       if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
       atualizarBotaoLote(tab);
@@ -4813,7 +4825,7 @@ function saveCompra() {
   closeModal('compra', true);
   save('empenhos', DB.empenhos);
   toast(compraEditId ? 'COMPRA ATUALIZADA ✓' : 'COMPRA SALVA ✓', 'success');
-  renderAll();
+  renderActive();
   setTimeout(()=>abrirPopupEmpenho(_empId), 150);
 }
 
@@ -4829,7 +4841,7 @@ function delCompra(empenhoId, compraId) {
   if (emp.disputaId) verificarAutoFinalizarDisputa(emp.disputaId);
   save('empenhos', DB.empenhos);
   toast('COMPRA EXCLUÍDA', 'info');
-  renderAll();
+  reconciliarFinalizacoes(); renderActive();
   setTimeout(()=>abrirPopupEmpenho(empenhoId), 100);
 }
 
@@ -5341,7 +5353,7 @@ function finalizarDisputa(id) {
   if (!d) return;
   _confirmarAcao({icon:'✅', titulo:'Finalizar contrato', msg:`Finalizar o contrato <strong>${d.orgao||id}</strong>?<br>Ela será movida para a aba Finalizadas.`, btnLabel:'✅ Finalizar', btnClass:'btn-success', onConfirm: () => {
     d.finalizada = true; d.finalizadaAuto = false; d.dataFinalizacao = new Date().toISOString().slice(0,10);
-    save('disputas', DB.disputas); renderAll(); toast('Contrato finalizado! ✅', 'success');
+    save('disputas', DB.disputas); renderActive(); toast('Contrato finalizado! ✅', 'success');
   }}); return;
 }
 
@@ -5365,7 +5377,7 @@ function reabrirDisputa(id) {
     });
     save('disputas', DB.disputas);
     if (empsFinalizados.length) save('empenhos', DB.empenhos);
-    renderAll(); toast('Contrato e empenhos reabertos! Datas de pagamento limpas, valores preservados.', 'info');
+    renderActive(); toast('Contrato e empenhos reabertos! Datas de pagamento limpas, valores preservados.', 'info');
   }}); return;
 }
 
@@ -5912,7 +5924,7 @@ function _doFinalizarEmpenho(id) {
   e.finalizado = true; e._manualFinalizado = true;
   e.dataFinalizacao = e.dataFinalizacao || new Date().toISOString().slice(0,10);
   if (e.disputaId) verificarAutoFinalizarDisputa(e.disputaId);
-  save('empenhos', DB.empenhos); renderAll(); toast('Empenho finalizado! ✅', 'success');
+  save('empenhos', DB.empenhos); renderActive(); toast('Empenho finalizado! ✅', 'success');
 }
 function _doReabrirEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
@@ -5920,7 +5932,7 @@ function _doReabrirEmpenho(id) {
   // Limpa apenas dpag para evitar re-finalização automática; rec preservado
   (e.compras||[]).forEach(c => { c.dpag = ''; });
   if (e.disputaId) { const d = DB.disputas.find(x => x.id === e.disputaId); if (d && d.finalizada) { d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false; } }
-  save('empenhos', DB.empenhos); renderAll(); toast('Empenho reaberto! Data de pagamento limpa, valores preservados.', 'info');
+  save('empenhos', DB.empenhos); renderActive(); toast('Empenho reaberto! Data de pagamento limpa, valores preservados.', 'info');
 }
 function finalizarEmpenho(id) {
   const e = DB.empenhos.find(x => x.id === id); if (!e) return;
@@ -6372,7 +6384,7 @@ function _doSaveAcomp(retornoVal) {
         _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== row.id);
         save('acomp', _fullDB.acomp);
         EID_acomp = null;
-        renderAcomp(); updateBadges(); atualizarPainel();
+        renderActive();
         toast('Acompanhamento removido (perdida).', 'info');
       }
     });
@@ -6384,10 +6396,8 @@ function _doSaveAcomp(retornoVal) {
   toast(EID_acomp ? 'Acompanhamento atualizado!' : 'Acompanhamento salvo!', 'success');
   EID_acomp = null;
   closeModal('acomp', true);
-  renderAcomp();
+  renderActive();
   // E-mail gerenciado exclusivamente pelo checarRetornos (2min antes)
-  updateBadges();
-  atualizarPainel();
 }
 
 function clearAcomp() {
@@ -6431,7 +6441,7 @@ function delAcomp(id) {
   if(btn) btn.onclick = () => {
     _fullDB.acomp = (_fullDB.acomp||[]).filter(x => x.id !== id);
     save('acomp', _fullDB.acomp);
-    renderAcomp(); updateBadges(); atualizarPainel();
+    renderActive();
     toast('Excluído!', 'success');
     PDel = null; closeConfirm();
   };
@@ -7206,7 +7216,7 @@ function inlineEditStatus(id, tipo) {
   if (!cell) return;
 
   const opts = statuses.map(([v, l]) => `<option value="${v}" ${v === currentVal ? 'selected' : ''}>${l}</option>`).join('');
-  cell.innerHTML = `<select class="inline-edit-select" onchange="commitInlineStatus('${id}','${tipo}',this.value,this)" onblur="renderAll()">${opts}</select>`;
+  cell.innerHTML = `<select class="inline-edit-select" onchange="commitInlineStatus('${id}','${tipo}',this.value,this)" onblur="renderActive()">${opts}</select>`;
   cell.querySelector('select').focus();
 }
 
@@ -7221,7 +7231,7 @@ function commitInlineStatus(id, tipo, newVal, el) {
     upsert('disputas', DB.disputas);
   }
   toast('Status atualizado!', 'success');
-  setTimeout(() => renderAll(), 100);
+  setTimeout(() => renderActive(), 100);
 }
 
 function inlineEditDate(id, tipo) {
@@ -7234,7 +7244,7 @@ function inlineEditDate(id, tipo) {
   const currentVal = r.data || '';
   cell.innerHTML = `<input type="date" class="inline-edit-input" value="${currentVal}"
     onchange="commitInlineDate('${id}','${tipo}',this.value)"
-    onblur="renderAll()" style="width:120px;">`;
+    onblur="renderActive()" style="width:120px;">`;
   cell.querySelector('input').focus();
 }
 
@@ -7244,7 +7254,7 @@ function commitInlineDate(id, tipo, newVal) {
   r.data = newVal;
   upsert(tipo, DB[tipo]);
   toast('Data atualizada!', 'success');
-  setTimeout(() => renderAll(), 100);
+  setTimeout(() => renderActive(), 100);
 }
 
 // Helpers para carregar/salvar edital e NE nos modais
@@ -7398,6 +7408,11 @@ function confirmar(titulo, msg, onConfirm) {
 
 function _debounce(fn,ms){var t;return function(){clearTimeout(t);var a=arguments,ctx=this;t=setTimeout(function(){fn.apply(ctx,a);},ms);};}
 var _debouncedBusca=_debounce(function(v){buscaGlobal(v);},200);
+// === PASSO 1: debounced wrappers para reduzir re-renderizações ===
+var _debFilterTable   = _debounce(function(tab,v){ filterTable(tab,v); }, 180);
+var _debRenderAcomp   = _debounce(function(){ renderAcomp(); }, 180);
+var _debRenderFinaliz = _debounce(function(){ renderFinalizadas(); }, 180);
+var _debRenderEmpFin  = _debounce(function(){ renderEmpFinalizados(); }, 180);
 function commitInlineAnalista(id,tipo,val){
   var r=_fullDB[tipo].find(function(x){return x.id===id;});if(!r)return;
   r.analista=val;save(tipo,_fullDB[tipo]);toast('Analista: '+val,'success');setTimeout(renderAll,80);
