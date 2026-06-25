@@ -1477,6 +1477,7 @@ const save = (k, v) => {
 
   const vToSave = (k in _fullDB) ? _fullDB[k] : v;
   const vClean = sanitizeForFirestore(vToSave);
+  _bumpDbVersion();
   fbDB.collection('dados').doc('principal').set(
     { [k]: vClean },
     { merge: true }
@@ -1727,6 +1728,7 @@ fbAuth.onAuthStateChanged(user => {
         _fullDB.disputas = []; _fullDB.empenhos = []; _fullDB.acomp = [];
         _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
+      _bumpDbVersion();
       atualizarFiltrosAnalista();
       aplicarPermissoes();
       // Inicia notificações na primeira carga
@@ -1905,19 +1907,37 @@ function sincLoteVenda(total) {
 
 // Dias sem recebimento (desde dcomp ou, se vazio, data mais antiga das compras)
 function diasSemPagamento(r) {
-  // Recebimento está dentro das compras, não no empenho diretamente
-  const temRecebimento = (r.compras||[]).some(c => c.dpag && (c.rec||0) > 0);
-  if (temRecebimento) return 0;
-  // Usa r.dcomp se disponível; senão pega a data mais antiga entre as compras individuais
+  // === PASSO 2: memoizado por id ===
+  if (r && r.id) {
+    const cached = _memoCache.diasSemPag.get(r.id);
+    if (cached !== undefined) return cached;
+  }
+  const compras = r.compras || [];
+  let temRecebimento = false;
+  for (let i = 0; i < compras.length; i++) {
+    if (compras[i].dpag && (compras[i].rec || 0) > 0) { temRecebimento = true; break; }
+  }
+  if (temRecebimento) {
+    if (r && r.id) _memoCache.diasSemPag.set(r.id, 0);
+    return 0;
+  }
   let dataRef = r.dcomp;
   if (!dataRef) {
-    const datas = (r.compras||[]).map(c => c.dcompra).filter(Boolean).sort();
-    if (datas.length) dataRef = datas[0];
+    let menor = null;
+    for (let i = 0; i < compras.length; i++) {
+      const d = compras[i].dcompra;
+      if (d && (menor === null || d < menor)) menor = d;
+    }
+    dataRef = menor;
   }
-  if (!dataRef) return 0;
-  const compra = new Date(dataRef);
-  const hoje = new Date();
-  return Math.floor((hoje - compra) / 86400000);
+  if (!dataRef) {
+    if (r && r.id) _memoCache.diasSemPag.set(r.id, 0);
+    return 0;
+  }
+  const hojeMs = _memoCache.hojeMs || Date.now();
+  const dias = Math.floor((hojeMs - new Date(dataRef).getTime()) / 86400000);
+  if (r && r.id) _memoCache.diasSemPag.set(r.id, dias);
+  return dias;
 }
 // Empenho pago = todos os itens têm ao menos uma compra com dpag preenchido
 function disputaEstaFinalizada(disputaId) {
@@ -1925,7 +1945,7 @@ function disputaEstaFinalizada(disputaId) {
   if (!d) return false;
   const emps = DB.empenhos.filter(e => e.disputaId === disputaId && !e.finalizado === false);
   // Critério 1: precisa ter ao menos 1 empenho
-  const todosEmpenhos = DB.empenhos.filter(e => e.disputaId === disputaId);
+  const todosEmpenhos = _empenhosDaDisputa(disputaId); // PASSO 2: índice
   if (!todosEmpenhos.length) return false;
   // Critério 2: todos os empenhos precisam estar pagos
   if (!todosEmpenhos.every(e => empenhoEstaPago(e))) return false;
@@ -1955,11 +1975,30 @@ function verificarAutoFinalizarDisputa(disputaId) {
 }
 
 function empenhoEstaPago(r) {
-  // Exige que TODOS os itens tenham ao menos uma compra com dpag preenchido E rec > 0
+  // === PASSO 2: memoizado por id ===
+  if (r && r.id) {
+    const cached = _memoCache.empenhoPago.get(r.id);
+    if (cached !== undefined) return cached;
+  }
   const itens = (r.itens && r.itens.length) ? r.itens : (r.loteId ? [{id:'leg1'}] : []);
-  if (!itens.length) return false;
+  if (!itens.length) {
+    if (r && r.id) _memoCache.empenhoPago.set(r.id, false);
+    return false;
+  }
   const compras = r.compras || [];
-  return itens.every(item => compras.some(c => c.itemId === item.id && c.dpag && (c.rec||0) > 0));
+  // Indexar compras por itemId para evaluação rápida
+  let result = true;
+  for (let i = 0; i < itens.length; i++) {
+    const item = itens[i];
+    let ok = false;
+    for (let j = 0; j < compras.length; j++) {
+      const c = compras[j];
+      if (c.itemId === item.id && c.dpag && (c.rec || 0) > 0) { ok = true; break; }
+    }
+    if (!ok) { result = false; break; }
+  }
+  if (r && r.id) _memoCache.empenhoPago.set(r.id, result);
+  return result;
 }
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 const fmt=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -1972,6 +2011,50 @@ const parseAliq = (v) => {
 
 // ─── Repositório completo (todos os analistas) ───────────────────────────────
 let _fullDB = { disputas:[], empenhos:[], acomp:[], comentarios:[], tarefas:[] };
+
+// === PASSO 2: Versionamento e cache de cálculos derivados ===
+let _dbVersion = 0;
+let _memoCache = {
+  version: 0,
+  empenhosByDisputa: null,   // Map: disputaId -> array de empenhos
+  qtdEnviada: new Map(),     // chave: disputaId|loteId|excludeId -> qtd
+  diasSemPag: new Map(),     // chave: empenhoId -> dias
+  empenhoPago: new Map(),    // chave: empenhoId -> bool
+  valorContrato: new Map(),  // chave: disputaId -> valor
+  hojeMs: 0                  // referência de "hoje" para diasSemPagamento
+};
+
+function _bumpDbVersion() {
+  _dbVersion++;
+  _memoCache.version = _dbVersion;
+  _memoCache.empenhosByDisputa = null;
+  _memoCache.qtdEnviada.clear();
+  _memoCache.diasSemPag.clear();
+  _memoCache.empenhoPago.clear();
+  _memoCache.valorContrato.clear();
+  // hojeMs fica fixo dentro da mesma versão para garantir consistência
+  _memoCache.hojeMs = Date.now();
+}
+
+function _getEmpenhosByDisputa() {
+  if (_memoCache.empenhosByDisputa) return _memoCache.empenhosByDisputa;
+  const map = new Map();
+  (_fullDB.empenhos || []).forEach(e => {
+    if (!e.disputaId) return;
+    let arr = map.get(e.disputaId);
+    if (!arr) { arr = []; map.set(e.disputaId, arr); }
+    arr.push(e);
+  });
+  _memoCache.empenhosByDisputa = map;
+  return map;
+}
+
+// === PASSO 2: filter rápido de empenhos por disputaId (usa o índice) ===
+function _empenhosDaDisputa(disputaId) {
+  if (!disputaId) return [];
+  const idx = _getEmpenhosByDisputa();
+  return idx.get(disputaId) || [];
+}
 
 // ─── DB: proxy com getters — SEMPRE retorna os dados filtrados para o usuário ─
 // Quando isAdmin=true  → retorna tudo.
@@ -2431,22 +2514,40 @@ const mTag=r=>Object.keys(r.M||{}).length?`<span class="badge by" style="font-si
 // ========== FUNÇÕES DE DUPLICAÇÃO ==========
 // ===== LOTES HELPERS =====
 function calcQtdEnviada(disputaId, loteId, excludeEmpenhoId) {
-  return DB.empenhos
-    .filter(e => e.disputaId === disputaId && e.id !== excludeEmpenhoId)
-    .reduce((s, e) => {
-      // Novo formato: itens[]
-      if(e.itens && e.itens.length) {
-        const item = e.itens.find(i=>i.loteId===loteId);
-        return s + (item ? item.qtd : 0);
-      }
-      // Formato legado
-      if(e.loteId === loteId) return s + (e.qtdLote || 0);
-      return s;
-    }, 0);
+  // === PASSO 2: memoizado + uso de índice por disputaId ===
+  const key = disputaId + '|' + loteId + '|' + (excludeEmpenhoId || '');
+  const cached = _memoCache.qtdEnviada.get(key);
+  if (cached !== undefined) return cached;
+  const idx = _getEmpenhosByDisputa();
+  const arr = idx.get(disputaId) || [];
+  let s = 0;
+  for (let i = 0; i < arr.length; i++) {
+    const e = arr[i];
+    if (e.id === excludeEmpenhoId) continue;
+    if (e.itens && e.itens.length) {
+      const item = e.itens.find(it => it.loteId === loteId);
+      if (item) s += item.qtd || 0;
+    } else if (e.loteId === loteId) {
+      s += e.qtdLote || 0;
+    }
+  }
+  _memoCache.qtdEnviada.set(key, s);
+  return s;
 }
 
 function getValorContrato(r) {
-  return (r.lotes || []).reduce((s, l) => s + (l.qtd || 0) * (l.vunit || 0), 0);
+  // === PASSO 2: memoizado por id ===
+  if (r && r.id) {
+    const cached = _memoCache.valorContrato.get(r.id);
+    if (cached !== undefined) return cached;
+  }
+  const lotes = r.lotes || [];
+  let s = 0;
+  for (let i = 0; i < lotes.length; i++) {
+    s += (lotes[i].qtd || 0) * (lotes[i].vunit || 0);
+  }
+  if (r && r.id) _memoCache.valorContrato.set(r.id, s);
+  return s;
 }
 
 function getLotesComSaldo(disputaId, excludeEmpenhoId) {
@@ -2465,7 +2566,7 @@ function abrirPopupDisputa(id) {
   const { imp, luc, pct } = dVals(r);
   const contrato = getValorContrato(r);
   const lotes = getLotesComSaldo(id);
-  const emps = DB.empenhos.filter(e => e.disputaId === id);
+  const emps = _empenhosDaDisputa(id); // PASSO 2: índice
   
   // Lucro realizado = soma do lucro das compras que têm data de pagamento preenchida
   const lucroRealizado = emps.reduce((s,e) => {
@@ -2931,7 +3032,7 @@ function renderD(){
     const contrato = getValorContrato(r);
 
     // ── Empenhos abertos vinculados a esto contrato ──
-    const empsAbertos = DB.empenhos.filter(e => e.disputaId === r.id && !e.finalizado);
+    const empsAbertos = _empenhosDaDisputa(r.id).filter(e => !e.finalizado); // PASSO 2: índice
     const expanded = false; // sub-rows desativadas
     const _q = FLT['disputas'] || '';
 
@@ -2963,7 +3064,7 @@ function renderD(){
     const _compraPrev = _lts.reduce((s,l)=>s+(l.compraPrev||0)*(l.qtd||0),0);
     const _custoPrev  = _lts.reduce((s,l)=>s+(l.custoPrev||0)*(l.qtd||0),0);
     const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
-    const _empsD = DB.empenhos.filter(e=>e.disputaId===r.id);
+    const _empsD = _empenhosDaDisputa(r.id); // PASSO 2: índice
     const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
 
     var _progCor = pctProg>=100?'var(--success)':pctProg>0?'var(--accent)':'var(--border-light)';
@@ -5888,7 +5989,7 @@ function renderFinalizadas() {
   }
   tb.innerHTML = rows.map((r, idx) => {
     const contrato = getValorContrato(r);
-    const emps = DB.empenhos.filter(e => e.disputaId === r.id);
+    const emps = _empenhosDaDisputa(r.id); // PASSO 2: índice
     const lucroRec = emps.reduce((s,e) =>
       s + (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=> {
         const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
@@ -5911,7 +6012,7 @@ function renderFinalizadas() {
 function sumFinalizadas(rows) {
   const tv = rows.reduce((s,r) => s + getValorContrato(r), 0);
   const lucroTotal = rows.reduce((s,r) => {
-    const emps = DB.empenhos.filter(e => e.disputaId === r.id);
+    const emps = _empenhosDaDisputa(r.id); // PASSO 2: índice
     return s + emps.reduce((s2,e) =>
       s2 + (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
         const luc = (c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0);
