@@ -1728,11 +1728,12 @@ fbAuth.onAuthStateChanged(user => {
         _fullDB.comentarios = []; _fullDB.tarefas = [];
       }
       atualizarFiltrosAnalista();
-      reconciliarFinalizacoes();
-      renderActive();
       aplicarPermissoes();
       // Inicia notificações na primeira carga
       if (!_notifTimer) {
+        // Primeira carga: render completo + abre painel
+        reconciliarFinalizacoes();
+        renderAll();
         iniciarNotificacoes();
         setTimeout(mostrarResumoDiario, 1200);
         // Vai para painel na primeira carga
@@ -1744,7 +1745,12 @@ fbAuth.onAuthStateChanged(user => {
           btnPainel.classList.add('active');
           const pane = document.getElementById('tab-painel');
           if (pane) pane.classList.add('active');
+          atualizarPainel();
         }
+      } else {
+        // Snapshots subsequentes: só renderiza a aba ativa atual
+        reconciliarFinalizacoes();
+        renderActive();
       }
     }, err => {
       console.error('Erro ao ouvir Firestore:', err);
@@ -3259,7 +3265,7 @@ function sumE(){
   }
 }
 
-// === PASSO 1: Reconciliação de finalização (removida do caminho quente) ===
+// === PASSO 1: Reconciliação de finalização (caminho frio) ===
 function reconciliarFinalizacoes() {
   DB.empenhos.forEach(e => {
     if (empenhoEstaPago(e)) {
@@ -3280,7 +3286,7 @@ function reconciliarFinalizacoes() {
   DB.disputas.forEach(d => { if (!d.finalizada || d.finalizadaAuto) verificarAutoFinalizarDisputa(d.id); });
 }
 
-// === PASSO 1: Renderizações leves (sempre executam) ===
+// === PASSO 1: Renderizações leves ===
 function renderShell() {
   updateBadges();
   updateHeader();
@@ -3302,7 +3308,7 @@ function renderActive() {
   }
 }
 
-// === PASSO 1: renderAll mantido apenas para boot/import ===
+// === PASSO 1: renderAll completo - usado em boot/import ===
 function renderAll(){
   reconciliarFinalizacoes();
   renderD();
@@ -3311,6 +3317,7 @@ function renderAll(){
   renderFinalizadas();
   renderShell();
   if (_activeTab === 'painel') atualizarPainel();
+  if (_activeTab === 'dashboard') atualizarDashboard();
   if (_activeTab === 'acompanhamentos') renderAcomp();
 }
 
@@ -7408,7 +7415,7 @@ function confirmar(titulo, msg, onConfirm) {
 
 function _debounce(fn,ms){var t;return function(){clearTimeout(t);var a=arguments,ctx=this;t=setTimeout(function(){fn.apply(ctx,a);},ms);};}
 var _debouncedBusca=_debounce(function(v){buscaGlobal(v);},200);
-// === PASSO 1: debounced wrappers para reduzir re-renderizações ===
+// === PASSO 1: debounced wrappers ===
 var _debFilterTable   = _debounce(function(tab,v){ filterTable(tab,v); }, 180);
 var _debRenderAcomp   = _debounce(function(){ renderAcomp(); }, 180);
 var _debRenderFinaliz = _debounce(function(){ renderFinalizadas(); }, 180);
