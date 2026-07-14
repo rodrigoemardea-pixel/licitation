@@ -615,12 +615,12 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>Data</th>
-          <th>Órgão / UF</th>
-          <th>Analista</th>
-          <th>Empresa</th>
-          <th>Lucro Recebido</th>
-          <th>Finalizada em</th>
+          <th id="sort-finalizadas-data" onclick="sortFinalizadas('data')" title="Ordenar pela data do contrato">Data</th>
+          <th id="sort-finalizadas-orgao" onclick="sortFinalizadas('orgao')" title="Ordenar por órgão">Órgão / UF</th>
+          <th id="sort-finalizadas-analista" onclick="sortFinalizadas('analista')" title="Ordenar por analista">Analista</th>
+          <th id="sort-finalizadas-empresa" onclick="sortFinalizadas('empresa')" title="Ordenar por empresa">Empresa</th>
+          <th id="sort-finalizadas-lucroRecebido" class="money" onclick="sortFinalizadas('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
+          <th id="sort-finalizadas-dataFinalizacao" onclick="sortFinalizadas('dataFinalizacao')" title="Ordenar pela data de finalização">Finalizada em</th>
         </tr>
       </thead>
       <tbody id="tbody-finalizadas"></tbody>

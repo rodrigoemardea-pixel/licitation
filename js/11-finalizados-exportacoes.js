@@ -49,6 +49,80 @@ function popularFiltroMesFinalizadas() {
     }).join('');
 }
 
+// Ordenação dos contratos finalizados.
+// O padrão mantém os registros finalizados mais recentemente no início.
+let _sortFinalizadas = { campo: 'dataFinalizacao', asc: false };
+
+function sortFinalizadas(campo) {
+  if (_sortFinalizadas.campo === campo) {
+    _sortFinalizadas.asc = !_sortFinalizadas.asc;
+  } else {
+    _sortFinalizadas = { campo, asc: true };
+  }
+  renderFinalizadas();
+}
+
+function _lucroRecebidoContratoFinalizado(contrato) {
+  return _empenhosDaDisputa(contrato.id).reduce((total, empenho) =>
+    total + (empenho.compras || [])
+      .filter(compra => compra.dpag && compra.dpag !== '')
+      .reduce((subtotal, compra) => {
+        const lucro = compra.luc !== undefined && compra.luc !== null
+          ? compra.luc
+          : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
+        return subtotal + lucro;
+      }, 0), 0);
+}
+
+function _compararContratosFinalizados(a, b) {
+  const campo = _sortFinalizadas.campo;
+  let valorA;
+  let valorB;
+
+  if (campo === 'lucroRecebido') {
+    valorA = _lucroRecebidoContratoFinalizado(a);
+    valorB = _lucroRecebidoContratoFinalizado(b);
+  } else {
+    valorA = a[campo] || '';
+    valorB = b[campo] || '';
+  }
+
+  let resultado;
+  if (campo === 'data' || campo === 'dataFinalizacao') {
+    const tempoA = valorA ? new Date(`${valorA}T12:00:00`).getTime() : Number.POSITIVE_INFINITY;
+    const tempoB = valorB ? new Date(`${valorB}T12:00:00`).getTime() : Number.POSITIVE_INFINITY;
+    resultado = tempoA - tempoB;
+  } else if (campo === 'lucroRecebido') {
+    resultado = Number(valorA || 0) - Number(valorB || 0);
+  } else {
+    resultado = String(valorA).localeCompare(String(valorB), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  if (resultado === 0) {
+    resultado = String(a.orgao || '').localeCompare(String(b.orgao || ''), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  return _sortFinalizadas.asc ? resultado : -resultado;
+}
+
+function _atualizarIndicadorFinalizadas() {
+  document.querySelectorAll('#tab-finalizadas th[id^="sort-finalizadas-"]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    th.removeAttribute('aria-sort');
+  });
+
+  const cabecalho = document.getElementById(`sort-finalizadas-${_sortFinalizadas.campo}`);
+  if (!cabecalho) return;
+  cabecalho.classList.add(_sortFinalizadas.asc ? 'sort-asc' : 'sort-desc');
+  cabecalho.setAttribute('aria-sort', _sortFinalizadas.asc ? 'ascending' : 'descending');
+}
+
 function renderFinalizadas() {
   popularFiltroMesFinalizadas();
   const q = (g('search-finalizadas')?.value || '').toLowerCase();
@@ -63,7 +137,9 @@ function renderFinalizadas() {
     }
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) || (d.processo||'').toLowerCase().includes(q) || (d.estado||'').toLowerCase().includes(q);
-  }).sort((a,b) => (b.dataFinalizacao||'').localeCompare(a.dataFinalizacao||''));
+  }).sort(_compararContratosFinalizados);
+
+  _atualizarIndicadorFinalizadas();
 
   const tb = g('tbody-finalizadas');
   if (!rows.length) {
@@ -73,12 +149,7 @@ function renderFinalizadas() {
   }
   tb.innerHTML = rows.map((r, idx) => {
     const contrato = getValorContrato(r);
-    const emps = _empenhosDaDisputa(r.id);
-    const lucroRec = emps.reduce((s,e) =>
-      s + (e.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=> {
-        const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
-        return ss+luc;
-      },0), 0);
+    const lucroRec = _lucroRecebidoContratoFinalizado(r);
     const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
     return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td class="mono" style="font-size:11px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
