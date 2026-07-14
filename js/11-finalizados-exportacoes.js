@@ -157,7 +157,7 @@ function renderFinalizadas() {
       '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';">' + (r.empresa||'—') + '</span></td>' +
       
-      '<td class="mono" style="color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
+      '<td class="mono money" style="text-align:right;color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
       '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
       '</tr>';
   }).join('');
@@ -391,7 +391,7 @@ function renderEmpFinalizados() {
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
           <td style="${zebraFinTd}"></td>
           <td style="${zebraFinTd}"></td>
-          <td class="mono" style="color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
+          <td class="mono money" style="text-align:right;color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
           <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
           </tr>`;
       }).join('');
@@ -413,7 +413,7 @@ function renderEmpFinalizados() {
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
         '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
         
-        '<td class="mono" style="color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
+        '<td class="mono money" style="text-align:right;color:var(--success);font-weight:600;">' + fmt(lucroRec) + '</td>' +
         '<td class="mono" style="font-size:11px;color:var(--text-tertiary);">' + fmtD(dpagExib) + '</td>' +
         '</tr>';
     }).join('');
