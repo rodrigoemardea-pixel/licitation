@@ -334,6 +334,38 @@ function getSorted(tab){
     } else if(c === 'pct' && tab === 'disputas') {
       va = dVals(x).pct;
       vb = dVals(y).pct;
+    } else if(c === 'valorEmpenho' && tab === 'empenhos') {
+      va = x.vem || 0;
+      vb = y.vem || 0;
+    } else if(c === 'valorCompra' && tab === 'empenhos') {
+      const totalCompra = registro => {
+        const compras = registro.compras || [];
+        return compras.length
+          ? compras.reduce((total, compra) => total + (compra.vtotal || 0), 0)
+          : eVals(registro).tot;
+      };
+      va = totalCompra(x);
+      vb = totalCompra(y);
+    } else if(c === 'lucroCompras' && tab === 'empenhos') {
+      const totalLucro = registro => {
+        const compras = registro.compras || [];
+        return compras.length
+          ? compras.reduce((total, compra) => total + (compra.luc || 0), 0)
+          : eVals(registro).luc;
+      };
+      va = totalLucro(x);
+      vb = totalLucro(y);
+    } else if(c === 'aReceber' && tab === 'empenhos') {
+      const totalAReceber = registro => {
+        const compras = registro.compras || [];
+        return compras.length
+          ? compras
+              .filter(compra => !compra.dpag || compra.dpag === '')
+              .reduce((total, compra) => total + (compra.rec || 0), 0)
+          : eVals(registro).rec;
+      };
+      va = totalAReceber(x);
+      vb = totalAReceber(y);
     } else if(c === 'lucro' && tab === 'empenhos') {
       va = eVals(x).luc;
       vb = eVals(y).luc;

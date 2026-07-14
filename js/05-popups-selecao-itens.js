@@ -667,19 +667,19 @@ function atualizarHeaderEmpenhosAgrupado() {
   if (!headerRow) return;
   if (_agrupado) {
     headerRow.innerHTML = `
-      <th style="min-width:130px;">Empenho</th>
-      <th class="money" style="min-width:130px;text-align:right;">Val. Empenho</th>
-      <th class="money" style="min-width:130px;text-align:right;">Valor Compra</th>
-      <th class="money" style="min-width:110px;text-align:right;">Lucro</th>
-      <th class="money" style="min-width:130px;text-align:right;">A Receber</th>
-      <th style="min-width:90px;text-align:center;">⏱️ Dias</th>
+      <th style="min-width:130px;" onclick="sort('empenhos','num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
+      <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorEmpenho')" id="sort-empenhos-valorEmpenho" title="Ordenar pelo valor do empenho">Val. Empenho</th>
+      <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorCompra')" id="sort-empenhos-valorCompra" title="Ordenar pelo valor das compras">Valor Compra</th>
+      <th class="money" style="min-width:110px;text-align:right;" onclick="sort('empenhos','lucroCompras')" id="sort-empenhos-lucroCompras" title="Ordenar pelo lucro">Lucro</th>
+      <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','aReceber')" id="sort-empenhos-aReceber" title="Ordenar pelo valor a receber">A Receber</th>
+      <th style="min-width:90px;text-align:center;" onclick="sort('empenhos','dias')" id="sort-empenhos-dias" title="Ordenar por dias">⏱️ Dias</th>
     `;
   } else {
     headerRow.innerHTML = `
       <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
-      <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
-      <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
-      <th>Analista</th>
+      <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
+      <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
+      <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
       <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
     `;
   }
@@ -690,7 +690,7 @@ function renderE(){
   const _btnAgr = g('btn-agrupar-orgao');
   if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
   atualizarHeaderEmpenhosAgrupado();
-  const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado).sort((a,b)=>diasSemPagamento(b)-diasSemPagamento(a));
+  const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
   if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
   if(_agrupado) { renderEAgrupado(rows, tb); sumE(); verificarAlertas(); return; }

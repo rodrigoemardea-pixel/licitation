@@ -244,18 +244,16 @@ function renderEAgrupado(rows, tb) {
     if (r.analista) grupos[org].analistas.add(r.analista);
   });
 
-  const sorted = Object.entries(grupos).sort((a, b) => {
-    const maxDiasA = a[1].empenhos.reduce((max, r) => Math.max(max, diasSemPagamento(r)), 0);
-    const maxDiasB = b[1].empenhos.reduce((max, r) => Math.max(max, diasSemPagamento(r)), 0);
-    return maxDiasB - maxDiasA;
-  });
+  // Mantém a ordem produzida por getSorted(). O primeiro empenho de cada órgão
+  // define a posição do grupo, e os registros internos preservam a mesma ordenação.
+  const sorted = Object.entries(grupos);
 
   tb.innerHTML = sorted.map(([org, grupo]) => {
     const analistasHTML = [...grupo.analistas].map(nome =>
       `<span class="badge ${_badgeClass(nome)}" style="font-size:10px;margin-left:6px;">${nome}</span>`
     ).join('');
 
-    const linhas = [...grupo.empenhos].sort((a,b)=>diasSemPagamento(b)-diasSemPagamento(a)).map((r, idx) => {
+    const linhas = grupo.empenhos.map((r, idx) => {
       const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
       const dias = diasSemPagamento(r);
       const diasBadge = dias > 0

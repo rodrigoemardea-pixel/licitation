@@ -542,10 +542,9 @@
       <table>
         <thead><tr>
           <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
-          <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num">Empenho</th>
-          <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao">Órgão</th>
-          <th>Analista</th>
-          
+          <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
+          <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
+          <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
           <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
