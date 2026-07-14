@@ -466,12 +466,12 @@
     <div class="table-wrapper" id="disputas-table-view">
       <table>
         <thead><tr>
-          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data">Data</th>
-          <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao">Órgão / UF</th>
-          <th style="min-width:80px;width:80px;">Analista</th>
-          <th class="money" style="min-width:105px;width:105px;">Vl. Contrato</th>
-          <th class="money" style="min-width:95px;width:95px;">Lucro Prev.</th>
-          <th style="min-width:80px;text-align:center;">Progresso</th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data" title="Ordenar por data">Data</th>
+          <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao" title="Ordenar por órgão">Órgão / UF</th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'analista')" id="sort-disputas-analista" title="Ordenar por analista">Analista</th>
+          <th class="money" style="min-width:105px;width:105px;" onclick="sort('disputas', 'valorContrato')" id="sort-disputas-valorContrato" title="Ordenar pelo valor do contrato">Vl. Contrato</th>
+          <th class="money" style="min-width:95px;width:95px;" onclick="sort('disputas', 'lucroPrevisto')" id="sort-disputas-lucroPrevisto" title="Ordenar pelo lucro previsto">Lucro Prev.</th>
+          <th style="min-width:80px;text-align:center;" onclick="sort('disputas', 'progresso')" id="sort-disputas-progresso" title="Ordenar pelo progresso">Progresso</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
         <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">

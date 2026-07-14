@@ -283,9 +283,14 @@ function sort(tab,col){
   // Persist sort state
   try { localStorage.setItem('_sortState', JSON.stringify({disputas: SS.disputas, empenhos: SS.empenhos})); } catch(e){}
   
-  // Atualizar indicadores visuais
+  // Atualiza o indicador visual sem remover classes existentes, como "money".
+  document.querySelectorAll(`[id^="sort-${tab}-"]`).forEach(el => {
+    el.classList.remove('sort-asc', 'sort-desc');
+    el.removeAttribute('aria-sort');
+  });
   document.querySelectorAll(`#sort-${tab}-${SS[tab].c}`).forEach(el => {
-    el.className = SS[tab].a ? 'sort-desc' : 'sort-asc';
+    el.classList.add(SS[tab].a ? 'sort-desc' : 'sort-asc');
+    el.setAttribute('aria-sort', SS[tab].a ? 'descending' : 'ascending');
   });
   
   if(tab === 'disputas') renderD(); else renderE();
@@ -297,7 +302,33 @@ function getSorted(tab){
     let va=x[c]??'',vb=y[c]??'';
     
     // Tratamento especial para valores calculados
-    if(c === 'lucro' && tab === 'disputas') {
+    if(c === 'valorContrato' && tab === 'disputas') {
+      va = getValorContrato(x);
+      vb = getValorContrato(y);
+    } else if(c === 'lucroPrevisto' && tab === 'disputas') {
+      const lucroPrevisto = registro => (registro.lotes || []).reduce((total, lote) => {
+        const qtd = lote.qtd || 0;
+        const valorVenda = qtd * (lote.vunit || 0);
+        const valorCompra = qtd * (lote.compraPrev || 0);
+        const custo = qtd * (lote.custoPrev || 0);
+        return total + valorVenda - valorCompra - custo;
+      }, 0);
+      va = lucroPrevisto(x);
+      vb = lucroPrevisto(y);
+    } else if(c === 'progresso' && tab === 'disputas') {
+      const calcularProgresso = registro => {
+        const lotes = registro.lotes || [];
+        const totalContratado = lotes.reduce((total, lote) => total + (lote.qtd || 0), 0);
+        if (totalContratado <= 0) return 0;
+        const totalEnviado = lotes.reduce(
+          (total, lote) => total + calcQtdEnviada(registro.id, lote.id),
+          0
+        );
+        return totalEnviado / totalContratado;
+      };
+      va = calcularProgresso(x);
+      vb = calcularProgresso(y);
+    } else if(c === 'lucro' && tab === 'disputas') {
       va = dVals(x).luc;
       vb = dVals(y).luc;
     } else if(c === 'pct' && tab === 'disputas') {
