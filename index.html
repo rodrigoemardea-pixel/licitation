@@ -165,14 +165,14 @@
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Data</th>
-          <th>Órgão / UF</th>
-          <th>Empresa</th>
-          <th>Tipo / Processo</th>
-          <th>Analista</th>
-          <th>Sistema</th>
-          <th>Status</th>
-          <th>⏰ Retorno</th>
+          <th id="sort-acomp-data" onclick="sortAcomp('data')" title="Ordenar por data">Data</th>
+          <th id="sort-acomp-orgao" onclick="sortAcomp('orgao')" title="Ordenar por órgão">Órgão / UF</th>
+          <th id="sort-acomp-empresa" onclick="sortAcomp('empresa')" title="Ordenar por empresa">Empresa</th>
+          <th id="sort-acomp-tipo" onclick="sortAcomp('tipo')" title="Ordenar por tipo e processo">Tipo / Processo</th>
+          <th id="sort-acomp-analista" onclick="sortAcomp('analista')" title="Ordenar por analista">Analista</th>
+          <th id="sort-acomp-sistema" onclick="sortAcomp('sistema')" title="Ordenar por sistema">Sistema</th>
+          <th id="sort-acomp-status" onclick="sortAcomp('status')" title="Ordenar por status">Status</th>
+          <th id="sort-acomp-retorno" onclick="sortAcomp('retorno')" title="Ordenar por data e hora de retorno">⏰ Retorno</th>
           <th style="width:50px;text-align:center;"></th>
         </tr></thead>
         <tbody id="tbody-acomp"></tbody>

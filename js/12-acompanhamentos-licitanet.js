@@ -240,6 +240,66 @@ function _abrirComAutoLogin(linkOriginal, creds) {
   }
 }
 
+// Ordenação da tabela de acompanhamentos.
+// A primeira seleção usa ordem crescente; novo clique na mesma coluna inverte a ordem.
+let _acompSort = { campo: 'retorno', asc: true };
+
+function sortAcomp(campo) {
+  if (_acompSort.campo === campo) {
+    _acompSort.asc = !_acompSort.asc;
+  } else {
+    _acompSort = { campo, asc: true };
+  }
+  renderAcomp();
+}
+
+function _valorOrdenacaoAcomp(registro, campo) {
+  if (campo === 'tipo') {
+    return `${registro.tipo || ''} ${registro.processo || ''}`.trim();
+  }
+  return registro[campo] || '';
+}
+
+function _compararAcomp(a, b) {
+  const campo = _acompSort.campo;
+  const valorA = _valorOrdenacaoAcomp(a, campo);
+  const valorB = _valorOrdenacaoAcomp(b, campo);
+
+  let resultado;
+  if (campo === 'data' || campo === 'retorno') {
+    const tempoA = valorA ? new Date(valorA).getTime() : Number.POSITIVE_INFINITY;
+    const tempoB = valorB ? new Date(valorB).getTime() : Number.POSITIVE_INFINITY;
+    resultado = tempoA - tempoB;
+  } else {
+    resultado = String(valorA).localeCompare(String(valorB), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  if (resultado === 0) {
+    resultado = String(a.orgao || '').localeCompare(String(b.orgao || ''), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  return _acompSort.asc ? resultado : -resultado;
+}
+
+function _atualizarIndicadorOrdenacaoAcomp() {
+  document.querySelectorAll('#tab-acompanhamentos th[id^="sort-acomp-"]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    th.removeAttribute('aria-sort');
+  });
+
+  const cabecalho = document.getElementById(`sort-acomp-${_acompSort.campo}`);
+  if (!cabecalho) return;
+
+  cabecalho.classList.add(_acompSort.asc ? 'sort-asc' : 'sort-desc');
+  cabecalho.setAttribute('aria-sort', _acompSort.asc ? 'ascending' : 'descending');
+}
+
 function renderAcomp() {
   markAllActiveFilters();
   const tb = document.getElementById('tbody-acomp'); if (!tb) return;
@@ -257,7 +317,9 @@ function renderAcomp() {
     if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
     if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
     return true;
-  }).sort((a,b) => (a.retorno||'').localeCompare(b.retorno||''));
+  }).sort(_compararAcomp);
+
+  _atualizarIndicadorOrdenacaoAcomp();
 
   if (!rows.length) {
     tb.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
