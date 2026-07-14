@@ -156,3 +156,131 @@ setTimeout(function(){var bi=document.getElementById('busca-global-input');if(bi
 })();
 
 console.log('v2 OK');
+
+// =====================================================================
+// LICITATIONBIZNIS MODERN UI 2026
+// Camada visual progressiva: nao altera regras de negocio ou persistencia.
+// =====================================================================
+(function(){
+  var pageMeta = {
+    painel: ['Painel', 'Acompanhe os principais indicadores e pendencias da operacao.'],
+    dashboard: ['Dashboard', 'Analise contratos, recebimentos, resultados e desempenho por periodo.'],
+    acompanhamentos: ['Acompanhamentos', 'Organize processos em acompanhamento, retornos e recursos.'],
+    disputas: ['Contratos ativos', 'Consulte contratos em andamento, saldos, empenhos e resultados previstos.'],
+    empenhos: ['Empenhos pendentes', 'Acompanhe compras, pagamentos pendentes e prazos de recebimento.'],
+    finalizadas: ['Contratos finalizados', 'Consulte o historico de contratos encerrados e o lucro recebido.'],
+    'emp-finalizados': ['Empenhos finalizados', 'Consulte pagamentos concluidos e resultados financeiros realizados.']
+  };
+
+  function addPageHeaders(){
+    Object.keys(pageMeta).forEach(function(key){
+      var pane = document.getElementById('tab-' + key);
+      if (!pane || pane.querySelector(':scope > .lb-page-head')) return;
+      var meta = pageMeta[key];
+      var head = document.createElement('div');
+      head.className = 'lb-page-head';
+      head.innerHTML = '<div class="lb-page-head-main">' +
+        '<h1 class="lb-page-title">' + meta[0] + '</h1>' +
+        '<p class="lb-page-subtitle">' + meta[1] + '</p>' +
+        '</div><div class="lb-page-actions" aria-label="Acoes da tela"></div>';
+      pane.insertBefore(head, pane.firstChild);
+    });
+  }
+
+  function addNavigationGroups(){
+    var tabs = document.querySelector('.tabs');
+    if (!tabs || tabs.querySelector('.lb-nav-section')) return;
+    var buttons = Array.prototype.slice.call(tabs.querySelectorAll(':scope > .tab-btn'));
+    var painel = buttons.find(function(b){ return (b.textContent || '').toLowerCase().indexOf('painel') >= 0; });
+    var acomp = buttons.find(function(b){ return (b.textContent || '').toLowerCase().indexOf('acompanhamentos') >= 0; });
+    var finalizadas = buttons.find(function(b){ return (b.textContent || '').toLowerCase().indexOf('finalizadas') >= 0; });
+    function section(label, before){
+      if (!before) return;
+      var el = document.createElement('div');
+      el.className = 'lb-nav-section';
+      el.textContent = label;
+      tabs.insertBefore(el, before);
+    }
+    section('Visao geral', painel);
+    section('Operacao', acomp);
+    section('Historico', finalizadas);
+  }
+
+  function improveSearch(){
+    var input = document.getElementById('busca-global-input');
+    if (!input) return;
+    input.placeholder = 'Pesquisar contratos, empenhos, orgaos ou processos...';
+    input.setAttribute('aria-label', 'Busca global');
+    input.setAttribute('title', 'Pesquisar em todo o sistema. Atalho: Ctrl + K');
+    var hint = document.querySelector('.busca-kbd-hint');
+    if (hint) hint.textContent = 'Ctrl K';
+  }
+
+  function improveTables(){
+    document.querySelectorAll('table').forEach(function(table){
+      table.setAttribute('role', 'table');
+      table.querySelectorAll('thead th').forEach(function(th){
+        th.setAttribute('scope', 'col');
+        if (th.onclick || th.getAttribute('onclick')) th.setAttribute('tabindex', '0');
+      });
+    });
+  }
+
+  function addKeyboardSorting(){
+    document.addEventListener('keydown', function(event){
+      var th = event.target && event.target.closest ? event.target.closest('th[onclick]') : null;
+      if (!th || (event.key !== 'Enter' && event.key !== ' ')) return;
+      event.preventDefault();
+      th.click();
+    });
+  }
+
+  function improveTooltips(){
+    document.querySelectorAll('tbody td').forEach(function(td){
+      var text = (td.textContent || '').trim().replace(/\s+/g, ' ');
+      if (text.length > 34 && !td.title) td.title = text;
+    });
+  }
+
+  function observeDynamicContent(){
+    var content = document.querySelector('.content');
+    if (!content || typeof MutationObserver === 'undefined') return;
+    var timer;
+    new MutationObserver(function(){
+      clearTimeout(timer);
+      timer = setTimeout(function(){ improveTables(); improveTooltips(); }, 80);
+    }).observe(content, { subtree:true, childList:true });
+  }
+
+  function standardizeButtons(){
+    document.querySelectorAll('.toolbar .btn').forEach(function(btn){
+      btn.setAttribute('type', btn.getAttribute('type') || 'button');
+    });
+    document.querySelectorAll('.modal-footer .btn-primary,.modal-footer .btn-success').forEach(function(btn){
+      btn.dataset.lbPrimaryAction = '1';
+    });
+  }
+
+  function enhanceEmptyStates(){
+    document.querySelectorAll('.empty-state').forEach(function(state){
+      state.setAttribute('role', 'status');
+      state.setAttribute('aria-live', 'polite');
+    });
+  }
+
+  function initModernUI(){
+    document.body.classList.add('lb-modern-ui');
+    addPageHeaders();
+    addNavigationGroups();
+    improveSearch();
+    improveTables();
+    improveTooltips();
+    standardizeButtons();
+    enhanceEmptyStates();
+    addKeyboardSorting();
+    observeDynamicContent();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initModernUI);
+  else initModernUI();
+})();
