@@ -581,11 +581,11 @@
       <table>
         <thead>
           <tr>
-            <th>Nº Empenho</th>
-            <th>Órgão</th>
-            <th>Analista</th>
-            <th>Lucro Recebido</th>
-            <th>Dt. Pagamento</th>
+            <th id="sort-emp-finalizados-num" onclick="sortEmpFinalizados('num')" title="Ordenar pelo número do empenho">Nº Empenho</th>
+            <th id="sort-emp-finalizados-orgao" onclick="sortEmpFinalizados('orgao')" title="Ordenar por órgão">Órgão</th>
+            <th id="sort-emp-finalizados-analista" onclick="sortEmpFinalizados('analista')" title="Ordenar por analista">Analista</th>
+            <th id="sort-emp-finalizados-lucroRecebido" class="money" onclick="sortEmpFinalizados('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
+            <th id="sort-emp-finalizados-dataPagamento" onclick="sortEmpFinalizados('dataPagamento')" title="Ordenar pela data de pagamento">Dt. Pagamento</th>
           </tr>
         </thead>
         <tbody id="tbody-emp-finalizados"></tbody>

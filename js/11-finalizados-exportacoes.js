@@ -254,29 +254,109 @@ function toggleAgrupamentoFin() {
   renderEmpFinalizados();
 }
 
+// Ordenação dos empenhos finalizados.
+// O padrão mantém os pagamentos mais recentes no início.
+let _sortEmpFinalizados = { campo: 'dataPagamento', asc: false };
+
+function sortEmpFinalizados(campo) {
+  if (_sortEmpFinalizados.campo === campo) {
+    _sortEmpFinalizados.asc = !_sortEmpFinalizados.asc;
+  } else {
+    _sortEmpFinalizados = { campo, asc: true };
+  }
+  renderEmpFinalizados();
+}
+
+function _dataPagamentoEmpenhoFinalizado(empenho) {
+  const datas = (empenho.compras || [])
+    .map(compra => compra.dpag || '')
+    .filter(Boolean)
+    .sort();
+  return datas.length ? datas[datas.length - 1] : '';
+}
+
+function _lucroRecebidoEmpenhoFinalizado(empenho) {
+  return (empenho.compras || [])
+    .filter(compra => compra.dpag && compra.dpag !== '')
+    .reduce((total, compra) => {
+      const lucro = compra.luc !== undefined && compra.luc !== null
+        ? compra.luc
+        : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
+      return total + lucro;
+    }, 0);
+}
+
+function _compararEmpenhosFinalizados(a, b) {
+  const campo = _sortEmpFinalizados.campo;
+  let valorA;
+  let valorB;
+
+  if (campo === 'dataPagamento') {
+    valorA = _dataPagamentoEmpenhoFinalizado(a);
+    valorB = _dataPagamentoEmpenhoFinalizado(b);
+  } else if (campo === 'lucroRecebido') {
+    valorA = _lucroRecebidoEmpenhoFinalizado(a);
+    valorB = _lucroRecebidoEmpenhoFinalizado(b);
+  } else {
+    valorA = a[campo] || '';
+    valorB = b[campo] || '';
+  }
+
+  let resultado;
+  if (campo === 'dataPagamento') {
+    const tempoA = valorA ? new Date(`${valorA}T12:00:00`).getTime() : Number.POSITIVE_INFINITY;
+    const tempoB = valorB ? new Date(`${valorB}T12:00:00`).getTime() : Number.POSITIVE_INFINITY;
+    resultado = tempoA - tempoB;
+  } else if (campo === 'lucroRecebido') {
+    resultado = Number(valorA || 0) - Number(valorB || 0);
+  } else {
+    resultado = String(valorA).localeCompare(String(valorB), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  if (resultado === 0) {
+    resultado = String(a.orgao || '').localeCompare(String(b.orgao || ''), 'pt-BR', {
+      sensitivity: 'base',
+      numeric: true
+    });
+  }
+
+  return _sortEmpFinalizados.asc ? resultado : -resultado;
+}
+
+function _atualizarIndicadorEmpFinalizados() {
+  document.querySelectorAll('#tab-emp-finalizados th[id^="sort-emp-finalizados-"]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    th.removeAttribute('aria-sort');
+  });
+
+  const cabecalho = document.getElementById(`sort-emp-finalizados-${_sortEmpFinalizados.campo}`);
+  if (!cabecalho) return;
+  cabecalho.classList.add(_sortEmpFinalizados.asc ? 'sort-asc' : 'sort-desc');
+  cabecalho.setAttribute('aria-sort', _sortEmpFinalizados.asc ? 'ascending' : 'descending');
+}
+
 function renderEmpFinalizados() {
   popularFiltroMesPagEmpFin();
   const q = (g('search-emp-finalizados')?.value || '').toLowerCase();
   const analista = g('filtro-analista-emp-fin')?.value || 'todos';
   const mesPag = g('filtro-mes-pag-emp-fin')?.value || 'todos';
 
-  // Helper: retorna a data de pagamento mais recente das compras do empenho
-  function getDataPagamento(e) {
-    const datas = (e.compras||[]).map(c => c.dpag||'').filter(d => d !== '').sort();
-    return datas.length ? datas[datas.length - 1] : '';
-  }
-
   const rows = DB.empenhos.filter(e => {
     if (!e.finalizado) return false;
     if (analista !== 'todos' && e.analista !== analista) return false;
     if (mesPag !== 'todos') {
-      const dp = getDataPagamento(e);
+      const dp = _dataPagamentoEmpenhoFinalizado(e);
       const anoMes = dp.substring(0,7);
       if (anoMes !== mesPag) return false;
     }
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
-  }).sort((a,b) => (getDataPagamento(b)||'').localeCompare(getDataPagamento(a)||''));
+  }).sort(_compararEmpenhosFinalizados);
+
+  _atualizarIndicadorEmpFinalizados();
 
   const tb = g('tbody-emp-finalizados');
   if (!tb) return;
@@ -296,18 +376,16 @@ function renderEmpFinalizados() {
       if (r.analista) grupos[org].analistas.add(r.analista);
     });
 
-    const sorted = Object.entries(grupos).sort((a,b)=>b[1].totalVem-a[1].totalVem);
+    // Preserva a ordem produzida pelo comparador selecionado no cabeçalho.
+    const sorted = Object.entries(grupos);
     tb.innerHTML = sorted.map(([org, g_]) => {
       const analistasHTML = [...g_.analistas].map(nome =>
         `<span class="badge ${_badgeClass(nome)}" style="font-size:10px;margin-left:6px;">${nome}</span>`
       ).join('');
 
       const linhasEmp = g_.empenhos.map((r, idx) => {
-        const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-          const luc=(c.luc!==undefined&&c.luc!==null)?c.luc:(c.rec||0)-(c.vtotal||0)-(c.custo||0); return ss+luc;
-        },0);
-        const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
-        const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
+        const lucroRec = _lucroRecebidoEmpenhoFinalizado(r);
+        const dpagExib = _dataPagamentoEmpenhoFinalizado(r);
         const zebraFinTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
         return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
           <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
@@ -328,12 +406,8 @@ function renderEmpFinalizados() {
     }).join('');
   } else {
     tb.innerHTML = rows.map(r => {
-      const lucroRec = (r.compras||[]).filter(c=>c.dpag&&c.dpag!=='').reduce((ss,c)=>{
-        const luc = (c.luc!==undefined&&c.luc!==null) ? c.luc : (c.rec||0)-(c.vtotal||0)-(c.custo||0);
-        return ss+luc;
-      },0);
-      const dpagDatas = (r.compras||[]).map(c=>c.dpag||'').filter(d=>d!=='').sort();
-      const dpagExib = dpagDatas.length ? dpagDatas[dpagDatas.length-1] : '';
+      const lucroRec = _lucroRecebidoEmpenhoFinalizado(r);
+      const dpagExib = _dataPagamentoEmpenhoFinalizado(r);
       return '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
         '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
         '<td style="font-size:12px;">' + (r.orgao||'—') + '</td>' +
