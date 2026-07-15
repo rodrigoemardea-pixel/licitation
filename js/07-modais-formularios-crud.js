@@ -28,7 +28,7 @@ function openModal(tab){
       if (sel) sel.disabled = true;
     }
   } else if(tab==='empenhos') {
-    toast('Para criar um empenho, abra umo contrato e clique em "+ Novo Empenho".', 'info');
+    toast('Para criar um empenho, abra um contrato e clique em "+ Novo Empenho".', 'info');
     return;
   }
   if(tab!=='empenhos-disputa') g('modal-'+tab).classList.add('open');
@@ -203,7 +203,7 @@ document.addEventListener('keydown', (e) => {
     if(activeTab.textContent.includes('Contratos')) {
       openModal('disputas');
     } else if(activeTab.textContent.includes('Empenhos')) {
-      toast('Para criar um empenho, abra umo contrato e clique em "+ Novo Empenho".', 'info');
+      toast('Para criar um empenho, abra um contrato e clique em "+ Novo Empenho".', 'info');
     }
   }
   
@@ -579,7 +579,7 @@ function delRow(tab,id){
     const disp = DB.disputas.find(r=>r.id===id);
     const empsVinculados = DB.empenhos.filter(e=>e.disputaId===id);
     const totalCompras = empsVinculados.reduce((s,e)=>s+(e.compras||[]).length,0);
-    const nome = disp ? disp.orgao : 'esto contrato';
+    const nome = disp ? disp.orgao : 'este contrato';
     titulo = `Excluir contrato`;
     icon = '⚠️';
     if(empsVinculados.length > 0) {

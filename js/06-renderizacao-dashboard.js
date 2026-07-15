@@ -450,7 +450,7 @@ function verEmpenhosDisputa(disputaId) {
   g('disp-emp-count').textContent = `${emps.length} empenho(s) vinculado(s)`;
   
   if(!emps.length) {
-    g('disp-emp-body').innerHTML = '<div class="emp-disp-empty">Nenhum empenho vinculado a esto contrato.<br><small>Clique em "+ Novo Empenho Vinculado" para adicionar.</small></div>';
+    g('disp-emp-body').innerHTML = '<div class="emp-disp-empty">Nenhum empenho vinculado a este contrato.<br><small>Clique em "+ Novo Empenho Vinculado" para adicionar.</small></div>';
     g('disp-emp-totais').innerHTML = '';
   } else {
     g('disp-emp-body').innerHTML = `
@@ -521,7 +521,7 @@ function novoEmpenhoDaDisputa() {
   if (disputaAtiva) {
     novoEmpenhoParaDisputa(disputaAtiva);
   } else {
-    toast('Selecione umo contrato primeiro.', 'error');
+    toast('Selecione um contrato primeiro.', 'error');
   }
 }
 
@@ -543,7 +543,7 @@ function populateDisputaSelect(preSelectId) {
   if (comSaldo.length === 0) {
     const opt = document.createElement('option');
     opt.disabled = true;
-    opt.textContent = '— Nenhumo contrato com saldo disponível —';
+    opt.textContent = '— Nenhum contrato com saldo disponível —';
     sel.appendChild(opt);
   }
 

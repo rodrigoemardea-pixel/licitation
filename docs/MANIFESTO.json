@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "path": "css/app.css",
+      "bytes": 57222
+    },
+    {
+      "path": "docs/PUBLICACAO.md",
+      "bytes": 1308
+    },
+    {
+      "path": "index.html",
+      "bytes": 81459
+    },
+    {
+      "path": "js/01-firebase-config.js",
+      "bytes": 922
+    },
+    {
+      "path": "js/02-core-auth-state.js",
+      "bytes": 15536
+    },
+    {
+      "path": "js/03-contratos-lotes-cache.js",
+      "bytes": 12020
+    },
+    {
+      "path": "js/04-calculos-filtros-navegacao.js",
+      "bytes": 19568
+    },
+    {
+      "path": "js/05-popups-selecao-itens.js",
+      "bytes": 54774
+    },
+    {
+      "path": "js/06-renderizacao-dashboard.js",
+      "bytes": 29103
+    },
+    {
+      "path": "js/07-modais-formularios-crud.js",
+      "bytes": 32952
+    },
+    {
+      "path": "js/08-compras.js",
+      "bytes": 11380
+    },
+    {
+      "path": "js/09-calculadora.js",
+      "bytes": 20975
+    },
+    {
+      "path": "js/10-finalizacao-busca-ui.js",
+      "bytes": 23778
+    },
+    {
+      "path": "js/11-finalizados-exportacoes.js",
+      "bytes": 29620
+    },
+    {
+      "path": "js/12-acompanhamentos-licitanet.js",
+      "bytes": 29572
+    },
+    {
+      "path": "js/13-painel-comentarios-inline.js",
+      "bytes": 28075
+    },
+    {
+      "path": "js/14-boot.js",
+      "bytes": 941
+    },
+    {
+      "path": "js/15-interface-enterprise.js",
+      "bytes": 13169
+    },
+    {
+      "path": "js/16-ui-ux-enhancements.js",
+      "bytes": 5835
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 50
+    }
+  ]
+}

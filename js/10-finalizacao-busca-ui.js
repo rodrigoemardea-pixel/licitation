@@ -2,7 +2,7 @@
 function finalizarDisputa(id) {
   const d = DB.disputas.find(x => x.id === id);
   if (!d) return;
-  _confirmarAcao({icon:'✅', titulo:'Finalizar contrato', msg:`Finalizar o contrato <strong>${d.orgao||id}</strong>?<br>Ela será movida para a aba Finalizadas.`, btnLabel:'✅ Finalizar', btnClass:'btn-success', onConfirm: () => {
+  _confirmarAcao({icon:'✅', titulo:'Finalizar contrato', msg:`Finalizar o contrato <strong>${d.orgao||id}</strong>?<br>O contrato será movido para a aba Finalizadas.`, btnLabel:'✅ Finalizar', btnClass:'btn-success', onConfirm: () => {
     d.finalizada = true; d.finalizadaAuto = false; d.dataFinalizacao = new Date().toISOString().slice(0,10);
     save('disputas', DB.disputas); renderActive(); toast('Contrato finalizado! ✅', 'success');
   }}); return;
@@ -19,7 +19,7 @@ function reabrirDisputa(id) {
   const msgCompras = totalCompras > 0
     ? `<br><span style="color:var(--warning);font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> As datas de pagamento das <strong>${totalCompras} compra(s)</strong> serão apagadas para evitar refinalização automática. Valores a receber são preservados.</span>`
     : '';
-  _confirmarAcao({icon:'↩️', titulo:'Reabrir contrato', msg:`Reabrir o contrato <strong>${d.orgao||id}</strong>?<br>Ela voltará para Contratos Ativos.${msgEmps}${msgCompras}`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => {
+  _confirmarAcao({icon:'↩️', titulo:'Reabrir contrato', msg:`Reabrir o contrato <strong>${d.orgao||id}</strong>?<br>O contrato voltará para Contratos Ativos.${msgEmps}${msgCompras}`, btnLabel:'Reabrir', btnClass:'btn-ghost', onConfirm: () => {
     d.finalizada = false; d.dataFinalizacao = null; d.finalizadaAuto = false;
     // Reabre empenhos e limpa dpag/rec das compras para quebrar o ciclo de auto-finalização
     empsFinalizados.forEach(e => {

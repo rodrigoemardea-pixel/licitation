@@ -65,7 +65,7 @@ function abrirPopupDisputa(id) {
       }).join('')}</tbody>
     </table>` : '<p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Nenhum item cadastrado.</p>';
 
-  // Todas as compras de todos os empenhos desto contrato
+  // Todas as compras de todos os empenhos deste contrato
   const todasCompras = [];
   emps.forEach(e => {
     const itensEmp = (e.itens && e.itens.length ? e.itens :
@@ -470,7 +470,7 @@ function renderD(){
     const pctProg = totalContratado > 0 ? Math.round(totalEnviado/totalContratado*100) : 0;
     const contrato = getValorContrato(r);
 
-    // ── Empenhos abertos vinculados a esto contrato ──
+    // ── Empenhos abertos vinculados a este contrato ──
     const empsAbertos = _empenhosDaDisputa(r.id).filter(e => !e.finalizado);
     const expanded = false; // sub-rows desativadas
     const _q = FLT['disputas'] || '';
@@ -521,7 +521,7 @@ function renderD(){
       '</tr>'
     );
 
-    // ── Sub-rows: empenhos abertos desto contrato ──
+    // ── Sub-rows: empenhos abertos deste contrato ──
     if (expanded && empsAbertos.length > 0) {
       // Header da seção de empenhos
       const totalVem   = empsAbertos.reduce((s,e)=>s+(e.vem||0),0);
