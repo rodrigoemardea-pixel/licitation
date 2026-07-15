@@ -374,6 +374,7 @@ function limparTodasNotificacoes() {
   if (emp30.length) _notifDismissed.add('emp30');
   _notifDismissed.add('disp-sem-emp');
   _notifDismissed.add('emp-sem-compra');
+  _notifDismissed.add('entregas-proximas');
   _salvarNotifDismissed();
   const badge = g('notif-badge');
   if (badge) badge.style.display = 'none';
@@ -414,6 +415,27 @@ function toggleNotificacoes() {
 function atualizarNotificacoes() {
   const alertas = [];
   const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const limiteEntregas = new Date(hoje);
+  limiteEntregas.setDate(limiteEntregas.getDate() + 2);
+  const entregasProximas = [];
+  DB.empenhos.filter(e => !e.finalizado).forEach(e => {
+    (e.compras || []).forEach(c => {
+      if (c.statusEntrega !== 'em_transito' || !c.dataPrevistaRecebimento) return;
+      const prevista = new Date(c.dataPrevistaRecebimento + 'T12:00:00');
+      if (prevista >= hoje && prevista <= limiteEntregas) {
+        entregasProximas.push({ empenho: e, compra: c, prevista });
+      }
+    });
+  });
+  if (entregasProximas.length && !_notifDismissed.has('entregas-proximas')) {
+    alertas.push({
+      chave: 'entregas-proximas',
+      icon: '📦',
+      msg: `${entregasProximas.length} compra(s) em trânsito com recebimento previsto até ${limiteEntregas.toLocaleDateString('pt-BR')}`,
+      onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])"
+    });
+  }
 
   const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
   const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);

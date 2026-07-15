@@ -128,3 +128,53 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
   else init();
 })();
+
+
+/* FIX: exibição dos campos logísticos criados dinamicamente no modal de compra */
+(function(){
+  'use strict';
+
+  function sincronizarCamposLogisticos(select){
+    if(!select || select.id !== 'c-status-entrega') return;
+    var status = select.value;
+    var previstaWrap = document.getElementById('c-data-prevista-wrap');
+    var previstaInput = document.getElementById('c-data-prevista-recebimento');
+    var recebimentoWrap = document.getElementById('c-data-recebimento-wrap');
+    var recebimentoInput = document.getElementById('c-data-recebimento-mercadoria');
+
+    if(previstaWrap){
+      previstaWrap.style.setProperty('display', status === 'em_transito' ? 'block' : 'none', 'important');
+    }
+    if(recebimentoWrap){
+      recebimentoWrap.style.setProperty('display', status === 'recebida' ? 'block' : 'none', 'important');
+    }
+    if(status !== 'em_transito' && previstaInput) previstaInput.value = '';
+    if(status !== 'recebida' && recebimentoInput) recebimentoInput.value = '';
+  }
+
+  document.addEventListener('change', function(event){
+    if(event.target && event.target.id === 'c-status-entrega'){
+      sincronizarCamposLogisticos(event.target);
+    }
+  }, true);
+
+  document.addEventListener('click', function(event){
+    if(event.target && event.target.id === 'c-status-entrega'){
+      sincronizarCamposLogisticos(event.target);
+    }
+  }, true);
+
+  var observer = new MutationObserver(function(){
+    var select = document.getElementById('c-status-entrega');
+    if(select) sincronizarCamposLogisticos(select);
+  });
+
+  function iniciar(){
+    observer.observe(document.body, { childList:true, subtree:true });
+    var select = document.getElementById('c-status-entrega');
+    if(select) sincronizarCamposLogisticos(select);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();
