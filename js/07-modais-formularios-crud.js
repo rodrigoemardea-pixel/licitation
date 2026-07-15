@@ -564,10 +564,14 @@ function editE(id){
 function upsert(tab, row) {
   const arr = _fullDB[tab] || [];
   const idx = arr.findIndex(r => r.id === row.id);
-  if (idx !== -1) arr[idx] = row;
-  else arr.push(row);
+  const antes = idx !== -1 ? JSON.parse(JSON.stringify(arr[idx])) : null;
+  row.atualizadoEm = new Date().toISOString();
+  row.atualizadoPor = fbAuth.currentUser?.uid || '';
+  if (idx === -1) { row.criadoEm = row.criadoEm || row.atualizadoEm; row.criadoPor = row.criadoPor || row.atualizadoPor; }
+  if (idx !== -1) arr[idx] = row; else arr.push(row);
   _fullDB[tab] = arr;
   save(tab, arr);
+  registrarAuditoria(tab, row.id, idx !== -1 ? 'alteracao' : 'criacao', antes, row);
 }
 let PDel=null;
 function delRow(tab,id){
@@ -611,15 +615,16 @@ function delRow(tab,id){
 function closeConfirm(){ PDel=null; g('modal-confirm').classList.remove('open'); const btn=g('confirm-del-btn'); if(btn) btn.onclick=confirmDel; btn && (btn.className='btn btn-danger'); btn && (btn.style.minWidth='110px'); }
 function confirmDel(){
   if(!PDel) return;
-  if(PDel.tab === 'disputas') {
-    _fullDB.empenhos = _fullDB.empenhos.filter(e => e.disputaId !== PDel.id);
-    save('empenhos', _fullDB.empenhos);
+  const tab = PDel.tab;
+  const registro = (_fullDB[tab] || []).find(r => r.id === PDel.id);
+  if (registro) {
+    registro.excluido = true;
+    registro.excluidoEm = new Date().toISOString();
+    registro.excluidoPor = fbAuth.currentUser?.uid || '';
+    save(tab, _fullDB[tab]);
+    registrarAuditoria(tab, registro.id, 'exclusao_logica', registro, null);
   }
-  _fullDB[PDel.tab] = _fullDB[PDel.tab].filter(r => r.id !== PDel.id);
-  save(PDel.tab, _fullDB[PDel.tab]);
-  closeConfirm();
-  renderActive();
-  toast('Excluído com sucesso','info');
+  closeConfirm(); renderActive(); toast('Registro movido para a lixeira','info');
 }
 
 // ========== EXCLUSÃO EM LOTE ==========
@@ -732,11 +737,9 @@ function exportXLSX(tab) {
 function exportarBackup() {
   try {
     const dados = {
-      disputas: DB.disputas,
-      empenhos: DB.empenhos,
-      initialized: true,
-      exportadoEm: new Date().toLocaleString('pt-BR'),
-      versao: '1.0'
+      disputas: _fullDB.disputas || [], empenhos: _fullDB.empenhos || [],
+      acompanhamentos: _fullDB.acomp || [], comentarios: _fullDB.comentarios || [], tarefas: _fullDB.tarefas || [],
+      initialized: true, exportadoEm: new Date().toISOString(), versao: 2
     };
     const json = JSON.stringify(dados, null, 2);
     const blob = new Blob(['\ufeff' + json], { type: 'application/json;charset=utf-8' });
@@ -763,6 +766,10 @@ function importarBackup(event) {
       if (!data.disputas || !data.empenhos) { toast('Arquivo inválido','error'); return; }
       DB.disputas = data.disputas;
       DB.empenhos = data.empenhos;
+      _fullDB.acomp = data.acompanhamentos || data.acomp || [];
+      _fullDB.comentarios = data.comentarios || [];
+      _fullDB.tarefas = data.tarefas || [];
+      save('acomp', _fullDB.acomp); save('comentarios', _fullDB.comentarios); save('tarefas', _fullDB.tarefas);
       save('disputas', DB.disputas);
       save('empenhos', DB.empenhos);
       renderAll();

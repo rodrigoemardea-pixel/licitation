@@ -18,12 +18,36 @@ let _ignorarProximoSnapshot = false;
 let _salvarTimeout = null;
 
 // Remove undefined/NaN de objetos antes de enviar ao Firestore
+function sanitizeText(value) {
+  return String(value ?? '').replace(/[<>]/g, '').replace(/\bon\w+\s*=/gi, '');
+}
+function escapeHTML(value) {
+  return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
 function sanitizeForFirestore(obj) {
   return JSON.parse(JSON.stringify(obj, (key, val) => {
     if (val === undefined) return null;
     if (typeof val === 'number' && isNaN(val)) return 0;
+    if (typeof val === 'string' && !/url|link|senha|password/i.test(key)) return sanitizeText(val);
     return val;
   }));
+}
+function registrarAuditoria(entidade, entidadeId, acao, antes, depois) {
+  // Registro local de apoio. Não cria coleções, não exige regras novas
+  // e não altera a configuração atual do Firestore.
+  try {
+    const chave = 'lb-auditoria-local';
+    const eventos = JSON.parse(localStorage.getItem(chave) || '[]');
+    eventos.push({
+      entidade, entidadeId, acao,
+      usuarioEmail: fbAuth.currentUser?.email || '',
+      dataHora: new Date().toISOString()
+    });
+    localStorage.setItem(chave, JSON.stringify(eventos.slice(-300)));
+  } catch (e) {
+    console.warn('Auditoria local não registrada:', e);
+  }
+  return Promise.resolve();
 }
 
 const save = (k, v) => {

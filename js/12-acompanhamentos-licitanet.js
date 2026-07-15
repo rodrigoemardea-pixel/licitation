@@ -187,7 +187,7 @@ function configurarLicitanet() {
   overlay.innerHTML = `
     <div style="background:var(--bg-surface-solid);border-radius:var(--radius-xl);padding:32px;max-width:420px;width:90%;box-shadow:var(--shadow-xl);">
       <div style="font-size:18px;font-weight:700;margin-bottom:20px;">Credenciais Licitanet</div>
-      <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Salve suas credenciais para login automatico ao usar "Abrir Todos". Os dados ficam apenas no seu navegador (localStorage).</p>
+      <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;">Salve suas credenciais para login automatico ao usar "Abrir Todos". O usuário permanece somente nesta sessão. A senha fica apenas na memória e é apagada ao fechar ou atualizar a página.</p>
       <div style="margin-bottom:12px;">
         <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Usuario</label>
         <input type="text" id="licitanet-cfg-user" value="${creds.user}" placeholder="Seu usuario Licitanet" style="width:100%;padding:10px 12px;border:1px solid var(--border-medium);border-radius:var(--radius-sm);font-size:13px;background:var(--bg-surface);color:var(--text-primary);">

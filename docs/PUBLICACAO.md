@@ -1,39 +1,43 @@
-# Publicação do LicitationBiznis no GitHub e na Vercel
+# Publicação da versão 4.1 no GitHub e na Vercel
 
-## Conteúdo desta entrega
+Esta entrega não exige alteração no Firebase, nas regras do Firestore ou na configuração da Vercel.
 
-A pasta contém a estrutura completa da aplicação:
+## Arquivos que devem ser publicados
 
 - `index.html`
 - `vercel.json`
-- `css/app.css`
-- `js/01-firebase-config.js` até `js/16-ui-ux-enhancements.js`
-- `docs/PUBLICACAO.md`
+- pasta `css`
+- pasta `js`
+- pasta `docs`
 
-## Substituição pelo site do GitHub
+## Como publicar
 
 1. Faça backup do repositório atual em **Code > Download ZIP**.
-2. Exclua da raiz do repositório os arquivos e pastas que serão substituídos: `index.html`, `css`, `js`, `docs` e `vercel.json`.
-3. No GitHub, clique em **Add file > Upload files**.
-4. Arraste o conteúdo interno desta pasta para a área de envio, preservando as pastas `css`, `js` e `docs`.
-5. Registre o commit.
+2. Extraia o arquivo `LicitationBiznis_v4_1_GitHub.zip`.
+3. Abra a pasta extraída.
+4. Substitua no repositório o `index.html`, o `vercel.json` e as pastas `css`, `js` e `docs`.
+5. Faça commit na branch de produção, normalmente `main`.
 6. Aguarde a implantação automática da Vercel.
+7. Atualize o sistema com `Ctrl + F5`.
 
-## Testes após a implantação
+## O que permanece inalterado
+
+- projeto Firebase atual;
+- autenticação existente;
+- documento `dados/principal`;
+- regras atuais do Firestore;
+- conexão atual entre GitHub e Vercel.
+
+## Testes recomendados
 
 - login e logout;
 - Painel e Dashboard;
-- busca global;
-- criação e edição de acompanhamentos;
-- criação e edição de contratos e lotes;
-- criação e edição de empenhos;
-- compras e cálculo de custos;
-- ordenação, filtros e paginação;
-- finalização e reabertura;
-- exportação XLSX;
-- modais, tecla Escape e navegação por teclado;
-- comportamento em celular.
-
-## Retorno rápido
-
-Se surgir algum problema, abra o painel da Vercel e promova novamente a implantação anterior, ou reverta o commit no GitHub.
+- contratos e empenhos;
+- compras e calculadora;
+- acompanhamentos;
+- filtros avançados;
+- visualizações salvas;
+- seleção de colunas;
+- checklists;
+- backup e restauração;
+- ordenação e exportação XLSX.
