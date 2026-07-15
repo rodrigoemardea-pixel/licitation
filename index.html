@@ -18,7 +18,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 </head>
-<body data-theme="light">
+<body data-theme="light" class="lb-modern-ui">
 
 <div class="login-overlay open" id="login-screen">
   <div class="login-card">
@@ -76,14 +76,17 @@
 <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-hidden')" title="Mostrar/ocultar menu">&#9776;</button>
 
 <div class="tabs">
+  <div class="lb-nav-section">Visão geral</div>
   <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
   <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
+  <div class="lb-nav-section">Operação</div>
   <button class="tab-btn" onclick="switchTab('acompanhamentos',this);renderAcomp();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Acompanhamentos <span class="tab-badge" id="badge-acomp" style="background:var(--warning);color:#000;">0</span></button>
   <button class="tab-btn" onclick="switchTab('disputas',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg> Contratos Ativos <span class="tab-badge" id="badge-disputas">0</span></button>
 
   <button class="tab-btn" onclick="switchTab('empenhos',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Empenhos Pendentes <span class="tab-badge" id="badge-empenhos">0</span></button>
-  <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizadas <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
-  <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Emp. Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
+  <div class="lb-nav-section">Histórico</div>
+  <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Contratos Finalizados <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
+  <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Empenhos Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
 
   <div class="sidebar-logout-wrap">
     <button class="sidebar-logout-btn" onclick="fazerLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</button>
@@ -115,6 +118,12 @@
   </div>
   
   <div class="tab-pane active" id="tab-painel">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Painel</h1>
+        <p class="lb-page-subtitle">Resumo operacional de contratos, empenhos, acompanhamentos e alertas.</p>
+      </div>
+    </div>
     <div id="painel-body">
       <div style="text-align:center;padding:40px;color:var(--text-tertiary);">Carregando painel...</div>
     </div>
@@ -122,6 +131,12 @@
 
   
   <div class="tab-pane" id="tab-acompanhamentos">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Acompanhamentos</h1>
+        <p class="lb-page-subtitle">Organize licitações em análise, retornos programados e recursos.</p>
+      </div>
+    </div>
     <div class="summary-row" id="sum-acomp"></div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openModal('acomp')">＋ Novo Acompanhamento</button>
@@ -182,10 +197,16 @@
 
   
   <div class="tab-pane" id="tab-dashboard">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Dashboard</h1>
+        <p class="lb-page-subtitle">Indicadores consolidados de contratos, recebimentos, lucro e desempenho.</p>
+      </div>
+    </div>
     
     
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-      <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">📊 Visão Geral</span>
+      
       <div class="filter-group">
         <label>👤 Analista:</label>
         <select id="dash-filtro-analista" onchange="atualizarDashboard()">
@@ -377,7 +398,13 @@
   </div>
 
   
-  <div class="tab-pane active" id="tab-disputas">
+  <div class="tab-pane" id="tab-disputas">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Contratos ativos</h1>
+        <p class="lb-page-subtitle">Acompanhe vigência, itens, saldos, empenhos vinculados e resultados previstos.</p>
+      </div>
+    </div>
     <div class="summary-row" id="sum-disputas"></div>
     <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
       📃 <span id="alerta-contratos-txt"></span>
@@ -492,6 +519,12 @@
 
   
   <div class="tab-pane" id="tab-empenhos">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Empenhos pendentes</h1>
+        <p class="lb-page-subtitle">Monitore compras, recebimentos, atrasos e valores ainda pendentes.</p>
+      </div>
+    </div>
     <div id="alerta-empenhos-banner" style="display:none;" class="alerta-banner" onclick="filtrarAtraso60()">
       🚨 <span id="alerta-empenhos-txt"></span> — clique para filtrar
     </div>
@@ -560,6 +593,12 @@
 
   
   <div class="tab-pane" id="tab-emp-finalizados">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Empenhos finalizados</h1>
+        <p class="lb-page-subtitle">Consulte pagamentos concluídos e resultados recebidos.</p>
+      </div>
+    </div>
     <div class="summary-row" id="sum-emp-finalizados"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="_debRenderEmpFin()"></div>
@@ -595,6 +634,12 @@
 
   
   <div class="tab-pane" id="tab-finalizadas">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Contratos finalizados</h1>
+        <p class="lb-page-subtitle">Consulte contratos encerrados e seus resultados consolidados.</p>
+      </div>
+    </div>
     <div class="summary-row" id="sum-finalizadas"></div>
     <div class="toolbar">
       <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="_debRenderFinaliz()"></div>
@@ -631,7 +676,7 @@
 </div>
 
 <div class="modal-overlay" id="modal-acomp">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="modal-header">
       <div class="modal-title" id="ttl-acomp">Novo Acompanhamento</div>
       <button class="modal-close" onclick="closeModal('acomp')">✕</button>
@@ -716,7 +761,7 @@
 </div>
 
 <div class="modal-overlay" id="modal-disputas">
-  <div class="modal">
+  <div class="modal modal-xl">
     <div class="modal-header">
       <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
       <button class="modal-close" onclick="closeModal('disputas')">✕</button>
@@ -796,7 +841,7 @@
 </div>
 
 <div class="modal-overlay" id="modal-empenhos">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="modal-header">
       <div class="modal-title" id="ttl-empenhos">Novo Empenho</div>
       <button class="modal-close" onclick="closeModal('empenhos')">✕</button>
@@ -916,7 +961,7 @@
         <button class="btn btn-primary btn-sm" onclick="novoEmpenhoDaDisputa()">+ Novo Empenho Vinculado</button>
       </div>
       <div id="disp-emp-body">
-        <div class="emp-disp-empty">Nenhum empenho vinculado a esto contrato.</div>
+        <div class="emp-disp-empty">Nenhum empenho vinculado a este contrato.</div>
       </div>
       <div style="border-top:1px solid var(--border-light); margin-top:14px; padding-top:12px; display:flex; gap:20px; flex-wrap:wrap;" id="disp-emp-totais"></div>
     </div>
@@ -1309,6 +1354,7 @@
 </div>
 
 <script src="./js/15-interface-enterprise.js"></script>
+<script src="./js/16-ui-ux-enhancements.js"></script>
 
 </body>
 </html>
