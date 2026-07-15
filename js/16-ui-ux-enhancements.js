@@ -80,7 +80,7 @@
       const key = STORAGE_PREFIX + control.id;
       try{
         const saved = sessionStorage.getItem(key);
-        if(saved !== null && ((control.tagName==='SELECT' && Array.from(control.options || []).some(o=>o.value===saved)) || control.tagName==='INPUT')) control.value=saved;
+        if(saved !== null && Array.from(control.options || []).some(o=>o.value===saved) || (saved !== null && control.tagName==='INPUT')) control.value=saved;
       }catch(_e){}
       control.addEventListener(control.tagName==='INPUT' ? 'input' : 'change', () => {
         try{ sessionStorage.setItem(key,control.value); }catch(_e){}
@@ -120,6 +120,7 @@
     syncDialogState();
 
     document.addEventListener('keydown', e => {
+      if(e.key==='Escape' && closeTopDialog()){ e.preventDefault(); return; }
       trapFocus(e);
     });
   }

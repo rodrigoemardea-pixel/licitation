@@ -392,11 +392,3 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
-
-/* v4.1 produtividade */
-.lb-advanced-panel{flex-basis:100%;display:flex;gap:7px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border-light)}
-.lb-advanced-panel[hidden]{display:none!important}.lb-view-select{min-height:36px!important;padding:5px 28px 5px 10px!important}
-.lb-column-popover{position:fixed;z-index:99999;background:#fff;border:1px solid var(--border-light);border-radius:12px;box-shadow:var(--shadow-lg);padding:10px;min-width:210px;display:grid;gap:7px}
-.lb-column-popover label{font-size:12px;display:flex;gap:8px;align-items:center}.lb-checklist{padding:14px;margin-bottom:16px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.lb-checklist h3{grid-column:1/-1;font-size:12px}.lb-checklist label{font-size:12px;display:flex;gap:8px;align-items:center}.lb-check-progress{grid-column:1/-1;height:5px;background:var(--bg-inset);border-radius:99px;overflow:hidden}.lb-check-progress span{display:block;height:100%;background:var(--success);transition:width .2s}
-.summary-row .card{cursor:pointer}@media(max-width:700px){.lb-checklist{grid-template-columns:1fr}}

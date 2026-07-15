@@ -129,6 +129,7 @@ function diasSemPagamento(r) {
 function disputaEstaFinalizada(disputaId) {
   const d = DB.disputas.find(x => x.id === disputaId);
   if (!d) return false;
+  const emps = DB.empenhos.filter(e => e.disputaId === disputaId && !e.finalizado === false);
   // Critério 1: precisa ter ao menos 1 empenho
   const todosEmpenhos = _empenhosDaDisputa(disputaId);
   if (!todosEmpenhos.length) return false;
@@ -282,7 +283,7 @@ function iniciarSemDados() {
   save('empenhos', DB.empenhos);
   document.getElementById('tela-boasvindas').style.display = 'none';
   renderActive();
-  toast('Sistema iniciado! Cadastre seu primeiro contrato.', 'info');
+  toast('Sistema iniciado! Cadastre sua primeiro contrato.', 'info');
 }
 
 // (boot movido para o final do script)

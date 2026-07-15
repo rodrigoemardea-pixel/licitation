@@ -1,43 +1,23 @@
-# Publicação da versão 4.1 no GitHub e na Vercel
+# Publicação da atualização de UI/UX
 
-Esta entrega não exige alteração no Firebase, nas regras do Firestore ou na configuração da Vercel.
+## Arquivos desta entrega
 
-## Arquivos que devem ser publicados
-
-- `index.html`
-- `vercel.json`
-- pasta `css`
-- pasta `js`
-- pasta `docs`
+- `index.html`: estrutura revisada, títulos de página, navegação agrupada e correções de marcação.
+- `css/app.css`: estilos existentes com camada final de consistência, acessibilidade e responsividade.
+- `js/16-ui-ux-enhancements.js`: foco em modais, fechamento por Escape, navegação por teclado em colunas ordenáveis, atributos ARIA e preservação de filtros durante a sessão.
+- `vercel.json`: configuração preservada.
 
 ## Como publicar
 
-1. Faça backup do repositório atual em **Code > Download ZIP**.
-2. Extraia o arquivo `LicitationBiznis_v4_1_GitHub.zip`.
-3. Abra a pasta extraída.
-4. Substitua no repositório o `index.html`, o `vercel.json` e as pastas `css`, `js` e `docs`.
-5. Faça commit na branch de produção, normalmente `main`.
-6. Aguarde a implantação automática da Vercel.
-7. Atualize o sistema com `Ctrl + F5`.
+1. Faça backup do repositório atual.
+2. Substitua o `index.html` da raiz pelo arquivo desta entrega.
+3. Substitua `css/app.css`.
+4. Adicione `js/16-ui-ux-enhancements.js` sem remover os arquivos JavaScript existentes.
+5. Preserve a pasta `js` atual e todos os arquivos `01` a `15`.
+6. Remova a pasta `Old` da publicação, caso ela não deva permanecer acessível.
+7. Faça commit e push para a branch de produção.
+8. Na Vercel, teste login, navegação, modais, filtros, ordenação, contratos, empenhos, compras, acompanhamentos, dashboard e exportação XLSX.
 
-## O que permanece inalterado
+## Observação
 
-- projeto Firebase atual;
-- autenticação existente;
-- documento `dados/principal`;
-- regras atuais do Firestore;
-- conexão atual entre GitHub e Vercel.
-
-## Testes recomendados
-
-- login e logout;
-- Painel e Dashboard;
-- contratos e empenhos;
-- compras e calculadora;
-- acompanhamentos;
-- filtros avançados;
-- visualizações salvas;
-- seleção de colunas;
-- checklists;
-- backup e restauração;
-- ordenação e exportação XLSX.
+Esta entrega não inclui os arquivos JavaScript `01` a `15`, pois eles não foram anexados. O novo arquivo `16` foi criado como uma camada complementar e não substitui a lógica de negócio existente.

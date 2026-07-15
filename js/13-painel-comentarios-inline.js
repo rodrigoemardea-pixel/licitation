@@ -202,7 +202,7 @@ function atualizarPainel() {
               <div style="font-size:10px;color:var(--text-tertiary);">${d.analista||'—'} · ${d.data?new Date(d.data+'T12:00').toLocaleDateString('pt-BR'):'—'}</div>
             </div>
             <span style="font-size:11px;color:var(--accent);font-weight:600;">${fmt(d.venda||0)}</span>
-          </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum contrato</div>'}
+          </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhumo contrato</div>'}
       </div>
       <div class="card">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">📄 Últimos Empenhos</div>

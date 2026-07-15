@@ -117,7 +117,7 @@ function calcSelecionarDisputa(id) {
 
   const listaEl = g('calc-itens-lista');
   if (!itens.length) {
-    listaEl.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum item cadastrado neste contrato.</div>';
+    listaEl.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum item cadastrado nesto contrato.</div>';
   } else {
     listaEl.innerHTML = itens.map(it =>
       `<div onclick="calcAbrirFormItem('${it.itemId}')" id="calc-item-${it.itemId}" style="padding:8px 12px;border:2px solid var(--border-light);border-radius:8px;cursor:pointer;font-size:12px;transition:all .15s;min-width:180px;flex:1;">
@@ -144,7 +144,7 @@ function abrirCalcParaLote(loteIdx) {
   const lote = lotesTemp[loteIdx];
   if (!lote) return;
 
-  // Determina o contrato sendo editado para pré-configurar a calculadora
+  // Determina o contrato sendo editada para pré-configurar a calculadora
   const disputaId = EID.disputas;
   const contrato = disputaId ? DB.disputas.find(d => d.id === disputaId) : null;
 
@@ -154,11 +154,11 @@ function abrirCalcParaLote(loteIdx) {
   // Abre a calculadora
   abrirCalculadora();
 
-  // Se tiver contrato selecionado, pré-seleciona ela e carrega o item do lote
-  if (contrato) {
+  // Se tiver contrato selecionada, pré-seleciona ela e carrega o item do lote
+  if (disputa) {
     // Pequeno delay para garantir que o modal abriu e o DOM está pronto
     setTimeout(() => {
-      calcSelecionarDisputa(contrato.id);
+      calcSelecionarDisputa(disputa.id);
       // Tenta encontrar o item correspondente ao lote pelo id
       const itemCorrespondente = calcItensDisputa.find(it => it.itemId === lote.id);
       if (itemCorrespondente) {
