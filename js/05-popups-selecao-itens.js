@@ -293,7 +293,7 @@ function abrirPopupEmpenho(id) {
 
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success)">' + fmt(compras.filter(c=>c.dpag).reduce((s,c)=>s+c.luc,0)) + '</div></div>' +
 
-      '<div class="detail-field"><div class="detail-field-label">DIAS SEM PAG.</div><div class="detail-field-value">' + (r.recebido > 0 ? '✓ PAGO' : dias + ' DIAS') + '</div></div>' +
+      '<div class="detail-field"><div class="detail-field-label">DIAS SEM PAG.</div><div class="detail-field-value">' + (function(){ const s = situacaoPrazoPagamento(r); return s.codigo === 'contando' ? dias + ' DIAS' : (s.codigo === 'pago' ? '✓ PAGO' : s.rotulo); })() + '</div></div>' +
     '</div>' +
     itensHTML +
     '<div style="margin-top:12px;">' +

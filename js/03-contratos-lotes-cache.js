@@ -93,38 +93,38 @@ function sincLoteVenda(total) {
 // ===== EXCEL =====
 
 // Dias sem recebimento (desde dcomp ou, se vazio, data mais antiga das compras)
+function situacaoPrazoPagamento(r) {
+  const compras = (r && r.compras) || [];
+  if (!compras.length) return { codigo: 'sem-compras', rotulo: 'SEM COMPRAS', dataInicio: '' };
+  if (empenhoEstaPago(r)) return { codigo: 'pago', rotulo: 'PAGO', dataInicio: '' };
+  const pendente = compras.find(c => c.statusEntrega !== 'recebida');
+  if (pendente) {
+    const rotulos = { aguardando_envio: 'AGUARDANDO ENVIO', em_transito: 'EM TRÂNSITO', nao_recebida: 'NÃO RECEBIDA' };
+    return { codigo: 'entrega-pendente', rotulo: rotulos[pendente.statusEntrega] || 'ENTREGA PENDENTE', dataInicio: '' };
+  }
+  const semData = compras.find(c => !c.dataRecebimentoMercadoria);
+  if (semData) return { codigo: 'data-pendente', rotulo: 'DATA DE RECEBIMENTO PENDENTE', dataInicio: '' };
+  const dataInicio = compras.reduce((maior, c) => c.dataRecebimentoMercadoria > maior ? c.dataRecebimentoMercadoria : maior, '');
+  return { codigo: 'contando', rotulo: '', dataInicio };
+}
+
 function diasSemPagamento(r) {
   if (r && r.id) {
     const cached = _memoCache.diasSemPag.get(r.id);
     if (cached !== undefined) return cached;
   }
-  const compras = r.compras || [];
-  let temRecebimento = false;
-  for (let i = 0; i < compras.length; i++) {
-    if (compras[i].dpag && (compras[i].rec || 0) > 0) { temRecebimento = true; break; }
-  }
-  if (temRecebimento) {
-    if (r && r.id) _memoCache.diasSemPag.set(r.id, 0);
-    return 0;
-  }
-  let dataRef = r.dcomp;
-  if (!dataRef) {
-    let menor = null;
-    for (let i = 0; i < compras.length; i++) {
-      const d = compras[i].dcompra;
-      if (d && (menor === null || d < menor)) menor = d;
-    }
-    dataRef = menor;
-  }
-  if (!dataRef) {
+  const situacao = situacaoPrazoPagamento(r);
+  if (situacao.codigo !== 'contando' || !situacao.dataInicio) {
     if (r && r.id) _memoCache.diasSemPag.set(r.id, 0);
     return 0;
   }
   const hojeMs = _memoCache.hojeMs || Date.now();
-  const dias = Math.floor((hojeMs - new Date(dataRef).getTime()) / 86400000);
+  const inicioMs = new Date(situacao.dataInicio + 'T12:00:00').getTime();
+  const dias = Math.max(0, Math.floor((hojeMs - inicioMs) / 86400000));
   if (r && r.id) _memoCache.diasSemPag.set(r.id, dias);
   return dias;
 }
+
 // Empenho pago = todos os itens têm ao menos uma compra com dpag preenchido
 function disputaEstaFinalizada(disputaId) {
   const d = DB.disputas.find(x => x.id === disputaId);

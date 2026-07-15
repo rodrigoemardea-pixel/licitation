@@ -5,6 +5,23 @@ let compraMSLuc = false;
 let compraMSRec = false;
 let compraLoteSelecionado = null;
 
+function garantirCamposLogisticaCompra() {
+  const campos = g('compra-campos');
+  if (!campos || g('c-status-entrega')) return;
+  const bloco = document.createElement('div');
+  bloco.id = 'c-logistica-entrega';
+  bloco.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0;padding:12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);';
+  bloco.innerHTML = `<div class="form-group"><label for="c-status-entrega">Status da entrega</label><select id="c-status-entrega" class="fc" onchange="atualizarCamposStatusEntrega()"><option value="aguardando_envio">Aguardando envio</option><option value="em_transito">Em trânsito</option><option value="nao_recebida">Não recebida</option><option value="recebida">Recebida</option></select></div><div class="form-group" id="c-data-recebimento-wrap" style="display:none;"><label for="c-data-recebimento-mercadoria">Data de recebimento da mercadoria</label><input type="date" id="c-data-recebimento-mercadoria" class="fc"></div>`;
+  campos.insertBefore(bloco, campos.firstChild);
+}
+function atualizarCamposStatusEntrega() {
+  const status = gv('c-status-entrega');
+  const wrap = g('c-data-recebimento-wrap');
+  const data = g('c-data-recebimento-mercadoria');
+  if (wrap) wrap.style.display = status === 'recebida' ? '' : 'none';
+  if (status !== 'recebida' && data) data.value = '';
+}
+
 function togCompra(f) {
   if(f === 'luc') { compraMSLuc = !compraMSLuc; setCompraField('luc', compraMSLuc); }
   if(f === 'rec') { compraMSRec = !compraMSRec; setCompraField('rec', compraMSRec); }
@@ -55,7 +72,10 @@ function abrirCompra(empenhoId, compraId) {
   compraMSLuc = false; compraMSRec = false;
   setCompraField('luc', false); setCompraField('rec', false);
   compraLoteSelecionado = null;
-  ['c-lote-desc','c-qtd-empenho','c-vem-item','c-qtd','c-dcompra','c-plataforma','c-link','c-vunit','c-vtotal-compra','c-custo','c-dpag','c-recebido','c-obs','c-luc-m','c-rec-m'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  garantirCamposLogisticaCompra();
+  ['c-status-entrega','c-data-recebimento-mercadoria','c-lote-desc','c-qtd-empenho','c-vem-item','c-qtd','c-dcompra','c-plataforma','c-link','c-vunit','c-vtotal-compra','c-custo','c-dpag','c-recebido','c-obs','c-luc-m','c-rec-m'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  if (g('c-status-entrega')) g('c-status-entrega').value = 'aguardando_envio';
+  atualizarCamposStatusEntrega();
   g('compra-campos').style.display = 'none';
   // Reseta painel de cálculo de custo
   const _painel = g('c-custo-calc-painel');
@@ -135,6 +155,9 @@ function selecionarCompraLote(empenhoId, itemId, dadosExist) {
   
   if(dadosExist) {
     g('c-dcompra').value = dadosExist.dcompra||'';
+    if (g('c-status-entrega')) g('c-status-entrega').value = dadosExist.statusEntrega || 'aguardando_envio';
+    if (g('c-data-recebimento-mercadoria')) g('c-data-recebimento-mercadoria').value = dadosExist.dataRecebimentoMercadoria || '';
+    atualizarCamposStatusEntrega();
     g('c-plataforma').value = dadosExist.plataforma||'';
     g('c-link').value = dadosExist.link||'';
     g('c-vunit').value = dadosExist.vunit||'';
@@ -161,6 +184,11 @@ function saveCompra() {
   const emp = DB.empenhos.find(x=>x.id===compraEmpenhoId); if(!emp) return;
   const item = (emp.itens||[]).find(i=>i.id===compraLoteSelecionado); if(!item) return;
   
+  const statusEntrega = gv('c-status-entrega') || 'aguardando_envio';
+  const dataRecebimentoMercadoria = gv('c-data-recebimento-mercadoria') || '';
+  if (statusEntrega === 'recebida' && !dataRecebimentoMercadoria) { toast('INFORME A DATA DE RECEBIMENTO DA MERCADORIA', 'error'); g('c-data-recebimento-mercadoria')?.focus(); return; }
+  const dataCompra = gv('c-dcompra') || '';
+  if (statusEntrega === 'recebida' && dataCompra && dataRecebimentoMercadoria < dataCompra) { toast('A DATA DE RECEBIMENTO NÃO PODE SER ANTERIOR À DATA DA COMPRA', 'error'); g('c-data-recebimento-mercadoria')?.focus(); return; }
   const qtdCompra = +gv('c-qtd')||1;
 
   // Valida saldo usando qtd do campo QTD EMPENHO (ITEM) visível no form
@@ -188,6 +216,8 @@ function saveCompra() {
     itemId: compraLoteSelecionado,
     qtd: +gv('c-qtd')||1,
     dcompra: gv('c-dcompra') || '',
+    statusEntrega: statusEntrega,
+    dataRecebimentoMercadoria: statusEntrega === 'recebida' ? dataRecebimentoMercadoria : '',
     plataforma: gv('c-plataforma').toUpperCase(),
     link: gv('c-link') || '',
     vunit: +gv('c-vunit')||0,
