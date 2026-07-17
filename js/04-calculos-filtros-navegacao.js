@@ -223,62 +223,14 @@ function switchTab(tab,btn){
 }
 
 // ========== PAGINATION ==========
-const PAGE_SIZE = 8;
-let _page = { disputas: 1, empenhos: 1 };
-
-function renderPagination(tab, totalRows) {
-  const container = document.getElementById('pagination-' + tab);
-  if (!container) return;
-  const total = totalRows;
-  const pages = Math.ceil(total / PAGE_SIZE);
-  if (pages <= 1) { container.style.display = 'none'; return; }
-  container.style.cssText = [
-    'display:flex',
-    'justify-content:center',
-    'align-items:center',
-    'gap:6px',
-    'width:100%',
-    'max-width:none',
-    'margin:12px auto 0',
-    'padding:10px 0',
-    'box-sizing:border-box',
-    'float:none',
-    'clear:both'
-  ].join(';');
-
-  // Mantem a paginacao na mesma posicao, inclusive na ultima pagina.
-  const pane = document.getElementById('tab-' + tab);
-  const tableWrap = pane?.querySelector('.table-wrapper, .table-wrap');
-  if (tableWrap) tableWrap.style.minHeight = '330px';
-
-  const cur = _page[tab];
-  let html = `<button class="page-btn" onclick="_goPage('${tab}',${cur-1})" ${cur===1?'disabled':''}>‹</button>`;
-  // Show window of pages
-  const from = Math.max(1, cur - 2);
-  const to   = Math.min(pages, cur + 2);
-  if (from > 1) html += `<button class="page-btn" onclick="_goPage('${tab}',1)">1</button>${from>2?'<span class="page-info">…</span>':''}`;
-  for (let p = from; p <= to; p++) {
-    html += `<button class="page-btn ${p===cur?'active':''}" onclick="_goPage('${tab}',${p})">${p}</button>`;
-  }
-  if (to < pages) html += `${to<pages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="_goPage('${tab}',${pages})">${pages}</button>`;
-  html += `<button class="page-btn" onclick="_goPage('${tab}',${cur+1})" ${cur===pages?'disabled':''}>›</button>`;
-  html += `<span class="page-info">${((cur-1)*PAGE_SIZE)+1}–${Math.min(cur*PAGE_SIZE,total)} de ${total}</span>`;
-  container.innerHTML = html;
-}
-
-function _goPage(tab, p) {
-  const pages = Math.ceil(_filteredCount(tab) / PAGE_SIZE);
-  _page[tab] = Math.max(1, Math.min(p, pages));
-  if (tab === 'disputas') renderD(); else renderE();
-  // Scroll table to top
-  const tw = document.querySelector(`#tab-${tab} .table-wrapper`);
-  if (tw) tw.scrollTop = 0;
-}
-
-function _filteredCount(tab) {
-  if (tab === 'disputas') return getSorted('disputas').filter(r => !r.finalizada && matches('disputas', r)).length;
-  return getSorted('empenhos').filter(r => matches('empenhos', r) && !r.finalizado).length;
-}
+// PAGE_SIZE unificado em 10 para todas as telas. Toda a logica de paginacao
+// vive em 18-paginacao.js (LB_paginar / LB_renderPag / renderPagination).
+// Mantemos _page como espelho de LB_PAGES apenas por compatibilidade com
+// codigo legado que le _page.disputas / _page.empenhos diretamente.
+const PAGE_SIZE = (typeof window !== 'undefined' && window.LB_PAGE_SIZE) || 10;
+let _page = (typeof window !== 'undefined' && window.LB_PAGES)
+  ? window.LB_PAGES
+  : { disputas: 1, empenhos: 1 };
 
 // Reset page when filtering
 const _origFiltrarDisputas = typeof filtrarDisputas !== 'undefined' ? filtrarDisputas : null;

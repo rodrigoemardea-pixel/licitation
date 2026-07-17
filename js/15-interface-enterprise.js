@@ -29,26 +29,18 @@ function validarIntegridade(sil){
 // Override renderD: progress bar column
 /* override renderD removido - progresso inline */
 
-// Override renderE: pagination
+// Override renderE: paginacao unificada em 18-paginacao.js.
+// Este override foi removido para evitar dupla paginacao (o proprio 05 ja pagina).
+// Mantido apenas o reset de pagina ao aplicar filtros.
 (function(){
-  var orig=renderE;
-  renderE=function(){
-    orig();
-    // Na visão agrupada, renderE já pagina os empenhos antes de criar os cabeçalhos dos órgãos.
-    // Evita contar cabeçalhos de grupo como se fossem registros.
-    if(typeof _agrupado !== 'undefined' && _agrupado)return;
-    var tb=document.getElementById('tbody-empenhos');if(!tb)return;
-    if(!document.getElementById('pagination-empenhos')){var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';tb.closest('.tab-pane').appendChild(d);}
-    var pag=document.getElementById('pagination-empenhos');if(pag)pag.style.cssText='justify-content:center;align-items:center;width:100%;margin:12px auto 0;padding:10px 0;';
-    var wrap=tb.closest('.table-wrapper, .table-wrap');if(wrap)wrap.style.minHeight='330px';
-    var rows=tb.querySelectorAll(':scope > tr');
-    if(rows.length<=PAGE_SIZE){renderPagination('empenhos',rows.length);return;}
-    var tp=Math.ceil(rows.length/PAGE_SIZE);if(_page.empenhos>tp)_page.empenhos=1;
-    var s=(_page.empenhos-1)*PAGE_SIZE;
-    rows.forEach(function(tr,i){tr.style.display=(i>=s&&i<s+PAGE_SIZE)?'':'none';});
-    renderPagination('empenhos',rows.length);
-  };
-  var origF=filtrarEmpenhos;filtrarEmpenhos=function(){_page.empenhos=1;origF();};
+  if(typeof filtrarEmpenhos === 'function'){
+    var origF = filtrarEmpenhos;
+    filtrarEmpenhos = function(){
+      if(typeof LB_resetPag === 'function') LB_resetPag('empenhos');
+      else if(typeof _page !== 'undefined' && _page) _page.empenhos = 1;
+      origF();
+    };
+  }
 })();
 
 // Override atualizarDashboard: comparison selectors

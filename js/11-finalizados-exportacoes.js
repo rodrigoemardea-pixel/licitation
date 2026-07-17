@@ -123,21 +123,7 @@ function _atualizarIndicadorFinalizadas() {
   cabecalho.setAttribute('aria-sort', _sortFinalizadas.asc ? 'ascending' : 'descending');
 }
 
-let _paginaFinalizadas = 1;
-let _paginaEmpFinalizados = 1;
-function _pagHistorico(tab,total,pagina,callback){
-  const id=tab==='finalizadas'?'tbody-finalizadas':'tbody-emp-finalizados';
-  const tb=document.getElementById(id);if(!tb)return;
-  let box=document.getElementById('pagination-'+tab+'-padrao');
-  if(!box){box=document.createElement('div');box.id='pagination-'+tab+'-padrao';box.className='pagination';const w=tb.closest('.table-wrapper, .table-wrap');if(w?.parentNode)w.parentNode.insertBefore(box,w.nextSibling);}
-  const w=tb.closest('.table-wrapper, .table-wrap');if(w)w.style.minHeight='330px';
-  const pags=Math.ceil(total/PAGE_SIZE);if(pags<=1){box.style.display='none';box.innerHTML='';return;}
-  box.style.cssText='display:flex;justify-content:center;align-items:center;width:100%;margin:12px auto 0;padding:10px 0;';
-  let h=`<button class="page-btn" data-p="${pagina-1}" ${pagina===1?'disabled':''}>‹</button>`;
-  for(let n=1;n<=pags;n++)h+=`<button class="page-btn ${n===pagina?'active':''}" data-p="${n}">${n}</button>`;
-  h+=`<button class="page-btn" data-p="${pagina+1}" ${pagina===pags?'disabled':''}>›</button><span class="page-info">${(pagina-1)*PAGE_SIZE+1}-${Math.min(pagina*PAGE_SIZE,total)} de ${total}</span>`;
-  box.innerHTML=h;box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>callback(Number(b.dataset.p)));
-}
+// Paginacao unificada em 18-paginacao.js (LB_paginar / LB_renderPag).
 
 function renderFinalizadas() {
   popularFiltroMesFinalizadas();
@@ -154,11 +140,10 @@ function renderFinalizadas() {
     if (!q) return true;
     return (d.orgao||'').toLowerCase().includes(q) || (d.processo||'').toLowerCase().includes(q) || (d.estado||'').toLowerCase().includes(q);
   }).sort(_compararContratosFinalizados);
-  const todasFinalizadas=rows;
-  const pagsFin=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
-  _paginaFinalizadas=Math.max(1,Math.min(_paginaFinalizadas,pagsFin));
-  rows=rows.slice((_paginaFinalizadas-1)*PAGE_SIZE,_paginaFinalizadas*PAGE_SIZE);
-  _pagHistorico('finalizadas',todasFinalizadas.length,_paginaFinalizadas,p=>{_paginaFinalizadas=p;renderFinalizadas();});
+  const todasFinalizadas = rows;
+  const _pageFin = LB_paginar(rows, 'finalizadas');
+  rows = _pageFin.itens;
+  LB_renderPag('finalizadas', todasFinalizadas.length, function(){ renderFinalizadas(); });
 
   _atualizarIndicadorFinalizadas();
 
@@ -376,11 +361,10 @@ function renderEmpFinalizados() {
     if (!q) return true;
     return (e.num||'').toLowerCase().includes(q) || (e.orgao||'').toLowerCase().includes(q);
   }).sort(_compararEmpenhosFinalizados);
-  const todosEmpFinalizados=rows;
-  const pagsEmpFin=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
-  _paginaEmpFinalizados=Math.max(1,Math.min(_paginaEmpFinalizados,pagsEmpFin));
-  rows=rows.slice((_paginaEmpFinalizados-1)*PAGE_SIZE,_paginaEmpFinalizados*PAGE_SIZE);
-  _pagHistorico('emp-finalizados',todosEmpFinalizados.length,_paginaEmpFinalizados,p=>{_paginaEmpFinalizados=p;renderEmpFinalizados();});
+  const todosEmpFinalizados = rows;
+  const _pageEmp = LB_paginar(rows, 'emp-finalizados');
+  rows = _pageEmp.itens;
+  LB_renderPag('emp-finalizados', todosEmpFinalizados.length, function(){ renderEmpFinalizados(); });
 
   _atualizarIndicadorEmpFinalizados();
 

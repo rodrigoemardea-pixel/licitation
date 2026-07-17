@@ -29,7 +29,8 @@
 /* LB_SAFE_UI_ENHANCEMENTS_20260717 */
 (function(){
  'use strict';
- var LIMIT=10, pages={acompanhamentos:1,finalizadas:1,'emp-finalizados':1};
+ // Paginacao unificada em 18-paginacao.js. Este modulo cuida apenas dos
+ // estilos, do bloco "outros empenhos" e da vinculacao aos popups.
  function styles(){
   if(document.getElementById('lb-safe-ui-style'))return;
   var el=document.createElement('style');el.id='lb-safe-ui-style';
@@ -41,22 +42,7 @@
    .lb-related-title{font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:7px}.lb-related-list{display:flex;flex-wrap:wrap;gap:6px}
   `;document.head.appendChild(el);
  }
- function pager(tab,tbodyId){
-  var tb=document.getElementById(tbodyId);if(!tb)return;
-  var rows=[].slice.call(tb.querySelectorAll(':scope > tr'));
-  var id='pagination-'+tab, box=document.getElementById(id);
-  if(!box){box=document.createElement('div');box.id=id;box.className='pagination';var pane=tb.closest('.tab-pane');if(pane)pane.appendChild(box);}
-  if(!rows.length||(rows.length===1&&rows[0].querySelector('.empty-state'))){box.style.display='none';return;}
-  var total=Math.ceil(rows.length/LIMIT)||1;if(pages[tab]>total)pages[tab]=1;
-  var cur=pages[tab],start=(cur-1)*LIMIT;
-  rows.forEach(function(row,i){row.style.display=i>=start&&i<start+LIMIT?'':'none';});
-  if(total<=1){box.style.display='none';return;}
-  box.style.display='flex';var html='<button class="page-btn" data-p="'+(cur-1)+'" '+(cur===1?'disabled':'')+'>‹</button>';
-  for(var n=1;n<=total;n++)html+='<button class="page-btn '+(n===cur?'active':'')+'" data-p="'+n+'">'+n+'</button>';
-  html+='<button class="page-btn" data-p="'+(cur+1)+'" '+(cur===total?'disabled':'')+'>›</button><span class="page-info">'+(start+1)+'-'+Math.min(start+LIMIT,rows.length)+' de '+rows.length+'</span>';
-  box.innerHTML=html;box.querySelectorAll('[data-p]').forEach(function(btn){btn.onclick=function(){pages[tab]=Math.max(1,Math.min(total,+btn.dataset.p||1));pager(tab,tbodyId);};});
- }
- function wrapRender(name,tab,tbody){var original=window[name];if(typeof original!=='function')return;window[name]=function(){var result=original.apply(this,arguments);pager(tab,tbody);return result;};}
+ // Funcoes pager e wrapRender removidas. A paginacao vem de 18-paginacao.js.
  function addRelated(id){
   var body=document.getElementById('popup-e-body');
   if(!body)return;
@@ -109,6 +95,6 @@
   wrapped._lbRelatedWrapped=true;
   window.abrirPopupEmpenho=wrapped;
  }
- function init(){styles();wrapRender('renderAcomp','acompanhamentos','tbody-acomp');wrapRender('renderFinalizadas','finalizadas','tbody-finalizadas');wrapRender('renderEmpFinalizados','emp-finalizados','tbody-emp-finalizados');wrapPopup();}
+ function init(){styles();wrapPopup();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

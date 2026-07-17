@@ -300,25 +300,7 @@ function _atualizarIndicadorOrdenacaoAcomp() {
   cabecalho.setAttribute('aria-sort', _acompSort.asc ? 'ascending' : 'descending');
 }
 
-let _paginaAcomp = 1;
-const _itensPorPaginaAcomp = 8;
-function irPaginaAcomp(p) { _paginaAcomp = p; renderAcomp(); }
-function renderPaginacaoAcomp(total) {
-  const tb=document.getElementById('tbody-acomp'); if(!tb)return;
-  const pane=document.getElementById('tab-acompanhamentos');
-  const wrap=tb.closest('.table-wrap')||tb.closest('.table-wrapper');
-  if(pane) pane.style.minHeight='calc(100vh - 92px)';
-  if(wrap) wrap.style.minHeight='330px';
-  let box=document.getElementById('pagination-acomp-inline');
-  if(!box){box=document.createElement('div');box.id='pagination-acomp-inline';box.className='pagination';const w=tb.closest('.table-wrap')||tb.closest('.table-wrapper');if(w?.parentNode)w.parentNode.insertBefore(box,w.nextSibling);}
-  box.style.cssText='display:flex;justify-content:center;align-items:center;width:100%;margin:12px auto 0;padding:10px 0;';
-  const pags=Math.ceil(total/_itensPorPaginaAcomp);
-  if(pags<=1){box.style.display='none';box.innerHTML='';return;}
-  _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pags));box.style.display='flex';
-  let h=`<button class="page-btn" onclick="irPaginaAcomp(${_paginaAcomp-1})" ${_paginaAcomp===1?'disabled':''}>‹</button>`;
-  for(let n=1;n<=pags;n++)h+=`<button class="page-btn ${n===_paginaAcomp?'active':''}" onclick="irPaginaAcomp(${n})">${n}</button>`;
-  h+=`<button class="page-btn" onclick="irPaginaAcomp(${_paginaAcomp+1})" ${_paginaAcomp===pags?'disabled':''}>›</button><span class="page-info">${(_paginaAcomp-1)*8+1}-${Math.min(_paginaAcomp*8,total)} de ${total}</span>`;box.innerHTML=h;
-}
+// Paginacao unificada em 18-paginacao.js (LB_paginar / LB_renderPag).
 
 function renderAcomp() {
   markAllActiveFilters();
@@ -339,10 +321,9 @@ function renderAcomp() {
     return true;
   }).sort(_compararAcomp);
 
-  const totalRowsAcomp=rows.length;
-  const pagsAcomp=Math.max(1,Math.ceil(totalRowsAcomp/_itensPorPaginaAcomp));
-  _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pagsAcomp));
-  rows=rows.slice((_paginaAcomp-1)*_itensPorPaginaAcomp,_paginaAcomp*_itensPorPaginaAcomp);
+  const totalRowsAcomp = rows.length;
+  const _pageAcomp = LB_paginar(rows, 'acompanhamentos');
+  rows = _pageAcomp.itens;
 
   _atualizarIndicadorOrdenacaoAcomp();
 
@@ -373,7 +354,7 @@ function renderAcomp() {
       <td style="text-align:center;${zebraTd}" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:15px;color:var(--text-tertiary);" title="Excluir" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-tertiary)'">🗑</button></td>
     </tr>`;
   }).join('');
-  renderPaginacaoAcomp(totalRowsAcomp);
+  LB_renderPag('acompanhamentos', totalRowsAcomp, function(){ renderAcomp(); });
 
   const pendentes = (DB.acomp||[]).filter(r=>r.status==='pendente').length;
   const recursos = (DB.acomp||[]).filter(r=>r.status==='recurso').length;
