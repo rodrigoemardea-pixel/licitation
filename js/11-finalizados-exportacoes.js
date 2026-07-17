@@ -172,9 +172,9 @@ function renderFinalizadas() {
     const contrato = getValorContrato(r);
     const lucroRec = _lucroRecebidoContratoFinalizado(r);
     const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
-    return '<tr style="cursor:pointer;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
-      '<td class="mono" style="font-size:11px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
-      '<td style="' + zebraTd + '"><div style="font-weight:600;font-size:13px;">' + (r.orgao||'—') + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
+    return '<tr class="lb-standard-data-row" style="cursor:pointer;height:36px;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+      '<td class="mono" style="font-size:11px;padding-top:5px;padding-bottom:5px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
+      '<td style="padding-top:5px;padding-bottom:5px;' + zebraTd + '"><div style="display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;"><span style="font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis;">' + (r.orgao||'—') + '</span><span class="estado-badge" style="font-size:9px;flex:0 0 auto;">' + (r.estado||'—') + '</span></div></td>' +
       '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';">' + (r.empresa||'—') + '</span></td>' +
       
