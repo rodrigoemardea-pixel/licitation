@@ -428,107 +428,95 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 }
 
 /* ========================================================================== */
-/* AJUSTE VISUAL DE CONSISTENCIA ENTRE AS TELAS OPERACIONAIS                  */
-/* Referencia: tabela de Contratos Ativos                                     */
+/* EMPENHOS PENDENTES - ALINHAMENTO IDENTICO A CONTRATOS ATIVOS               */
+/* Ajuste exclusivamente visual de largura, alinhamento e tipografia.          */
 /* ========================================================================== */
 
-/* Tipografia e cor uniformes nas cinco tabelas */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-  padding:0 10px!important;
+/* Impede que o navegador distribua as colunas por todo o espaco disponivel. */
+#tab-empenhos .table-wrapper > table{
+  table-layout:fixed!important;
+  width:100%!important;
+}
+
+/* Larguras proporcionais equivalentes ao posicionamento de Contratos Ativos. */
+#tab-empenhos .table-wrapper > table thead th:nth-child(1),
+#tab-empenhos .table-wrapper > table tbody td:nth-child(1){
+  width:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  padding-left:10px!important;
+  padding-right:4px!important;
+  text-align:left!important;
+}
+#tab-empenhos .table-wrapper > table thead th:nth-child(2),
+#tab-empenhos .table-wrapper > table tbody td:nth-child(2){
+  width:70px!important;
+  min-width:70px!important;
+  max-width:70px!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  text-align:left!important;
+}
+#tab-empenhos .table-wrapper > table thead th:nth-child(3),
+#tab-empenhos .table-wrapper > table tbody td:nth-child(3){
+  width:auto!important;
+  min-width:0!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  text-align:left!important;
+}
+#tab-empenhos .table-wrapper > table thead th:nth-child(4),
+#tab-empenhos .table-wrapper > table tbody td:nth-child(4){
+  width:150px!important;
+  min-width:150px!important;
+  max-width:150px!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  text-align:left!important;
+}
+#tab-empenhos .table-wrapper > table thead th:nth-child(5),
+#tab-empenhos .table-wrapper > table tbody td:nth-child(5){
+  width:110px!important;
+  min-width:110px!important;
+  max-width:110px!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  text-align:center!important;
+}
+
+/* Nome do orgao com a mesma cor, fonte, peso e alinhamento de Contratos Ativos. */
+#tab-empenhos #tbody-empenhos > tr > td:nth-child(3){
+  color:#455468!important;
+  font-family:var(--font-sans)!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  line-height:36px!important;
+  text-align:left!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+/* Numero do empenho segue a mesma base visual da coluna Data em Contratos Ativos. */
+#tab-empenhos #tbody-empenhos > tr > td:nth-child(2){
   color:#455468!important;
   font-family:var(--font-sans)!important;
   font-size:12px!important;
   font-weight:400!important;
   line-height:36px!important;
-  vertical-align:middle!important;
+  text-align:left!important;
 }
 
-/* Elementos internos nao podem aumentar a altura da linha */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td > :is(div,span,a,button){
-  margin-top:0!important;
-  margin-bottom:0!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
+/* Cabecalhos alinhados exatamente com as celulas correspondentes. */
+#tab-empenhos .table-wrapper > table thead th{
+  text-align:left!important;
+}
+#tab-empenhos .table-wrapper > table thead th:nth-child(5){
+  text-align:center!important;
 }
 
-/* Campos principais com o mesmo peso visual do nome do orgao em Contratos Ativos */
-#tab-disputas #tbody-disputas td:nth-child(2) span:first-child,
-#tab-acompanhamentos #tbody-acomp td:nth-child(2) span:first-child,
-#tab-empenhos #tbody-empenhos td:nth-child(2),
-#tab-finalizadas #tbody-finalizadas td:nth-child(2) span:first-child,
-#tab-emp-finalizados #tbody-emp-finalizados td:nth-child(2){
-  color:#455468!important;
-  font-family:var(--font-sans)!important;
-  font-size:12px!important;
-  font-weight:600!important;
-}
-
-/* Numeros e datas mantem alinhamento, mas usam a mesma familia e cor */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td.mono,
-#tab-emp-finalizados #tbody-emp-finalizados td:first-child,
-#tab-empenhos #tbody-empenhos td:nth-child(2){
-  color:#455468!important;
-  font-family:var(--font-sans)!important;
-  font-size:12px!important;
-  font-weight:600!important;
-}
-
-/* Acompanhamentos: remove qualquer fundo vermelho de retorno vencido */
-#tab-acompanhamentos #tbody-acomp > tr > td{
-  background:var(--bg-surface-solid)!important;
-}
-#tab-acompanhamentos #tbody-acomp > tr:nth-child(even) > td{
-  background:#fbfcfd!important;
-}
-#tab-acompanhamentos #tbody-acomp > tr:hover > td{
-  background:var(--lb-hover)!important;
-}
-
-/* Acompanhamentos: altura rigorosamente igual a Contratos Ativos */
-#tab-acompanhamentos #tbody-acomp > tr,
-#tab-acompanhamentos #tbody-acomp > tr > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-}
-#tab-acompanhamentos #tbody-acomp .badge,
-#tab-acompanhamentos #tbody-acomp .estado-badge{
-  min-height:0!important;
-  height:auto!important;
-  padding:2px 7px!important;
-  line-height:1.2!important;
-  font-size:9px!important;
-}
-#tab-acompanhamentos #tbody-acomp button:not(.action-dropdown-btn){
-  min-height:0!important;
-  height:auto!important;
-  padding-top:0!important;
-  padding-bottom:0!important;
-}
-
-/* Empenhos pendentes e finalizados: mesma cor e peso de Contratos Ativos */
-#tab-empenhos #tbody-empenhos > tr > td,
-#tab-emp-finalizados #tbody-emp-finalizados > tr > td{
-  color:#455468!important;
-  font-family:var(--font-sans)!important;
-  font-size:12px!important;
-}
-#tab-empenhos #tbody-empenhos > tr > td.hi,
-#tab-emp-finalizados #tbody-emp-finalizados > tr > td.hi{
-  color:#455468!important;
-  font-weight:600!important;
-}
-
-/* Mantem apenas as cores semanticas dos badges e valores financeiros */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .badge,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .estado-badge,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .status-pago,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .status-pendente{
-  font-family:var(--font-sans)!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) td.money{
-  font-family:var(--font-mono)!important;
+/* Checkboxes ficam alinhados a esquerda, sem deslocar as demais colunas. */
+#tab-empenhos .table-wrapper input[type="checkbox"]{
+  display:block!important;
+  margin:0!important;
 }
