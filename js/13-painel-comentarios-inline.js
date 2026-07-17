@@ -272,7 +272,6 @@ function renderEAgrupado(rows, tb) {
         : vals.rec;
 
       return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
-        <td onclick="event.stopPropagation()" style="text-align:center;${zebraTd}"><input type="checkbox" class="chk-row-empenhos" data-id="${r.id}" onchange="onRowCheck('empenhos')" style="cursor:pointer;width:15px;height:15px;"></td>
         <td class="mono hi" style="font-size:11px;font-weight:700;padding-left:20px;${zebraTd}">${r.num || '—'}</td>
         <td class="mono" style="text-align:right;color:var(--accent);font-weight:700;${zebraTd}">${fmt(r.vem)}</td>
         <td class="mono" style="text-align:right;color:var(--text-secondary);font-size:11px;${zebraTd}">${valorCompra > 0 ? fmt(valorCompra) : '—'}</td>
@@ -283,7 +282,7 @@ function renderEAgrupado(rows, tb) {
     }).join('');
 
     return `<tr style="background:var(--bg-inset);">
-        <td colspan="7" style="padding:8px 12px;">
+        <td colspan="6" style="padding:8px 12px;">
           <div style="display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;flex-wrap:wrap;">
             <span>🏢 ${org}${analistasHTML}</span>
             <span style="font-size:11px;color:var(--text-tertiary);">${grupo.empenhos.length} empenho(s)</span>
