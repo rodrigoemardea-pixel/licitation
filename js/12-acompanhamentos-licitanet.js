@@ -311,7 +311,7 @@ function renderPaginacaoAcomp(total) {
   if(wrap) wrap.style.minHeight='330px';
   let box=document.getElementById('pagination-acomp-inline');
   if(!box){box=document.createElement('div');box.id='pagination-acomp-inline';box.className='pagination';const w=tb.closest('.table-wrap')||tb.closest('.table-wrapper');if(w?.parentNode)w.parentNode.insertBefore(box,w.nextSibling);}
-  box.style.cssText='margin-top:auto;padding-top:10px;position:sticky;bottom:0;z-index:8;background:var(--bg-page);justify-content:center;';
+  box.style.cssText='display:flex;justify-content:center;align-items:center;width:100%;margin:12px auto 0;padding:10px 0;';
   const pags=Math.ceil(total/_itensPorPaginaAcomp);
   if(pags<=1){box.style.display='none';box.innerHTML='';return;}
   _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pags));box.style.display='flex';

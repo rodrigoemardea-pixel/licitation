@@ -39,6 +39,8 @@ function validarIntegridade(sil){
     if(typeof _agrupado !== 'undefined' && _agrupado)return;
     var tb=document.getElementById('tbody-empenhos');if(!tb)return;
     if(!document.getElementById('pagination-empenhos')){var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';tb.closest('.tab-pane').appendChild(d);}
+    var pag=document.getElementById('pagination-empenhos');if(pag)pag.style.cssText='justify-content:center;align-items:center;width:100%;margin:12px auto 0;padding:10px 0;';
+    var wrap=tb.closest('.table-wrapper, .table-wrap');if(wrap)wrap.style.minHeight='330px';
     var rows=tb.querySelectorAll(':scope > tr');
     if(rows.length<=PAGE_SIZE){renderPagination('empenhos',rows.length);return;}
     var tp=Math.ceil(rows.length/PAGE_SIZE);if(_page.empenhos>tp)_page.empenhos=1;
