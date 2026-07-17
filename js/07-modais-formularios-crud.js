@@ -692,7 +692,6 @@ function exportCSV(tab){
 function exportXLSX(tab) {
   if (typeof XLSX === 'undefined') { exportCSV(tab); return; }
 
-  // Na tela de empenhos, exporta somente os registros previamente selecionados.
   if (tab === 'empenhos') {
     const idsSelecionados = Array.from(
       document.querySelectorAll('.chk-row-empenhos:checked')
@@ -714,23 +713,24 @@ function exportXLSX(tab) {
       'Valor do Empenho',
       'Valor da Compra',
       'Custo',
-      'Lucro a Receber'
+      'Lucro a Receber',
+      'Valor a Receber'
     ];
 
     const linhas = empenhosSelecionados.map(r => {
       const compras = r.compras || [];
-      const valorCompra = compras.reduce((total, compra) =>
-        total + (compra.vtotal || 0), 0);
-      const custo = compras.reduce((total, compra) =>
-        total + (compra.custo || 0), 0);
-      const lucroAReceber = compras
-        .filter(compra => !compra.dpag || compra.dpag === '')
-        .reduce((total, compra) => {
-          const lucro = compra.luc !== undefined && compra.luc !== null
-            ? compra.luc
-            : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
-          return total + lucro;
-        }, 0);
+      const comprasPendentes = compras.filter(compra => !compra.dpag || compra.dpag === '');
+      const valorCompra = compras.reduce((total, compra) => total + (compra.vtotal || 0), 0);
+      const custo = compras.reduce((total, compra) => total + (compra.custo || 0), 0);
+      const lucroAReceber = comprasPendentes.reduce((total, compra) => {
+        const lucro = compra.luc !== undefined && compra.luc !== null
+          ? compra.luc
+          : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
+        return total + lucro;
+      }, 0);
+      const valorAReceber = comprasPendentes.reduce(
+        (total, compra) => total + (compra.rec || 0), 0
+      );
 
       return [
         r.orgao || '',
@@ -738,38 +738,52 @@ function exportXLSX(tab) {
         r.vem || 0,
         valorCompra,
         custo,
-        lucroAReceber
+        lucroAReceber,
+        valorAReceber
       ];
     });
 
-    const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...linhas]);
+    const linhaTotais = [
+      'TOTAL',
+      '',
+      linhas.reduce((soma, linha) => soma + (linha[2] || 0), 0),
+      linhas.reduce((soma, linha) => soma + (linha[3] || 0), 0),
+      linhas.reduce((soma, linha) => soma + (linha[4] || 0), 0),
+      linhas.reduce((soma, linha) => soma + (linha[5] || 0), 0),
+      linhas.reduce((soma, linha) => soma + (linha[6] || 0), 0)
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...linhas, linhaTotais]);
     ws['!cols'] = [
-      { wch: 35 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 16 },
-      { wch: 22 }
+      { wch: 35 }, { wch: 20 }, { wch: 20 }, { wch: 20 },
+      { wch: 16 }, { wch: 22 }, { wch: 22 }
     ];
 
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let C = range.s.c; C <= range.e.c; C++) {
       const cell = ws[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (cell) {
-        cell.s = {
-          font: { bold: true },
-          fill: { fgColor: { rgb: 'EEF2F6' } },
-          alignment: { horizontal: 'center', vertical: 'center' }
-        };
-      }
+      if (cell) cell.s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: 'EEF2F6' } },
+        alignment: { horizontal: 'center', vertical: 'center' }
+      };
     }
 
-    // Formata as quatro colunas financeiras como moeda no Excel.
     for (let R = 1; R <= range.e.r; R++) {
-      for (let C = 2; C <= 5; C++) {
+      for (let C = 2; C <= 6; C++) {
         const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
         if (cell) cell.z = 'R$ #,##0.00';
       }
+    }
+
+    const totalRow = range.e.r;
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const cell = ws[XLSX.utils.encode_cell({ r: totalRow, c: C })];
+      if (cell) cell.s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: 'D9EAD3' } },
+        alignment: { horizontal: C < 2 ? 'left' : 'right', vertical: 'center' }
+      };
     }
 
     const wb = XLSX.utils.book_new();
@@ -779,7 +793,6 @@ function exportXLSX(tab) {
     return;
   }
 
-  // Mantém inalterada a exportação dos contratos.
   const H = {
     disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação']
   };
