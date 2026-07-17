@@ -25,189 +25,50 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-/* LICITATIONBIZNIS: paginacao segura, linhas compactas e navegacao entre empenhos */
+
+/* LB_SAFE_UI_ENHANCEMENTS_20260717 */
 (function(){
-  'use strict';
-
-  var LIMITE_POR_PAGINA = 10;
-  var paginas = {
-    acompanhamentos: 1,
-    finalizadas: 1,
-    'emp-finalizados': 1
-  };
-
-  function instalarEstilosCompactos(){
-    if(document.getElementById('lb-compact-pages-style')) return;
-    var style = document.createElement('style');
-    style.id = 'lb-compact-pages-style';
-    style.textContent = `
-      #tab-acompanhamentos tbody td,
-      #tab-disputas tbody td,
-      #tab-finalizadas tbody td,
-      #tab-emp-finalizados tbody td {
-        padding-top: 5px !important;
-        padding-bottom: 5px !important;
-        line-height: 1.18 !important;
-      }
-      #tab-acompanhamentos tbody tr,
-      #tab-disputas tbody tr,
-      #tab-finalizadas tbody tr,
-      #tab-emp-finalizados tbody tr {
-        min-height: 34px !important;
-      }
-      #tab-acompanhamentos tbody td > div:first-child,
-      #tab-disputas tbody td > div:first-child,
-      #tab-finalizadas tbody td > div:first-child {
-        display: inline !important;
-      }
-      #tab-acompanhamentos .estado-badge,
-      #tab-disputas .estado-badge,
-      #tab-finalizadas .estado-badge {
-        display: inline-flex !important;
-        margin-left: 6px !important;
-        vertical-align: middle !important;
-      }
-      .lb-related-empenhos {
-        margin: 0 0 12px;
-        padding: 10px 12px;
-        border: 1px solid var(--border-light);
-        border-radius: 10px;
-        background: var(--bg-surface-soft);
-      }
-      .lb-related-empenhos-title {
-        margin-bottom: 7px;
-        color: var(--text-tertiary);
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .05em;
-      }
-      .lb-related-empenhos-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function obterContainerPaginacao(tab, tbody){
-    var id = 'pagination-' + tab;
-    var container = document.getElementById(id);
-    if(container) return container;
-    container = document.createElement('div');
-    container.id = id;
-    container.className = 'pagination';
-    var pane = tbody.closest('.tab-pane');
-    if(pane) pane.appendChild(container);
-    return container;
-  }
-
-  function aplicarPaginacao(tab, tbodyId){
-    var tbody = document.getElementById(tbodyId);
-    if(!tbody) return;
-    var linhas = Array.prototype.slice.call(tbody.querySelectorAll(':scope > tr'));
-    var container = obterContainerPaginacao(tab, tbody);
-
-    if(!linhas.length || linhas.length === 1 && linhas[0].querySelector('.empty-state')){
-      container.style.display = 'none';
-      return;
-    }
-
-    var totalPaginas = Math.max(1, Math.ceil(linhas.length / LIMITE_POR_PAGINA));
-    if(paginas[tab] > totalPaginas) paginas[tab] = 1;
-    var atual = paginas[tab];
-    var inicio = (atual - 1) * LIMITE_POR_PAGINA;
-
-    linhas.forEach(function(linha, indice){
-      linha.style.display = indice >= inicio && indice < inicio + LIMITE_POR_PAGINA ? '' : 'none';
-    });
-
-    if(totalPaginas <= 1){
-      container.style.display = 'none';
-      return;
-    }
-
-    container.style.display = 'flex';
-    var html = '<button class="page-btn" data-page="' + (atual - 1) + '" ' + (atual === 1 ? 'disabled' : '') + '>‹</button>';
-    for(var pagina = 1; pagina <= totalPaginas; pagina++){
-      html += '<button class="page-btn ' + (pagina === atual ? 'active' : '') + '" data-page="' + pagina + '">' + pagina + '</button>';
-    }
-    html += '<button class="page-btn" data-page="' + (atual + 1) + '" ' + (atual === totalPaginas ? 'disabled' : '') + '>›</button>';
-    html += '<span class="page-info">' + (inicio + 1) + '-' + Math.min(inicio + LIMITE_POR_PAGINA, linhas.length) + ' de ' + linhas.length + '</span>';
-    container.innerHTML = html;
-    container.querySelectorAll('button[data-page]').forEach(function(botao){
-      botao.onclick = function(){
-        paginas[tab] = Math.max(1, Math.min(totalPaginas, Number(botao.dataset.page) || 1));
-        aplicarPaginacao(tab, tbodyId);
-        var tabela = tbody.closest('.table-wrapper');
-        if(tabela) tabela.scrollTop = 0;
-      };
-    });
-  }
-
-  function envolverRender(nomeFuncao, tab, tbodyId){
-    var original = window[nomeFuncao];
-    if(typeof original !== 'function') return;
-    window[nomeFuncao] = function(){
-      var resultado = original.apply(this, arguments);
-      aplicarPaginacao(tab, tbodyId);
-      return resultado;
-    };
-  }
-
-  function adicionarNavegacaoEmpenhos(id){
-    var atual = DB.empenhos.find(function(e){ return e.id === id; });
-    var body = document.getElementById('popup-e-body');
-    if(!atual || !body || !atual.disputaId || body.querySelector('.lb-related-empenhos')) return;
-
-    var relacionados = DB.empenhos.filter(function(e){
-      return e.disputaId === atual.disputaId && e.id !== atual.id;
-    });
-    if(!relacionados.length) return;
-
-    var bloco = document.createElement('section');
-    bloco.className = 'lb-related-empenhos';
-    var titulo = document.createElement('div');
-    titulo.className = 'lb-related-empenhos-title';
-    titulo.textContent = 'OUTROS EMPENHOS DESTE CONTRATO';
-    var lista = document.createElement('div');
-    lista.className = 'lb-related-empenhos-list';
-
-    relacionados.forEach(function(empenho){
-      var botao = document.createElement('button');
-      botao.type = 'button';
-      botao.className = 'btn btn-ghost btn-sm';
-      botao.textContent = '#' + (empenho.num || 'SEM NÚMERO') + (empenho.finalizado ? ' · FINALIZADO' : '');
-      botao.onclick = function(){ abrirPopupEmpenho(empenho.id); };
-      lista.appendChild(botao);
-    });
-
-    bloco.appendChild(titulo);
-    bloco.appendChild(lista);
-    var contrato = Array.prototype.slice.call(body.querySelectorAll('.detail-field')).find(function(el){
-      return /CONTRATO VINCULADO/i.test(el.textContent || '');
-    });
-    if(contrato && contrato.nextSibling) body.insertBefore(bloco, contrato.nextSibling);
-    else body.insertBefore(bloco, body.firstChild);
-  }
-
-  function envolverPopupEmpenho(){
-    var original = window.abrirPopupEmpenho;
-    if(typeof original !== 'function') return;
-    window.abrirPopupEmpenho = function(id){
-      original.apply(this, arguments);
-      adicionarNavegacaoEmpenhos(id);
-    };
-  }
-
-  function iniciar(){
-    instalarEstilosCompactos();
-    envolverRender('renderAcomp', 'acompanhamentos', 'tbody-acomp');
-    envolverRender('renderFinalizadas', 'finalizadas', 'tbody-finalizadas');
-    envolverRender('renderEmpFinalizados', 'emp-finalizados', 'tbody-emp-finalizados');
-    envolverPopupEmpenho();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
-  else iniciar();
+ 'use strict';
+ var LIMIT=10, pages={acompanhamentos:1,finalizadas:1,'emp-finalizados':1};
+ function styles(){
+  if(document.getElementById('lb-safe-ui-style'))return;
+  var el=document.createElement('style');el.id='lb-safe-ui-style';
+  el.textContent=`
+   #tab-acompanhamentos tbody td,#tab-disputas tbody td,#tab-finalizadas tbody td,#tab-emp-finalizados tbody td{padding-top:5px!important;padding-bottom:5px!important;line-height:1.15!important}
+   #tab-acompanhamentos tbody td>div:first-child,#tab-disputas tbody td>div:first-child,#tab-finalizadas tbody td>div:first-child{display:inline!important}
+   #tab-acompanhamentos .estado-badge,#tab-disputas .estado-badge,#tab-finalizadas .estado-badge{display:inline-flex!important;margin-left:6px!important;vertical-align:middle!important}
+   .lb-related-empenhos{margin:0 0 12px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft)}
+   .lb-related-title{font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:7px}.lb-related-list{display:flex;flex-wrap:wrap;gap:6px}
+  `;document.head.appendChild(el);
+ }
+ function pager(tab,tbodyId){
+  var tb=document.getElementById(tbodyId);if(!tb)return;
+  var rows=[].slice.call(tb.querySelectorAll(':scope > tr'));
+  var id='pagination-'+tab, box=document.getElementById(id);
+  if(!box){box=document.createElement('div');box.id=id;box.className='pagination';var pane=tb.closest('.tab-pane');if(pane)pane.appendChild(box);}
+  if(!rows.length||(rows.length===1&&rows[0].querySelector('.empty-state'))){box.style.display='none';return;}
+  var total=Math.ceil(rows.length/LIMIT)||1;if(pages[tab]>total)pages[tab]=1;
+  var cur=pages[tab],start=(cur-1)*LIMIT;
+  rows.forEach(function(row,i){row.style.display=i>=start&&i<start+LIMIT?'':'none';});
+  if(total<=1){box.style.display='none';return;}
+  box.style.display='flex';var html='<button class="page-btn" data-p="'+(cur-1)+'" '+(cur===1?'disabled':'')+'>‹</button>';
+  for(var n=1;n<=total;n++)html+='<button class="page-btn '+(n===cur?'active':'')+'" data-p="'+n+'">'+n+'</button>';
+  html+='<button class="page-btn" data-p="'+(cur+1)+'" '+(cur===total?'disabled':'')+'>›</button><span class="page-info">'+(start+1)+'-'+Math.min(start+LIMIT,rows.length)+' de '+rows.length+'</span>';
+  box.innerHTML=html;box.querySelectorAll('[data-p]').forEach(function(btn){btn.onclick=function(){pages[tab]=Math.max(1,Math.min(total,+btn.dataset.p||1));pager(tab,tbodyId);};});
+ }
+ function wrapRender(name,tab,tbody){var original=window[name];if(typeof original!=='function')return;window[name]=function(){var result=original.apply(this,arguments);pager(tab,tbody);return result;};}
+ function addRelated(id){
+  var body=document.getElementById('popup-e-body');if(!body||body.querySelector('.lb-related-empenhos'))return;
+  var current=DB.empenhos.find(function(e){return e.id===id;});if(!current||!current.disputaId)return;
+  var related=DB.empenhos.filter(function(e){return e.disputaId===current.disputaId&&e.id!==id;});if(!related.length)return;
+  var section=document.createElement('section');section.className='lb-related-empenhos';
+  var title=document.createElement('div');title.className='lb-related-title';title.textContent='OUTROS EMPENHOS DESTE CONTRATO';section.appendChild(title);
+  var list=document.createElement('div');list.className='lb-related-list';
+  related.forEach(function(e){var b=document.createElement('button');b.type='button';b.className='btn btn-ghost btn-sm';b.textContent='#'+(e.num||'SEM NÚMERO')+(e.finalizado?' · FINALIZADO':'');b.onclick=function(){abrirPopupEmpenho(e.id);};list.appendChild(b);});
+  section.appendChild(list);var fields=[].slice.call(body.querySelectorAll('.detail-field')),contract=fields.find(function(x){return /CONTRATO VINCULADO/i.test(x.textContent||'');});
+  if(contract&&contract.nextSibling)body.insertBefore(section,contract.nextSibling);else body.insertBefore(section,body.firstChild);
+ }
+ function wrapPopup(){var original=window.abrirPopupEmpenho;if(typeof original!=='function')return;window.abrirPopupEmpenho=function(id){original.apply(this,arguments);addRelated(id);};}
+ function init(){styles();wrapRender('renderAcomp','acompanhamentos','tbody-acomp');wrapRender('renderFinalizadas','finalizadas','tbody-finalizadas');wrapRender('renderEmpFinalizados','emp-finalizados','tbody-emp-finalizados');wrapPopup();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
