@@ -374,7 +374,13 @@ function limparTodasNotificacoes() {
   if (emp30.length) _notifDismissed.add('emp30');
   _notifDismissed.add('disp-sem-emp');
   _notifDismissed.add('emp-sem-compra');
-  _notifDismissed.add('entregas-proximas');
+  DB.empenhos.filter(e => !e.finalizado).forEach(e => {
+    (e.compras || []).forEach(c => {
+      if (c.statusEntrega === 'em_transito' && c.dataPrevistaRecebimento) {
+        _notifDismissed.add(`entrega-${e.id}-${c.id}`);
+      }
+    });
+  });
   _salvarNotifDismissed();
   const badge = g('notif-badge');
   if (badge) badge.style.display = 'none';
@@ -412,6 +418,27 @@ function toggleNotificacoes() {
     p.style.display = 'none';
   }
 }
+function abrirCompraNotificada(empenhoId, compraId) {
+  const painel = g('notif-panel');
+  if (painel) painel.style.display = 'none';
+  abrirPopupEmpenho(empenhoId);
+  setTimeout(() => {
+    const checkbox = document.querySelector(`.chk-compra-${empenhoId}[data-cid="${compraId}"]`);
+    const linha = checkbox?.closest('tr');
+    if (!linha) return;
+    linha.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const fundoAnterior = linha.style.background;
+    const sombraAnterior = linha.style.boxShadow;
+    linha.style.background = 'var(--warning-soft)';
+    linha.style.boxShadow = 'inset 4px 0 0 var(--warning)';
+    linha.style.transition = 'background .25s ease, box-shadow .25s ease';
+    setTimeout(() => {
+      linha.style.background = fundoAnterior;
+      linha.style.boxShadow = sombraAnterior;
+    }, 3500);
+  }, 180);
+}
+
 function atualizarNotificacoes() {
   const alertas = [];
   const hoje = new Date();
@@ -428,14 +455,23 @@ function atualizarNotificacoes() {
       }
     });
   });
-  if (entregasProximas.length && !_notifDismissed.has('entregas-proximas')) {
-    alertas.push({
-      chave: 'entregas-proximas',
-      icon: '📦',
-      msg: `${entregasProximas.length} compra(s) em trânsito com recebimento previsto até ${limiteEntregas.toLocaleDateString('pt-BR')}`,
-      onclick: "toggleNotificacoes();switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])"
+
+  // Uma notificacao por compra, vinculada diretamente ao empenho correspondente.
+  entregasProximas
+    .sort((a, b) => a.prevista - b.prevista || String(a.empenho.num || '').localeCompare(String(b.empenho.num || ''), 'pt-BR', { numeric: true }))
+    .forEach(({ empenho, compra, prevista }) => {
+      const chave = `entrega-${empenho.id}-${compra.id}`;
+      if (_notifDismissed.has(chave)) return;
+      const itemEmpenho = (empenho.itens || []).find(item => item.id === compra.itemId);
+      const produto = itemEmpenho?.descricao || empenho.produto || compra.observacao || compra.plataforma || 'Compra';
+      const dataPrevista = prevista.toLocaleDateString('pt-BR');
+      alertas.push({
+        chave,
+        icon: '📦',
+        msg: `Empenho #${empenho.num || '—'} · ${empenho.orgao || '—'} · ${produto} · chegada prevista em ${dataPrevista}`,
+        onclick: `abrirCompraNotificada('${empenho.id}','${compra.id}')`
+      });
     });
-  }
 
   const emp30 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 30 && diasSemPagamento(e) < 60);
   const emp60 = DB.empenhos.filter(e => !e.finalizado && diasSemPagamento(e) >= 60 && diasSemPagamento(e) < 90);
