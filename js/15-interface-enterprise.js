@@ -29,15 +29,20 @@ function validarIntegridade(sil){
 // Override renderD: progress bar column
 /* override renderD removido - progresso inline */
 
-// Paginação de empenhos aplicada diretamente aos registros em renderE.
+// Override renderE: pagination
 (function(){
-  function garantirPaginacaoEmpenhos(){
-    var tb=document.getElementById('tbody-empenhos');
-    if(!tb||document.getElementById('pagination-empenhos'))return;
-    var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';
-    var pane=tb.closest('.tab-pane');if(pane)pane.appendChild(d);
-  }
-  var orig=renderE;renderE=function(){garantirPaginacaoEmpenhos();orig();};
+  var orig=renderE;
+  renderE=function(){
+    orig();
+    var tb=document.getElementById('tbody-empenhos');if(!tb)return;
+    if(!document.getElementById('pagination-empenhos')){var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';tb.closest('.tab-pane').appendChild(d);}
+    var rows=tb.querySelectorAll(':scope > tr');
+    if(rows.length<=PAGE_SIZE){renderPagination('empenhos',rows.length);return;}
+    var tp=Math.ceil(rows.length/PAGE_SIZE);if(_page.empenhos>tp)_page.empenhos=1;
+    var s=(_page.empenhos-1)*PAGE_SIZE;
+    rows.forEach(function(tr,i){tr.style.display=(i>=s&&i<s+PAGE_SIZE)?'':'none';});
+    renderPagination('empenhos',rows.length);
+  };
   var origF=filtrarEmpenhos;filtrarEmpenhos=function(){_page.empenhos=1;origF();};
 })();
 

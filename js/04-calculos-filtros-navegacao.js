@@ -223,7 +223,7 @@ function switchTab(tab,btn){
 }
 
 // ========== PAGINATION ==========
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 50;
 let _page = { disputas: 1, empenhos: 1 };
 
 function renderPagination(tab, totalRows) {

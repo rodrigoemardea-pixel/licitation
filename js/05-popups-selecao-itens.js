@@ -195,12 +195,6 @@ function abrirPopupEmpenho(id) {
   const { tot, imp, luc, pct, rec } = eVals(r);
   const dias = diasSemPagamento(r);
   const disp = r.disputaId ? DB.disputas.find(d => d.id === r.disputaId) : null;
-  const empenhosMesmoContrato = r.disputaId ? DB.empenhos.filter(e => e.disputaId === r.disputaId && e.id !== r.id) : [];
-  const empenhosRelacionadosHTML = empenhosMesmoContrato.length
-    ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OUTROS EMPENHOS DESTE CONTRATO</div><div class="detail-field-value" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;">' +
-      empenhosMesmoContrato.map(e => '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\''+e.id+'\')">#'+escapeHTML(e.num||'SEM NÚMERO')+(e.finalizado?' · FINALIZADO':'')+'</button>').join('') +
-      '</div></div>'
-    : '';
   
   // Itens do empenho — descrição sempre buscada ao vivo do contrato para refletir edições
   const itensRaw = r.itens && r.itens.length ? r.itens : 
@@ -293,7 +287,6 @@ function abrirPopupEmpenho(id) {
 
     (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
     (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">CONTRATO VINCULADO</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
-    empenhosRelacionadosHTML +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
@@ -697,14 +690,9 @@ function renderE(){
   const _btnAgr = g('btn-agrupar-orgao');
   if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
   atualizarHeaderEmpenhosAgrupado();
-  const allRows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
+  const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
-  if(!allRows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; renderPagination('empenhos',0); sumE(); verificarAlertas(); return; }
-  const totalPages=Math.ceil(allRows.length/PAGE_SIZE);
-  if(_page.empenhos>totalPages)_page.empenhos=1;
-  const start=(_page.empenhos-1)*PAGE_SIZE;
-  const rows=allRows.slice(start,start+PAGE_SIZE);
-  renderPagination('empenhos',allRows.length);
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
   if(_agrupado) { renderEAgrupado(rows, tb); sumE(); verificarAlertas(); return; }
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
