@@ -387,75 +387,76 @@ function renderAcomp() {
 }
 
 function verAcomp(id) {
-  const r = (DB.acomp || []).find(x => x.id === id);
-  if (!r) return;
-
+  const r = (DB.acomp||[]).find(x=>x.id===id); if(!r) return;
   const ret = r.retorno ? new Date(r.retorno) : null;
   const agora = new Date();
   const vencido = ret && ret < agora;
   const hoje = ret && ret.toDateString() === agora.toDateString();
-  const retStr = ret
-    ? ret.toLocaleDateString('pt-BR') + ' ' + ret.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})
-    : '—';
+  const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Em Recurso',perdida:'❌ Perdida'};
+  const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
+
+  g('popup-ac-title').textContent = r.orgao || 'Acompanhamento';
+  g('popup-ac-sub').textContent = (r.estado ? r.estado + ' · ' : '') + (r.sistema || '') + (r.processo ? ' · ' + r.processo : '');
+
+  const retStr = ret ? ret.toLocaleDateString('pt-BR') + ' ' + ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
   const retColor = vencido ? 'var(--danger)' : hoje ? 'var(--warning)' : 'var(--text-primary)';
 
-  const tituloOrgao = r.orgao || 'Acompanhamento';
-  g('popup-ac-title').textContent = r.estado ? `${tituloOrgao} / ${r.estado}` : tituloOrgao;
-
-  const tipoProcesso = [r.tipo, r.processo].filter(Boolean).join(' ');
-  g('popup-ac-sub').textContent = tipoProcesso || '—';
-
   g('popup-ac-body').innerHTML = `
-    <div class="detail-grid-3">
+    <div class="detail-section">INFORMAÇÕES GERAIS</div>
+    <div class="detail-grid">
       <div class="detail-field">
-        <div class="detail-field-label">ANALISTA</div>
-        <div class="detail-field-value">${r.analista || '—'}</div>
+        <div class="detail-field-label">Data do Contrato</div>
+        <div class="detail-field-value">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</div>
       </div>
       <div class="detail-field">
-        <div class="detail-field-label">SISTEMA</div>
+        <div class="detail-field-label">Órgão</div>
+        <div class="detail-field-value">${r.orgao || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">UF</div>
+        <div class="detail-field-value">${r.estado || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Sistema</div>
         <div class="detail-field-value">${r.sistema || '—'}</div>
       </div>
       <div class="detail-field">
-        <div class="detail-field-label">EMPRESA</div>
-        <div class="detail-field-value">${r.empresa || '—'}</div>
+        <div class="detail-field-label">Analista</div>
+        <div class="detail-field-value">${r.analista || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Empresa</div>
+        <div class="detail-field-value"><span style="padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent-muted)'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa || '—'}</span></div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Tipo de Processo</div>
+        <div class="detail-field-value">${r.tipo || '—'}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Nº do Processo</div>
+        <div class="detail-field-value">${r.processo || '—'}</div>
       </div>
     </div>
-
-    <div class="detail-field">
-      <div class="detail-field-label">DATA/HORA DE RETORNO</div>
-      <div class="detail-field-value" style="color:${retColor};font-weight:${vencido ? '700' : '550'};">
-        ${vencido ? '🔴 VENCIDO · ' : ''}${retStr}
+    <div class="detail-section">STATUS E RETORNO</div>
+    <div class="detail-grid">
+      <div class="detail-field">
+        <div class="detail-field-label">Status</div>
+        <div class="detail-field-value"><span style="color:${statusColors[r.status]||'var(--text-primary)'};font-weight:700;">${statusLabels[r.status]||r.status||'—'}</span></div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Data/Hora de Retorno</div>
+        <div class="detail-field-value"><span style="color:${retColor};font-weight:700;">${vencido?'🔴 VENCIDO · ':''}${retStr}</span></div>
       </div>
     </div>
-
-    ${r.link ? `
-      <div class="detail-field">
-        <div class="detail-field-label">LINK DO SISTEMA</div>
-        <div class="detail-field-value">
-          <a href="${r.link}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;word-break:break-all;">${r.link}</a>
-        </div>
-      </div>
-    ` : ''}
-
-    ${r.observacao ? `
-      <div class="detail-field">
-        <div class="detail-field-label">OBSERVAÇÃO</div>
-        <div class="detail-field-value" style="font-weight:400;white-space:pre-wrap;">${r.observacao}</div>
-      </div>
-    ` : ''}
+    ${r.link ? '<div class="detail-section">LINK DO SISTEMA</div><div style="margin-bottom:10px;"><a href="'+r.link+'" target="_blank" style="color:var(--accent);font-size:12px;word-break:break-all;">'+r.link+'</a></div>' : ''}
+    ${r.observacao ? '<div class="detail-section">OBSERVAÇÃO</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;background:var(--bg-surface-soft);padding:10px 14px;border-radius:var(--radius-md);white-space:pre-wrap;">'+r.observacao+'</div>' : ''}
+    ${renderComentarios('acomp', id)}
   `;
 
   const editBtn = g('popup-ac-edit-btn');
-  if (editBtn) editBtn.onclick = function() {
-    fecharPopup('acomp');
-    editAcomp(id);
-  };
-
+  if (editBtn) editBtn.onclick = function() { fecharPopup('acomp'); editAcomp(id); };
   const convBtn = g('popup-ac-conv-btn');
-  if (convBtn) convBtn.onclick = function() {
-    fecharPopup('acomp');
-    converterEmDisputa(id);
-  };
+  if (convBtn) convBtn.onclick = function() { fecharPopup('acomp'); converterEmDisputa(id); };
 
   g('popup-acomp').classList.add('open');
 }
