@@ -72,7 +72,7 @@ function abrirPopupDisputa(id) {
           '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
-          '<td class="mono" style="color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
+          '<td class="mono" style="padding-top:5px;padding-bottom:5px;color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
           '<td class="mono" style="color:var(--success);font-weight:600;">' + qtdViaCompras + '</td>' +
           '<td class="mono ' + cls + '">' + (l.qtdRestante > 0 ? l.qtdRestante : '✓ COMPLETO') + '</td>' +
           '<td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pctVal + '%"></div></div></td>' +
@@ -115,7 +115,7 @@ function abrirPopupDisputa(id) {
           '<td style="font-size:11px;">'+(c.plataforma||'—')+'</td>' +
           '<td class="mono">'+(c.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
-          '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
+          '<td class="mono" style="padding-top:5px;padding-bottom:5px;color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
           '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
           '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
           '<td>'+linkBtn+'</td>' +
@@ -530,16 +530,22 @@ function renderD(){
 
     var _progCor = pctProg>=100?'var(--success)':pctProg>0?'var(--accent)':'var(--border-light)';
     htmlParts.push(
-      '<tr style="' + rowStyle + '" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
-      '<td class="inline-edit-cell" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
+      '<tr style="' + rowStyle + 'height:36px;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+      '<td class="inline-edit-cell" style="padding-top:5px;padding-bottom:5px;" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
         '<span class="mono" style="font-size:11px;">' + fmtD(r.data) + '</span>' +
         '<span class="inline-edit-trigger" onclick="inlineEditDate(\'' + r.id + '\',\'disputas\')">✏️</span>' +
       '</td>' +
-      '<td style="max-width:250px;"><div style="font-weight:600;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (r.orgao||'') + '">' + (r.orgao||'—') + contratoAlerta + empBadge + '</div><span class="estado-badge" style="font-size:9px;">' + (r.estado||'—') + '</span></td>' +
-      '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td style="max-width:250px;padding-top:5px;padding-bottom:5px;">' +
+        '<div style="display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;">' +
+          '<span style="font-weight:600;font-size:12px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;" title="' + (r.orgao||'') + '">' + (r.orgao||'—') + '</span>' +
+          '<span class="estado-badge" style="font-size:9px;flex:0 0 auto;">' + (r.estado||'—') + '</span>' +
+          contratoAlerta + empBadge +
+        '</div>' +
+      '</td>' +
+      '<td style="padding-top:5px;padding-bottom:5px;"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
-      '<td style="text-align:center;padding-left:12px;padding-right:12px;">' +
+      '<td style="text-align:center;padding:5px 12px;">' +
         '<div style="display:flex;align-items:center;gap:8px;width:100%;min-width:180px;">' +
           '<div class="progress-bar-wrap" style="position:relative;flex:1;width:100%;height:8px;min-width:0;overflow:hidden;border-radius:999px;background:var(--bg-inset);">' +
             '<div class="progress-bar-fill" style="display:block;height:100%;max-width:100%;width:'+Math.max(0,Math.min(100,pctProg))+'%;background:'+_progCor+';border-radius:999px;"></div>' +
