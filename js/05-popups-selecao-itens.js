@@ -696,6 +696,7 @@ function atualizarHeaderEmpenhosAgrupado() {
   if (!headerRow) return;
   if (_agrupado) {
     headerRow.innerHTML = `
+      <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
       <th style="min-width:130px;" onclick="sort('empenhos','num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
       <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorEmpenho')" id="sort-empenhos-valorEmpenho" title="Ordenar pelo valor do empenho">Val. Empenho</th>
       <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorCompra')" id="sort-empenhos-valorCompra" title="Ordenar pelo valor das compras">Valor Compra</th>
@@ -820,6 +821,7 @@ function sumE(){
 
     tfRowE.style.display = '';
     tfRowE.innerHTML = `
+      <td style="background:var(--bg-surface-soft);"></td>
       <td style="text-align:right;padding:10px 12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;background:var(--bg-surface-soft);">TOTAIS</td>
       <td class="mono" style="text-align:right;color:var(--accent);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
       <td class="mono" style="text-align:right;color:var(--text-secondary);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-compra">${fmt(totalValorCompraTela)}</td>
