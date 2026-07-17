@@ -305,8 +305,13 @@ const _itensPorPaginaAcomp = 8;
 function irPaginaAcomp(p) { _paginaAcomp = p; renderAcomp(); }
 function renderPaginacaoAcomp(total) {
   const tb=document.getElementById('tbody-acomp'); if(!tb)return;
+  const pane=document.getElementById('tab-acompanhamentos');
+  const wrap=tb.closest('.table-wrap')||tb.closest('.table-wrapper');
+  if(pane) pane.style.minHeight='calc(100vh - 92px)';
+  if(wrap) wrap.style.minHeight='330px';
   let box=document.getElementById('pagination-acomp-inline');
   if(!box){box=document.createElement('div');box.id='pagination-acomp-inline';box.className='pagination';const w=tb.closest('.table-wrap')||tb.closest('.table-wrapper');if(w?.parentNode)w.parentNode.insertBefore(box,w.nextSibling);}
+  box.style.cssText='margin-top:auto;padding-top:10px;position:sticky;bottom:0;z-index:8;background:var(--bg-page);justify-content:center;';
   const pags=Math.ceil(total/_itensPorPaginaAcomp);
   if(pags<=1){box.style.display='none';box.innerHTML='';return;}
   _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pags));box.style.display='flex';
