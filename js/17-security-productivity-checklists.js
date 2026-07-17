@@ -64,7 +64,21 @@
   var section=document.createElement('section');section.className='lb-related-empenhos';
   var title=document.createElement('div');title.className='lb-related-title';title.textContent='OUTROS EMPENHOS DESTE CONTRATO';section.appendChild(title);
   var list=document.createElement('div');list.className='lb-related-list';
-  related.forEach(function(e){var b=document.createElement('button');b.type='button';b.className='btn btn-ghost btn-sm';b.textContent='#'+(e.num||'SEM NÚMERO')+(e.finalizado?' · FINALIZADO':'');b.onclick=function(){abrirPopupEmpenho(e.id);};list.appendChild(b);});
+  related.forEach(function(e){
+   var b=document.createElement('button');
+   b.type='button';
+   b.className='btn btn-ghost btn-sm';
+   var numero=document.createElement('span');
+   numero.textContent='#'+(e.num||'SEM NÚMERO')+' · ';
+   var status=document.createElement('span');
+   status.textContent=e.finalizado?'PAGO':'PENDENTE';
+   status.style.color=e.finalizado?'var(--success)':'var(--warning)';
+   status.style.fontWeight='800';
+   b.appendChild(numero);
+   b.appendChild(status);
+   b.onclick=function(){abrirPopupEmpenho(e.id);};
+   list.appendChild(b);
+  });
   section.appendChild(list);var fields=[].slice.call(body.querySelectorAll('.detail-field')),contract=fields.find(function(x){return /CONTRATO VINCULADO/i.test(x.textContent||'');});
   if(contract&&contract.nextSibling)body.insertBefore(section,contract.nextSibling);else body.insertBefore(section,body.firstChild);
  }
