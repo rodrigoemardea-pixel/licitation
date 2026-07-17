@@ -362,6 +362,30 @@ function _salvarNotifDismissed() {
   localStorage.setItem('notifDismissed', JSON.stringify([..._notifDismissed]));
 }
 
+const _NOTIF_LIDAS_KEY = 'notifLidasV2';
+let _notifLidas = new Set(JSON.parse(localStorage.getItem(_NOTIF_LIDAS_KEY) || '[]'));
+
+function _salvarNotifLidas() {
+  localStorage.setItem(_NOTIF_LIDAS_KEY, JSON.stringify([..._notifLidas]));
+}
+
+function _assinaturaNotificacao(alerta) {
+  return `${alerta.chave}|${alerta.msg}`;
+}
+
+function _marcarNotificacoesComoLidas(alertas) {
+  alertas.forEach(alerta => _notifLidas.add(_assinaturaNotificacao(alerta)));
+  _salvarNotifLidas();
+}
+
+function _atualizarBadgeNotificacoes(alertas) {
+  const badge = g('notif-badge');
+  if (!badge) return;
+  const naoLidas = alertas.filter(alerta => !_notifLidas.has(_assinaturaNotificacao(alerta))).length;
+  badge.textContent = naoLidas;
+  badge.style.display = naoLidas ? 'block' : 'none';
+}
+
 function limparTodasNotificacoes() {
   _notifDismissed = new Set(['__all__' + Date.now()]);
   // Adiciona todas as chaves atuais ao dismissed
@@ -382,6 +406,8 @@ function limparTodasNotificacoes() {
     });
   });
   _salvarNotifDismissed();
+  _notifLidas.clear();
+  _salvarNotifLidas();
   const badge = g('notif-badge');
   if (badge) badge.style.display = 'none';
   const list = g('notif-list');
@@ -398,11 +424,10 @@ function toggleNotificacoes() {
   const p = g('notif-panel');
   if (!p) return;
   if (p.style.display === 'none') {
-    atualizarNotificacoes();
+    const alertasAtuais = atualizarNotificacoes();
+    _marcarNotificacoesComoLidas(alertasAtuais);
     p.style.display = 'block';
-    // Esconde badge ao abrir
-    const badge = g('notif-badge');
-    if (badge) badge.style.display = 'none';
+    _atualizarBadgeNotificacoes(alertasAtuais);
     // Fecha ao clicar fora
     setTimeout(() => {
       function fecharFora(ev) {
@@ -499,10 +524,7 @@ function atualizarNotificacoes() {
 
   const badge = g('notif-badge');
   const list = g('notif-list');
-  if (badge && g('notif-panel').style.display === 'none') {
-    badge.textContent = alertas.length;
-    badge.style.display = alertas.length ? 'block' : 'none';
-  }
+  if (badge) _atualizarBadgeNotificacoes(alertas);
   if (list) {
     list.innerHTML = alertas.length
       ? alertas.map(a => `
@@ -513,5 +535,6 @@ function atualizarNotificacoes() {
         </div>`).join('')
       : '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
   }
+  return alertas;
 }
 
