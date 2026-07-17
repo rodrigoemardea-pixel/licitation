@@ -644,3 +644,112 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   background:var(--lb-hover)!important;
   background-color:var(--lb-hover)!important;
 }
+
+/* ========================================================================== */
+/* PADRAO EXCLUSIVO DAS LINHAS DA TELA DE EMPENHOS PENDENTES                 */
+/* Escopo restrito a #tab-empenhos.                                           */
+/* ========================================================================== */
+
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)){
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+}
+
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td{
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  padding-top:5px!important;
+  padding-bottom:5px!important;
+  box-sizing:border-box!important;
+  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-size:12px!important;
+  color:#455468!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
+}
+
+/* Numero do empenho: 11px e fonte monoespacada. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td:nth-child(2){
+  font-family:'DM Mono','JetBrains Mono',monospace!important;
+  font-size:11px!important;
+  font-weight:400!important;
+  color:#455468!important;
+  text-align:left!important;
+}
+
+/* Orgao: 12px, peso 600, alinhado a esquerda e com reticencias. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td:nth-child(3){
+  max-width:250px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  color:#455468!important;
+  line-height:1.15!important;
+  text-align:left!important;
+  vertical-align:middle!important;
+}
+
+/* Analista: 10px dentro do badge, sem ampliar a linha. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td:nth-child(4) .badge{
+  height:auto!important;
+  min-height:0!important;
+  max-height:26px!important;
+  padding:3px 8px!important;
+  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-size:10px!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
+}
+
+/* Valores financeiros eventualmente exibidos permanecem monoespacados. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td.money{
+  font-family:'DM Mono','JetBrains Mono',monospace!important;
+  font-size:11px!important;
+  font-weight:700!important;
+}
+
+/* Checkbox compacto e centralizado verticalmente. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) input[type="checkbox"]{
+  width:15px!important;
+  height:15px!important;
+  min-width:15px!important;
+  min-height:15px!important;
+  margin:0!important;
+  vertical-align:middle!important;
+}
+
+/* Elementos internos nao podem aumentar a altura da linha. */
+#tab-empenhos #tbody-empenhos > tr:not(:has(.empty-state)) > td > :is(div,span,a,button){
+  min-height:0!important;
+  max-height:28px!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
+}
+
+/* Fundo neutro, preservando somente o zebrado discreto. */
+#tab-empenhos #tbody-empenhos > tr > td,
+#tab-empenhos #tbody-empenhos > tr[style] > td,
+#tab-empenhos #tbody-empenhos > tr.alerta-30 > td,
+#tab-empenhos #tbody-empenhos > tr.alerta-60 > td,
+#tab-empenhos #tbody-empenhos > tr.alerta-90 > td{
+  background:#fff!important;
+  background-color:#fff!important;
+}
+
+#tab-empenhos #tbody-empenhos > tr:nth-child(even) > td,
+#tab-empenhos #tbody-empenhos > tr:nth-child(even)[style] > td{
+  background:#fbfcfd!important;
+  background-color:#fbfcfd!important;
+}
+
+#tab-empenhos #tbody-empenhos > tr:hover > td{
+  background:var(--lb-hover)!important;
+  background-color:var(--lb-hover)!important;
+}
