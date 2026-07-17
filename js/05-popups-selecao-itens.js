@@ -23,6 +23,19 @@ function abrirPopupDisputa(id) {
     return s + total - (l.compraPrev||0)*qtd - (l.custoPrev||0)*qtd;
   }, 0);
 
+  // Atalhos para todos os empenhos vinculados a este contrato.
+  const empenhosRelacionadosHTML = emps.length ?
+    '<section class="lb-related-empenhos" style="margin:0 0 14px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">' +
+      '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);letter-spacing:.05em;margin-bottom:7px;">EMPENHOS DESTE CONTRATO</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+        emps.map(e =>
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escapeHTML(e.num || '') + '">' +
+            '#' + escapeHTML(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · FINALIZADO' : '') +
+          '</button>'
+        ).join('') +
+      '</div>' +
+    '</section>' : '';
+
   const lotesHTML = lotes.length ? `
     <div class="detail-section">📦 ITENS / LOTES</div>
     <table class="lotes-status-table">
@@ -145,6 +158,7 @@ function abrirPopupDisputa(id) {
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
+    empenhosRelacionadosHTML +
     lotesHTML +
     comprasDisputaHTML +
     renderComentarios('disputa', id);
