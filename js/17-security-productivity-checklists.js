@@ -58,16 +58,28 @@
  }
  function wrapRender(name,tab,tbody){var original=window[name];if(typeof original!=='function')return;window[name]=function(){var result=original.apply(this,arguments);pager(tab,tbody);return result;};}
  function addRelated(id){
-  var body=document.getElementById('popup-e-body');if(!body||body.querySelector('.lb-related-empenhos'))return;
-  var current=DB.empenhos.find(function(e){return e.id===id;});if(!current||!current.disputaId)return;
-  var related=DB.empenhos.filter(function(e){return e.disputaId===current.disputaId&&e.id!==id;});if(!related.length)return;
-  var section=document.createElement('section');section.className='lb-related-empenhos';
-  var title=document.createElement('div');title.className='lb-related-title';title.textContent='OUTROS EMPENHOS DESTE CONTRATO';section.appendChild(title);
-  var list=document.createElement('div');list.className='lb-related-list';
+  var body=document.getElementById('popup-e-body');
+  if(!body)return;
+  var anterior=body.querySelector('.lb-related-empenhos-detail');
+  if(anterior)anterior.remove();
+  var banco=(window.DB&&Array.isArray(DB.empenhos))?DB.empenhos:((window._fullDB&&Array.isArray(_fullDB.empenhos))?_fullDB.empenhos:[]);
+  var current=banco.find(function(e){return e.id===id;});
+  if(!current||!current.disputaId)return;
+  var related=banco.filter(function(e){return e.disputaId===current.disputaId&&e.id!==id;});
+  if(!related.length)return;
+  var section=document.createElement('section');
+  section.className='lb-related-empenhos lb-related-empenhos-detail';
+  var title=document.createElement('div');
+  title.className='lb-related-title';
+  title.textContent='OUTROS EMPENHOS DESTE CONTRATO';
+  section.appendChild(title);
+  var list=document.createElement('div');
+  list.className='lb-related-list';
   related.forEach(function(e){
    var b=document.createElement('button');
    b.type='button';
    b.className='btn btn-ghost btn-sm';
+   b.title='Abrir empenho '+(e.num||'sem numero');
    var numero=document.createElement('span');
    numero.textContent='#'+(e.num||'SEM NÚMERO')+' · ';
    var status=document.createElement('span');
@@ -76,13 +88,27 @@
    status.style.fontWeight='800';
    b.appendChild(numero);
    b.appendChild(status);
-   b.onclick=function(){abrirPopupEmpenho(e.id);};
+   b.onclick=function(event){event.stopPropagation();abrirPopupEmpenho(e.id);};
    list.appendChild(b);
   });
-  section.appendChild(list);var fields=[].slice.call(body.querySelectorAll('.detail-field')),contract=fields.find(function(x){return /CONTRATO VINCULADO/i.test(x.textContent||'');});
-  if(contract&&contract.nextSibling)body.insertBefore(section,contract.nextSibling);else body.insertBefore(section,body.firstChild);
+  section.appendChild(list);
+  var checklist=body.querySelector('.lb-checklist');
+  if(checklist&&checklist.nextSibling)body.insertBefore(section,checklist.nextSibling);
+  else if(checklist)body.appendChild(section);
+  else body.insertBefore(section,body.firstChild);
  }
- function wrapPopup(){var original=window.abrirPopupEmpenho;if(typeof original!=='function')return;window.abrirPopupEmpenho=function(id){original.apply(this,arguments);addRelated(id);};}
+ function wrapPopup(){
+  var original=window.abrirPopupEmpenho;
+  if(typeof original!=='function'||original._lbRelatedWrapped)return;
+  var wrapped=function(id){
+   var result=original.apply(this,arguments);
+   addRelated(id);
+   setTimeout(function(){addRelated(id);},0);
+   return result;
+  };
+  wrapped._lbRelatedWrapped=true;
+  window.abrirPopupEmpenho=wrapped;
+ }
  function init(){styles();wrapRender('renderAcomp','acompanhamentos','tbody-acomp');wrapRender('renderFinalizadas','finalizadas','tbody-finalizadas');wrapRender('renderEmpFinalizados','emp-finalizados','tbody-emp-finalizados');wrapPopup();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
