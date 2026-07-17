@@ -753,3 +753,73 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   background:var(--lb-hover)!important;
   background-color:var(--lb-hover)!important;
 }
+
+/* ========================================================================== */
+/* COMPONENTES REUTILIZAVEIS (usados por 19-componentes.js)                    */
+/* Cards de resumo, badges de empresa, analista, UF e status.                  */
+/* ========================================================================== */
+
+/* --- Cards de resumo (lbCard) --- */
+.lb-card{
+  min-height:92px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  position:relative;
+}
+.lb-card--clicavel{cursor:pointer}
+.lb-card--clicavel:hover{box-shadow:var(--shadow-md)!important;transform:translateY(-1px)}
+.lb-card--borda{border-left:3px solid var(--border-medium)}
+.lb-card--accent.lb-card--borda{border-left-color:var(--accent)}
+.lb-card--success.lb-card--borda{border-left-color:var(--success)}
+.lb-card--warning.lb-card--borda{border-left-color:var(--warning)}
+.lb-card--danger.lb-card--borda{border-left-color:var(--danger)}
+.lb-card--purple.lb-card--borda{border-left-color:var(--purple)}
+
+.lb-card-value--accent{color:var(--accent)}
+.lb-card-value--success{color:var(--success)}
+.lb-card-value--warning{color:var(--warning)}
+.lb-card-value--danger{color:var(--danger)}
+.lb-card-value--purple{color:var(--purple)}
+
+.lb-card-sub{
+  font-size:10px;
+  color:var(--text-tertiary);
+  margin-top:4px;
+  line-height:1.3;
+}
+
+/* --- Badges reutilizaveis (lbBadge*) --- */
+.lb-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:3px 8px;
+  border-radius:99px;
+  font-size:10px;
+  font-weight:700;
+  line-height:1.6;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.lb-badge--neutral{
+  background:var(--bg-surface-soft);
+  color:var(--text-tertiary);
+  border-color:var(--border-light);
+}
+
+/* Empresa */
+.lb-badge--empresa{font-size:11px;padding:2px 8px;border-radius:10px}
+.lb-badge--hamate{background:var(--purple-soft);color:var(--purple);border-color:rgba(124,58,237,.15)}
+.lb-badge--gadita{background:var(--info-soft);color:var(--accent);border-color:rgba(45,106,79,.15)}
+
+/* UF (mantém o estilo já existente do .estado-badge, mas garante alinhamento) */
+.lb-badge--uf{font-size:10px;font-weight:600}
+
+/* Status pago / pendente / atraso */
+.lb-badge--status{padding:3px 9px}
+.lb-badge--pago{background:var(--success-soft);color:var(--success);border-color:rgba(22,163,74,.15)}
+.lb-badge--pendente{background:var(--warning-soft);color:var(--warning);border-color:rgba(202,138,4,.15)}
+.lb-badge--atraso-30{background:rgba(234,179,8,.10);color:var(--warning);border-color:rgba(234,179,8,.20)}
+.lb-badge--atraso-60{background:rgba(220,38,38,.08);color:var(--danger);border-color:rgba(220,38,38,.20)}
+.lb-badge--atraso-90{background:var(--danger-soft);color:var(--danger);border-color:rgba(220,38,38,.30);font-weight:800}
