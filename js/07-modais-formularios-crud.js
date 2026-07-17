@@ -693,127 +693,71 @@ function exportXLSX(tab) {
   if (typeof XLSX === 'undefined') { exportCSV(tab); return; }
 
   if (tab === 'empenhos') {
-    const idsSelecionados = Array.from(
-      document.querySelectorAll('.chk-row-empenhos:checked')
-    ).map(chk => chk.dataset.id);
-
+    const idsSelecionados = Array.from(document.querySelectorAll('.chk-row-empenhos:checked'))
+      .map(chk => chk.dataset.id);
     if (!idsSelecionados.length) {
       toast('Selecione ao menos um empenho para exportar.', 'error');
       return;
     }
 
     const idsSet = new Set(idsSelecionados);
-    const empenhosSelecionados = DB.empenhos.filter(r =>
-      idsSet.has(r.id) && !r.finalizado
-    );
-
-    const cabecalho = [
-      'Órgão',
-      'Número Empenho',
-      'Valor do Empenho',
-      'Valor da Compra',
-      'Custo',
-      'Lucro a Receber',
-      'Valor a Receber'
-    ];
+    const empenhosSelecionados = DB.empenhos.filter(r => idsSet.has(r.id) && !r.finalizado);
+    const cabecalho = ['Órgão','Número Empenho','Valor Empenhado','Valor da Compra','Custo','Lucro a Receber','Valor a Receber'];
 
     const linhas = empenhosSelecionados.map(r => {
       const compras = r.compras || [];
-      const comprasPendentes = compras.filter(compra => !compra.dpag || compra.dpag === '');
-      const valorCompra = compras.reduce((total, compra) => total + (compra.vtotal || 0), 0);
-      const custo = compras.reduce((total, compra) => total + (compra.custo || 0), 0);
-      const lucroAReceber = comprasPendentes.reduce((total, compra) => {
-        const lucro = compra.luc !== undefined && compra.luc !== null
-          ? compra.luc
-          : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
-        return total + lucro;
-      }, 0);
-      const valorAReceber = comprasPendentes.reduce(
-        (total, compra) => total + (compra.rec || 0), 0
-      );
-
-      return [
-        r.orgao || '',
-        r.num || '',
-        r.vem || 0,
-        valorCompra,
-        custo,
-        lucroAReceber,
-        valorAReceber
-      ];
+      const pendentes = compras.filter(c => !c.dpag || c.dpag === '');
+      const itens = r.itens && r.itens.length ? r.itens : [{ qtd:r.qtd||0, vunit:r.vunit||0 }];
+      const valorEmpenhado = itens.reduce((s, item) => s + (item.vunit||0) * (item.qtd||0), 0);
+      const valorCompra = compras.reduce((s,c) => s + (c.vtotal||0), 0);
+      const custo = compras.reduce((s,c) => s + (c.custo||0), 0);
+      const lucroAReceber = pendentes.reduce((s,c) => s + (c.luc !== undefined && c.luc !== null
+        ? c.luc : (c.rec||0) - (c.vtotal||0) - (c.custo||0)), 0);
+      const valorAReceber = pendentes.reduce((s,c) => s + (c.rec||0), 0);
+      return [r.orgao||'', r.num||'', valorEmpenhado, valorCompra, custo, lucroAReceber, valorAReceber];
     });
 
-    const linhaTotais = [
-      'TOTAL',
-      '',
-      linhas.reduce((soma, linha) => soma + (linha[2] || 0), 0),
-      linhas.reduce((soma, linha) => soma + (linha[3] || 0), 0),
-      linhas.reduce((soma, linha) => soma + (linha[4] || 0), 0),
-      linhas.reduce((soma, linha) => soma + (linha[5] || 0), 0),
-      linhas.reduce((soma, linha) => soma + (linha[6] || 0), 0)
-    ];
-
-    const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...linhas, linhaTotais]);
-    ws['!cols'] = [
-      { wch: 35 }, { wch: 20 }, { wch: 20 }, { wch: 20 },
-      { wch: 16 }, { wch: 22 }, { wch: 22 }
-    ];
-
+    const totais = ['TOTAL','', ...[2,3,4,5,6].map(i => linhas.reduce((s,l) => s + (l[i]||0), 0))];
+    const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...linhas, totais]);
+    ws['!cols'] = [{wch:35},{wch:20},{wch:20},{wch:20},{wch:16},{wch:22},{wch:22}];
     const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let C = range.s.c; C <= range.e.c; C++) {
-      const cell = ws[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (cell) cell.s = {
-        font: { bold: true },
-        fill: { fgColor: { rgb: 'EEF2F6' } },
-        alignment: { horizontal: 'center', vertical: 'center' }
-      };
+    for (let C=0; C<=range.e.c; C++) {
+      const cell=ws[XLSX.utils.encode_cell({r:0,c:C})];
+      if(cell) cell.s={font:{bold:true},fill:{fgColor:{rgb:'EEF2F6'}},alignment:{horizontal:'center'}};
     }
-
-    for (let R = 1; R <= range.e.r; R++) {
-      for (let C = 2; C <= 6; C++) {
-        const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
-        if (cell) cell.z = 'R$ #,##0.00';
-      }
+    for (let R=1; R<=range.e.r; R++) for (let C=2; C<=6; C++) {
+      const cell=ws[XLSX.utils.encode_cell({r:R,c:C})]; if(cell) cell.z='R$ #,##0.00';
     }
-
-    const totalRow = range.e.r;
-    for (let C = range.s.c; C <= range.e.c; C++) {
-      const cell = ws[XLSX.utils.encode_cell({ r: totalRow, c: C })];
-      if (cell) cell.s = {
-        font: { bold: true },
-        fill: { fgColor: { rgb: 'D9EAD3' } },
-        alignment: { horizontal: C < 2 ? 'left' : 'right', vertical: 'center' }
-      };
+    for (let C=0; C<=range.e.c; C++) {
+      const cell=ws[XLSX.utils.encode_cell({r:range.e.r,c:C})];
+      if(cell) cell.s={font:{bold:true},fill:{fgColor:{rgb:'D9EAD3'}}};
     }
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Empenhos');
+    XLSX.writeFile(wb,`Empenhos_selecionados_${today()}.xlsx`);
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Empenhos');
-    XLSX.writeFile(wb, `Empenhos_selecionados_${today()}.xlsx`);
-    toast(`Excel exportado: ${linhas.length} empenho(s) selecionado(s)`, 'success');
+    const moeda=v => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const esc=v => String(v??'').replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]));
+    const corpo=linhas.map(l=>`<tr><td>${esc(l[0])}</td><td>${esc(l[1])}</td>${l.slice(2).map(v=>`<td class="n">${moeda(v)}</td>`).join('')}</tr>`).join('');
+    const totalPDF=totais.slice(2).map(v=>`<td class="n">${moeda(v)}</td>`).join('');
+    const janela=window.open('','_blank');
+    if(janela){
+      janela.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Empenhos selecionados</title><style>
+      @page{size:A4 landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#1f2937;margin:0}h1{font-size:18px;color:#2d6a4f;margin:0 0 4px}p{font-size:10px;color:#64748b;margin:0 0 14px}table{width:100%;border-collapse:collapse;font-size:9px}th{background:#2d6a4f;color:#fff;padding:7px 5px;border:1px solid #24583f}td{padding:6px 5px;border:1px solid #cbd5e1}tbody tr:nth-child(even){background:#f8fafc}.n{text-align:right;white-space:nowrap}tfoot td{font-weight:bold;background:#d9ead3}</style></head><body>
+      <h1>Empenhos selecionados</h1><p>Gerado em ${new Date().toLocaleDateString('pt-BR')} - ${linhas.length} empenho(s)</p>
+      <table><thead><tr>${cabecalho.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${corpo}</tbody><tfoot><tr><td>TOTAL</td><td></td>${totalPDF}</tr></tfoot></table>
+      <script>window.onload=function(){window.print();};<\/script></body></html>`);
+      janela.document.close();
+    } else toast('Excel gerado. O navegador bloqueou a janela do PDF.', 'error');
+    toast(`Excel gerado e PDF aberto: ${linhas.length} empenho(s)`, 'success');
     return;
   }
 
-  const H = {
-    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação']
-  };
-  const R = {
-    disputas: DB.disputas.filter(r => !r.finalizada && matches('disputas', r)).map(r => {
-      const v = dVals(r);
-      return [r.data, r.orgao, r.estado, r.empresa, r.tipo, r.rp, r.processo, r.sistema, r.analista,
-        getValorContrato(r), r.compra||0, r.custo||0, v.luc, v.pct+'%', r.situacao||'', r.observacao||''];
-    })
-  };
-  const ws = XLSX.utils.aoa_to_sheet([H[tab], ...R[tab]]);
-  ws['!cols'] = H[tab].map(h => ({ wch: Math.max(h.length + 2, 12) }));
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  for (let C = range.s.c; C <= range.e.c; C++) {
-    const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
-    if (cell) cell.s = { font: { bold: true }, fill: { fgColor: { rgb: 'EEF2F6' } } };
-  }
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Contratos');
-  XLSX.writeFile(wb, `Contratos_${today()}.xlsx`);
-  toast(`Excel exportado: ${R[tab].length} registros`, 'success');
+  const H={disputas:['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação']};
+  const R={disputas:DB.disputas.filter(r=>!r.finalizada&&matches('disputas',r)).map(r=>{const v=dVals(r);return[r.data,r.orgao,r.estado,r.empresa,r.tipo,r.rp,r.processo,r.sistema,r.analista,getValorContrato(r),r.compra||0,r.custo||0,v.luc,v.pct+'%',r.situacao||'',r.observacao||''];})};
+  const ws=XLSX.utils.aoa_to_sheet([H[tab],...R[tab]]); ws['!cols']=H[tab].map(h=>({wch:Math.max(h.length+2,12)}));
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Contratos'); XLSX.writeFile(wb,`Contratos_${today()}.xlsx`);
+  toast(`Excel exportado: ${R[tab].length} registros`,'success');
 }
 
 // ========== BACKUP / RESTAURAR ==========
