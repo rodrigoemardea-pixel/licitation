@@ -300,6 +300,21 @@ function _atualizarIndicadorOrdenacaoAcomp() {
   cabecalho.setAttribute('aria-sort', _acompSort.asc ? 'ascending' : 'descending');
 }
 
+let _paginaAcomp = 1;
+const _itensPorPaginaAcomp = 8;
+function irPaginaAcomp(p) { _paginaAcomp = p; renderAcomp(); }
+function renderPaginacaoAcomp(total) {
+  const tb=document.getElementById('tbody-acomp'); if(!tb)return;
+  let box=document.getElementById('pagination-acomp-inline');
+  if(!box){box=document.createElement('div');box.id='pagination-acomp-inline';box.className='pagination';const w=tb.closest('.table-wrap')||tb.closest('.table-wrapper');if(w?.parentNode)w.parentNode.insertBefore(box,w.nextSibling);}
+  const pags=Math.ceil(total/_itensPorPaginaAcomp);
+  if(pags<=1){box.style.display='none';box.innerHTML='';return;}
+  _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pags));box.style.display='flex';
+  let h=`<button class="page-btn" onclick="irPaginaAcomp(${_paginaAcomp-1})" ${_paginaAcomp===1?'disabled':''}>‹</button>`;
+  for(let n=1;n<=pags;n++)h+=`<button class="page-btn ${n===_paginaAcomp?'active':''}" onclick="irPaginaAcomp(${n})">${n}</button>`;
+  h+=`<button class="page-btn" onclick="irPaginaAcomp(${_paginaAcomp+1})" ${_paginaAcomp===pags?'disabled':''}>›</button><span class="page-info">${(_paginaAcomp-1)*8+1}-${Math.min(_paginaAcomp*8,total)} de ${total}</span>`;box.innerHTML=h;
+}
+
 function renderAcomp() {
   markAllActiveFilters();
   const tb = document.getElementById('tbody-acomp'); if (!tb) return;
@@ -319,6 +334,11 @@ function renderAcomp() {
     return true;
   }).sort(_compararAcomp);
 
+  const totalRowsAcomp=rows.length;
+  const pagsAcomp=Math.max(1,Math.ceil(totalRowsAcomp/_itensPorPaginaAcomp));
+  _paginaAcomp=Math.max(1,Math.min(_paginaAcomp,pagsAcomp));
+  rows=rows.slice((_paginaAcomp-1)*_itensPorPaginaAcomp,_paginaAcomp*_itensPorPaginaAcomp);
+
   _atualizarIndicadorOrdenacaoAcomp();
 
   if (!rows.length) {
@@ -336,18 +356,19 @@ function renderAcomp() {
     const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     const zebraTd = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);');
-    return `<tr style="cursor:pointer;" onclick="verAcomp('${r.id}')">
+    return `<tr style="cursor:pointer;height:34px;" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td style="${zebraTd}"><div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;min-width:0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao||'—'}</span>${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" style="display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:var(--accent);text-decoration:none;font-size:13px;">🔗</a>` : ''}</div><span class="estado-badge" style="font-size:9px;">${r.estado||''}</span></td>
+      <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px;min-width:0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao||'—'}</span>${r.estado ? `<span class="estado-badge" style="font-size:9px;flex:0 0 auto;">${r.estado}</span>` : ''}${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" style="color:var(--accent);text-decoration:none;flex:0 0 auto;">🔗</a>` : ''}</div></td>
       <td style="${zebraTd}"><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa||'—'}</span></td>
-      <td style="${zebraTd}"><div style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</div><span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo||''}</span></td>
+      <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;"><span style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</span>${r.processo ? `<span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo}</span>` : ''}</div></td>
       <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
       <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
-      <td style="${zebraTd}cursor:pointer;" onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno">${retStr}</td>
+      <td style="${zebraTd}padding:5px 8px;cursor:pointer;" onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno">${retStr}</td>
       <td style="text-align:center;${zebraTd}" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:15px;color:var(--text-tertiary);" title="Excluir" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-tertiary)'">🗑</button></td>
     </tr>`;
   }).join('');
+  renderPaginacaoAcomp(totalRowsAcomp);
 
   const pendentes = (DB.acomp||[]).filter(r=>r.status==='pendente').length;
   const recursos = (DB.acomp||[]).filter(r=>r.status==='recurso').length;
@@ -561,71 +582,5 @@ function mostrarPopupAlerta(r) {
 
 
 
-// ========== EDICAO INLINE DA DATA/HORA DE RETORNO ==========
-function editarRetornoAcompInline(id, celula) {
-  const registro = (DB.acomp || []).find(r => r.id === id);
-  if (!registro || !celula || celula.querySelector('input')) return;
-
-  const valorAnterior = registro.retorno || '';
-  celula.innerHTML = '';
-
-  const input = document.createElement('input');
-  input.type = 'datetime-local';
-  input.value = valorAnterior;
-  input.className = 'fc';
-  input.style.cssText = 'min-width:185px;padding:5px 7px;font-size:11px;';
-  input.title = 'Altere a data e a hora. Enter ou clique fora salva. Esc cancela.';
-
-  let concluido = false;
-
-  const cancelar = () => {
-    if (concluido) return;
-    concluido = true;
-    renderAcomp();
-  };
-
-  const salvar = () => {
-    if (concluido) return;
-    concluido = true;
-    salvarRetornoAcompInline(id, input.value);
-  };
-
-  input.addEventListener('click', event => event.stopPropagation());
-  input.addEventListener('keydown', event => {
-    event.stopPropagation();
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      salvar();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      cancelar();
-    }
-  });
-  input.addEventListener('blur', salvar);
-
-  celula.appendChild(input);
-  input.focus();
-  if (typeof input.showPicker === 'function') {
-    try { input.showPicker(); } catch (e) {}
-  }
-}
-
-function salvarRetornoAcompInline(id, novoRetorno) {
-  const indice = (_fullDB.acomp || []).findIndex(r => r.id === id);
-  if (indice === -1) {
-    toast('Acompanhamento nao encontrado.', 'error');
-    renderAcomp();
-    return;
-  }
-
-  const valorAnterior = _fullDB.acomp[indice].retorno || '';
-  if (novoRetorno === valorAnterior) {
-    renderAcomp();
-    return;
-  }
-
-  _fullDB.acomp[indice].retorno = novoRetorno || '';
-  save('acomp', _fullDB.acomp);
-  renderActive();
-  toast(novoRetorno ? 'Data de retorno atualizada!' : 'Data de retorno removida!', 'success');
-}
+function editarRetornoAcompInline(id,celula){const r=(DB.acomp||[]).find(x=>x.id===id);if(!r||celula.querySelector('input'))return;celula.innerHTML='';const i=document.createElement('input');i.type='datetime-local';i.value=r.retorno||'';i.className='fc';i.style.cssText='min-width:185px;padding:5px 7px;font-size:11px;';let fim=false;const salvar=()=>{if(fim)return;fim=true;salvarRetornoAcompInline(id,i.value);};i.onclick=e=>e.stopPropagation();i.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();salvar();}else if(e.key==='Escape'){fim=true;renderAcomp();}};i.onblur=salvar;celula.appendChild(i);i.focus();if(i.showPicker)try{i.showPicker();}catch(e){}}
+function salvarRetornoAcompInline(id,v){const n=(_fullDB.acomp||[]).findIndex(x=>x.id===id);if(n<0){toast('Acompanhamento nao encontrado.','error');return renderAcomp();}if((_fullDB.acomp[n].retorno||'')===v)return renderAcomp();_fullDB.acomp[n].retorno=v||'';save('acomp',_fullDB.acomp);renderActive();toast(v?'Data de retorno atualizada!':'Data de retorno removida!','success');}
