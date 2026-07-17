@@ -601,3 +601,61 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 .lb-badge--atraso-30{background:rgba(234,179,8,.10);color:var(--warning);border-color:rgba(234,179,8,.20)}
 .lb-badge--atraso-60{background:rgba(220,38,38,.08);color:var(--danger);border-color:rgba(220,38,38,.20)}
 .lb-badge--atraso-90{background:var(--danger-soft);color:var(--danger);border-color:rgba(220,38,38,.30);font-weight:800}
+
+
+/* ========================================================================== */
+/* CLASSES DE LINHA E CELULA (usadas por renderAcomp, renderFinalizadas,      */
+/* renderEmpFinalizados agrupado). Substituem os style="..." inline.          */
+/* ========================================================================== */
+
+/* Linha padrao clicavel */
+.lb-row{cursor:pointer}
+.lb-row--sub{background:transparent}
+.lb-row--sub > td:first-child{padding-left:20px!important}
+
+/* Cell inline (orgao + UF + link) */
+.lb-cell-inline{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  white-space:nowrap;
+}
+.lb-cell-truncate{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  min-width:0;
+}
+.lb-cell-strong{font-weight:600;color:var(--text-primary)}
+.lb-cell-sub{color:var(--text-tertiary);font-size:11px}
+.lb-cell-link{color:var(--accent);text-decoration:none;flex:0 0 auto}
+.lb-cell-clicavel{cursor:pointer}
+.lb-cell-acao{text-align:center}
+.lb-cell-indent{padding-left:20px!important}
+
+/* Valores coloridos (padroniza cor por semantica, sem style inline) */
+.lb-cell-value--success{color:var(--success)!important;font-weight:600}
+.lb-cell-value--warning{color:var(--warning)!important;font-weight:600}
+.lb-cell-value--danger{color:var(--danger)!important;font-weight:600}
+.lb-cell-value--accent{color:var(--accent)!important;font-weight:600}
+
+/* Status de acompanhamento */
+.lb-cell-status{font-size:11px;font-weight:600}
+.lb-cell-status--pendente{color:var(--warning)}
+.lb-cell-status--recurso{color:var(--accent)}
+.lb-cell-status--perdida{color:var(--danger)}
+
+/* Data/hora de retorno (acompanhamentos) */
+.lb-cell-retorno{font-size:11px;font-weight:700}
+.lb-cell-retorno--vencido{color:var(--danger)}
+.lb-cell-retorno--hoje{color:var(--warning)}
+.lb-cell-retorno--futuro{color:var(--text-secondary)}
+
+/* Botao lixeira compacto */
+.lb-btn-lixo{
+  padding:4px 8px!important;
+  font-size:15px!important;
+  color:var(--text-tertiary)!important;
+}
+.lb-btn-lixo:hover{color:var(--danger)!important}
