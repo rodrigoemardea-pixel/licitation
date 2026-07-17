@@ -393,162 +393,36 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
-/* ========================================================================== */
-/* PADRAO VISUAL DAS TELAS OPERACIONAIS                                       */
-/* Acompanhamentos, contratos ativos, empenhos pendentes e telas finalizadas  */
-/* ========================================================================== */
-:root{
-  --lb-standard-card-w:184px;
-  --lb-standard-card-h:82px;
-  --lb-standard-toolbar-h:58px;
-  --lb-standard-row-h:38px;
-  --lb-standard-table-h:354px;
-}
+/* Ajuste final de densidade: usa Contratos Ativos como referencia */
+:root{--lb-standard-row-h:36px;}
 
-/* Mesma estrutura vertical nas cinco telas */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados){
-  min-height:calc(100vh - 108px);
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .lb-page-head{
-  min-height:52px!important;
-  margin-bottom:14px!important;
-}
-
-/* Cards com largura, altura, espacamento e tipografia uniformes */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row{
-  display:grid!important;
-  grid-template-columns:repeat(auto-fill,var(--lb-standard-card-w))!important;
-  grid-auto-rows:var(--lb-standard-card-h)!important;
-  justify-content:start!important;
-  align-items:stretch!important;
-  gap:10px!important;
-  min-height:var(--lb-standard-card-h)!important;
-  margin-bottom:14px!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row > .card{
-  width:var(--lb-standard-card-w)!important;
-  min-width:var(--lb-standard-card-w)!important;
-  max-width:var(--lb-standard-card-w)!important;
-  height:var(--lb-standard-card-h)!important;
-  min-height:var(--lb-standard-card-h)!important;
-  padding:13px 15px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .card-label{
-  min-height:15px!important;
-  margin-bottom:4px!important;
-  font-size:9px!important;
-  line-height:1.2!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .card-value{
-  font-size:18px!important;
-  line-height:1.1!important;
-}
-
-/* Barras de filtros com a mesma altura e controles equivalentes */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar{
-  min-height:var(--lb-standard-toolbar-h)!important;
-  margin-bottom:12px!important;
-  padding:10px 12px!important;
-  gap:7px!important;
-  align-items:center!important;
-  align-content:center!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar :is(.btn,.filter-group,.search-box input,select,input){
-  min-height:36px!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .filter-group{
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)){
   height:36px!important;
   min-height:36px!important;
-  padding:3px 9px!important;
-  border-radius:9px!important;
+  max-height:36px!important;
 }
 
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .search-box{
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td{
   height:36px!important;
   min-height:36px!important;
+  max-height:36px!important;
+  padding-top:5px!important;
+  padding-bottom:5px!important;
+  line-height:1.15!important;
 }
 
-/* Tabelas com oito linhas na mesma area visual */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .table-wrapper,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .table-wrap{
-  height:var(--lb-standard-table-h)!important;
-  min-height:var(--lb-standard-table-h)!important;
-  max-height:var(--lb-standard-table-h)!important;
+#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)),
+#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td,
+#tab-finalizadas table tbody > tr:not(:has(.empty-state)),
+#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td{
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+}
+
+#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td > :is(div,span),
+#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td > :is(div,span){
+  margin-top:0!important;
   margin-bottom:0!important;
-  overflow:auto!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table thead th{
-  height:42px!important;
-  padding:8px 10px!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr{
-  height:var(--lb-standard-row-h)!important;
-  min-height:var(--lb-standard-row-h)!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td{
-  height:var(--lb-standard-row-h)!important;
-  min-height:var(--lb-standard-row-h)!important;
-  padding:5px 9px!important;
-  line-height:1.18!important;
-}
-
-/* Paginacao sempre centralizada e na mesma faixa inferior */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .pagination,
-#pagination-acomp-inline,
-#pagination-disputas,
-#pagination-empenhos,
-#pagination-finalizadas-padrao,
-#pagination-emp-finalizados-padrao{
-  display:flex;
-  justify-content:center!important;
-  align-items:center!important;
-  align-content:center!important;
-  gap:5px!important;
-  width:100%!important;
-  min-height:52px!important;
-  margin:0 auto!important;
-  padding:10px 0!important;
-  float:none!important;
-  clear:both!important;
-  box-sizing:border-box!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .pagination[style*="display: none"],
-#pagination-acomp-inline[style*="display: none"],
-#pagination-finalizadas-padrao[style*="display: none"],
-#pagination-emp-finalizados-padrao[style*="display: none"]{
-  display:none!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .page-btn{
-  width:34px!important;
-  min-width:34px!important;
-  height:34px!important;
-  min-height:34px!important;
-  padding:0 7px!important;
-}
-
-/* Responsividade sem alterar a hierarquia visual */
-@media(max-width:900px){
-  :root{--lb-standard-card-w:168px;--lb-standard-table-h:354px}
-  :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row{
-    grid-template-columns:repeat(auto-fill,var(--lb-standard-card-w))!important;
-  }
-  :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row > .card{
-    width:var(--lb-standard-card-w)!important;
-    min-width:var(--lb-standard-card-w)!important;
-    max-width:var(--lb-standard-card-w)!important;
-  }
+  line-height:1.15!important;
 }
