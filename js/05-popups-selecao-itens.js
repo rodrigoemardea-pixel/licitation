@@ -24,13 +24,17 @@ function abrirPopupDisputa(id) {
   }, 0);
 
   // Atalhos para todos os empenhos vinculados a este contrato.
+  // Função local para não depender de utilitário externo inexistente.
+  const escaparEmpenhoRelacionado = valor => String(valor ?? '').replace(/[&<>"]/g, caractere => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
+  })[caractere]);
   const empenhosRelacionadosHTML = emps.length ?
     '<section class="lb-related-empenhos" style="margin:0 0 14px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">' +
       '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);letter-spacing:.05em;margin-bottom:7px;">EMPENHOS DESTE CONTRATO</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
         emps.map(e =>
-          '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escapeHTML(e.num || '') + '">' +
-            '#' + escapeHTML(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · FINALIZADO' : '') +
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escaparEmpenhoRelacionado(e.num || '') + '">' +
+            '#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · FINALIZADO' : '') +
           '</button>'
         ).join('') +
       '</div>' +
