@@ -29,10 +29,40 @@ function validarIntegridade(sil){
 // Override renderD: progress bar column
 /* override renderD removido - progresso inline */
 
-// Override renderE: paginacao unificada em 18-paginacao.js.
-// Este override foi removido para evitar dupla paginacao (o proprio 05 ja pagina).
-// Mantido apenas o reset de pagina ao aplicar filtros.
+// Override renderE: paginacao visual dos empenhos na visao NAO agrupada.
+// O renderE do 05 renderiza todas as linhas de uma vez, entao aqui fatiamos
+// via display:none e delegamos a barra ao 18-paginacao.js. Na visao agrupada,
+// o proprio 05 ja fatia antes de renderizar, entao so pintamos a barra.
 (function(){
+  if(typeof renderE !== 'function') return;
+  var orig = renderE;
+  renderE = function(){
+    orig();
+    var tb = document.getElementById('tbody-empenhos');
+    if(!tb) return;
+    // Se e a visao agrupada, o 05 ja paginou antes de renderizar.
+    if(typeof _agrupado !== 'undefined' && _agrupado){
+      // O 05 ja chama renderPagination na visao agrupada.
+      return;
+    }
+    var size = (window.LB_PAGE_SIZE) || 10;
+    var rows = [].slice.call(tb.querySelectorAll(':scope > tr'));
+    // Se so tem empty-state, nao pagina.
+    if(!rows.length || (rows.length === 1 && rows[0].querySelector('.empty-state'))){
+      if(typeof LB_renderPag === 'function') LB_renderPag('empenhos', 0, function(){ renderE(); });
+      return;
+    }
+    var pag = (window.LB_PAGES && window.LB_PAGES.empenhos) || 1;
+    var total = Math.ceil(rows.length / size) || 1;
+    if(pag > total) { pag = 1; window.LB_PAGES.empenhos = 1; }
+    var start = (pag - 1) * size;
+    rows.forEach(function(tr, i){
+      tr.style.display = (i >= start && i < start + size) ? '' : 'none';
+    });
+    if(typeof LB_renderPag === 'function'){
+      LB_renderPag('empenhos', rows.length, function(){ renderE(); });
+    }
+  };
   if(typeof filtrarEmpenhos === 'function'){
     var origF = filtrarEmpenhos;
     filtrarEmpenhos = function(){
