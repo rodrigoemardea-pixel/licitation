@@ -140,11 +140,9 @@ function abrirPopupDisputa(id) {
       '</div>' +
       '</div>' +
       '<div class="detail-grid-3">' +
-      (r.propostaUrl ? '<div class="detail-field"><div class="detail-field-label">PROPOSTA</div><div class="detail-field-value"><button onclick="baixarProposta(\'' + id + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📎 ' + (r.propostaNome||'Baixar arquivo') + '</button></div></div>' : '') +
 
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
-      (r.contratoUrl ? '<div class="detail-field"><div class="detail-field-label">CONTRATO PDF</div><div class="detail-field-value"><button onclick="baixarContrato(\'' + r.contratoUrl + '\',\'' + (r.contratoNome||'contrato.pdf') + '\')" class="btn btn-ghost btn-sm" style="color:var(--accent);border-color:var(--accent);">📄 ' + (r.contratoNome||'Ver contrato') + '</button></div></div>' : '') +
     '</div>' +
     (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     lotesHTML +
@@ -195,7 +193,6 @@ function abrirPopupEmpenho(id) {
   const { tot, imp, luc, pct, rec } = eVals(r);
   const dias = diasSemPagamento(r);
   const disp = r.disputaId ? DB.disputas.find(d => d.id === r.disputaId) : null;
-  
   // Itens do empenho — descrição sempre buscada ao vivo do contrato para refletir edições
   const itensRaw = r.itens && r.itens.length ? r.itens : 
     (r.loteId ? [{ id:'leg1', loteId:r.loteId, descricao:r.produto||'', qtd:r.qtd||1, vunit:r.vunit||0 }] : []);
@@ -517,7 +514,14 @@ function renderD(){
       '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
       '<td class="mono" style="color:var(--accent);font-weight:700;font-size:11px;">'+(_vlCont>0?fmt(_vlCont):'—')+'</td>' +
       '<td class="mono" style="color:var(--warning);font-weight:700;font-size:11px;">'+(_lucPrev!==0?fmt(_lucPrev):'—')+'</td>' +
-      '<td style="text-align:center;"><div class="progress-bar-wrap" style="min-width:50px;"><div class="progress-bar-fill" style="width:'+pctProg+'%;background:'+_progCor+'"></div></div><span style="font-size:9px;color:var(--text-tertiary);">'+pctProg+'%</span></td>' +
+      '<td style="text-align:center;padding-left:12px;padding-right:12px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;width:100%;min-width:180px;">' +
+          '<div class="progress-bar-wrap" style="position:relative;flex:1;width:100%;height:8px;min-width:0;overflow:hidden;border-radius:999px;background:var(--bg-inset);">' +
+            '<div class="progress-bar-fill" style="display:block;height:100%;max-width:100%;width:'+Math.max(0,Math.min(100,pctProg))+'%;background:'+_progCor+';border-radius:999px;"></div>' +
+          '</div>' +
+          '<span style="flex:0 0 30px;text-align:right;font-size:9px;color:var(--text-tertiary);">'+pctProg+'%</span>' +
+        '</div>' +
+      '</td>' +
       '</tr>'
     );
 
