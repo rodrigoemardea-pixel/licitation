@@ -232,7 +232,25 @@ function renderPagination(tab, totalRows) {
   const total = totalRows;
   const pages = Math.ceil(total / PAGE_SIZE);
   if (pages <= 1) { container.style.display = 'none'; return; }
-  container.style.display = 'flex';
+  container.style.cssText = [
+    'display:flex',
+    'justify-content:center',
+    'align-items:center',
+    'gap:6px',
+    'width:100%',
+    'max-width:none',
+    'margin:12px auto 0',
+    'padding:10px 0',
+    'box-sizing:border-box',
+    'float:none',
+    'clear:both'
+  ].join(';');
+
+  // Mantem a paginacao na mesma posicao, inclusive na ultima pagina.
+  const pane = document.getElementById('tab-' + tab);
+  const tableWrap = pane?.querySelector('.table-wrapper, .table-wrap');
+  if (tableWrap) tableWrap.style.minHeight = '330px';
+
   const cur = _page[tab];
   let html = `<button class="page-btn" onclick="_goPage('${tab}',${cur-1})" ${cur===1?'disabled':''}>‹</button>`;
   // Show window of pages
