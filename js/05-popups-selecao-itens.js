@@ -34,7 +34,7 @@ function abrirPopupDisputa(id) {
       '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
         emps.map(e =>
           '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escaparEmpenhoRelacionado(e.num || '') + '">' +
-            '#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · FINALIZADO' : '') +
+            '#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · <span style="color:var(--success);font-weight:800;">PAGO</span>' : ' · <span style="color:var(--warning);font-weight:800;">PENDENTE</span>') +
           '</button>'
         ).join('') +
       '</div>' +
@@ -43,7 +43,7 @@ function abrirPopupDisputa(id) {
   const lotesHTML = lotes.length ? `
     <div class="detail-section">📦 ITENS / LOTES</div>
     <table class="lotes-status-table">
-      <thead><tr><th>Descrição</th><th>Qtd</th><th>Vl.Unit</th><th>Empenhado</th><th>Enviado (Compras)</th><th>Restante</th><th>Progresso</th><th>Empenhos</th><th>Pago?</th></tr></thead>
+      <thead><tr><th>Descrição</th><th>Qtd</th><th>Vl.Unit</th><th>Empenhado</th><th>Enviado (Compras)</th><th>Restante</th><th>Progresso</th></tr></thead>
       <tbody>${lotes.map(l => {
         const pctVal = l.qtd > 0 ? Math.min(100, Math.round(l.qtdEnviada / l.qtd * 100)) : 0;
         const cls = l.qtdRestante <= 0 ? 'saldo-zero' : l.qtdEnviada > 0 ? 'saldo-parcial' : 'saldo-ok';
@@ -76,8 +76,6 @@ function abrirPopupDisputa(id) {
           '<td class="mono" style="color:var(--success);font-weight:600;">' + qtdViaCompras + '</td>' +
           '<td class="mono ' + cls + '">' + (l.qtdRestante > 0 ? l.qtdRestante : '✓ COMPLETO') + '</td>' +
           '<td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pctVal + '%"></div></div></td>' +
-          '<td>' + (empsLote.map(e => '<span onclick="abrirPopupEmpenho(\''+e.id+'\')" style="cursor:pointer;color:var(--accent);font-size:10px;font-weight:600;margin-right:4px;">#' + e.num + '</span>').join('') || '—') + '</td>' +
-          '<td>' + statusPag + '</td>' +
           '</tr>';
       }).join('')}</tbody>
     </table>` : '<p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Nenhum item cadastrado.</p>';
