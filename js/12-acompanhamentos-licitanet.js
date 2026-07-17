@@ -333,25 +333,23 @@ function renderAcomp() {
     return;
   }
 
-  const btnStyle = 'padding:5px 9px;font-size:15px;border-radius:8px;';
-  tb.innerHTML = rows.map((r, idx) => {
+    tb.innerHTML = rows.map((r) => {
     const ret = r.retorno ? new Date(r.retorno) : null;
     const vencido = ret && ret < agora;
     const hoje = ret && ret.toDateString() === agora.toDateString();
-    const retStr = ret ? `<span style="font-size:11px;font-weight:700;color:${vencido?'var(--danger)':hoje?'var(--warning)':'var(--text-secondary)'};">${vencido?'🔴 ':''}${ret.toLocaleDateString('pt-BR')} ${ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>` : '—';
-    const statusColors = {pendente:'var(--warning)',recurso:'var(--accent)',perdida:'var(--danger)'};
+    const retStatus = vencido ? 'vencido' : hoje ? 'hoje' : 'futuro';
+    const retStr = ret ? `<span class="lb-cell-retorno lb-cell-retorno--${retStatus}">${vencido?'🔴 ':''}${ret.toLocaleDateString('pt-BR')} ${ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>` : '—';
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
-    const zebraTd = vencido ? 'background:rgba(239,68,68,0.05);' : (idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);');
-    return `<tr style="cursor:pointer;height:34px;" onclick="verAcomp('${r.id}')">
-      <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px;min-width:0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao||'—'}</span>${r.estado ? `<span class="estado-badge" style="font-size:9px;flex:0 0 auto;">${r.estado}</span>` : ''}${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" style="color:var(--accent);text-decoration:none;flex:0 0 auto;">🔗</a>` : ''}</div></td>
-      <td style="${zebraTd}">${lbBadgeEmpresa(r.empresa)}</td>
-      <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;"><span style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</span>${r.processo ? `<span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo}</span>` : ''}</div></td>
-      <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
-      <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
-      <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
-      <td style="${zebraTd}padding:5px 8px;cursor:pointer;" onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno">${retStr}</td>
-      <td style="text-align:center;${zebraTd}" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:15px;color:var(--text-tertiary);" title="Excluir" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-tertiary)'">🗑</button></td>
+    return `<tr class="lb-row" onclick="verAcomp('${r.id}')">
+      <td class="mono">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
+      <td><div class="lb-cell-inline"><span class="lb-cell-truncate">${r.orgao||'—'}</span>${r.estado ? lbBadgeUF(r.estado) : ''}${r.link ? `${r.link}er" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" class="lb-cell-link">🔗</a>` : ''}</div></td>
+      <td>${lbBadgeEmpresa(r.empresa)}</td>
+      <td><div class="lb-cell-inline"><span class="lb-cell-strong">${r.tipo||'—'}</span>${r.processo ? `<span class="mono lb-cell-sub">${r.processo}</span>` : ''}</div></td>
+      <td>${lbBadgeAnalista(r.analista)}</td>
+      <td>${r.sistema||'—'}</td>
+      <td><span class="lb-cell-status lb-cell-status--${r.status}">${statusLabels[r.status]||r.status}</span></td>
+      <td onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno" class="lb-cell-clicavel">${retStr}</td>
+      <td class="lb-cell-acao" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm lb-btn-lixo" title="Excluir">🗑</button></td>
     </tr>`;
   }).join('');
   LB_renderPag('acompanhamentos', totalRowsAcomp, function(){ renderAcomp(); });

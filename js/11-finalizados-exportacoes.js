@@ -153,18 +153,15 @@ function renderFinalizadas() {
     sumFinalizadas(todasFinalizadas);
     return;
   }
-  tb.innerHTML = rows.map((r, idx) => {
-    const contrato = getValorContrato(r);
+   tb.innerHTML = rows.map((r) => {
     const lucroRec = _lucroRecebidoContratoFinalizado(r);
-    const zebraTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
-    return '<tr class="lb-standard-data-row" style="cursor:pointer;height:36px;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
-      '<td class="mono" style="font-size:11px;padding-top:5px;padding-bottom:5px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
-      '<td style="padding-top:5px;padding-bottom:5px;' + zebraTd + '"><div style="display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;"><span style="font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis;">' + (r.orgao||'—') + '</span><span class="estado-badge" style="font-size:9px;flex:0 0 auto;">' + (r.estado||'—') + '</span></div></td>' +
-      '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td style="' + zebraTd + '">' + lbBadgeEmpresa(r.empresa) + '</td>' +
-      
-      '<td class="mono money" style="text-align:right;color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
-      '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
+    return '<tr class="lb-row" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
+      '<td class="mono">' + fmtD(r.data) + '</td>' +
+      '<td><div class="lb-cell-inline"><span class="lb-cell-truncate lb-cell-strong">' + (r.orgao||'—') + '</span>' + lbBadgeUF(r.estado) + '</div></td>' +
+      '<td>' + lbBadgeAnalista(r.analista) + '</td>' +
+      '<td>' + lbBadgeEmpresa(r.empresa) + '</td>' +
+      '<td class="mono money lb-cell-value--success">' + fmt(lucroRec) + '</td>' +
+      '<td class="mono lb-cell-sub">' + fmtD(r.dataFinalizacao) + '</td>' +
       '</tr>';
   }).join('');
   sumFinalizadas(todasFinalizadas);
@@ -393,16 +390,15 @@ function renderEmpFinalizados() {
         `<span class="badge ${_badgeClass(nome)}" style="font-size:10px;margin-left:6px;">${nome}</span>`
       ).join('');
 
-      const linhasEmp = g_.empenhos.map((r, idx) => {
+          const linhasEmp = g_.empenhos.map((r) => {
         const lucroRec = _lucroRecebidoEmpenhoFinalizado(r);
         const dpagExib = _dataPagamentoEmpenhoFinalizado(r);
-        const zebraFinTd = idx % 2 === 1 ? 'background:var(--bg-surface-soft);' : 'background:var(--bg-surface);';
-        return `<tr style="cursor:pointer;" onclick="abrirPopupEmpenho('${r.id}')">
-          <td class="mono hi" style="font-size:11px;font-weight:600;padding-left:20px;${zebraFinTd}">${r.num||'—'}</td>
-          <td style="${zebraFinTd}"></td>
-          <td style="${zebraFinTd}"></td>
-          <td class="mono money" style="text-align:right;color:var(--success);font-weight:600;${zebraFinTd}">${fmt(lucroRec)}</td>
-          <td class="mono" style="font-size:11px;color:var(--text-tertiary);${zebraFinTd}">${fmtD(dpagExib)}</td>
+        return `<tr class="lb-row lb-row--sub" onclick="abrirPopupEmpenho('${r.id}')">
+          <td class="mono hi lb-cell-strong lb-cell-indent">${r.num||'—'}</td>
+          <td></td>
+          <td></td>
+          <td class="mono money lb-cell-value--success">${fmt(lucroRec)}</td>
+          <td class="mono lb-cell-sub">${fmtD(dpagExib)}</td>
           </tr>`;
       }).join('');
 
