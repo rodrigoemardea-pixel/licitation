@@ -716,9 +716,10 @@ function atualizarHeaderEmpenhosAgrupado() {
 }
 
 function renderE(){
-  // Sincroniza estilo do botão de agrupamento
+  // A visualização agrupada por órgão foi desativada.
+  _agrupado = false;
   const _btnAgr = g('btn-agrupar-orgao');
-  if(_btnAgr) { _btnAgr.style.background = _agrupado ? 'var(--accent)' : ''; _btnAgr.style.color = _agrupado ? '#fff' : ''; }
+  if (_btnAgr) _btnAgr.style.display = 'none';
   atualizarHeaderEmpenhosAgrupado();
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
