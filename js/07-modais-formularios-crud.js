@@ -691,41 +691,116 @@ function exportCSV(tab){
 // ========== EXPORT XLSX (SheetJS) ==========
 function exportXLSX(tab) {
   if (typeof XLSX === 'undefined') { exportCSV(tab); return; }
+
+  // Na tela de empenhos, exporta somente os registros previamente selecionados.
+  if (tab === 'empenhos') {
+    const idsSelecionados = Array.from(
+      document.querySelectorAll('.chk-row-empenhos:checked')
+    ).map(chk => chk.dataset.id);
+
+    if (!idsSelecionados.length) {
+      toast('Selecione ao menos um empenho para exportar.', 'error');
+      return;
+    }
+
+    const idsSet = new Set(idsSelecionados);
+    const empenhosSelecionados = DB.empenhos.filter(r =>
+      idsSet.has(r.id) && !r.finalizado
+    );
+
+    const cabecalho = [
+      'Órgão',
+      'Número Empenho',
+      'Valor do Empenho',
+      'Valor da Compra',
+      'Custo',
+      'Lucro a Receber'
+    ];
+
+    const linhas = empenhosSelecionados.map(r => {
+      const compras = r.compras || [];
+      const valorCompra = compras.reduce((total, compra) =>
+        total + (compra.vtotal || 0), 0);
+      const custo = compras.reduce((total, compra) =>
+        total + (compra.custo || 0), 0);
+      const lucroAReceber = compras
+        .filter(compra => !compra.dpag || compra.dpag === '')
+        .reduce((total, compra) => {
+          const lucro = compra.luc !== undefined && compra.luc !== null
+            ? compra.luc
+            : (compra.rec || 0) - (compra.vtotal || 0) - (compra.custo || 0);
+          return total + lucro;
+        }, 0);
+
+      return [
+        r.orgao || '',
+        r.num || '',
+        r.vem || 0,
+        valorCompra,
+        custo,
+        lucroAReceber
+      ];
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...linhas]);
+    ws['!cols'] = [
+      { wch: 35 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 16 },
+      { wch: 22 }
+    ];
+
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const cell = ws[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (cell) {
+        cell.s = {
+          font: { bold: true },
+          fill: { fgColor: { rgb: 'EEF2F6' } },
+          alignment: { horizontal: 'center', vertical: 'center' }
+        };
+      }
+    }
+
+    // Formata as quatro colunas financeiras como moeda no Excel.
+    for (let R = 1; R <= range.e.r; R++) {
+      for (let C = 2; C <= 5; C++) {
+        const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
+        if (cell) cell.z = 'R$ #,##0.00';
+      }
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Empenhos');
+    XLSX.writeFile(wb, `Empenhos_selecionados_${today()}.xlsx`);
+    toast(`Excel exportado: ${linhas.length} empenho(s) selecionado(s)`, 'success');
+    return;
+  }
+
+  // Mantém inalterada a exportação dos contratos.
   const H = {
-    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação'],
-    empenhos: ['Empenho','Data','Órgão','Analista','Produto','Plataforma','Dt.Compra','Vl.Unit','Qtd','Total Compra','Vl.Empenho','Alíquota','Imposto','Lucro','% Lucro','A Receber','Recebido','Dt.Receb','Observação']
+    disputas: ['Data','Órgão','UF','Empresa','Tipo','RP','Processo','Sistema','Analista','Vl.Contrato','Compra Prev.','Custo Prev.','Lucro Prev.','% Lucro','Situação','Observação']
   };
   const R = {
     disputas: DB.disputas.filter(r => !r.finalizada && matches('disputas', r)).map(r => {
       const v = dVals(r);
       return [r.data, r.orgao, r.estado, r.empresa, r.tipo, r.rp, r.processo, r.sistema, r.analista,
         getValorContrato(r), r.compra||0, r.custo||0, v.luc, v.pct+'%', r.situacao||'', r.observacao||''];
-    }),
-    empenhos: DB.empenhos.filter(r => matches('empenhos', r) && !r.finalizado).map(r => {
-      const v = eVals(r);
-      return [r.num, r.data, r.orgao, r.analista, r.produto, r.plataforma, r.dcomp,
-        r.vunit||0, r.qtd||0, v.tot, r.vem||0, r.aliq||0, v.imp, v.luc, v.pct+'%', v.rec, r.recebido||0, r.dreceb||'', r.observacao||''];
     })
   };
-
   const ws = XLSX.utils.aoa_to_sheet([H[tab], ...R[tab]]);
-
-  // Column widths
-  const wscols = H[tab].map((h, i) => ({ wch: Math.max(h.length + 2, 12) }));
-  ws['!cols'] = wscols;
-
-  // Style header row bold (xlsx.js basic)
+  ws['!cols'] = H[tab].map(h => ({ wch: Math.max(h.length + 2, 12) }));
   const range = XLSX.utils.decode_range(ws['!ref']);
   for (let C = range.s.c; C <= range.e.c; C++) {
     const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
-    if (cell) { cell.s = { font: { bold: true }, fill: { fgColor: { rgb: 'EEF2F6' } } }; }
+    if (cell) cell.s = { font: { bold: true }, fill: { fgColor: { rgb: 'EEF2F6' } } };
   }
-
   const wb = XLSX.utils.book_new();
-  const sheetName = tab === 'disputas' ? 'Contratos' : 'Empenhos';
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  XLSX.writeFile(wb, `${sheetName}_${today()}.xlsx`);
-  toast(`✅ Excel exportado: ${R[tab].length} registros`, 'success');
+  XLSX.utils.book_append_sheet(wb, ws, 'Contratos');
+  XLSX.writeFile(wb, `Contratos_${today()}.xlsx`);
+  toast(`Excel exportado: ${R[tab].length} registros`, 'success');
 }
 
 // ========== BACKUP / RESTAURAR ==========
