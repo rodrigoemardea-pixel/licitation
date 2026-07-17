@@ -696,6 +696,7 @@ function atualizarHeaderEmpenhosAgrupado() {
   if (!headerRow) return;
   if (_agrupado) {
     headerRow.innerHTML = `
+      <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
       <th style="min-width:130px;" onclick="sort('empenhos','num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
       <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorEmpenho')" id="sort-empenhos-valorEmpenho" title="Ordenar pelo valor do empenho">Val. Empenho</th>
       <th class="money" style="min-width:130px;text-align:right;" onclick="sort('empenhos','valorCompra')" id="sort-empenhos-valorCompra" title="Ordenar pelo valor das compras">Valor Compra</th>
@@ -721,8 +722,19 @@ function renderE(){
   atualizarHeaderEmpenhosAgrupado();
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; sumE(); verificarAlertas(); return; }
-  if(_agrupado) { renderEAgrupado(rows, tb); sumE(); verificarAlertas(); return; }
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; renderPagination('empenhos', 0); sumE(); verificarAlertas(); return; }
+  if(_agrupado) {
+    const totalPaginasAgrupado = Math.ceil(rows.length / PAGE_SIZE);
+    if (_page.empenhos > totalPaginasAgrupado) _page.empenhos = totalPaginasAgrupado;
+    if (_page.empenhos < 1) _page.empenhos = 1;
+    const inicioAgrupado = (_page.empenhos - 1) * PAGE_SIZE;
+    const rowsPagina = rows.slice(inicioAgrupado, inicioAgrupado + PAGE_SIZE);
+    renderEAgrupado(rowsPagina, tb);
+    renderPagination('empenhos', rows.length);
+    sumE();
+    verificarAlertas();
+    return;
+  }
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
     const compras = r.compras || [];
@@ -820,6 +832,7 @@ function sumE(){
 
     tfRowE.style.display = '';
     tfRowE.innerHTML = `
+      <td style="background:var(--bg-surface-soft);"></td>
       <td style="text-align:right;padding:10px 12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;background:var(--bg-surface-soft);">TOTAIS</td>
       <td class="mono" style="text-align:right;color:var(--accent);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
       <td class="mono" style="text-align:right;color:var(--text-secondary);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-compra">${fmt(totalValorCompraTela)}</td>

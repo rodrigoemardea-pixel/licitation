@@ -34,6 +34,9 @@ function validarIntegridade(sil){
   var orig=renderE;
   renderE=function(){
     orig();
+    // Na visão agrupada, renderE já pagina os empenhos antes de criar os cabeçalhos dos órgãos.
+    // Evita contar cabeçalhos de grupo como se fossem registros.
+    if(typeof _agrupado !== 'undefined' && _agrupado)return;
     var tb=document.getElementById('tbody-empenhos');if(!tb)return;
     if(!document.getElementById('pagination-empenhos')){var d=document.createElement('div');d.id='pagination-empenhos';d.className='pagination';d.style.display='none';tb.closest('.tab-pane').appendChild(d);}
     var rows=tb.querySelectorAll(':scope > tr');
