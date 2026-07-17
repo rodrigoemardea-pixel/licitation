@@ -161,7 +161,7 @@ function renderFinalizadas() {
       '<td class="mono" style="font-size:11px;padding-top:5px;padding-bottom:5px;' + zebraTd + '">' + fmtD(r.data) + '</td>' +
       '<td style="padding-top:5px;padding-bottom:5px;' + zebraTd + '"><div style="display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;"><span style="font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis;">' + (r.orgao||'—') + '</span><span class="estado-badge" style="font-size:9px;flex:0 0 auto;">' + (r.estado||'—') + '</span></div></td>' +
       '<td style="' + zebraTd + '"><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
-      '<td style="' + zebraTd + '"><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;background:' + (r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20') + ';color:' + (r.empresa==='Hamate'?'#7c3aed':'var(--accent)') + ';">' + (r.empresa||'—') + '</span></td>' +
+      '<td style="' + zebraTd + '">' + lbBadgeEmpresa(r.empresa) + '</td>' +
       
       '<td class="mono money" style="text-align:right;color:var(--success);font-weight:600;' + zebraTd + '">' + fmt(lucroRec) + '</td>' +
       '<td class="mono" style="font-size:11px;color:var(--text-tertiary);' + zebraTd + '">' + fmtD(r.dataFinalizacao) + '</td>' +
@@ -182,9 +182,9 @@ function sumFinalizadas(rows) {
   }, 0);
   const el = g('sum-finalizadas');
   if (el) el.innerHTML =
-    '<div class="card"><div class="card-label">Finalizadas</div><div class="card-value cv-green">' + rows.length + '</div></div>' +
-    '<div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">' + fmt(tv) + '</div></div>' +
-    '<div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>';
+    lbCard({ label: 'Finalizadas',      valor: rows.length,     cor: 'success' }) +
+    lbCard({ label: 'Valor Contratado', valor: fmt(tv),         cor: 'accent'  }) +
+    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroTotal), cor: 'success' });
 }
 
 // ========== EMPENHOS FINALIZADOS ==========
@@ -441,13 +441,15 @@ function sumEmpFinalizados(rows) {
   const pct = totalComprado > 0 ? (lucroTotal / totalComprado * 100) : 0;
   const cor = pct >= 0 ? 'var(--success)' : 'var(--danger)';
   const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%';
+  const corSlug = pct >= 0 ? 'success' : 'danger';
   const el = g('sum-emp-finalizados');
   if (el) el.innerHTML =
-    '<div class="card"><div class="card-label">Finalizados</div><div class="card-value cv-purple">' + rows.length + '</div></div>' +
-    '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value cv-blue">' + fmt(tv) + '</div></div>' +
-    '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">' + fmt(totalComprado) + '</div></div>' +
-    '<div class="card"><div class="card-label">Lucro Total</div><div class="card-value cv-green">' + fmt(lucroTotal) + '</div></div>' +
-    '<div class="card" style="border-left:3px solid '+cor+';"><div class="card-label">% Lucro</div><div class="card-value" style="color:'+cor+';">' + fmtPct(pct) + '</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro total / total comprado</div></div>';
+    lbCard({ label: 'Finalizados',     valor: rows.length,        cor: 'purple'  }) +
+    lbCard({ label: 'Total Empenhado', valor: fmt(tv),            cor: 'accent'  }) +
+    lbCard({ label: 'Total Comprado',  valor: fmt(totalComprado), cor: 'warning' }) +
+    lbCard({ label: 'Lucro Total',     valor: fmt(lucroTotal),    cor: 'success' }) +
+    lbCard({ label: '% Lucro',         valor: fmtPct(pct),        cor: corSlug, borda: true,
+             sublinha: 'lucro total / total comprado' });
 }
 
 // ========== EXPORTAR COMPRAS SELECIONADAS ==========

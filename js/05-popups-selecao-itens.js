@@ -697,14 +697,16 @@ function sumD(){
     }, 0);
   }, 0);
 
-  g('sum-disputas').innerHTML=`
-    <div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${a.length}</div></div>
-    <div class="card"><div class="card-label">Valor Contratado</div><div class="card-value cv-blue">${fmt(tv)}</div></div>
-    <div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">${fmt(totalComprado)}</div></div>
-    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">💡 Lucro Previsto</div><div class="card-value cv-yellow">${fmt(lucroPrevTotal)}</div></div>
-    <div class="card"><div class="card-label">Lucro Recebido</div><div class="card-value cv-green">${fmt(lucroRecebidoD)}</div></div>
-    <div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div></div>
-    <div class="card" style="border-left:3px solid ${corPct};"><div class="card-label">% Lucro</div><div class="card-value" style="color:${corPct};">${fmtPct(pctLucro)}</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro recebido / total comprado</div></div>`;
+  const corPctSlug = pctLucro >= 0 ? 'success' : 'danger';
+  g('sum-disputas').innerHTML =
+    lbCard({ label: 'Total',            valor: a.length,             cor: 'accent'  }) +
+    lbCard({ label: 'Valor Contratado', valor: fmt(tv),              cor: 'accent'  }) +
+    lbCard({ label: 'Total Comprado',   valor: fmt(totalComprado),   cor: 'warning' }) +
+    lbCard({ label: 'Lucro Previsto',   valor: fmt(lucroPrevTotal),  cor: 'warning', borda: true }) +
+    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroRecebidoD),  cor: 'success' }) +
+    lbCard({ label: 'Lucro Empenhado',  valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
+    lbCard({ label: '% Lucro',          valor: fmtPct(pctLucro),     cor: corPctSlug, borda: true,
+             sublinha: 'lucro recebido / total comprado' });
 
 }
 
@@ -823,12 +825,14 @@ function sumE(){
   const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%';
   const corEmp = pctLucroEmpenhado >= 0 ? 'var(--warning)' : 'var(--danger)';
 
-  g('sum-empenhos').innerHTML=
-    '<div class="card"><div class="card-label">Empenhos</div><div class="card-value cv-blue">'+a.length+'</div></div>'+
-    '<div class="card"><div class="card-label">Total Empenhado</div><div class="card-value">'+fmt(te)+'</div></div>'+
-    '<div class="card"><div class="card-label">Total Comprado</div><div class="card-value cv-yellow">'+fmt(totalComprado)+'</div></div>'+
-    '<div class="card" style="border-left:3px solid var(--warning);"><div class="card-label">Lucro Empenhado</div><div class="card-value cv-yellow">'+fmt(lucroEmpenhado)+'</div></div>'+
-    '<div class="card" style="border-left:3px solid '+corEmp+';"><div class="card-label">% Lucro Empenhado</div><div class="card-value" style="color:'+corEmp+';">'+fmtPct(pctLucroEmpenhado)+'</div><div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">lucro empenhado / total comprado</div></div>';
+  const corEmpSlug = pctLucroEmpenhado >= 0 ? 'warning' : 'danger';
+  g('sum-empenhos').innerHTML =
+    lbCard({ label: 'Empenhos',          valor: a.length,             cor: 'accent'  }) +
+    lbCard({ label: 'Total Empenhado',   valor: fmt(te),              cor: 'accent'  }) +
+    lbCard({ label: 'Total Comprado',    valor: fmt(totalComprado),   cor: 'warning' }) +
+    lbCard({ label: 'Lucro Empenhado',   valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
+    lbCard({ label: '% Lucro Empenhado', valor: fmtPct(pctLucroEmpenhado), cor: corEmpSlug, borda: true,
+             sublinha: 'lucro empenhado / total comprado' });
 
   // "A receber": empenhos ainda não pagos
   // "A receber" = soma do campo rec das compras ainda não pagas
@@ -838,7 +842,7 @@ function sumE(){
 
   // Adiciona card "A Receber"
   g('sum-empenhos').innerHTML +=
-    '<div class="card" style="border-left:3px solid var(--purple);"><div class="card-label">⏳ A Receber</div><div class="card-value" style="color:var(--purple);">'+fmt(aReceber)+'</div></div>';
+    lbCard({ label: 'A Receber', valor: fmt(aReceber), cor: 'purple', borda: true });
 
   // Update tfoot empenhos
   // Os totais do rodapé devem refletir exatamente os registros exibidos na tela.

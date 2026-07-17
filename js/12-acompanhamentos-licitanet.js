@@ -345,7 +345,7 @@ function renderAcomp() {
     return `<tr style="cursor:pointer;height:34px;" onclick="verAcomp('${r.id}')">
       <td style="font-size:11px;${zebraTd}">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
       <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px;min-width:0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao||'—'}</span>${r.estado ? `<span class="estado-badge" style="font-size:9px;flex:0 0 auto;">${r.estado}</span>` : ''}${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" style="color:var(--accent);text-decoration:none;flex:0 0 auto;">🔗</a>` : ''}</div></td>
-      <td style="${zebraTd}"><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:${r.empresa==='Hamate'?'#7c3aed20':'var(--accent)20'};color:${r.empresa==='Hamate'?'#7c3aed':'var(--accent)'};">${r.empresa||'—'}</span></td>
+      <td style="${zebraTd}">${lbBadgeEmpresa(r.empresa)}</td>
       <td style="${zebraTd}padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;"><span style="font-size:11px;font-weight:600;color:var(--text-secondary);">${r.tipo||'—'}</span>${r.processo ? `<span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);">${r.processo}</span>` : ''}</div></td>
       <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
