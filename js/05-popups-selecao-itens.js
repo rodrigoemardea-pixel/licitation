@@ -291,15 +291,24 @@ function abrirPopupEmpenho(id) {
   const impRealizado = compras.reduce((s,c) => s + (c.custo||0), 0);
 
   g('popup-e-title').textContent = 'EMPENHO #' + (r.num || '—');
-  g('popup-e-sub').textContent = (r.orgao||'').toUpperCase() + ' · ' + fmtD(r.data);
+  const popupESub = g('popup-e-sub');
+  popupESub.textContent = '';
+  const orgaoSub = document.createElement(disp ? 'button' : 'span');
+  orgaoSub.textContent = (r.orgao || '').toUpperCase();
+  if (disp) {
+    orgaoSub.type = 'button';
+    orgaoSub.title = 'Abrir detalhes do contrato';
+    orgaoSub.style.cssText = 'appearance:none;background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px;';
+    orgaoSub.onclick = () => { fecharPopup('empenho'); abrirPopupDisputa(disp.id); };
+  }
+  popupESub.appendChild(orgaoSub);
+  popupESub.appendChild(document.createTextNode(' · ' + fmtD(r.data)));
   g('popup-e-body').innerHTML =
     '<div class="detail-grid-3">' +
       '<div class="detail-field"><div class="detail-field-label">ANALISTA</div><div class="detail-field-value">' + (r.analista||'—') + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">STATUS</div><div class="detail-field-value">' + (empenhoEstaPago(r) ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>') + '</div></div>' +
     '</div>' +
 
-    (r.neUrl ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">📄 PDF DO EMPENHO</div><div class="detail-field-value"><a href="'+r.neUrl+'" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--success);border-color:var(--success);text-decoration:none;">📄 '+(r.neNome||'PDF do Empenho')+'</a></div></div>' : '') +
-    (disp ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">CONTRATO VINCULADO</div><div class="detail-field-value" style="cursor:pointer;color:var(--accent)" onclick="fecharPopup(\'empenho\');abrirPopupDisputa(\''+disp.id+'\')">🔗 ' + disp.orgao.toUpperCase() + ' · ' + disp.processo + '</div></div>' : '') +
     '<div class="detail-grid">' +
       '<div class="detail-field"><div class="detail-field-label">VAL. EMPENHO</div><div class="detail-field-value" style="color:var(--accent)">' + fmt(r.vem) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">IMPOSTOS</div><div class="detail-field-value" style="color:var(--warning)">' + fmt(impRealizado) + (compras.length === 0 ? ' <span style="font-size:9px;color:var(--text-tertiary);">(sem compras)</span>' : '') + '</div></div>' +
