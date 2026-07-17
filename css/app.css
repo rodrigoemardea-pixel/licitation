@@ -428,242 +428,107 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 }
 
 /* ========================================================================== */
-/* PADRONIZACAO VISUAL FINAL - CONTRATOS ATIVOS COMO REFERENCIA               */
-/* Somente interface. Nao altera dados, calculos, filtros ou regras.           */
+/* AJUSTE VISUAL DE CONSISTENCIA ENTRE AS TELAS OPERACIONAIS                  */
+/* Referencia: tabela de Contratos Ativos                                     */
 /* ========================================================================== */
-:root{
-  --lb-op-row-h:36px;
-  --lb-op-head-h:40px;
-  --lb-op-control-h:36px;
-  --lb-op-card-h:86px;
-  --lb-op-table-h:330px;
-  --lb-op-cell-x:10px;
-  --lb-op-cell-y:5px;
-}
 
-/* Escopo exclusivo das cinco telas operacionais */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados){
-  font-size:13px;
-}
-
-/* Titulos e espacamento da pagina */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .lb-page-head{
-  min-height:52px!important;
-  margin:0 0 14px!important;
-  padding:0 2px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .lb-page-title{
-  font-size:22px!important;
-  line-height:1.18!important;
-  font-weight:750!important;
-  letter-spacing:-.55px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .lb-page-subtitle{
-  margin-top:5px!important;
-  font-size:12.5px!important;
-  line-height:1.5!important;
-}
-
-/* Cards: mesmo comportamento visual dos cards de Contratos Ativos */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row{
-  display:grid!important;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
-  grid-auto-rows:var(--lb-op-card-h)!important;
-  align-items:stretch!important;
-  gap:10px!important;
-  min-height:var(--lb-op-card-h)!important;
-  margin-bottom:18px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row > .card{
-  width:auto!important;
-  min-width:0!important;
-  max-width:none!important;
-  height:var(--lb-op-card-h)!important;
-  min-height:var(--lb-op-card-h)!important;
-  padding:15px 17px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  overflow:hidden!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row .card-label{
-  margin-bottom:6px!important;
-  font-size:9.5px!important;
-  line-height:1.2!important;
-  letter-spacing:.55px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .summary-row .card-value{
-  font-size:clamp(18px,1.25vw,22px)!important;
-  line-height:1.15!important;
-  letter-spacing:-.65px!important;
-}
-
-/* Filtros, pesquisas e botoes */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar{
-  min-height:56px!important;
-  padding:9px 11px!important;
-  gap:7px!important;
-  margin-bottom:12px!important;
-  align-items:center!important;
-  align-content:center!important;
-  border-radius:14px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .btn{
-  min-height:var(--lb-op-control-h)!important;
-  height:var(--lb-op-control-h)!important;
-  padding:7px 13px!important;
-  border-radius:9px!important;
+/* Tipografia e cor uniformes nas cinco tabelas */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td{
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  padding:0 10px!important;
+  color:#455468!important;
+  font-family:var(--font-sans)!important;
   font-size:12px!important;
-  line-height:1!important;
+  font-weight:400!important;
+  line-height:36px!important;
+  vertical-align:middle!important;
 }
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .filter-group{
-  height:var(--lb-op-control-h)!important;
-  min-height:var(--lb-op-control-h)!important;
-  padding:3px 9px!important;
-  gap:5px!important;
-  border-radius:9px!important;
+
+/* Elementos internos nao podem aumentar a altura da linha */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td > :is(div,span,a,button){
+  margin-top:0!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
 }
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .filter-group label{
+
+/* Campos principais com o mesmo peso visual do nome do orgao em Contratos Ativos */
+#tab-disputas #tbody-disputas td:nth-child(2) span:first-child,
+#tab-acompanhamentos #tbody-acomp td:nth-child(2) span:first-child,
+#tab-empenhos #tbody-empenhos td:nth-child(2),
+#tab-finalizadas #tbody-finalizadas td:nth-child(2) span:first-child,
+#tab-emp-finalizados #tbody-emp-finalizados td:nth-child(2){
+  color:#455468!important;
+  font-family:var(--font-sans)!important;
+  font-size:12px!important;
+  font-weight:600!important;
+}
+
+/* Numeros e datas mantem alinhamento, mas usam a mesma familia e cor */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td.mono,
+#tab-emp-finalizados #tbody-emp-finalizados td:first-child,
+#tab-empenhos #tbody-empenhos td:nth-child(2){
+  color:#455468!important;
+  font-family:var(--font-sans)!important;
+  font-size:12px!important;
+  font-weight:600!important;
+}
+
+/* Acompanhamentos: remove qualquer fundo vermelho de retorno vencido */
+#tab-acompanhamentos #tbody-acomp > tr > td{
+  background:var(--bg-surface-solid)!important;
+}
+#tab-acompanhamentos #tbody-acomp > tr:nth-child(even) > td{
+  background:#fbfcfd!important;
+}
+#tab-acompanhamentos #tbody-acomp > tr:hover > td{
+  background:var(--lb-hover)!important;
+}
+
+/* Acompanhamentos: altura rigorosamente igual a Contratos Ativos */
+#tab-acompanhamentos #tbody-acomp > tr,
+#tab-acompanhamentos #tbody-acomp > tr > td{
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+}
+#tab-acompanhamentos #tbody-acomp .badge,
+#tab-acompanhamentos #tbody-acomp .estado-badge{
+  min-height:0!important;
+  height:auto!important;
+  padding:2px 7px!important;
+  line-height:1.2!important;
   font-size:9px!important;
-  line-height:1!important;
-  letter-spacing:.35px!important;
-  white-space:nowrap!important;
 }
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .filter-group select{
-  height:28px!important;
-  min-height:28px!important;
+#tab-acompanhamentos #tbody-acomp button:not(.action-dropdown-btn){
+  min-height:0!important;
+  height:auto!important;
   padding-top:0!important;
   padding-bottom:0!important;
-  font-size:11px!important;
-  line-height:28px!important;
 }
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .search-box{
-  min-width:220px!important;
-  max-width:330px!important;
-  height:var(--lb-op-control-h)!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .search-box input{
-  height:var(--lb-op-control-h)!important;
-  min-height:var(--lb-op-control-h)!important;
-  padding-top:7px!important;
-  padding-bottom:7px!important;
-  border-radius:9px!important;
+
+/* Empenhos pendentes e finalizados: mesma cor e peso de Contratos Ativos */
+#tab-empenhos #tbody-empenhos > tr > td,
+#tab-emp-finalizados #tbody-emp-finalizados > tr > td{
+  color:#455468!important;
+  font-family:var(--font-sans)!important;
   font-size:12px!important;
 }
-
-/* Mesma moldura, altura util e largura para todas as tabelas */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > :is(.table-wrapper,.table-wrap){
-  width:100%!important;
-  height:var(--lb-op-table-h)!important;
-  min-height:var(--lb-op-table-h)!important;
-  max-height:var(--lb-op-table-h)!important;
-  margin-bottom:0!important;
-  overflow:auto!important;
-  border-radius:14px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table{
-  width:100%!important;
-  font-size:12px!important;
-  border-collapse:separate!important;
-  border-spacing:0!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table thead th{
-  height:var(--lb-op-head-h)!important;
-  min-height:var(--lb-op-head-h)!important;
-  padding:9px var(--lb-op-cell-x)!important;
-  font-size:9.5px!important;
-  line-height:1.1!important;
-  letter-spacing:.52px!important;
-  vertical-align:middle!important;
+#tab-empenhos #tbody-empenhos > tr > td.hi,
+#tab-emp-finalizados #tbody-emp-finalizados > tr > td.hi{
+  color:#455468!important;
+  font-weight:600!important;
 }
 
-/* Linhas e celulas iguais as de Contratos Ativos */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr{
-  height:var(--lb-op-row-h)!important;
-  min-height:var(--lb-op-row-h)!important;
-  max-height:var(--lb-op-row-h)!important;
+/* Mantem apenas as cores semanticas dos badges e valores financeiros */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .badge,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .estado-badge,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .status-pago,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .status-pendente{
+  font-family:var(--font-sans)!important;
 }
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td{
-  height:var(--lb-op-row-h)!important;
-  min-height:var(--lb-op-row-h)!important;
-  max-height:var(--lb-op-row-h)!important;
-  padding:var(--lb-op-cell-y) var(--lb-op-cell-x)!important;
-  font-size:12px!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
-  white-space:nowrap!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td :is(div,span,a,button){
-  line-height:1.15!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td .badge{
-  padding:3px 8px!important;
-  font-size:10px!important;
-  line-height:1.2!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr > td .estado-badge{
-  display:inline-flex!important;
-  align-items:center!important;
-  margin-left:6px!important;
-  padding:2px 6px!important;
-  font-size:9px!important;
-  line-height:1.2!important;
-  vertical-align:middle!important;
-}
-
-/* Estado vazio preserva a leitura e nao interfere nas linhas de dados */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody .empty-state{
-  min-height:220px!important;
-  height:auto!important;
-  padding:36px 20px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody tr:has(.empty-state),
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody tr:has(.empty-state) > td{
-  height:auto!important;
-  max-height:none!important;
-  padding:0!important;
-}
-
-/* Paginacao na mesma posicao e centralizada */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .pagination,
-#pagination-acomp-inline,
-#pagination-disputas,
-#pagination-empenhos,
-#pagination-finalizadas-padrao,
-#pagination-emp-finalizados-padrao{
-  justify-content:center!important;
-  align-items:center!important;
-  align-content:center!important;
-  width:100%!important;
-  min-height:52px!important;
-  margin:0 auto!important;
-  padding:10px 0!important;
-  gap:5px!important;
-  float:none!important;
-  clear:both!important;
-  box-sizing:border-box!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .page-btn{
-  width:34px!important;
-  min-width:34px!important;
-  height:34px!important;
-  min-height:34px!important;
-  padding:0 7px!important;
-  border-radius:8px!important;
-  font-size:12px!important;
-}
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) .page-info{
-  font-size:11px!important;
-  line-height:34px!important;
-}
-
-@media(max-width:860px){
-  :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar{
-    position:relative!important;
-    top:auto!important;
-  }
-  :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) > .toolbar .search-box{
-    min-width:100%!important;
-    max-width:none!important;
-  }
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) td.money{
+  font-family:var(--font-mono)!important;
 }
