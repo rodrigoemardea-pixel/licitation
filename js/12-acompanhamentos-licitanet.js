@@ -342,7 +342,7 @@ function renderAcomp() {
     const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
     return `<tr class="lb-row" onclick="verAcomp('${r.id}')">
       <td class="mono">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td><div class="lb-cell-inline"><span class="lb-cell-truncate">${r.orgao||'—'}</span>${r.estado ? lbBadgeUF(r.estado) : ''}${r.link ? `${r.link}er" onclick="event.stopPropagation()" title="Abrir pagina de acompanhamento no sistema" class="lb-cell-link">🔗</a>` : ''}</div></td>
+      <td><div class="lb-cell-inline"><span class="lb-cell-truncate">${r.orgao||'—'}</span>${r.estado ? lbBadgeUF(r.estado) : ''}${r.link ? `${r.link}" class="lb-cell-link">🔗</a>` : ''}</div></td>
       <td>${lbBadgeEmpresa(r.empresa)}</td>
       <td><div class="lb-cell-inline"><span class="lb-cell-strong">${r.tipo||'—'}</span>${r.processo ? `<span class="mono lb-cell-sub">${r.processo}</span>` : ''}</div></td>
       <td>${lbBadgeAnalista(r.analista)}</td>
