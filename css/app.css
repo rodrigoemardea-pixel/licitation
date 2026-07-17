@@ -488,8 +488,8 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 }
 
 /* ========================================================================== */
-/* PADRAO EXCLUSIVO DAS LINHAS DA TELA DE ACOMPANHAMENTOS                     */
-/* Escopo restrito a #tab-acompanhamentos.                                    */
+/* AJUSTE EXCLUSIVO: ALTURA DAS LINHAS DE ACOMPANHAMENTOS                     */
+/* Replica a altura efetiva das linhas de Contratos Ativos.                   */
 /* ========================================================================== */
 
 #tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)){
@@ -502,114 +502,42 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   height:36px!important;
   min-height:36px!important;
   max-height:36px!important;
-  padding-top:5px!important;
-  padding-bottom:5px!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:12px!important;
-  color:#455468!important;
+  padding:5px 10px!important;
+  box-sizing:border-box!important;
   line-height:1.15!important;
   vertical-align:middle!important;
 }
 
-/* Data: 11px e fonte monoespacada. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(1){
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
-  font-size:11px!important;
-  font-weight:400!important;
-}
-
-/* Orgao: alinhado a esquerda, limitado a 250px e com reticencias. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(2){
-  width:250px!important;
-  max-width:250px!important;
-  text-align:left!important;
-  vertical-align:middle!important;
-  overflow:hidden!important;
-}
-
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(2) > div{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:6px!important;
-  min-width:0!important;
-  max-width:100%!important;
+/* O botao de acoes/lixeira tinha altura minima global de 40px e ampliava a linha. */
+#tab-acompanhamentos #tbody-acomp .action-dropdown,
+#tab-acompanhamentos #tbody-acomp .action-dropdown-btn{
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
   margin:0!important;
-  line-height:1.15!important;
-}
-
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(2) > div > span:first-child{
-  display:block!important;
-  min-width:0!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:12px!important;
-  font-weight:600!important;
-  line-height:1.15!important;
-  color:#455468!important;
-}
-
-/* UF: 9px dentro do badge e separada do orgao por 6px. */
-#tab-acompanhamentos #tbody-acomp .estado-badge{
-  flex:0 0 auto!important;
-  margin:0!important;
-  padding:2px 6px!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:9px!important;
-  font-weight:500!important;
-  line-height:1.15!important;
+  padding:0!important;
+  line-height:26px!important;
   vertical-align:middle!important;
 }
 
-/* Link junto ao orgao sem alterar a altura da linha. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(2) a{
-  flex:0 0 auto!important;
-  margin:0!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
-}
-
-/* Analista: 10px dentro do badge. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td:nth-child(5) .badge{
-  height:auto!important;
+/* Qualquer outro botao dentro das linhas tambem fica contido na altura de 36px. */
+#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) button{
   min-height:0!important;
-  padding:3px 8px!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:10px!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
-}
-
-/* Qualquer valor financeiro presente nesta tela. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td.money{
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
-  font-size:11px!important;
-  font-weight:700!important;
-}
-
-/* Elementos internos nao podem aumentar a linha. */
-#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) > td > :is(div,span,a,button){
+  max-height:28px!important;
   margin-top:0!important;
   margin-bottom:0!important;
+  box-sizing:border-box!important;
+}
+
+/* Badges e links nao podem ampliar a linha. */
+#tab-acompanhamentos #tbody-acomp > tr:not(:has(.empty-state)) :is(.badge,.estado-badge,a,span,div){
+  min-height:0!important;
+  max-height:28px!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
   vertical-align:middle!important;
-}
-
-/* Fundo neutro inclusive para acompanhamentos com retorno vencido. */
-#tab-acompanhamentos #tbody-acomp > tr > td,
-#tab-acompanhamentos #tbody-acomp > tr[style] > td{
-  background:#fff!important;
-  background-color:#fff!important;
-}
-
-#tab-acompanhamentos #tbody-acomp > tr:nth-child(even) > td,
-#tab-acompanhamentos #tbody-acomp > tr:nth-child(even)[style] > td{
-  background:#fbfcfd!important;
-  background-color:#fbfcfd!important;
-}
-
-#tab-acompanhamentos #tbody-acomp > tr:hover > td{
-  background:var(--lb-hover)!important;
-  background-color:var(--lb-hover)!important;
 }
