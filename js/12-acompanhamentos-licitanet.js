@@ -345,7 +345,7 @@ function renderAcomp() {
       <td style="${zebraTd}"><span class="badge ${_badgeClass(r.analista)}" style="font-size:10px;">${r.analista||'—'}</span></td>
       <td style="font-size:11px;${zebraTd}">${r.sistema||'—'}</td>
       <td style="${zebraTd}"><span style="font-size:11px;font-weight:600;color:${statusColors[r.status]||'var(--text-secondary)'};">${statusLabels[r.status]||r.status}</span></td>
-      <td style="${zebraTd}">${retStr}</td>
+      <td style="${zebraTd}cursor:pointer;" onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno">${retStr}</td>
       <td style="text-align:center;${zebraTd}" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:15px;color:var(--text-tertiary);" title="Excluir" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-tertiary)'">🗑</button></td>
     </tr>`;
   }).join('');
@@ -560,3 +560,71 @@ function mostrarPopupAlerta(r) {
   setTimeout(() => { if (overlay.parentNode) { window._pararTodosAlarmes(); overlay.remove(); } }, 60000);
 }
 
+
+// ========== EDICAO INLINE DA DATA/HORA DE RETORNO ==========
+function editarRetornoAcompInline(id, celula) {
+  const registro = (DB.acomp || []).find(r => r.id === id);
+  if (!registro || !celula || celula.querySelector('input')) return;
+
+  const valorAnterior = registro.retorno || '';
+  celula.dataset.valorOriginal = celula.innerHTML;
+  celula.innerHTML = '';
+
+  const input = document.createElement('input');
+  input.type = 'datetime-local';
+  input.value = valorAnterior;
+  input.className = 'fc';
+  input.style.cssText = 'min-width:185px;padding:5px 7px;font-size:11px;';
+  input.title = 'Altere a data e a hora. Pressione Enter ou saia do campo para salvar. Esc cancela.';
+
+  let concluido = false;
+  const cancelar = () => {
+    if (concluido) return;
+    concluido = true;
+    renderAcomp();
+  };
+  const salvar = () => {
+    if (concluido) return;
+    concluido = true;
+    salvarRetornoAcompInline(id, input.value);
+  };
+
+  input.addEventListener('click', event => event.stopPropagation());
+  input.addEventListener('keydown', event => {
+    event.stopPropagation();
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      salvar();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelar();
+    }
+  });
+  input.addEventListener('blur', salvar);
+
+  celula.appendChild(input);
+  input.focus();
+  if (typeof input.showPicker === 'function') {
+    try { input.showPicker(); } catch (e) {}
+  }
+}
+
+function salvarRetornoAcompInline(id, novoRetorno) {
+  const indice = (_fullDB.acomp || []).findIndex(r => r.id === id);
+  if (indice === -1) {
+    toast('Acompanhamento não encontrado.', 'error');
+    renderAcomp();
+    return;
+  }
+
+  const valorAnterior = _fullDB.acomp[indice].retorno || '';
+  if (novoRetorno === valorAnterior) {
+    renderAcomp();
+    return;
+  }
+
+  _fullDB.acomp[indice].retorno = novoRetorno || '';
+  save('acomp', _fullDB.acomp);
+  renderActive();
+  toast(novoRetorno ? 'Data de retorno atualizada!' : 'Data de retorno removida!', 'success');
+}
