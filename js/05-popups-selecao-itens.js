@@ -209,6 +209,30 @@ function abrirPopupEmpenho(id) {
   const { tot, imp, luc, pct, rec } = eVals(r);
   const dias = diasSemPagamento(r);
   const disp = r.disputaId ? DB.disputas.find(d => d.id === r.disputaId) : null;
+
+  // Links para os demais empenhos vinculados ao mesmo contrato.
+  const escaparEmpenhoRelacionado = valor => String(valor ?? '').replace(/[&<>"]/g, caractere => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
+  })[caractere]);
+  const empenhosRelacionados = r.disputaId
+    ? DB.empenhos.filter(e => e.disputaId === r.disputaId && e.id !== r.id)
+    : [];
+  const empenhosRelacionadosHTML = empenhosRelacionados.length
+    ? '<section class="lb-related-empenhos" style="margin:0 0 12px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">' +
+        '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:7px;">OUTROS EMPENHOS DESTE CONTRATO</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+          empenhosRelacionados.map(e =>
+            '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escaparEmpenhoRelacionado(e.num || '') + '">' +
+              '<span>#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + ' · </span>' +
+              '<span style="color:' + (e.finalizado ? 'var(--success)' : 'var(--warning)') + ';font-weight:800;">' +
+                (e.finalizado ? 'PAGO' : 'PENDENTE') +
+              '</span>' +
+            '</button>'
+          ).join('') +
+        '</div>' +
+      '</section>'
+    : '';
+
   // Itens do empenho — descrição sempre buscada ao vivo do contrato para refletir edições
   const itensRaw = r.itens && r.itens.length ? r.itens : 
     (r.loteId ? [{ id:'leg1', loteId:r.loteId, descricao:r.produto||'', qtd:r.qtd||1, vunit:r.vunit||0 }] : []);
@@ -317,6 +341,7 @@ function abrirPopupEmpenho(id) {
 
       '<div class="detail-field"><div class="detail-field-label">DIAS SEM PAG.</div><div class="detail-field-value">' + (function(){ const s = situacaoPrazoPagamento(r); return s.codigo === 'contando' ? dias + ' DIAS' : (s.codigo === 'pago' ? '✓ PAGO' : s.rotulo); })() + '</div></div>' +
     '</div>' +
+    empenhosRelacionadosHTML +
     itensHTML +
     '<div style="margin-top:12px;">' +
       (function(){ const _temP = empenhoTemSaldo(r.id); return '<button class="btn ' + (_temP ? 'btn-primary' : 'btn-ghost') + ' btn-sm" onclick="' + (_temP ? 'fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\'' + r.id + '\')' : '') + '" style="width:100%;' + (!_temP ? 'opacity:0.45;cursor:not-allowed;pointer-events:none;' : '') + '" title="' + (!_temP ? 'Todos os itens já foram completamente comprados' : '') + '">＋ ' + (_temP ? 'NOVA COMPRA PARA ESTE EMPENHO' : 'ITENS JÁ COMPLETAMENTE COMPRADOS') + '</button>'; })() +
