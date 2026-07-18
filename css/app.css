@@ -1695,3 +1695,43 @@ body .detail-popup-overlay :is(
   }
 }
 
+/* ==========================================================================
+   AJUSTE FINAL - FUNDO SOLIDO NAS TELAS DE DETALHAMENTO
+   Remove transparencias do painel, cabecalho, corpo e rodape.
+   ========================================================================== */
+body .detail-popup-overlay .detail-popup,
+body .detail-popup-overlay .detail-popup-header,
+body .detail-popup-overlay :is(
+  .detail-popup-body,
+  #popup-d-body,
+  #popup-e-body,
+  #popup-ac-body
+),
+body .detail-popup-overlay :is(.detail-popup-footer,.detail-actions) {
+  background: var(--bg-surface-solid, #fff) !important;
+  background-color: var(--bg-surface-solid, #fff) !important;
+  opacity: 1 !important;
+}
+
+/* Retira o efeito translúcido aplicado aos elementos internos do popup. */
+body .detail-popup-overlay .detail-popup-header,
+body .detail-popup-overlay :is(.detail-popup-footer,.detail-actions) {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Garante fundo sólido também nos blocos principais exibidos no detalhamento. */
+body .detail-popup-overlay :is(
+  .card,
+  .table-wrapper,
+  .table-wrap,
+  .detail-item,
+  .info-item,
+  [class*="detail-field"],
+  .lb-checklist,
+  .lb-related-empenhos,
+  [id^="coment-list-"]
+) {
+  opacity: 1 !important;
+}
+
