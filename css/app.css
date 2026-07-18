@@ -5,7 +5,7 @@
    ========================================================================== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--font-sans:'DM Sans','Inter',system-ui,sans-serif;--font-mono:'DM Mono','JetBrains Mono',monospace;--radius-xs:6px;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;--radius-2xl:24px;--radius-3xl:32px;--lb-sidebar-w:230px;--lb-topbar-h:64px;--lb-gap:12px;--ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--ease-smooth:cubic-bezier(0.4,0,0.2,1)--lb-control-h:36px;--lb-row-h:44px;--lb-muted:#64748b;--lb-line:#e8edf2;--lb-hover:#f3f8f5;--lb-touch-target:40px;--lb-focus:0 0 0 3px rgba(45,106,79,.20);--lb-standard-row-h:36px;}
-body[data-theme="light"]{--bg-app:#f8fafb;--bg-surface:rgba(255,255,255,0.82);--bg-surface-solid:#fff;--bg-surface-hover:#f4f6f8;--bg-surface-soft:#f0f3f6;--bg-inset:#e8ecf0;--bg-sidebar:#0c1f17;--border-light:rgba(0,0,0,0.06);--border-medium:rgba(0,0,0,0.10);--border-focus:#2d6a4f;--text-primary:#0c1421;--text-secondary:#3b4a5c;--text-tertiary:#7a8694;--text-placeholder:#b0b8c4;--accent:#2d6a4f;--accent-hover:#1b4332;--accent-muted:rgba(45,106,79,0.08);--accent-ring:rgba(45,106,79,0.16);--success:#16a34a;--success-soft:rgba(22,163,74,0.08);--warning:#ca8a04;--warning-soft:rgba(202,138,4,0.08);--danger:#dc2626;--danger-soft:rgba(220,38,38,0.07);--purple:#7c3aed;--purple-soft:rgba(124,58,237,0.08);--info:#2563eb;--info-soft:rgba(37,99,235,0.07);--shadow-xs:0 1px 2px rgba(0,0,0,0.03);--shadow-sm:0 2px 8px rgba(0,0,0,0.04),0 0 0 1px rgba(0,0,0,0.03);--shadow-md:0 8px 24px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.03);--shadow-lg:0 16px 48px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.03);--shadow-xl:0 24px 64px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);--glass-bg:rgba(255,255,255,0.72);--glass-border:rgba(255,255,255,0.5);--glass-blur:blur(20px) saturate(1.2);--chart-1:#2d6a4f;--chart-2:#7c3aed;--chart-3:#16a34a;--chart-4:#ca8a04;--chart-5:#dc2626;--sort-asc:#2d6a4f;--sort-desc:#dc2626;--nao-recebido-bg:#fefce8;--nao-recebido-border:#facc15;--nao-recebido-hover:#fef9c3}
+body[data-theme="light"]{--bg-app:#f8fafb;--bg-surface:#ffffff;--bg-surface-solid:#fff;--bg-surface-hover:#f4f6f8;--bg-surface-soft:#f0f3f6;--bg-inset:#e8ecf0;--bg-sidebar:#0c1f17;--border-light:rgba(0,0,0,0.06);--border-medium:rgba(0,0,0,0.10);--border-focus:#2d6a4f;--text-primary:#0c1421;--text-secondary:#3b4a5c;--text-tertiary:#7a8694;--text-placeholder:#b0b8c4;--accent:#2d6a4f;--accent-hover:#1b4332;--accent-muted:rgba(45,106,79,0.08);--accent-ring:rgba(45,106,79,0.16);--success:#16a34a;--success-soft:rgba(22,163,74,0.08);--warning:#ca8a04;--warning-soft:rgba(202,138,4,0.08);--danger:#dc2626;--danger-soft:rgba(220,38,38,0.07);--purple:#7c3aed;--purple-soft:rgba(124,58,237,0.08);--info:#2563eb;--info-soft:rgba(37,99,235,0.07);--shadow-xs:0 1px 2px rgba(0,0,0,0.03);--shadow-sm:0 2px 8px rgba(0,0,0,0.04),0 0 0 1px rgba(0,0,0,0.03);--shadow-md:0 8px 24px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.03);--shadow-lg:0 16px 48px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.03);--shadow-xl:0 24px 64px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);--glass-bg:#ffffff;--glass-border:rgba(255,255,255,0.5);--glass-blur:blur(20px) saturate(1.2);--chart-1:#2d6a4f;--chart-2:#7c3aed;--chart-3:#16a34a;--chart-4:#ca8a04;--chart-5:#dc2626;--sort-asc:#2d6a4f;--sort-desc:#dc2626;--nao-recebido-bg:#fefce8;--nao-recebido-border:#facc15;--nao-recebido-hover:#fef9c3}
 
 body{font-family:var(--font-sans);color:var(--text-primary);min-height:100vh;font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased;display:block!important;overflow-x:hidden;background:var(--bg-app)!important}
 
@@ -1080,8 +1080,8 @@ body.lb-modern-ui .lb-pagination .page-info{
 .modal-overlay,.detail-popup-overlay,.wizard-overlay,.confirm-modal-overlay{
   padding:24px!important;
   background:rgba(15,23,42,.46)!important;
-  backdrop-filter:blur(5px);
-  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
 }
 .modal-overlay.open,.detail-popup-overlay.open,.wizard-overlay.open,.confirm-modal-overlay.open{
   display:flex!important;align-items:center!important;justify-content:center!important;
@@ -1115,8 +1115,8 @@ body.lb-modern-ui .lb-pagination .page-info{
   position:sticky!important;top:0;z-index:20;flex:0 0 auto;
   min-height:64px;padding:15px 20px!important;
   border-bottom:1px solid var(--border-light)!important;
-  background:rgba(255,255,255,.97)!important;
-  backdrop-filter:blur(10px);
+  background:#ffffff!important;
+  backdrop-filter:none;
 }
 .modal-title,.detail-popup-title{
   color:var(--text-primary)!important;font-size:17px!important;font-weight:750!important;
@@ -1151,7 +1151,7 @@ body.lb-modern-ui .lb-pagination .page-info{
   min-height:62px;padding:12px 20px!important;
   display:flex!important;align-items:center!important;justify-content:flex-end!important;
   gap:8px!important;border-top:1px solid var(--border-light)!important;
-  background:rgba(248,250,249,.97)!important;backdrop-filter:blur(10px);
+  background:#ffffff!important;backdrop-filter:none;
 }
 .modal-footer .btn,.detail-popup-footer .btn{min-height:36px}
 
@@ -1850,4 +1850,28 @@ body #popup-acomp .detail-actions {
   filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+
+/* ==========================================================================
+   CORRECAO VISUAL NA ORIGEM - SUPERFICIES SEM EFEITO DE VIDRO
+   ========================================================================== */
+body[data-theme="light"]{
+  --bg-surface:#ffffff!important;
+  --bg-surface-solid:#ffffff!important;
+  --glass-bg:#ffffff!important;
+  --glass-blur:none!important;
+}
+body :is(#popup-disputa,#popup-empenho,#popup-acomp),
+body :is(#popup-disputa,#popup-empenho,#popup-acomp) .detail-popup,
+body :is(#popup-disputa,#popup-empenho,#popup-acomp) .detail-popup-header,
+body :is(#popup-disputa,#popup-empenho,#popup-acomp) :is(#popup-d-body,#popup-e-body,#popup-ac-body),
+body :is(#popup-disputa,#popup-empenho,#popup-acomp) .detail-actions{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  background-image:none!important;
+  opacity:1!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
 }
