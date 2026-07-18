@@ -1071,3 +1071,189 @@ body.lb-modern-ui .lb-pagination .page-info{
   #tab-dashboard>.lb-page-head+div .filter-group{flex:1 1 100%}
 }
 
+/* ========================================================================== 
+   ETAPA 4 - MODAIS E TELAS DE DETALHE
+   Hierarquia, dimensoes e leitura. IDs, campos, eventos e fluxos preservados.
+   ========================================================================== */
+
+/* Fundo e posicionamento */
+.modal-overlay,.detail-popup-overlay,.wizard-overlay,.confirm-modal-overlay{
+  padding:24px!important;
+  background:rgba(15,23,42,.46)!important;
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.modal-overlay.open,.detail-popup-overlay.open,.wizard-overlay.open,.confirm-modal-overlay.open{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+}
+
+/* Estrutura base */
+.modal-overlay .modal,.detail-popup-overlay .detail-popup,.wizard-overlay .wizard,
+.confirm-modal-overlay .confirm-modal-box{
+  overflow:hidden!important;border:1px solid rgba(255,255,255,.72)!important;
+  border-radius:16px!important;background:var(--bg-surface)!important;
+  box-shadow:0 24px 70px rgba(15,23,42,.22),0 2px 8px rgba(15,23,42,.08)!important;
+}
+.modal-overlay .modal,.detail-popup-overlay .detail-popup{
+  width:min(100%,980px)!important;max-height:calc(100vh - 48px)!important;
+  display:flex!important;flex-direction:column!important;
+}
+
+/* Larguras adequadas a cada fluxo */
+#modal-acomp .modal{width:min(100%,820px)!important}
+#modal-empenhos .modal{width:min(100%,900px)!important}
+#modal-compra .modal{width:min(100%,980px)!important}
+#modal-disputas .modal{width:min(100%,1280px)!important}
+#modal-empenhos-disputa .modal{width:min(100%,1180px)!important}
+#modal-calc .modal{width:min(100%,1240px)!important}
+#popup-acomp .detail-popup{width:min(100%,820px)!important}
+#popup-empenho .detail-popup{width:min(100%,1100px)!important}
+#popup-disputa .detail-popup{width:min(100%,1200px)!important}
+
+/* Cabecalhos fixos */
+.modal-header,.detail-popup-header{
+  position:sticky!important;top:0;z-index:20;flex:0 0 auto;
+  min-height:64px;padding:15px 20px!important;
+  border-bottom:1px solid var(--border-light)!important;
+  background:rgba(255,255,255,.97)!important;
+  backdrop-filter:blur(10px);
+}
+.modal-title,.detail-popup-title{
+  color:var(--text-primary)!important;font-size:17px!important;font-weight:750!important;
+  line-height:1.25!important;letter-spacing:-.2px!important;
+}
+.detail-popup-subtitle,.modal-subtitle{
+  margin-top:3px!important;color:var(--text-tertiary)!important;
+  font-size:11px!important;line-height:1.35!important;
+}
+.modal-close,.detail-close{
+  position:relative;flex:0 0 34px;width:34px!important;height:34px!important;
+  display:grid!important;place-items:center!important;padding:0!important;
+  border:1px solid var(--border-light)!important;border-radius:9px!important;
+  background:var(--bg-surface-soft)!important;color:var(--text-secondary)!important;
+  font-size:18px!important;line-height:1!important;
+}
+.modal-close:hover,.detail-close:hover{
+  border-color:#cbd5df!important;background:#eef3f0!important;color:var(--text-primary)!important;
+}
+
+/* Corpo rolavel */
+.modal-body,.detail-popup-body{
+  flex:1 1 auto;min-height:0;overflow:auto!important;
+  padding:20px!important;background:var(--bg-surface)!important;
+  scrollbar-gutter:stable;
+}
+#popup-d-body,#popup-e-body,#popup-ac-body{padding-top:18px!important}
+
+/* Rodapes fixos */
+.modal-footer,.detail-popup-footer{
+  position:sticky!important;bottom:0;z-index:20;flex:0 0 auto;
+  min-height:62px;padding:12px 20px!important;
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;
+  gap:8px!important;border-top:1px solid var(--border-light)!important;
+  background:rgba(248,250,249,.97)!important;backdrop-filter:blur(10px);
+}
+.modal-footer .btn,.detail-popup-footer .btn{min-height:36px}
+
+/* Campos e secoes de formulario */
+.modal-body .form-section,.modal-body .section,.detail-popup-body .detail-section{
+  border-color:var(--border-light)!important;
+}
+.modal-body .form-section,.modal-body .section{
+  margin-bottom:16px!important;padding:16px!important;
+  border:1px solid var(--border-light)!important;border-radius:12px!important;
+  background:#fbfcfc!important;
+}
+.detail-popup-body .detail-section{
+  margin:20px 0 10px!important;padding:0 0 8px!important;
+  border-bottom:1px solid var(--border-light)!important;
+  color:var(--text-tertiary)!important;font-size:10px!important;
+  font-weight:800!important;letter-spacing:.55px!important;text-transform:uppercase;
+}
+.modal-body .form-grid{gap:13px 14px!important}
+.modal-body label{margin-bottom:5px!important;color:var(--text-secondary)!important;font-size:10px!important;font-weight:700!important}
+.modal-body :is(input,select,textarea).fc,
+.modal-body :is(input,select,textarea):not([type="checkbox"]):not([type="radio"]){
+  min-height:36px;border-color:var(--border-light);border-radius:9px;
+}
+.modal-body textarea{min-height:76px!important;line-height:1.45!important;resize:vertical}
+.modal-body :is(input,select,textarea):focus{
+  border-color:var(--accent)!important;box-shadow:var(--lb-focus)!important;outline:none!important;
+}
+
+/* Resumos e dados dos detalhes */
+.detail-popup-body .detail-grid,.detail-popup-body .info-grid,
+.detail-popup-body [style*="grid-template-columns"]{
+  gap:10px 12px!important;
+}
+.detail-popup-body .detail-item,.detail-popup-body .info-item,
+.detail-popup-body [class*="detail-field"]{
+  min-width:0;padding:11px 12px!important;border:1px solid var(--border-light)!important;
+  border-radius:10px!important;background:var(--bg-surface-soft)!important;
+}
+.detail-popup-body .detail-label{
+  margin-bottom:4px!important;color:var(--text-tertiary)!important;
+  font-size:9px!important;font-weight:800!important;letter-spacing:.45px!important;
+}
+.detail-popup-body .detail-value{
+  color:var(--text-primary)!important;font-size:12px!important;font-weight:600!important;line-height:1.4!important;
+}
+.detail-popup-body .summary-row,.detail-popup-body .detail-summary{
+  gap:10px!important;margin-bottom:16px!important;
+}
+.detail-popup-body .summary-row .card,.detail-popup-body .detail-summary .card{
+  min-height:78px!important;padding:12px 14px!important;border:1px solid var(--border-light)!important;
+  border-radius:11px!important;box-shadow:none!important;
+}
+
+/* Tabelas dentro de modais e detalhes */
+.modal-body :is(.table-wrapper,.table-wrap),.detail-popup-body :is(.table-wrapper,.table-wrap),
+.modal-body>div[style*="overflow-x:auto"],.detail-popup-body>div[style*="overflow-x:auto"]{
+  overflow:auto!important;border:1px solid var(--border-light)!important;
+  border-radius:11px!important;background:var(--bg-surface)!important;
+}
+.modal-body table,.detail-popup-body table{
+  width:100%!important;border-collapse:separate!important;border-spacing:0!important;font-size:11.5px!important;
+}
+.modal-body table thead th,.detail-popup-body table thead th{
+  position:sticky;top:0;z-index:5;height:35px;padding:7px 8px!important;
+  border-bottom:1px solid var(--border-light)!important;background:#f8faf9!important;
+  color:var(--text-tertiary)!important;font-size:9px!important;font-weight:800!important;
+  letter-spacing:.35px;text-transform:uppercase;white-space:nowrap;
+}
+.modal-body table tbody td,.detail-popup-body table tbody td{
+  min-height:35px;padding:7px 8px!important;border-bottom:1px solid #edf1f3!important;
+  color:var(--text-secondary);vertical-align:middle!important;
+}
+.modal-body table tbody tr:last-child td,.detail-popup-body table tbody tr:last-child td{border-bottom:0!important}
+.modal-body table tbody tr:hover td,.detail-popup-body table tbody tr:hover td{background:#f5f9f7!important}
+
+/* Checklist, comentarios e empenhos relacionados */
+.detail-popup-body .lb-checklist,.detail-popup-body .lb-related-empenhos,
+.detail-popup-body [id^="coment-list-"]{
+  border:1px solid var(--border-light)!important;border-radius:11px!important;
+  background:#fbfcfc!important;
+}
+.detail-popup-body .lb-checklist{padding:13px 14px!important;margin-bottom:14px!important}
+.detail-popup-body .lb-checklist h3{margin:0 0 10px!important;font-size:11px!important;font-weight:800!important}
+.detail-popup-body .lb-checklist label{min-height:30px;display:flex;align-items:center;gap:8px;font-size:11px}
+.detail-popup-body .lb-related-empenhos{padding:12px 14px!important;margin-bottom:14px!important}
+.detail-popup-body [id^="coment-list-"]{padding:8px!important;max-height:240px!important}
+.detail-popup-body [id^="coment-input-"]{min-height:36px;border-radius:9px!important}
+
+/* Confirmacao e wizard */
+.confirm-modal-box{width:min(100%,420px)!important;padding:22px!important}
+.confirm-modal-title{font-size:16px!important;font-weight:750!important}
+.wizard{width:min(100%,680px)!important;max-height:calc(100vh - 48px)!important}
+
+@media(max-width:760px){
+  .modal-overlay,.detail-popup-overlay,.wizard-overlay,.confirm-modal-overlay{padding:8px!important}
+  .modal-overlay .modal,.detail-popup-overlay .detail-popup{max-height:calc(100vh - 16px)!important;border-radius:13px!important}
+  .modal-header,.detail-popup-header{min-height:56px;padding:12px 14px!important}
+  .modal-body,.detail-popup-body{padding:14px!important}
+  .modal-footer,.detail-popup-footer{min-height:58px;padding:10px 14px!important;flex-wrap:wrap!important}
+  .modal-footer .btn,.detail-popup-footer .btn{flex:1 1 auto}
+  .modal-body .form-grid{grid-template-columns:1fr!important}
+  .detail-popup-body [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+}
+
