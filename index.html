@@ -17,1288 +17,1285 @@
 <link rel="stylesheet" href="./css/app.css?v=20260717-modais-detalhes-4">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-
-
-
 </head>
 <body data-theme="light" class="lb-modern-ui">
 
 <div class="login-overlay open" id="login-screen">
- <div class="login-card">
- 
- <div class="login-title">LicitationBiznis</div>
- <div class="login-sub">Gestão de Licitações</div>
- <form id="login-form" onsubmit="event.preventDefault();fazerLogin();" autocomplete="on">
- <label class="login-label">E-mail</label>
- <input type="email" id="login-email" name="email" class="login-select" placeholder="seu@email.com" style="margin-bottom:14px;" autocomplete="username" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
- <label class="login-label">Senha</label>
- <input type="password" id="login-senha" name="password" class="login-select" placeholder="••••••••" style="margin-bottom:6px;" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
- <div id="login-erro" style="color:#f87171;font-size:12px;min-height:18px;margin-bottom:10px;text-align:center;"></div>
- <button type="submit" class="login-btn" id="login-btn">Entrar →</button>
- </form>
- <div class="login-footer">Acesso restrito · Dados em nuvem</div>
- </div>
+  <div class="login-card">
+    
+    <div class="login-title">LicitationBiznis</div>
+    <div class="login-sub">Gestão de Licitações</div>
+    <form id="login-form" onsubmit="event.preventDefault();fazerLogin();" autocomplete="on">
+    <label class="login-label">E-mail</label>
+    <input type="email" id="login-email" name="email" class="login-select" placeholder="seu@email.com" style="margin-bottom:14px;" autocomplete="username" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
+    <label class="login-label">Senha</label>
+    <input type="password" id="login-senha" name="password" class="login-select" placeholder="••••••••" style="margin-bottom:6px;" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();fazerLogin();}">
+    <div id="login-erro" style="color:#f87171;font-size:12px;min-height:18px;margin-bottom:10px;text-align:center;"></div>
+    <button type="submit" class="login-btn" id="login-btn">Entrar →</button>
+    </form>
+    <div class="login-footer">Acesso restrito · Dados em nuvem</div>
+  </div>
 </div>
 
 <header>
- <div class="spacer"></div>
+  <div class="spacer"></div>
 
- 
- <div style="position:relative;margin-right:4px;">
- <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:100px;color:var(--text-primary);padding:6px 30px 6px 30px;font-size:12px;width:200px;outline:none;transition:all 0.18s;" autocomplete="off">
- <span class="busca-kbd-hint">/</span>
- <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:400px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
- </div>
+  
+  <div style="position:relative;margin-right:4px;">
+    <input type="text" id="busca-global-input" placeholder="🔍 Busca rápida..." oninput="buscaGlobal(this.value)" style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:100px;color:var(--text-primary);padding:6px 30px 6px 30px;font-size:12px;width:200px;outline:none;transition:all 0.18s;" autocomplete="off">
+    <span class="busca-kbd-hint">/</span>
+    <div id="busca-global-result" style="display:none;position:absolute;right:0;top:36px;width:380px;max-height:400px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:8px;"></div>
+  </div>
 
- 
- <button class="hbtn" onclick="abrirCalculadora()" title="Cálculo Rápido"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg></button>
- <div style="position:relative;">
- <button id="notif-bell" onclick="toggleNotificacoes()" class="hbtn" style="position:relative;" title="Notificações">
+  
+  <button class="hbtn" onclick="abrirCalculadora()" title="Cálculo Rápido"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg></button>
+  <div style="position:relative;">
+    <button id="notif-bell" onclick="toggleNotificacoes()" class="hbtn" style="position:relative;" title="Notificações">
       🔔
- <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
- </button>
- <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:320px;max-height:440px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:10px;">
- <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
- <div style="font-weight:700;font-size:13px;color:var(--text-primary);">🔔 Notificações</div>
- <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">🗑 Limpar tudo</button>
- </div>
- <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
- </div>
- </div>
+      <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;border-radius:50%;font-size:9px;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+    </button>
+    <div id="notif-panel" style="display:none;position:absolute;right:0;top:38px;width:320px;max-height:440px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:16px;box-shadow:var(--shadow-xl);z-index:9999;padding:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-weight:700;font-size:13px;color:var(--text-primary);">🔔 Notificações</div>
+        <button onclick="limparTodasNotificacoes()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-tertiary);" title="Limpar todas">🗑 Limpar tudo</button>
+      </div>
+      <div id="notif-list"><div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div></div>
+    </div>
+  </div>
 
- <div id="user-role-badge" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;"></div>
+  <div id="user-role-badge" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;"></div>
 
- 
- <div id="user-menu-wrap">
- <div class="user-chip" title="Usuário logado">
- <div class="user-avatar" id="user-avatar">?</div>
- <span id="user-nome" style="font-size:12px;font-weight:500;color:var(--text-secondary);">—</span>
- </div>
- </div>
+  
+  <div id="user-menu-wrap">
+    <div class="user-chip" title="Usuário logado">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span id="user-nome" style="font-size:12px;font-weight:500;color:var(--text-secondary);">—</span>
+    </div>
+  </div>
 </header>
 <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-hidden')" title="Mostrar/ocultar menu">&#9776;</button>
 
 <div class="tabs">
- <div class="lb-nav-section">Visão geral</div>
- <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
- <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
- <div class="lb-nav-section">Operação</div>
- <button class="tab-btn" onclick="switchTab('acompanhamentos',this);renderAcomp();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Acompanhamentos <span class="tab-badge" id="badge-acomp" style="background:var(--warning);color:#000;">0</span></button>
- <button class="tab-btn" onclick="switchTab('disputas',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg> Contratos Ativos <span class="tab-badge" id="badge-disputas">0</span></button>
+  <div class="lb-nav-section">Visão geral</div>
+  <button class="tab-btn active" id="tab-btn-painel" onclick="switchTab('painel',this);atualizarPainel();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Painel</button>
+  <button class="tab-btn" onclick="switchTab('dashboard',this);atualizarDashboard();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
+  <div class="lb-nav-section">Operação</div>
+  <button class="tab-btn" onclick="switchTab('acompanhamentos',this);renderAcomp();"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Acompanhamentos <span class="tab-badge" id="badge-acomp" style="background:var(--warning);color:#000;">0</span></button>
+  <button class="tab-btn" onclick="switchTab('disputas',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg> Contratos Ativos <span class="tab-badge" id="badge-disputas">0</span></button>
 
- <button class="tab-btn" onclick="switchTab('empenhos',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Empenhos Pendentes <span class="tab-badge" id="badge-empenhos">0</span></button>
- <div class="lb-nav-section">Histórico</div>
- <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Contratos Finalizados <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
- <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Empenhos Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
+  <button class="tab-btn" onclick="switchTab('empenhos',this)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Empenhos Pendentes <span class="tab-badge" id="badge-empenhos">0</span></button>
+  <div class="lb-nav-section">Histórico</div>
+  <button class="tab-btn" onclick="switchTab('finalizadas',this)" style="color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Contratos Finalizados <span class="tab-badge" id="badge-finalizadas" style="background:var(--success);">0</span></button>
+  <button class="tab-btn" onclick="switchTab('emp-finalizados',this)" style="color:var(--purple);"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Empenhos Finalizados <span class="tab-badge" id="badge-emp-finalizados" style="background:var(--purple);color:#fff;">0</span></button>
 
- <div class="sidebar-logout-wrap">
- <button class="sidebar-logout-btn" onclick="fazerLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</button>
- </div>
+  <div class="sidebar-logout-wrap">
+    <button class="sidebar-logout-btn" onclick="fazerLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</button>
+  </div>
 </div>
 
 <div class="content">
 
- 
- <div id="tela-boasvindas" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;">
- <div style="background:var(--bg-surface); border-radius:24px; padding:40px; max-width:480px; width:90%; text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3); border:1px solid var(--border-light);">
- <div style="font-size:48px; margin-bottom:16px;">📦</div>
- <h2 style="font-size:22px; font-weight:700; color:var(--text-primary); margin-bottom:10px;">Nenhum dado encontrado</h2>
- <p style="color:var(--text-secondary); font-size:14px; line-height:1.6; margin-bottom:8px;">
+  
+  <div id="tela-boasvindas" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-surface); border-radius:24px; padding:40px; max-width:480px; width:90%; text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3); border:1px solid var(--border-light);">
+      <div style="font-size:48px; margin-bottom:16px;">📦</div>
+      <h2 style="font-size:22px; font-weight:700; color:var(--text-primary); margin-bottom:10px;">Nenhum dado encontrado</h2>
+      <p style="color:var(--text-secondary); font-size:14px; line-height:1.6; margin-bottom:8px;">
         Este arquivo é novo e ainda não tem dados associados.
- </p>
- <p style="color:var(--text-tertiary); font-size:13px; margin-bottom:28px;">
+      </p>
+      <p style="color:var(--text-tertiary); font-size:13px; margin-bottom:28px;">
         Se você já usava o sistema antes, importe seu backup JSON para restaurar todos os seus dados.
- </p>
- <label style="display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:white; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,102,255,0.4); margin-bottom:12px;">
+      </p>
+      <label style="display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:white; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,102,255,0.4); margin-bottom:12px;">
         ⬆ Importar meu backup (.json)
- <input type="file" accept=".json" onchange="importarBackup(event)" style="display:none;">
- </label>
- <br>
- <button onclick="iniciarSemDados()" style="background:none; border:none; color:var(--text-tertiary); font-size:13px; cursor:pointer; margin-top:8px; text-decoration:underline;">
+        <input type="file" accept=".json" onchange="importarBackup(event)" style="display:none;">
+      </label>
+      <br>
+      <button onclick="iniciarSemDados()" style="background:none; border:none; color:var(--text-tertiary); font-size:13px; cursor:pointer; margin-top:8px; text-decoration:underline;">
         Começar do zero (sem importar)
- </button>
- </div>
- </div>
- 
- <div class="tab-pane active" id="tab-painel">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Painel</h1>
- <p class="lb-page-subtitle">Resumo operacional de contratos, empenhos, acompanhamentos e alertas.</p>
- </div>
- </div>
- <div id="painel-body">
- <div style="text-align:center;padding:40px;color:var(--text-tertiary);">Carregando painel...</div>
- </div>
- </div>
+      </button>
+    </div>
+  </div>
+  
+  <div class="tab-pane active" id="tab-painel">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Painel</h1>
+        <p class="lb-page-subtitle">Resumo operacional de contratos, empenhos, acompanhamentos e alertas.</p>
+      </div>
+    </div>
+    <div id="painel-body">
+      <div style="text-align:center;padding:40px;color:var(--text-tertiary);">Carregando painel...</div>
+    </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-acompanhamentos">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Acompanhamentos</h1>
- <p class="lb-page-subtitle">Organize licitações em análise, retornos programados e recursos.</p>
- </div>
- </div>
- <div class="summary-row" id="sum-acomp"></div>
- <div class="toolbar">
- <button class="btn btn-primary" onclick="openModal('acomp')">＋ Novo Acompanhamento</button>
- <button class="btn btn-ghost" onclick="abrirTodosAcompanhamentos()" title="Abrir todos os links dos acompanhamentos filtrados em novas abas">&#x1F517; Abrir Todos</button>
- <div class="filter-group">
- <label>🏢 Empresa:</label>
- <select id="filtro-empresa-acomp" onchange="renderAcomp()">
- <option value="todos">Todas</option>
- <option value="Hamate">Hamate</option>
- <option value="Gadita">Gadita</option>
- </select>
- </div>
- <div class="filter-group">
- <label>📋 Tipo:</label>
- <select id="filtro-tipo-acomp" onchange="renderAcomp()">
- <option value="todos">Todos</option>
- <option value="Pregão Eletrônico">Pregão</option>
- <option value="Dispensa">Dispensa</option>
- </select>
- </div>
- <div class="filter-group">
- <label>👤 Analista:</label>
- <select id="filtro-analista-acomp" onchange="renderAcomp()">
- <option value="todos">Todos</option>
- <option value="Márdea">Márdea</option>
- <option value="Rodrigo">Rodrigo</option>
- 
- </select>
- </div>
- <div class="filter-group">
- <label>📌 Status:</label>
- <select id="filtro-status-acomp" onchange="renderAcomp()">
- <option value="todos">Todos</option>
- <option value="pendente">Pendente</option>
- <option value="recurso">Em Recurso</option>
- </select>
- </div>
- <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="_debRenderAcomp()"></div>
- </div>
- <div class="table-wrap">
- <table>
- <thead><tr>
- <th id="sort-acomp-data" onclick="sortAcomp('data')" title="Ordenar por data">Data</th>
- <th id="sort-acomp-orgao" onclick="sortAcomp('orgao')" title="Ordenar por órgão">Órgão / UF</th>
- <th id="sort-acomp-empresa" onclick="sortAcomp('empresa')" title="Ordenar por empresa">Empresa</th>
- <th id="sort-acomp-tipo" onclick="sortAcomp('tipo')" title="Ordenar por tipo e processo">Tipo / Processo</th>
- <th id="sort-acomp-analista" onclick="sortAcomp('analista')" title="Ordenar por analista">Analista</th>
- <th id="sort-acomp-sistema" onclick="sortAcomp('sistema')" title="Ordenar por sistema">Sistema</th>
- <th id="sort-acomp-status" onclick="sortAcomp('status')" title="Ordenar por status">Status</th>
- <th id="sort-acomp-retorno" onclick="sortAcomp('retorno')" title="Ordenar por data e hora de retorno">⏰ Retorno</th>
- <th style="width:50px;text-align:center;"></th>
- </tr></thead>
- <tbody id="tbody-acomp"></tbody>
- </table>
- </div>
- </div>
+  
+  <div class="tab-pane" id="tab-acompanhamentos">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Acompanhamentos</h1>
+        <p class="lb-page-subtitle">Organize licitações em análise, retornos programados e recursos.</p>
+      </div>
+    </div>
+    <div class="summary-row" id="sum-acomp"></div>
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="openModal('acomp')">＋ Novo Acompanhamento</button>
+      <button class="btn btn-ghost" onclick="abrirTodosAcompanhamentos()" title="Abrir todos os links dos acompanhamentos filtrados em novas abas">&#x1F517; Abrir Todos</button>
+      <div class="filter-group">
+        <label>🏢 Empresa:</label>
+        <select id="filtro-empresa-acomp" onchange="renderAcomp()">
+          <option value="todos">Todas</option>
+          <option value="Hamate">Hamate</option>
+          <option value="Gadita">Gadita</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📋 Tipo:</label>
+        <select id="filtro-tipo-acomp" onchange="renderAcomp()">
+          <option value="todos">Todos</option>
+          <option value="Pregão Eletrônico">Pregão</option>
+          <option value="Dispensa">Dispensa</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-acomp" onchange="renderAcomp()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+          
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📌 Status:</label>
+        <select id="filtro-status-acomp" onchange="renderAcomp()">
+          <option value="todos">Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="recurso">Em Recurso</option>
+        </select>
+      </div>
+      <div class="search-box"><input type="text" id="search-acomp" placeholder="Pesquisar..." oninput="_debRenderAcomp()"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th id="sort-acomp-data" onclick="sortAcomp('data')" title="Ordenar por data">Data</th>
+          <th id="sort-acomp-orgao" onclick="sortAcomp('orgao')" title="Ordenar por órgão">Órgão / UF</th>
+          <th id="sort-acomp-empresa" onclick="sortAcomp('empresa')" title="Ordenar por empresa">Empresa</th>
+          <th id="sort-acomp-tipo" onclick="sortAcomp('tipo')" title="Ordenar por tipo e processo">Tipo / Processo</th>
+          <th id="sort-acomp-analista" onclick="sortAcomp('analista')" title="Ordenar por analista">Analista</th>
+          <th id="sort-acomp-sistema" onclick="sortAcomp('sistema')" title="Ordenar por sistema">Sistema</th>
+          <th id="sort-acomp-status" onclick="sortAcomp('status')" title="Ordenar por status">Status</th>
+          <th id="sort-acomp-retorno" onclick="sortAcomp('retorno')" title="Ordenar por data e hora de retorno">⏰ Retorno</th>
+          <th style="width:50px;text-align:center;"></th>
+        </tr></thead>
+        <tbody id="tbody-acomp"></tbody>
+      </table>
+    </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-dashboard">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Dashboard</h1>
- <p class="lb-page-subtitle">Indicadores consolidados de contratos, recebimentos, lucro e desempenho.</p>
- </div>
- </div>
- 
- 
- <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
- 
- <div class="filter-group">
- <label>👤 Analista:</label>
- <select id="dash-filtro-analista" onchange="atualizarDashboard()">
- <option value="todos">Todos</option>
- <option value="Márdea">Márdea</option>
- <option value="Rodrigo">Rodrigo</option>
- 
- </select>
- </div>
- <div class="filter-group">
- <label>📅 Período:</label>
- <select id="dash-filtro-periodo" onchange="atualizarDashboard()">
- <option value="todos">Todo período</option>
- <option value="mes">Mês atual</option>
- <option value="trim">Últimos 3 meses</option>
- <option value="ano">Este ano</option>
- </select>
- </div>
- </div>
+  
+  <div class="tab-pane" id="tab-dashboard">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Dashboard</h1>
+        <p class="lb-page-subtitle">Indicadores consolidados de contratos, recebimentos, lucro e desempenho.</p>
+      </div>
+    </div>
+    
+    
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="dash-filtro-analista" onchange="atualizarDashboard()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+          
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Período:</label>
+        <select id="dash-filtro-periodo" onchange="atualizarDashboard()">
+          <option value="todos">Todo período</option>
+          <option value="mes">Mês atual</option>
+          <option value="trim">Últimos 3 meses</option>
+          <option value="ano">Este ano</option>
+        </select>
+      </div>
+    </div>
 
- 
- <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
- <div class="card" style="border-left:4px solid var(--accent);">
- <div class="card-label">Contratos Ativos</div>
- <div class="card-value cv-blue" id="dk-contratos">—</div>
- </div>
- <div class="card" style="border-left:4px solid var(--purple);">
- <div class="card-label">Empenhos Ativos</div>
- <div class="card-value cv-purple" id="dk-empenhos">—</div>
- </div>
- <div class="card" style="border-left:4px solid var(--success);">
- <div class="card-label">Lucro Total</div>
- <div class="card-value cv-green" id="dk-lucro">—</div>
- </div>
- <div class="card" style="border-left:4px solid var(--accent);">
- <div class="card-label">Taxa Conversão</div>
- <div class="card-value cv-blue" id="dk-conversao">—</div>
- </div>
- </div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
+      <div class="card" style="border-left:4px solid var(--accent);">
+        <div class="card-label">Contratos Ativos</div>
+        <div class="card-value cv-blue" id="dk-contratos">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--purple);">
+        <div class="card-label">Empenhos Ativos</div>
+        <div class="card-value cv-purple" id="dk-empenhos">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--success);">
+        <div class="card-label">Lucro Total</div>
+        <div class="card-value cv-green" id="dk-lucro">—</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--accent);">
+        <div class="card-label">Taxa Conversão</div>
+        <div class="card-value cv-blue" id="dk-conversao">—</div>
+      </div>
+    </div>
 
- 
- <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;">
- 
- <div class="card" style="grid-column:span 2;">
- <h3 style="font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;">📅 Comparativo: Mês Atual vs Anterior</h3>
- <div style="height:180px;"><canvas id="grafico-comparativo"></canvas></div>
- </div>
- 
- <div class="card">
- <div class="card-label">Empenhos em Atraso</div>
- <div style="font-size:18px;font-weight:700;margin:8px 0;" id="dk-atraso">—</div>
- <div style="height:130px;"><canvas id="grafico-situacoes"></canvas></div>
- </div>
- </div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;">
+      
+      <div class="card" style="grid-column:span 2;">
+        <h3 style="font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;">📅 Comparativo: Mês Atual vs Anterior</h3>
+        <div style="height:180px;"><canvas id="grafico-comparativo"></canvas></div>
+      </div>
+      
+      <div class="card">
+        <div class="card-label">Empenhos em Atraso</div>
+        <div style="font-size:18px;font-weight:700;margin:8px 0;" id="dk-atraso">—</div>
+        <div style="height:130px;"><canvas id="grafico-situacoes"></canvas></div>
+      </div>
+    </div>
 
- 
- <div class="dashboard-grid" style="margin-bottom:20px;">
- <div class="chart-card">
- <h3>Recebido &amp; Lucro por Mês</h3>
- <div style="height:240px;"><canvas id="grafico-lucro-mensal"></canvas></div>
- </div>
- <div class="chart-card">
- <h3>Top 5 Órgãos por Lucro</h3>
- <div style="height:240px;"><canvas id="grafico-orgaos"></canvas></div>
- </div>
- </div>
+    
+    <div class="dashboard-grid" style="margin-bottom:20px;">
+      <div class="chart-card">
+        <h3>Recebido &amp; Lucro por Mês</h3>
+        <div style="height:240px;"><canvas id="grafico-lucro-mensal"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Top 5 Órgãos por Lucro</h3>
+        <div style="height:240px;"><canvas id="grafico-orgaos"></canvas></div>
+      </div>
+    </div>
 
- <div class="dashboard-grid" style="grid-template-columns:repeat(3,1fr);">
- <div class="chart-card">
- <h3>Performance por Analista</h3>
- <div style="height:220px;"><canvas id="grafico-analistas"></canvas></div>
- </div>
- <div class="chart-card">
- <h3>Velocidade Média de Pagamento</h3>
- <div style="height:220px;"><canvas id="grafico-velocidade"></canvas></div>
- </div>
- </div>
+    <div class="dashboard-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="chart-card">
+        <h3>Performance por Analista</h3>
+        <div style="height:220px;"><canvas id="grafico-analistas"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Velocidade Média de Pagamento</h3>
+        <div style="height:220px;"><canvas id="grafico-velocidade"></canvas></div>
+      </div>
+    </div>
 
- 
- <div class="chart-card" style="margin-top:20px;">
- <h3>Empenhos Pendentes há mais de 30 dias</h3>
- <div style="overflow-x:auto;">
- <table style="width:100%;font-size:12px;border-collapse:collapse;">
- <thead>
- <tr style="background:var(--bg-surface-soft);">
- <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Nº Empenho</th>
- <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
- <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Analista</th>
- <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Empenho</th>
- <th style="padding:8px;text-align:center;font-weight:600;color:var(--text-tertiary);">Dias</th>
- </tr>
- </thead>
- <tbody id="dash-tbody-urgentes"></tbody>
- </table>
- </div>
- </div>
+    
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>Empenhos Pendentes há mais de 30 dias</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Nº Empenho</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Analista</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Empenho</th>
+              <th style="padding:8px;text-align:center;font-weight:600;color:var(--text-tertiary);">Dias</th>
+            </tr>
+          </thead>
+          <tbody id="dash-tbody-urgentes"></tbody>
+        </table>
+      </div>
+    </div>
 
- 
- <div class="chart-card" style="margin-top:20px;">
- <h3>🏅 Ranking de Órgãos (por valor contratado)</h3>
- <div style="overflow-x:auto;">
- <table style="width:100%;font-size:12px;border-collapse:collapse;">
- <thead>
- <tr style="background:var(--bg-surface-soft);">
- <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">#</th>
- <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
- <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Contratos</th>
- <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Contrato</th>
- <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Lucro</th>
- </tr>
- </thead>
- <tbody id="dash-tbody-ranking"></tbody>
- </table>
- </div>
- </div>
+    
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>🏅 Ranking de Órgãos (por valor contratado)</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--bg-surface-soft);">
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">#</th>
+              <th style="padding:8px;text-align:left;font-weight:600;color:var(--text-tertiary);">Órgão</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Contratos</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Val. Contrato</th>
+              <th style="padding:8px;text-align:right;font-weight:600;color:var(--text-tertiary);">Lucro</th>
+            </tr>
+          </thead>
+          <tbody id="dash-tbody-ranking"></tbody>
+        </table>
+      </div>
+    </div>
 
- 
- <div class="chart-card" style="margin-top:20px;">
- <h3>Previsão de Caixa — Empenhos Pendentes</h3>
- <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
- <div class="card" style="border-left:4px solid var(--success);text-align:center;">
- <div class="card-label">Próximos 30 dias</div>
- <div class="card-value cv-green" id="caixa-30">—</div>
- <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-30-qt"></div>
- </div>
- <div class="card" style="border-left:4px solid var(--warning);text-align:center;">
- <div class="card-label">31 a 60 dias</div>
- <div class="card-value cv-yellow" id="caixa-60">—</div>
- <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-60-qt"></div>
- </div>
- <div class="card" style="border-left:4px solid var(--danger);text-align:center;">
- <div class="card-label">61 a 90 dias</div>
- <div class="card-value" style="color:var(--danger);" id="caixa-90">—</div>
- <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90-qt"></div>
- </div>
- <div class="card" style="border-left:4px solid var(--purple);text-align:center;">
- <div class="card-label">Acima de 90 dias</div>
- <div class="card-value cv-purple" id="caixa-90p">—</div>
- <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90p-qt"></div>
- </div>
- </div>
- <div style="overflow-x:auto;">
- <table style="width:100%;font-size:12px;border-collapse:collapse;" id="dash-caixa-tabela">
- <thead><tr style="background:var(--bg-surface-soft);">
- <th style="padding:8px;text-align:left;">Nº Empenho</th>
- <th style="padding:8px;text-align:left;">Órgão</th>
- <th style="padding:8px;text-align:left;">Analista</th>
- <th style="padding:8px;text-align:right;">A Receber</th>
- <th style="padding:8px;text-align:center;">Dias</th>
- <th style="padding:8px;text-align:center;">Faixa</th>
- </tr></thead>
- <tbody id="dash-tbody-caixa"></tbody>
- </table>
- </div>
- </div>
+    
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>Previsão de Caixa — Empenhos Pendentes</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
+        <div class="card" style="border-left:4px solid var(--success);text-align:center;">
+          <div class="card-label">Próximos 30 dias</div>
+          <div class="card-value cv-green" id="caixa-30">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-30-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--warning);text-align:center;">
+          <div class="card-label">31 a 60 dias</div>
+          <div class="card-value cv-yellow" id="caixa-60">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-60-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--danger);text-align:center;">
+          <div class="card-label">61 a 90 dias</div>
+          <div class="card-value" style="color:var(--danger);" id="caixa-90">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90-qt"></div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--purple);text-align:center;">
+          <div class="card-label">Acima de 90 dias</div>
+          <div class="card-value cv-purple" id="caixa-90p">—</div>
+          <div style="font-size:10px;color:var(--text-tertiary);" id="caixa-90p-qt"></div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;" id="dash-caixa-tabela">
+          <thead><tr style="background:var(--bg-surface-soft);">
+            <th style="padding:8px;text-align:left;">Nº Empenho</th>
+            <th style="padding:8px;text-align:left;">Órgão</th>
+            <th style="padding:8px;text-align:left;">Analista</th>
+            <th style="padding:8px;text-align:right;">A Receber</th>
+            <th style="padding:8px;text-align:center;">Dias</th>
+            <th style="padding:8px;text-align:center;">Faixa</th>
+          </tr></thead>
+          <tbody id="dash-tbody-caixa"></tbody>
+        </table>
+      </div>
+    </div>
 
- 
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
- <div class="chart-card">
- <h3>Top Órgãos Devedores</h3>
- <div style="overflow-x:auto;">
- <table style="width:100%;font-size:12px;border-collapse:collapse;">
- <thead><tr style="background:var(--bg-surface-soft);">
- <th style="padding:7px 8px;text-align:left;">Órgão</th>
- <th style="padding:7px 8px;text-align:right;">Empenhos</th>
- <th style="padding:7px 8px;text-align:right;">A Receber</th>
- <th style="padding:7px 8px;text-align:center;">Maior Atraso</th>
- </tr></thead>
- <tbody id="dash-tbody-devedores"></tbody>
- </table>
- </div>
- </div>
- <div class="chart-card">
- <h3>Taxa de Recebimento por Órgão</h3>
- <div style="overflow-x:auto;">
- <table style="width:100%;font-size:12px;border-collapse:collapse;">
- <thead><tr style="background:var(--bg-surface-soft);">
- <th style="padding:7px 8px;text-align:left;">Órgão</th>
- <th style="padding:7px 8px;text-align:center;">Pagos</th>
- <th style="padding:7px 8px;text-align:center;">Total</th>
- <th style="padding:7px 8px;text-align:center;">Taxa</th>
- </tr></thead>
- <tbody id="dash-tbody-taxa"></tbody>
- </table>
- </div>
- </div>
- </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+      <div class="chart-card">
+        <h3>Top Órgãos Devedores</h3>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;font-size:12px;border-collapse:collapse;">
+            <thead><tr style="background:var(--bg-surface-soft);">
+              <th style="padding:7px 8px;text-align:left;">Órgão</th>
+              <th style="padding:7px 8px;text-align:right;">Empenhos</th>
+              <th style="padding:7px 8px;text-align:right;">A Receber</th>
+              <th style="padding:7px 8px;text-align:center;">Maior Atraso</th>
+            </tr></thead>
+            <tbody id="dash-tbody-devedores"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Taxa de Recebimento por Órgão</h3>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;font-size:12px;border-collapse:collapse;">
+            <thead><tr style="background:var(--bg-surface-soft);">
+              <th style="padding:7px 8px;text-align:left;">Órgão</th>
+              <th style="padding:7px 8px;text-align:center;">Pagos</th>
+              <th style="padding:7px 8px;text-align:center;">Total</th>
+              <th style="padding:7px 8px;text-align:center;">Taxa</th>
+            </tr></thead>
+            <tbody id="dash-tbody-taxa"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
- </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-disputas">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Contratos ativos</h1>
- <p class="lb-page-subtitle">Acompanhe vigência, itens, saldos, empenhos vinculados e resultados previstos.</p>
- </div>
- </div>
- <div class="summary-row" id="sum-disputas"></div>
- <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
+  
+  <div class="tab-pane" id="tab-disputas">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Contratos ativos</h1>
+        <p class="lb-page-subtitle">Acompanhe vigência, itens, saldos, empenhos vinculados e resultados previstos.</p>
+      </div>
+    </div>
+    <div class="summary-row" id="sum-disputas"></div>
+    <div id="alerta-contratos-banner" style="display:none;cursor:pointer;" class="alerta-banner" onclick="switchTab('disputas',document.querySelectorAll('.tab-btn')[2])" title="Ver disputas com contrato vencendo">
       📃 <span id="alerta-contratos-txt"></span>
- </div>
- <div class="toolbar">
- <button class="btn btn-primary" onclick="openModal('disputas')">＋ Novo Contrato</button>
- <div class="toolbar-separator"></div>
- <div class="filter-group">
- <label>👤 Analista:</label>
- <select id="filtro-analista-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="Márdea">Márdea</option>
- <option value="Rodrigo">Rodrigo</option>
- 
- </select>
- </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="openModal('disputas')">＋ Novo Contrato</button>
+      <div class="toolbar-separator"></div>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+        
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>📅 Mês/Ano:</label>
- <select id="filtro-mes-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>📅 Mês/Ano:</label>
+        <select id="filtro-mes-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>📄 Empenhos:</label>
- <select id="filtro-empenho-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="com-empenho">Com empenho</option>
- <option value="sem-empenho">Sem empenho</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>📄 Empenhos:</label>
+        <select id="filtro-empenho-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="com-empenho">Com empenho</option>
+          <option value="sem-empenho">Sem empenho</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>🏢 Empresa:</label>
- <select id="filtro-empresa-disputas" onchange="filtrarDisputas()">
- <option value="todas">Todas</option>
- <option value="Gadita">Gadita</option>
- <option value="Hamate">Hamate</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>🏢 Empresa:</label>
+        <select id="filtro-empresa-disputas" onchange="filtrarDisputas()">
+          <option value="todas">Todas</option>
+          <option value="Gadita">Gadita</option>
+          <option value="Hamate">Hamate</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>📋 Tipo:</label>
- <select id="filtro-tipo-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="Pregão Eletrônico">Pregão Eletrônico</option>
- <option value="Dispensa">Dispensa</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>📋 Tipo:</label>
+        <select id="filtro-tipo-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="Pregão Eletrônico">Pregão Eletrônico</option>
+          <option value="Dispensa">Dispensa</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>🔁 RP:</label>
- <select id="filtro-rp-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="SIM">SIM</option>
- <option value="NÃO">NÃO</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>🔁 RP:</label>
+        <select id="filtro-rp-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="SIM">SIM</option>
+          <option value="NÃO">NÃO</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>💻 Sistema:</label>
- <select id="filtro-sistema-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="Licitar Digital">Licitar Digital</option>
- <option value="Licitanet">Licitanet</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>💻 Sistema:</label>
+        <select id="filtro-sistema-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="Licitar Digital">Licitar Digital</option>
+          <option value="Licitanet">Licitanet</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>🗺️ UF:</label>
- <select id="filtro-estado-disputas" onchange="filtrarDisputas()">
- <option value="todos">Todos</option>
- <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
- </select>
- </div>
- 
- <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar contratos..." oninput="_debFilterTable('disputas',this.value)"></div>
- <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
- <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
- <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+      <div class="filter-group">
+        <label>🗺️ UF:</label>
+        <select id="filtro-estado-disputas" onchange="filtrarDisputas()">
+          <option value="todos">Todos</option>
+          <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+        </select>
+      </div>
+      
+      <div class="search-box"><input type="text" id="search-disputas" placeholder="Pesquisar contratos..." oninput="_debFilterTable('disputas',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-disputas" onclick="limparFiltrosDisputas()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-disputas">0</span> filtro(s) ativo(s) · ✕</span>
+      <button class="btn btn-ghost btn-sm" onclick="limparFiltrosDisputas()" title="Limpar filtros">✕ Limpar</button>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
 
- <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
- </div>
- </div>
- <div class="table-wrapper" id="disputas-table-view">
- <table>
- <thead><tr>
- <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data" title="Ordenar por data">Data</th>
- <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao" title="Ordenar por órgão">Órgão / UF</th>
- <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'analista')" id="sort-disputas-analista" title="Ordenar por analista">Analista</th>
- <th class="money" style="min-width:105px;width:105px;" onclick="sort('disputas', 'valorContrato')" id="sort-disputas-valorContrato" title="Ordenar pelo valor do contrato">Vl. Contrato</th>
- <th class="money" style="min-width:95px;width:95px;" onclick="sort('disputas', 'lucroPrevisto')" id="sort-disputas-lucroPrevisto" title="Ordenar pelo lucro previsto">Lucro Prev.</th>
- <th style="min-width:80px;text-align:center;" onclick="sort('disputas', 'progresso')" id="sort-disputas-progresso" title="Ordenar pelo progresso">Progresso</th>
- </tr></thead>
- <tbody id="tbody-disputas"></tbody>
- <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
- <tr id="tfoot-disputas-row" style="display:none;">
- <td></td>
- <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
- <td></td>
- <td class="money" id="tfoot-d-contrato" style="color:var(--accent);font-family:var(--font-mono);"></td>
- <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:var(--font-mono);"></td>
- <td></td>
- </tr>
- </tfoot>
- </table>
- </div>
- <div id="pagination-disputas" class="pagination" style="display:none;"></div>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('disputas')" title="Exportar planilha Excel formatada">⬇ Excel</button>
+      </div>
+    </div>
+    <div class="table-wrapper" id="disputas-table-view">
+      <table>
+        <thead><tr>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'data')" id="sort-disputas-data" title="Ordenar por data">Data</th>
+          <th style="min-width:180px;" onclick="sort('disputas', 'orgao')" id="sort-disputas-orgao" title="Ordenar por órgão">Órgão / UF</th>
+          <th style="min-width:80px;width:80px;" onclick="sort('disputas', 'analista')" id="sort-disputas-analista" title="Ordenar por analista">Analista</th>
+          <th class="money" style="min-width:105px;width:105px;" onclick="sort('disputas', 'valorContrato')" id="sort-disputas-valorContrato" title="Ordenar pelo valor do contrato">Vl. Contrato</th>
+          <th class="money" style="min-width:95px;width:95px;" onclick="sort('disputas', 'lucroPrevisto')" id="sort-disputas-lucroPrevisto" title="Ordenar pelo lucro previsto">Lucro Prev.</th>
+          <th style="min-width:80px;text-align:center;" onclick="sort('disputas', 'progresso')" id="sort-disputas-progresso" title="Ordenar pelo progresso">Progresso</th>
+        </tr></thead>
+        <tbody id="tbody-disputas"></tbody>
+        <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-disputas-row" style="display:none;">
+            <td></td>
+            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td></td>
+            <td class="money" id="tfoot-d-contrato" style="color:var(--accent);font-family:var(--font-mono);"></td>
+            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:var(--font-mono);"></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div id="pagination-disputas" class="pagination" style="display:none;"></div>
 
- </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-empenhos">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Empenhos pendentes</h1>
- <p class="lb-page-subtitle">Monitore compras, recebimentos, atrasos e valores ainda pendentes.</p>
- </div>
- </div>
- <div id="alerta-empenhos-banner" style="display:none;" class="alerta-banner" onclick="filtrarAtraso60()">
+  
+  <div class="tab-pane" id="tab-empenhos">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Empenhos pendentes</h1>
+        <p class="lb-page-subtitle">Monitore compras, recebimentos, atrasos e valores ainda pendentes.</p>
+      </div>
+    </div>
+    <div id="alerta-empenhos-banner" style="display:none;" class="alerta-banner" onclick="filtrarAtraso60()">
       🚨 <span id="alerta-empenhos-txt"></span> — clique para filtrar
- </div>
- <div class="summary-row" id="sum-empenhos"></div>
- <div class="toolbar">
+    </div>
+    <div class="summary-row" id="sum-empenhos"></div>
+    <div class="toolbar">
 
- <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
+      <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao" onclick="toggleAgrupamento()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
 
- 
- <div class="filter-group">
- <label>⏱️ Atraso:</label>
- <select id="filtro-atraso-empenhos" onchange="filtrarEmpenhos()">
- <option value="todos">Todos</option>
- <option value="30">+30 dias</option>
- <option value="60">+60 dias</option>
- <option value="90">+90 dias</option>
- </select>
- </div>
+      
+      <div class="filter-group">
+        <label>⏱️ Atraso:</label>
+        <select id="filtro-atraso-empenhos" onchange="filtrarEmpenhos()">
+          <option value="todos">Todos</option>
+          <option value="30">+30 dias</option>
+          <option value="60">+60 dias</option>
+          <option value="90">+90 dias</option>
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>👤 Analista:</label>
- <select id="filtro-analista-empenhos" onchange="filtrarEmpenhos()">
- <option value="todos">Todos</option>
- <option value="Márdea">Márdea</option>
- <option value="Rodrigo">Rodrigo</option>
- 
- </select>
- </div>
+      <div class="filter-group">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-empenhos" onchange="filtrarEmpenhos()">
+          <option value="todos">Todos</option>
+          <option value="Márdea">Márdea</option>
+          <option value="Rodrigo">Rodrigo</option>
+         
+        </select>
+      </div>
 
- <div class="filter-group">
- <label>🛒 Compras:</label>
- <select id="filtro-compras-empenhos" onchange="filtrarEmpenhos()">
- <option value="todos">Todos</option>
- <option value="com-compras">Com compras</option>
- <option value="sem-compras">Sem compras</option>
- </select>
- </div>
+      <div class="filter-group">
+        <label>🛒 Compras:</label>
+        <select id="filtro-compras-empenhos" onchange="filtrarEmpenhos()">
+          <option value="todos">Todos</option>
+          <option value="com-compras">Com compras</option>
+          <option value="sem-compras">Sem compras</option>
+        </select>
+      </div>
 
- <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="_debFilterTable('empenhos',this.value)"></div>
- <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
- <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
- <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
- <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
- <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
- </div>
- </div>
- <div class="table-wrapper">
- <table>
- <thead><tr>
- <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
- <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
- <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
- <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
- <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
- </tr></thead>
- <tbody id="tbody-empenhos"></tbody>
- <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
- <tr id="tfoot-empenhos-row" style="display:none;">
- <td colspan="3" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
- <td colspan="2"></td>
- </tr>
- </tfoot>
- </table>
- </div>
- </div>
+      <div class="search-box"><input type="text" id="search-empenhos" placeholder="Pesquisar empenhos..." oninput="_debFilterTable('empenhos',this.value)"></div>
+      <span class="active-filters-badge" id="badge-filtros-empenhos" onclick="limparFiltrosEmpenhos()" title="Limpar todos os filtros">🔽 <span id="cnt-filtros-empenhos">0</span> filtro(s) ativo(s) · ✕</span>
+      <button class="btn btn-ghost btn-sm" onclick="limparFiltrosEmpenhos()" title="Limpar filtros">✕ Limpar</button>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+        <button class="btn btn-danger btn-sm" id="btn-del-lote-empenhos" style="display:none;" onclick="deletarSelecionados('empenhos')">Excluir selecionados (<span id="cnt-sel-empenhos">0</span>)</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportXLSX('empenhos')" title="Exportar planilha Excel formatada">⬇ Excel</button>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr>
+          <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
+          <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
+          <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
+          <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
+          <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
+        </tr></thead>
+        <tbody id="tbody-empenhos"></tbody>
+        <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
+          <tr id="tfoot-empenhos-row" style="display:none;">
+            <td colspan="3" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-emp-finalizados">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Empenhos finalizados</h1>
- <p class="lb-page-subtitle">Consulte pagamentos concluídos e resultados recebidos.</p>
- </div>
- </div>
- <div class="summary-row" id="sum-emp-finalizados"></div>
- <div class="toolbar">
- <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="_debRenderEmpFin()"></div>
- <div class="filter-group" id="fg-analista-emp-fin">
- <label>👤 Analista:</label>
- <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
- <option value="todos">Todos</option>
- </select>
- </div>
- <div class="filter-group">
- <label>📅 Mês/Ano Pagamento:</label>
- <select id="filtro-mes-pag-emp-fin" onchange="renderEmpFinalizados()">
- <option value="todos">Todos</option>
- </select>
- </div>
- <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
- </div>
- <div class="table-wrapper">
- <table>
- <thead>
- <tr>
- <th id="sort-emp-finalizados-num" onclick="sortEmpFinalizados('num')" title="Ordenar pelo número do empenho">Nº Empenho</th>
- <th id="sort-emp-finalizados-orgao" onclick="sortEmpFinalizados('orgao')" title="Ordenar por órgão">Órgão</th>
- <th id="sort-emp-finalizados-analista" onclick="sortEmpFinalizados('analista')" title="Ordenar por analista">Analista</th>
- <th id="sort-emp-finalizados-lucroRecebido" class="money" onclick="sortEmpFinalizados('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
- <th id="sort-emp-finalizados-dataPagamento" onclick="sortEmpFinalizados('dataPagamento')" title="Ordenar pela data de pagamento">Dt. Pagamento</th>
- </tr>
- </thead>
- <tbody id="tbody-emp-finalizados"></tbody>
- </table>
- </div>
- </div>
+  
+  <div class="tab-pane" id="tab-emp-finalizados">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Empenhos finalizados</h1>
+        <p class="lb-page-subtitle">Consulte pagamentos concluídos e resultados recebidos.</p>
+      </div>
+    </div>
+    <div class="summary-row" id="sum-emp-finalizados"></div>
+    <div class="toolbar">
+      <div class="search-box"><input type="text" id="search-emp-finalizados" placeholder="Pesquisar empenhos finalizados..." oninput="_debRenderEmpFin()"></div>
+      <div class="filter-group" id="fg-analista-emp-fin">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-emp-fin" onchange="renderEmpFinalizados()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Mês/Ano Pagamento:</label>
+        <select id="filtro-mes-pag-emp-fin" onchange="renderEmpFinalizados()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-agrupar-orgao-fin" onclick="toggleAgrupamentoFin()" title="Agrupar por órgão" style="font-size:12px;">🏢 Agrupar por Órgão</button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th id="sort-emp-finalizados-num" onclick="sortEmpFinalizados('num')" title="Ordenar pelo número do empenho">Nº Empenho</th>
+            <th id="sort-emp-finalizados-orgao" onclick="sortEmpFinalizados('orgao')" title="Ordenar por órgão">Órgão</th>
+            <th id="sort-emp-finalizados-analista" onclick="sortEmpFinalizados('analista')" title="Ordenar por analista">Analista</th>
+            <th id="sort-emp-finalizados-lucroRecebido" class="money" onclick="sortEmpFinalizados('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
+            <th id="sort-emp-finalizados-dataPagamento" onclick="sortEmpFinalizados('dataPagamento')" title="Ordenar pela data de pagamento">Dt. Pagamento</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-emp-finalizados"></tbody>
+      </table>
+    </div>
+  </div>
 
- 
- <div class="tab-pane" id="tab-finalizadas">
- <div class="lb-page-head">
- <div class="lb-page-head-main">
- <h1 class="lb-page-title">Contratos finalizados</h1>
- <p class="lb-page-subtitle">Consulte contratos encerrados e seus resultados consolidados.</p>
- </div>
- </div>
- <div class="summary-row" id="sum-finalizadas"></div>
- <div class="toolbar">
- <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="_debRenderFinaliz()"></div>
- <div class="filter-group" id="fg-analista-finalizadas">
- <label>👤 Analista:</label>
- <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
- <option value="todos">Todos</option>
- </select>
- </div>
- <div class="filter-group">
- <label>📅 Mês/Ano Finalização:</label>
- <select id="filtro-mes-finalizadas" onchange="renderFinalizadas()">
- <option value="todos">Todos</option>
- </select>
- </div>
- </div>
- <div class="table-wrapper">
- <table class="data-table">
- <thead>
- <tr>
- <th id="sort-finalizadas-data" onclick="sortFinalizadas('data')" title="Ordenar pela data do contrato">Data</th>
- <th id="sort-finalizadas-orgao" onclick="sortFinalizadas('orgao')" title="Ordenar por órgão">Órgão / UF</th>
- <th id="sort-finalizadas-analista" onclick="sortFinalizadas('analista')" title="Ordenar por analista">Analista</th>
- <th id="sort-finalizadas-empresa" onclick="sortFinalizadas('empresa')" title="Ordenar por empresa">Empresa</th>
- <th id="sort-finalizadas-lucroRecebido" class="money" onclick="sortFinalizadas('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
- <th id="sort-finalizadas-dataFinalizacao" onclick="sortFinalizadas('dataFinalizacao')" title="Ordenar pela data de finalização">Finalizada em</th>
- </tr>
- </thead>
- <tbody id="tbody-finalizadas"></tbody>
- </table>
- </div>
- </div>
+  
+  <div class="tab-pane" id="tab-finalizadas">
+    <div class="lb-page-head">
+      <div class="lb-page-head-main">
+        <h1 class="lb-page-title">Contratos finalizados</h1>
+        <p class="lb-page-subtitle">Consulte contratos encerrados e seus resultados consolidados.</p>
+      </div>
+    </div>
+    <div class="summary-row" id="sum-finalizadas"></div>
+    <div class="toolbar">
+      <div class="search-box"><input type="text" id="search-finalizadas" placeholder="Pesquisar finalizadas..." oninput="_debRenderFinaliz()"></div>
+      <div class="filter-group" id="fg-analista-finalizadas">
+        <label>👤 Analista:</label>
+        <select id="filtro-analista-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Mês/Ano Finalização:</label>
+        <select id="filtro-mes-finalizadas" onchange="renderFinalizadas()">
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th id="sort-finalizadas-data" onclick="sortFinalizadas('data')" title="Ordenar pela data do contrato">Data</th>
+          <th id="sort-finalizadas-orgao" onclick="sortFinalizadas('orgao')" title="Ordenar por órgão">Órgão / UF</th>
+          <th id="sort-finalizadas-analista" onclick="sortFinalizadas('analista')" title="Ordenar por analista">Analista</th>
+          <th id="sort-finalizadas-empresa" onclick="sortFinalizadas('empresa')" title="Ordenar por empresa">Empresa</th>
+          <th id="sort-finalizadas-lucroRecebido" class="money" onclick="sortFinalizadas('lucroRecebido')" title="Ordenar pelo lucro recebido">Lucro Recebido</th>
+          <th id="sort-finalizadas-dataFinalizacao" onclick="sortFinalizadas('dataFinalizacao')" title="Ordenar pela data de finalização">Finalizada em</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-finalizadas"></tbody>
+    </table>
+    </div>
+  </div>
 
 </div>
 
 <div class="modal-overlay" id="modal-acomp">
- <div class="modal modal-lg">
- <div class="modal-header">
- <div class="modal-title" id="ttl-acomp">Novo Acompanhamento</div>
- <button class="modal-close" onclick="closeModal('acomp')">✕</button>
- </div>
- <div class="modal-body">
- <div class="form-grid">
- <div class="fg"><label class="fl">Data do Contrato</label><input type="date" class="fc" id="ac-data"></div>
- <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="ac-orgao" placeholder="Prefeitura de..."></div>
- <div class="fg"><label class="fl">UF</label>
- <select class="fc" id="ac-estado">
- <option value="">Selecione</option>
- <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
- </select>
- </div>
- <div class="fg"><label class="fl">Sistema</label>
- <select class="fc" id="ac-sistema">
- <option value="">Selecione</option>
- <option>Licitar Digital</option>
- <option selected>Licitanet</option>
- 
- </select>
- </div>
- <div class="fg"><label class="fl">Analista</label>
- <select class="fc" id="ac-analista">
- <option value="">Selecione</option>
- <option selected>Márdea</option>
- <option>Rodrigo</option>
- 
- </select>
- </div>
- <div class="fg"><label class="fl">Status</label>
- <select class="fc" id="ac-status">
- <option value="pendente">Pendente</option>
- <option value="recurso">Em Recurso</option>
- </select>
- </div>
- <div class="fg"><label class="fl">Empresa</label>
- <select class="fc" id="ac-empresa">
- <option value="">Selecione</option>
- <option value="Hamate">Hamate</option>
- <option value="Gadita">Gadita</option>
- </select>
- </div>
- <div class="fg"><label class="fl">Tipo de Processo</label>
- <select class="fc" id="ac-tipo">
- <option value="">Selecione</option>
- <option value="Pregão Eletrônico">Pregão Eletrônico</option>
- <option value="Dispensa">Dispensa</option>
- </select>
- </div>
- <div class="fg"><label class="fl">Nº do Processo</label><input type="text" class="fc" id="ac-processo" placeholder="Ex: 001/2025"></div>
- <div class="fg"><label class="fl">🔗 Link do Sistema</label><input type="url" class="fc" id="ac-link" placeholder="https://..."></div>
- <div class="fg"><label class="fl">⏰ Data e Hora de Retorno</label><input type="datetime-local" class="fc" id="ac-retorno"></div>
- <div class="fg full"><label class="fl">Observação</label>
- <textarea class="fc" id="ac-observacao" maxlength="300" rows="3" placeholder="Situação atual, motivo do recurso..."></textarea>
- </div>
- </div>
- </div>
- <div class="modal-footer">
- <button class="btn btn-ghost" onclick="closeModal('acomp')">Cancelar</button>
- <button class="btn btn-primary" onclick="saveAcomp()">Salvar</button>
- </div>
- </div>
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="ttl-acomp">Novo Acompanhamento</div>
+      <button class="modal-close" onclick="closeModal('acomp')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Data do Contrato</label><input type="date" class="fc" id="ac-data"></div>
+        <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="ac-orgao" placeholder="Prefeitura de..."></div>
+        <div class="fg"><label class="fl">UF</label>
+          <select class="fc" id="ac-estado">
+            <option value="">Selecione</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Sistema</label>
+          <select class="fc" id="ac-sistema">
+            <option value="">Selecione</option>
+            <option>Licitar Digital</option>
+            <option selected>Licitanet</option>
+           
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Analista</label>
+          <select class="fc" id="ac-analista">
+            <option value="">Selecione</option>
+            <option selected>Márdea</option>
+            <option>Rodrigo</option>
+           
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Status</label>
+          <select class="fc" id="ac-status">
+            <option value="pendente">Pendente</option>
+            <option value="recurso">Em Recurso</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Empresa</label>
+          <select class="fc" id="ac-empresa">
+            <option value="">Selecione</option>
+            <option value="Hamate">Hamate</option>
+            <option value="Gadita">Gadita</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Tipo de Processo</label>
+          <select class="fc" id="ac-tipo">
+            <option value="">Selecione</option>
+            <option value="Pregão Eletrônico">Pregão Eletrônico</option>
+            <option value="Dispensa">Dispensa</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Nº do Processo</label><input type="text" class="fc" id="ac-processo" placeholder="Ex: 001/2025"></div>
+        <div class="fg"><label class="fl">🔗 Link do Sistema</label><input type="url" class="fc" id="ac-link" placeholder="https://..."></div>
+        <div class="fg"><label class="fl">⏰ Data e Hora de Retorno</label><input type="datetime-local" class="fc" id="ac-retorno"></div>
+        <div class="fg full"><label class="fl">Observação</label>
+          <textarea class="fc" id="ac-observacao" maxlength="300" rows="3" placeholder="Situação atual, motivo do recurso..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('acomp')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAcomp()">Salvar</button>
+    </div>
+  </div>
 </div>
 
 <div class="detail-popup-overlay" id="popup-acomp">
- <div class="detail-popup">
- <div class="detail-popup-header">
- <div>
- <div class="detail-popup-title" id="popup-ac-title">Detalhes do Acompanhamento</div>
- <div class="detail-popup-sub" id="popup-ac-sub"></div>
- </div>
- <button class="detail-close" onclick="fecharPopup('acomp')">&#10005;</button>
- </div>
- <div id="popup-ac-body"></div>
- <div class="detail-actions">
- <button class="btn btn-ghost" onclick="fecharPopup('acomp')">Fechar</button>
- <button class="btn btn-primary" id="popup-ac-edit-btn">Editar</button>
- <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Contrato</button>
- </div>
- </div>
+  <div class="detail-popup">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="popup-ac-title">Detalhes do Acompanhamento</div>
+        <div class="detail-popup-sub" id="popup-ac-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharPopup('acomp')">&#10005;</button>
+    </div>
+    <div id="popup-ac-body"></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharPopup('acomp')">Fechar</button>
+      <button class="btn btn-primary" id="popup-ac-edit-btn">Editar</button>
+      <button class="btn btn-success" id="popup-ac-conv-btn">Converter em Contrato</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-disputas">
- <div class="modal modal-xl">
- <div class="modal-header">
- <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
- <button class="modal-close" onclick="closeModal('disputas')">✕</button>
- </div>
- <div class="modal-body">
- <div class="form-grid">
- <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="d-data"></div>
- <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="d-orgao" placeholder="Prefeitura..."></div>
- <div class="fg"><label class="fl">Estado</label>
- <select class="fc" id="d-estado">
- <option value="">Selecione</option>
- <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
- </select>
- </div>
- <div class="fg"><label class="fl">Empresa</label>
- <select class="fc" id="d-empresa"><option value="">Selecione</option><option>Gadita</option><option selected>Hamate</option></select>
- </div>
- <div class="fg"><label class="fl">Tipo</label>
- <select class="fc" id="d-tipo"><option value="">Selecione</option><option selected>Pregão Eletrônico</option><option>Dispensa</option></select>
- </div>
- <div class="fg"><label class="fl">RP?</label>
- <select class="fc" id="d-rp"><option value="">—</option><option>SIM</option><option selected>NÃO</option></select>
- </div>
- <div class="fg"><label class="fl">Processo</label><input type="text" class="fc" id="d-processo"></div>
- <div class="fg"><label class="fl">Sistema</label>
- <select class="fc" id="d-sistema"><option value="">Selecione</option><option>Licitar Digital</option><option selected>Licitanet</option></select>
- </div>
- <div class="fg"><label class="fl">Analista</label>
- <select class="fc" id="d-analista"><option value="">Selecione</option><option selected>Márdea</option><option>Rodrigo</option></select>
- </div>
- <div class="fg">
- <label class="fl">Data do Contrato</label>
- <input type="date" class="fc" id="d-contrato-data" onchange="calcVencimentoContrato()">
- </div>
- <div class="fg half">
- <label class="fl">Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
- <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()">
- </div>
- <input type="hidden" id="d-contrato-url">
- <input type="hidden" id="d-contrato-nome">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <div class="modal-title" id="ttl-disputas">Novo Contrato</div>
+      <button class="modal-close" onclick="closeModal('disputas')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="d-data"></div>
+        <div class="fg"><label class="fl">Órgão</label><input type="text" class="fc" id="d-orgao" placeholder="Prefeitura..."></div>
+        <div class="fg"><label class="fl">Estado</label>
+          <select class="fc" id="d-estado">
+            <option value="">Selecione</option>
+            <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Empresa</label>
+          <select class="fc" id="d-empresa"><option value="">Selecione</option><option>Gadita</option><option selected>Hamate</option></select>
+        </div>
+        <div class="fg"><label class="fl">Tipo</label>
+          <select class="fc" id="d-tipo"><option value="">Selecione</option><option selected>Pregão Eletrônico</option><option>Dispensa</option></select>
+        </div>
+        <div class="fg"><label class="fl">RP?</label>
+          <select class="fc" id="d-rp"><option value="">—</option><option>SIM</option><option selected>NÃO</option></select>
+        </div>
+        <div class="fg"><label class="fl">Processo</label><input type="text" class="fc" id="d-processo"></div>
+        <div class="fg"><label class="fl">Sistema</label>
+          <select class="fc" id="d-sistema"><option value="">Selecione</option><option>Licitar Digital</option><option selected>Licitanet</option></select>
+        </div>
+        <div class="fg"><label class="fl">Analista</label>
+          <select class="fc" id="d-analista"><option value="">Selecione</option><option selected>Márdea</option><option>Rodrigo</option></select>
+        </div>
+        <div class="fg">
+          <label class="fl">Data do Contrato</label>
+          <input type="date" class="fc" id="d-contrato-data" onchange="calcVencimentoContrato()">
+        </div>
+        <div class="fg half">
+          <label class="fl">Vencimento <span style="font-size:10px;color:var(--text-tertiary);font-weight:400;">(auto: 1 ano)</span></label>
+          <input type="date" class="fc" id="d-contrato-vencimento" onchange="atualizarCorVencimento()">
+        </div>
+        <input type="hidden" id="d-contrato-url">
+        <input type="hidden" id="d-contrato-nome">
 
- 
- <div class="full">
- <div class="fsec">📦 Itens / Lotes do Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></div>
- <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
- <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Descrição</span>
- <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Qtd Cont.</span>
- <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Unit</span>
- <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Total</span>
- <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Vl. Compra Prev.</span>
- <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Custo Prev.</span>
- <span style="font-size:9px;font-weight:700;color:var(--success);text-transform:uppercase;">Lucro Prev.</span>
- <span></span>
- </div>
- <div id="lotes-container"></div>
- <button type="button" class="btn btn-ghost btn-sm" onclick="adicionarLote()" style="margin-top:6px;">＋ Adicionar Item/Lote</button>
- <div class="lotes-totais" id="lotes-totais" style="display:none;margin-top:8px;">
- <span>Itens: <strong id="lt-count">0</strong></span>
- <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent);">R$ 0,00</strong></span>
- <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
- </div>
- <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
- </div>
- 
- <div class="fg full">
- <label class="fl">Observação (max 200 caracteres)</label>
- <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
- </div>
+        
+        <div class="full">
+          <div class="fsec">📦 Itens / Lotes do Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></div>
+          <div style="display:grid;grid-template-columns:1fr 70px 100px 100px 100px 90px 100px 30px;gap:4px;padding:0 4px;margin-bottom:4px;">
+            <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Descrição</span>
+            <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Qtd Cont.</span>
+            <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Unit</span>
+            <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Vl. Total</span>
+            <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Vl. Compra Prev.</span>
+            <span style="font-size:9px;font-weight:700;color:var(--warning);text-transform:uppercase;">Custo Prev.</span>
+            <span style="font-size:9px;font-weight:700;color:var(--success);text-transform:uppercase;">Lucro Prev.</span>
+            <span></span>
+          </div>
+          <div id="lotes-container"></div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="adicionarLote()" style="margin-top:6px;">＋ Adicionar Item/Lote</button>
+          <div class="lotes-totais" id="lotes-totais" style="display:none;margin-top:8px;">
+            <span>Itens: <strong id="lt-count">0</strong></span>
+            <span>Valor do Contrato: <strong id="lt-total" style="color:var(--accent);">R$ 0,00</strong></span>
+            <span>Lucro Previsto: <strong id="lt-luc-prev" style="color:var(--success);">R$ 0,00</strong></span>
+          </div>
+          <div id="lotes-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:6px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Adicione pelo menos 1 item para salvar.</div>
+        </div>
+        
+        <div class="fg full">
+          <label class="fl">Observação (max 200 caracteres)</label>
+          <textarea class="fc" id="d-observacao" maxlength="200" rows="3" placeholder="Informações adicionais..."></textarea>
+        </div>
 
- </div>
- </div>
- <div class="modal-footer">
- <button class="btn btn-ghost" onclick="closeModal('disputas')">Cancelar</button>
- <button class="btn btn-primary" onclick="saveD()">Salvar</button>
- </div>
- </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('disputas')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveD()">Salvar</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-empenhos">
- <div class="modal modal-lg">
- <div class="modal-header">
- <div class="modal-title" id="ttl-empenhos">Novo Empenho</div>
- <button class="modal-close" onclick="closeModal('empenhos')">✕</button>
- </div>
- <div class="modal-body">
- <div class="form-grid">
- <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
- <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="ttl-empenhos">Novo Empenho</div>
+      <button class="modal-close" onclick="closeModal('empenhos')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Nº Empenho</label><input type="text" class="fc" id="e-num"></div>
+        <div class="fg"><label class="fl">Data</label><input type="date" class="fc" id="e-data"></div>
 
- 
- <div class="fg" id="fg-e-analista">
- <label class="fl">👤 Analista</label>
- <select class="fc" id="e-analista"><option value="">Selecione</option></select>
- </div>
+        
+        <div class="fg" id="fg-e-analista">
+          <label class="fl">👤 Analista</label>
+          <select class="fc" id="e-analista"><option value="">Selecione</option></select>
+        </div>
 
- 
- <div class="fg full">
- <label class="fl">🏢 Órgão / Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></label>
- <select class="fc" id="e-disputa-id" onchange="onDisputaSelecionada(this.value)" style="font-size:13px;">
- <option value="">— Selecione o órgão —</option>
- </select>
- <div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">Apenas órgãos com saldo de itens a empenhar são listados</div>
- </div>
+        
+        <div class="fg full">
+          <label class="fl">🏢 Órgão / Contrato <span style="color:var(--danger);font-size:10px;">* obrigatório</span></label>
+          <select class="fc" id="e-disputa-id" onchange="onDisputaSelecionada(this.value)" style="font-size:13px;">
+            <option value="">— Selecione o órgão —</option>
+          </select>
+          <div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;">Apenas órgãos com saldo de itens a empenhar são listados</div>
+        </div>
 
- 
- <div class="fg full" id="lote-selector-wrap" style="display:none;">
- <label class="fl">📦 Itens/Lotes do Empenho <span style="color:var(--text-tertiary);font-size:9px;">(selecione um ou mais)</span></label>
- <div id="lote-selector-container"></div>
- <div id="lote-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SELECIONE PELO MENOS UM LOTE PARA CONTINUAR.</div>
- <div id="lote-valor-total-wrap" style="margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;">
- <span style="font-size:11px;color:var(--text-tertiary);">VALOR TOTAL DO EMPENHO (CALCULADO): </span>
- <strong id="lote-valor-total-calc" style="color:var(--accent);font-size:14px;"></strong>
- </div>
- </div>
+        
+        <div class="fg full" id="lote-selector-wrap" style="display:none;">
+          <label class="fl">📦 Itens/Lotes do Empenho <span style="color:var(--text-tertiary);font-size:9px;">(selecione um ou mais)</span></label>
+          <div id="lote-selector-container"></div>
+          <div id="lote-aviso" style="display:none;color:var(--danger);font-size:11px;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SELECIONE PELO MENOS UM LOTE PARA CONTINUAR.</div>
+          <div id="lote-valor-total-wrap" style="margin-top:8px;padding:8px 12px;background:var(--info-soft);border-radius:8px;display:none;">
+            <span style="font-size:11px;color:var(--text-tertiary);">VALOR TOTAL DO EMPENHO (CALCULADO): </span>
+            <strong id="lote-valor-total-calc" style="color:var(--accent);font-size:14px;"></strong>
+          </div>
+        </div>
 
- 
- <div class="fg full">
- <label class="fl">Observação (max 200 caracteres)</label>
- <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
- </div>
+        
+        <div class="fg full">
+          <label class="fl">Observação (max 200 caracteres)</label>
+          <textarea class="fc" id="e-observacao" maxlength="200" rows="2" placeholder="Informações adicionais..."></textarea>
+        </div>
 
- 
- <input type="hidden" id="e-dcomp">
- <input type="hidden" id="e-vunit" value="0">
- <input type="hidden" id="e-qtd" value="1">
- <input type="hidden" id="e-vem" value="0">
- <input type="hidden" id="e-aliq" value="13">
- <input type="hidden" id="e-recebido" value="0">
- <input type="hidden" id="e-dreceb">
- <input type="hidden" id="e-vem-a">
- <input type="hidden" id="e-tot-a"><input type="hidden" id="e-tot-m">
- <input type="hidden" id="e-imp-a"><input type="hidden" id="e-imp-m">
- <input type="hidden" id="e-luc-a"><input type="hidden" id="e-luc-m">
- <input type="hidden" id="e-pct-a"><input type="hidden" id="e-pct-m">
- <input type="hidden" id="e-rec-a"><input type="hidden" id="e-rec-m">
- <input type="hidden" id="e-all">
- <input type="hidden" id="tbtn-e-vem">
- <input type="hidden" id="tbtn-e-tot">
- <input type="hidden" id="tbtn-e-imp">
- <input type="hidden" id="tbtn-e-luc">
- <input type="hidden" id="tbtn-e-pct">
- <input type="hidden" id="tbtn-e-rec">
- </div>
- </div>
- <div class="modal-footer">
- <button class="btn btn-ghost" onclick="closeModal('empenhos')">Cancelar</button>
- <button class="btn btn-primary" onclick="saveE()">Salvar</button>
- </div>
- </div>
+        
+        <input type="hidden" id="e-dcomp">
+        <input type="hidden" id="e-vunit" value="0">
+        <input type="hidden" id="e-qtd" value="1">
+        <input type="hidden" id="e-vem" value="0">
+        <input type="hidden" id="e-aliq" value="13">
+        <input type="hidden" id="e-recebido" value="0">
+        <input type="hidden" id="e-dreceb">
+        <input type="hidden" id="e-vem-a">
+        <input type="hidden" id="e-tot-a"><input type="hidden" id="e-tot-m">
+        <input type="hidden" id="e-imp-a"><input type="hidden" id="e-imp-m">
+        <input type="hidden" id="e-luc-a"><input type="hidden" id="e-luc-m">
+        <input type="hidden" id="e-pct-a"><input type="hidden" id="e-pct-m">
+        <input type="hidden" id="e-rec-a"><input type="hidden" id="e-rec-m">
+        <input type="hidden" id="e-all">
+        <input type="hidden" id="tbtn-e-vem">
+        <input type="hidden" id="tbtn-e-tot">
+        <input type="hidden" id="tbtn-e-imp">
+        <input type="hidden" id="tbtn-e-luc">
+        <input type="hidden" id="tbtn-e-pct">
+        <input type="hidden" id="tbtn-e-rec">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('empenhos')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveE()">Salvar</button>
+    </div>
+  </div>
 </div>
 
 <div class="wizard-overlay" id="wizard-quick">
- <div class="wizard">
- <h2>Entrada Rápida</h2>
- <div class="wizard-progress">
- <div class="step active" id="wiz-step1"></div>
- <div class="step" id="wiz-step2"></div>
- <div class="step" id="wiz-step3"></div>
- </div>
- 
- <div id="wizard-step-1" class="wizard-step">
- <label>Tipo de Registro</label>
- <select id="wizard-tipo">
- <option value="disputas">Contrato</option>
- <option value="empenhos">Empenho</option>
- </select>
- </div>
- 
- <div id="wizard-step-2" class="wizard-step" style="display:none;">
- <label>Órgão</label>
- <input type="text" id="wizard-orgao" placeholder="Ex: Prefeitura Municipal...">
- </div>
- 
- <div id="wizard-step-3" class="wizard-step" style="display:none;">
- <label>Processo / Empenho</label>
- <input type="text" id="wizard-processo" placeholder="Número do processo/empenho">
- </div>
- 
- <div class="wizard-buttons">
- <button class="btn btn-ghost" onclick="closeWizard()">Cancelar</button>
- <button class="btn btn-primary" id="wizard-next" onclick="wizardNext()">Próximo</button>
- <button class="btn btn-success" id="wizard-finish" style="display:none;" onclick="wizardFinish()">Finalizar</button>
- </div>
- </div>
+  <div class="wizard">
+    <h2>Entrada Rápida</h2>
+    <div class="wizard-progress">
+      <div class="step active" id="wiz-step1"></div>
+      <div class="step" id="wiz-step2"></div>
+      <div class="step" id="wiz-step3"></div>
+    </div>
+    
+    <div id="wizard-step-1" class="wizard-step">
+      <label>Tipo de Registro</label>
+      <select id="wizard-tipo">
+        <option value="disputas">Contrato</option>
+        <option value="empenhos">Empenho</option>
+      </select>
+    </div>
+    
+    <div id="wizard-step-2" class="wizard-step" style="display:none;">
+      <label>Órgão</label>
+      <input type="text" id="wizard-orgao" placeholder="Ex: Prefeitura Municipal...">
+    </div>
+    
+    <div id="wizard-step-3" class="wizard-step" style="display:none;">
+      <label>Processo / Empenho</label>
+      <input type="text" id="wizard-processo" placeholder="Número do processo/empenho">
+    </div>
+    
+    <div class="wizard-buttons">
+      <button class="btn btn-ghost" onclick="closeWizard()">Cancelar</button>
+      <button class="btn btn-primary" id="wizard-next" onclick="wizardNext()">Próximo</button>
+      <button class="btn btn-success" id="wizard-finish" style="display:none;" onclick="wizardFinish()">Finalizar</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-empenhos-disputa">
- <div class="modal modal-emp-disp">
- <div class="modal-header">
- <div class="modal-title" id="ttl-empenhos-disputa">📄 Empenhos do Contrato</div>
- <button class="modal-close" onclick="closeModal('empenhos-disputa')">✕</button>
- </div>
- <div class="modal-body">
- <div class="disp-info-banner" id="disp-info-banner"></div>
- <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
- <div style="font-size:12px; color:var(--text-tertiary);" id="disp-emp-count"></div>
- <button class="btn btn-primary btn-sm" onclick="novoEmpenhoDaDisputa()">+ Novo Empenho Vinculado</button>
- </div>
- <div id="disp-emp-body">
- <div class="emp-disp-empty">Nenhum empenho vinculado a este contrato.</div>
- </div>
- <div style="border-top:1px solid var(--border-light); margin-top:14px; padding-top:12px; display:flex; gap:20px; flex-wrap:wrap;" id="disp-emp-totais"></div>
- </div>
- <div class="modal-footer">
- <button class="btn btn-ghost" onclick="closeModal('empenhos-disputa')">Fechar</button>
- </div>
- </div>
+  <div class="modal modal-emp-disp">
+    <div class="modal-header">
+      <div class="modal-title" id="ttl-empenhos-disputa">📄 Empenhos do Contrato</div>
+      <button class="modal-close" onclick="closeModal('empenhos-disputa')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="disp-info-banner" id="disp-info-banner"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-size:12px; color:var(--text-tertiary);" id="disp-emp-count"></div>
+        <button class="btn btn-primary btn-sm" onclick="novoEmpenhoDaDisputa()">+ Novo Empenho Vinculado</button>
+      </div>
+      <div id="disp-emp-body">
+        <div class="emp-disp-empty">Nenhum empenho vinculado a este contrato.</div>
+      </div>
+      <div style="border-top:1px solid var(--border-light); margin-top:14px; padding-top:12px; display:flex; gap:20px; flex-wrap:wrap;" id="disp-emp-totais"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('empenhos-disputa')">Fechar</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-compra">
- <div class="modal" style="max-width:900px;">
- <div class="modal-header">
- <div class="modal-title" id="ttl-compra">Nova Compra</div>
- <button class="modal-close" onclick="closeModal('compra')">✕</button>
- </div>
- <div class="modal-body">
- <div id="compra-lote-selector-wrap">
- <div class="fsec">📦 Selecione o Item/Lote</div>
- <div id="compra-lote-selector" class="compra-lote-select"></div>
- </div>
- <div id="compra-campos" style="display:none;">
- <div class="form-grid">
- <div class="fg half">
- <label class="fl">Item/Lote</label>
- <input type="text" class="fc" id="c-lote-desc" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
- </div>
- <div class="fg">
- <label class="fl">Qtd Empenho (Item)</label>
- <input type="number" class="fc" id="c-qtd-empenho" readonly style="background:var(--bg-inset);color:var(--text-tertiary);">
- </div>
- <div class="fg">
- <label class="fl">Vl. Empenho do Item (total)</label>
- <input type="number" class="fc" id="c-vem-item" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
- </div>
- <div class="fg">
- <label class="fl">Qtd Comprando <span id="c-saldo-info" style="font-size:10px;color:var(--success);font-weight:700;"></span></label>
- <input type="number" step="1" min="1" class="fc" id="c-qtd" oninput="calcCompra()">
- </div>
- <div class="fg">
- <label class="fl">Data da Compra</label>
- <input type="date" class="fc" id="c-dcompra">
- </div>
- <div class="fg">
- <label class="fl">Plataforma</label>
- <input type="text" class="fc" id="c-plataforma" placeholder="MERCADO LIVRE, SHOPEE...">
- </div>
- <div class="fg full">
- <label class="fl">🔗 Link da Compra</label>
- <input type="url" class="fc" id="c-link" placeholder="https://...">
- </div>
- <div class="fg">
- <label class="fl">Vl. Unitário Compra (R$)</label>
- <input type="number" step="0.01" class="fc" id="c-vunit" oninput="calcCompra()">
- </div>
- <div class="fg">
- <label class="fl">Vl. Total Compra (R$)</label>
- <input type="number" step="0.01" class="fc" id="c-vtotal-compra" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
- </div>
- <div class="fg">
- <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
- <span>Custo (R$)</span>
- <button type="button" onclick="calcCustoAutomatico()" style="font-size:10px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:6px;padding:2px 7px;cursor:pointer;font-weight:700;">🧮 Calcular</button>
- </label>
- <input type="number" step="0.01" class="fc" id="c-custo" oninput="calcCompra()">
- </div>
- 
- <div class="fg full" id="c-custo-calc-painel" style="display:none;">
- <div style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:10px;font-size:12px;">
- <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
- <span style="font-weight:700;color:var(--text-primary);">⚙️ Método de cálculo:</span>
- <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="c-calc-tipo" value="simples" id="c-calc-simples" onchange="calcCustoRecalcular()" checked> Simples (%)</label>
- <label id="c-calc-icms-lbl" style="display:flex;align-items:center;gap:4px;cursor:pointer;display:none;"><input type="radio" name="c-calc-tipo" value="icms" id="c-calc-icms" onchange="calcCustoRecalcular()"> ICMS</label>
- <span id="c-calc-empresa-info" style="font-size:11px;color:var(--text-tertiary);margin-left:auto;"></span>
- </div>
- 
- <div id="c-calc-bloco-simples" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
- <span style="font-size:11px;color:var(--text-secondary);">% Custo:</span>
- <input type="number" class="fc" id="c-calc-pct" value="9" step="0.1" oninput="calcCustoRecalcular()" style="width:70px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center;">
- <span style="font-size:13px;font-weight:700;color:var(--warning);">%</span>
- </div>
- 
- <div id="c-calc-bloco-icms" style="display:none;margin-bottom:8px;">
- <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
- <span id="c-calc-estado-label" style="font-size:12px;font-weight:700;color:var(--accent);"></span>
- <span id="c-calc-icms-label" style="font-size:12px;font-weight:700;color:var(--warning);"></span>
- <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" id="c-calc-custo-emp" onchange="calcCustoRecalcular()"> +Custo Empresa (3%)</label>
- </div>
- <div style="display:flex;align-items:center;gap:8px;">
- <span style="font-size:11px;color:var(--text-secondary);">Crédito ICMS (R$):</span>
- <input type="number" class="fc" id="c-calc-credito" placeholder="0,00" step="0.01" oninput="calcCustoRecalcular()" style="width:100px;padding:4px 8px;font-size:13px;">
- </div>
- </div>
- 
- <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
- <span style="font-size:11px;color:var(--text-secondary);">Custo calculado:</span>
- <span id="c-calc-resultado" style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</span>
- <button type="button" onclick="calcCustoAplicar()" class="btn btn-primary btn-sm" style="margin-left:auto;">✓ Aplicar no campo</button>
- <button type="button" onclick="g('c-custo-calc-painel').style.display='none'" class="btn btn-ghost btn-sm">✕</button>
- </div>
- </div>
- </div>
- <div class="fg">
- <label class="fl">Lucro <button type="button" class="mtg" id="tbtn-c-luc" onclick="togCompra('luc')"><span class="dot"></span>Auto</button></label>
- <input class="fc-auto" id="c-luc-a" readonly>
- <input type="number" step="0.01" class="fc-manual" id="c-luc-m" oninput="calcCompra()">
- <div style="font-size:9px;color:var(--text-tertiary);margin-top:2px;">= Vl.Emp.Prop. − Total Compra − Custo</div>
- </div>
- <div class="fg">
- <label class="fl">% Lucro</label>
- <input class="fc" id="c-pct-lucro" readonly style="background:var(--bg-inset);color:var(--success);font-weight:700;font-family:var(--font-mono);">
- </div>
- <div class="fg">
- <label class="fl">Vl. Total a Receber <button type="button" class="mtg" id="tbtn-c-rec" onclick="togCompra('rec')"><span class="dot"></span>Auto</button></label>
- <input class="fc-auto" id="c-rec-a" readonly>
- <input type="number" step="0.01" class="fc-manual" id="c-rec-m" oninput="calcCompra()">
- </div>
- <div class="fsec full">🏦 Pagamento</div>
- <div class="fg">
- <label class="fl">Data de Pagamento</label>
- <input type="date" class="fc" id="c-dpag">
- </div>
- <div class="fg">
- <label class="fl">Valor Recebido (R$)</label>
- <input type="number" step="0.01" class="fc" id="c-recebido">
- </div>
- <div class="fg full">
- <label class="fl">Observação</label>
- <textarea class="fc" id="c-obs" rows="2" maxlength="200" placeholder="OBSERVAÇÕES..."></textarea>
- </div>
- </div>
- </div>
- </div>
- <div class="modal-footer">
- <button class="btn btn-ghost" onclick="closeModal('compra')">Cancelar</button>
- <button class="btn btn-primary" onclick="saveCompra()">Salvar Compra</button>
- </div>
- </div>
+  <div class="modal" style="max-width:900px;">
+    <div class="modal-header">
+      <div class="modal-title" id="ttl-compra">Nova Compra</div>
+      <button class="modal-close" onclick="closeModal('compra')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="compra-lote-selector-wrap">
+        <div class="fsec">📦 Selecione o Item/Lote</div>
+        <div id="compra-lote-selector" class="compra-lote-select"></div>
+      </div>
+      <div id="compra-campos" style="display:none;">
+        <div class="form-grid">
+          <div class="fg half">
+            <label class="fl">Item/Lote</label>
+            <input type="text" class="fc" id="c-lote-desc" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
+          </div>
+          <div class="fg">
+            <label class="fl">Qtd Empenho (Item)</label>
+            <input type="number" class="fc" id="c-qtd-empenho" readonly style="background:var(--bg-inset);color:var(--text-tertiary);">
+          </div>
+          <div class="fg">
+            <label class="fl">Vl. Empenho do Item (total)</label>
+            <input type="number" class="fc" id="c-vem-item" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
+          </div>
+          <div class="fg">
+            <label class="fl">Qtd Comprando <span id="c-saldo-info" style="font-size:10px;color:var(--success);font-weight:700;"></span></label>
+            <input type="number" step="1" min="1" class="fc" id="c-qtd" oninput="calcCompra()">
+          </div>
+          <div class="fg">
+            <label class="fl">Data da Compra</label>
+            <input type="date" class="fc" id="c-dcompra">
+          </div>
+          <div class="fg">
+            <label class="fl">Plataforma</label>
+            <input type="text" class="fc" id="c-plataforma" placeholder="MERCADO LIVRE, SHOPEE...">
+          </div>
+          <div class="fg full">
+            <label class="fl">🔗 Link da Compra</label>
+            <input type="url" class="fc" id="c-link" placeholder="https://...">
+          </div>
+          <div class="fg">
+            <label class="fl">Vl. Unitário Compra (R$)</label>
+            <input type="number" step="0.01" class="fc" id="c-vunit" oninput="calcCompra()">
+          </div>
+          <div class="fg">
+            <label class="fl">Vl. Total Compra (R$)</label>
+            <input type="number" step="0.01" class="fc" id="c-vtotal-compra" readonly style="background:var(--bg-inset);color:var(--accent);font-weight:700;">
+          </div>
+          <div class="fg">
+            <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>Custo (R$)</span>
+              <button type="button" onclick="calcCustoAutomatico()" style="font-size:10px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:6px;padding:2px 7px;cursor:pointer;font-weight:700;">🧮 Calcular</button>
+            </label>
+            <input type="number" step="0.01" class="fc" id="c-custo" oninput="calcCompra()">
+          </div>
+          
+          <div class="fg full" id="c-custo-calc-painel" style="display:none;">
+            <div style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:10px;font-size:12px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                <span style="font-weight:700;color:var(--text-primary);">⚙️ Método de cálculo:</span>
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="c-calc-tipo" value="simples" id="c-calc-simples" onchange="calcCustoRecalcular()" checked> Simples (%)</label>
+                <label id="c-calc-icms-lbl" style="display:flex;align-items:center;gap:4px;cursor:pointer;display:none;"><input type="radio" name="c-calc-tipo" value="icms" id="c-calc-icms" onchange="calcCustoRecalcular()"> ICMS</label>
+                <span id="c-calc-empresa-info" style="font-size:11px;color:var(--text-tertiary);margin-left:auto;"></span>
+              </div>
+              
+              <div id="c-calc-bloco-simples" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span style="font-size:11px;color:var(--text-secondary);">% Custo:</span>
+                <input type="number" class="fc" id="c-calc-pct" value="9" step="0.1" oninput="calcCustoRecalcular()" style="width:70px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--warning);">%</span>
+              </div>
+              
+              <div id="c-calc-bloco-icms" style="display:none;margin-bottom:8px;">
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
+                  <span id="c-calc-estado-label" style="font-size:12px;font-weight:700;color:var(--accent);"></span>
+                  <span id="c-calc-icms-label" style="font-size:12px;font-weight:700;color:var(--warning);"></span>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox" id="c-calc-custo-emp" onchange="calcCustoRecalcular()"> +Custo Empresa (3%)</label>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:11px;color:var(--text-secondary);">Crédito ICMS (R$):</span>
+                  <input type="number" class="fc" id="c-calc-credito" placeholder="0,00" step="0.01" oninput="calcCustoRecalcular()" style="width:100px;padding:4px 8px;font-size:13px;">
+                </div>
+              </div>
+              
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span style="font-size:11px;color:var(--text-secondary);">Custo calculado:</span>
+                <span id="c-calc-resultado" style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</span>
+                <button type="button" onclick="calcCustoAplicar()" class="btn btn-primary btn-sm" style="margin-left:auto;">✓ Aplicar no campo</button>
+                <button type="button" onclick="g('c-custo-calc-painel').style.display='none'" class="btn btn-ghost btn-sm">✕</button>
+              </div>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Lucro <button type="button" class="mtg" id="tbtn-c-luc" onclick="togCompra('luc')"><span class="dot"></span>Auto</button></label>
+            <input class="fc-auto" id="c-luc-a" readonly>
+            <input type="number" step="0.01" class="fc-manual" id="c-luc-m" oninput="calcCompra()">
+            <div style="font-size:9px;color:var(--text-tertiary);margin-top:2px;">= Vl.Emp.Prop. − Total Compra − Custo</div>
+          </div>
+          <div class="fg">
+            <label class="fl">% Lucro</label>
+            <input class="fc" id="c-pct-lucro" readonly style="background:var(--bg-inset);color:var(--success);font-weight:700;font-family:var(--font-mono);">
+          </div>
+          <div class="fg">
+            <label class="fl">Vl. Total a Receber <button type="button" class="mtg" id="tbtn-c-rec" onclick="togCompra('rec')"><span class="dot"></span>Auto</button></label>
+            <input class="fc-auto" id="c-rec-a" readonly>
+            <input type="number" step="0.01" class="fc-manual" id="c-rec-m" oninput="calcCompra()">
+          </div>
+          <div class="fsec full">🏦 Pagamento</div>
+          <div class="fg">
+            <label class="fl">Data de Pagamento</label>
+            <input type="date" class="fc" id="c-dpag">
+          </div>
+          <div class="fg">
+            <label class="fl">Valor Recebido (R$)</label>
+            <input type="number" step="0.01" class="fc" id="c-recebido">
+          </div>
+          <div class="fg full">
+            <label class="fl">Observação</label>
+            <textarea class="fc" id="c-obs" rows="2" maxlength="200" placeholder="OBSERVAÇÕES..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('compra')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveCompra()">Salvar Compra</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modal-calc" style="z-index:3000;align-items:stretch;padding:16px;">
- <div class="modal" style="max-width:100%;width:100%;max-height:100%;height:100%;display:flex;flex-direction:column;border-radius:16px;">
- <div class="modal-header">
- <div class="modal-title">🧮 Cálculo Rápido de Custos / Lucros</div>
- <button class="modal-close" onclick="closeModal('calc',true);_calcRetornarLoteIdx=null;g('calc-retornar-wrap').style.display='none';">✕</button>
- </div>
- <div class="modal-body" style="flex:1;overflow-y:auto;padding:16px 20px;">
+  <div class="modal" style="max-width:100%;width:100%;max-height:100%;height:100%;display:flex;flex-direction:column;border-radius:16px;">
+    <div class="modal-header">
+      <div class="modal-title">🧮 Cálculo Rápido de Custos / Lucros</div>
+      <button class="modal-close" onclick="closeModal('calc',true);_calcRetornarLoteIdx=null;g('calc-retornar-wrap').style.display='none';">✕</button>
+    </div>
+    <div class="modal-body" style="flex:1;overflow-y:auto;padding:16px 20px;">
 
- 
- <div id="calc-passo1">
- <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
- <div>
- <div style="font-size:15px;font-weight:700;color:var(--text-primary);">Selecione o Contrato Ativo</div>
- <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px;">Apenas contratos em andamento são exibidos</div>
- </div>
- </div>
- <input type="text" id="calc-busca-disputa" class="fc" placeholder="🔍 Pesquisar por órgão, processo, produto..." oninput="calcFiltrarDisputas()" style="margin-bottom:12px;">
- <div id="calc-lista-disputas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;max-height:calc(100vh - 280px);overflow-y:auto;padding-right:2px;"></div>
- </div>
+      
+      <div id="calc-passo1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-primary);">Selecione o Contrato Ativo</div>
+            <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px;">Apenas contratos em andamento são exibidos</div>
+          </div>
+        </div>
+        <input type="text" id="calc-busca-disputa" class="fc" placeholder="🔍 Pesquisar por órgão, processo, produto..." oninput="calcFiltrarDisputas()" style="margin-bottom:12px;">
+        <div id="calc-lista-disputas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;max-height:calc(100vh - 280px);overflow-y:auto;padding-right:2px;"></div>
+      </div>
 
- 
- <div id="calc-passo2" style="display:none;">
- <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
- <button onclick="calcVoltarPasso1()" style="background:none;border:1px solid var(--border-light);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--text-secondary);">← Voltar</button>
- <div id="calc-disputa-titulo" style="font-weight:700;font-size:14px;color:var(--text-primary);"></div>
- <span id="calc-empresa-badge" style="font-size:11px;padding:2px 8px;border-radius:12px;font-weight:700;"></span>
- </div>
+      
+      <div id="calc-passo2" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <button onclick="calcVoltarPasso1()" style="background:none;border:1px solid var(--border-light);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--text-secondary);">← Voltar</button>
+          <div id="calc-disputa-titulo" style="font-weight:700;font-size:14px;color:var(--text-primary);"></div>
+          <span id="calc-empresa-badge" style="font-size:11px;padding:2px 8px;border-radius:12px;font-weight:700;"></span>
+        </div>
 
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
 
- 
- <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;">
+          
+          <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;">
 
- 
- <div>
- <div class="fsec" style="margin-bottom:6px;">📦 Itens disponíveis — clique para adicionar</div>
- <div id="calc-itens-lista" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px;"></div>
- </div>
+            
+            <div>
+              <div class="fsec" style="margin-bottom:6px;">📦 Itens disponíveis — clique para adicionar</div>
+              <div id="calc-itens-lista" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px;"></div>
+            </div>
 
- 
- <div id="calc-form-item" style="background:var(--bg-surface-2,#f8fafc);border:2px solid var(--accent);border-radius:10px;padding:12px;display:none;">
- <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent);" id="calc-form-item-titulo">Adicionar item</div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
- <div class="fg" style="margin:0;">
- <label class="fl">Qtd</label>
- <input type="number" class="fc" id="calc-form-qtd" value="1" min="1">
- </div>
- <div class="fg" style="margin:0;">
- <label class="fl">Vl. Compra Unit. (R$)</label>
- <input type="number" class="fc" id="calc-form-vcompra" placeholder="0,00" step="0.01" onkeydown="if(event.key==='Enter')calcAdicionarItem()">
- </div>
- </div>
- <div style="display:flex;gap:8px;margin-top:8px;">
- <button onclick="calcAdicionarItem()" class="btn btn-primary btn-sm" style="flex:1;">＋ Adicionar</button>
- <button onclick="calcFecharFormItem()" class="btn btn-ghost btn-sm">Cancelar</button>
- </div>
- </div>
+            
+            <div id="calc-form-item" style="background:var(--bg-surface-2,#f8fafc);border:2px solid var(--accent);border-radius:10px;padding:12px;display:none;">
+              <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--accent);" id="calc-form-item-titulo">Adicionar item</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div class="fg" style="margin:0;">
+                  <label class="fl">Qtd</label>
+                  <input type="number" class="fc" id="calc-form-qtd" value="1" min="1">
+                </div>
+                <div class="fg" style="margin:0;">
+                  <label class="fl">Vl. Compra Unit. (R$)</label>
+                  <input type="number" class="fc" id="calc-form-vcompra" placeholder="0,00" step="0.01" onkeydown="if(event.key==='Enter')calcAdicionarItem()">
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button onclick="calcAdicionarItem()" class="btn btn-primary btn-sm" style="flex:1;">＋ Adicionar</button>
+                <button onclick="calcFecharFormItem()" class="btn btn-ghost btn-sm">Cancelar</button>
+              </div>
+            </div>
 
- 
- <div id="calc-itens-adicionados-wrap" style="display:none;flex:1;">
- <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
- <div class="fsec" style="margin:0;">🛒 Itens no Cálculo</div>
- <button onclick="calcLimparItens()" style="font-size:11px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:2px 8px;cursor:pointer;">Limpar tudo</button>
- </div>
- <div style="overflow-x:auto;">
- <table style="width:100%;border-collapse:collapse;font-size:12px;">
- <thead>
- <tr style="background:var(--bg-surface-2,#f1f5f9);">
- <th style="padding:6px 8px;text-align:left;font-weight:700;">Item</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Qtd</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Vl.Unit Emp.</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Vl.Compra</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Base</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Custo</th>
- <th style="padding:6px 8px;text-align:right;font-weight:700;">Lucro</th>
- <th style="padding:6px 4px;"></th>
- </tr>
- </thead>
- <tbody id="calc-itens-tbody"></tbody>
- <tfoot id="calc-itens-tfoot" style="font-weight:700;border-top:2px solid var(--border-light);"></tfoot>
- </table>
- </div>
- </div>
+            
+            <div id="calc-itens-adicionados-wrap" style="display:none;flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <div class="fsec" style="margin:0;">🛒 Itens no Cálculo</div>
+                <button onclick="calcLimparItens()" style="font-size:11px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:2px 8px;cursor:pointer;">Limpar tudo</button>
+              </div>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                  <thead>
+                    <tr style="background:var(--bg-surface-2,#f1f5f9);">
+                      <th style="padding:6px 8px;text-align:left;font-weight:700;">Item</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Qtd</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Vl.Unit Emp.</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Vl.Compra</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Base</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Custo</th>
+                      <th style="padding:6px 8px;text-align:right;font-weight:700;">Lucro</th>
+                      <th style="padding:6px 4px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="calc-itens-tbody"></tbody>
+                  <tfoot id="calc-itens-tfoot" style="font-weight:700;border-top:2px solid var(--border-light);"></tfoot>
+                </table>
+              </div>
+            </div>
 
- </div>
+          </div>
 
- 
- <div style="display:flex;flex-direction:column;gap:12px;">
+          
+          <div style="display:flex;flex-direction:column;gap:12px;">
 
- 
- <div id="calc-tipo-gadita" style="display:none;">
- <div class="fsec" style="margin-bottom:8px;">Tipo de Cálculo</div>
- <div style="display:flex;gap:8px;">
- <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border-light);border-radius:10px;font-size:13px;font-weight:600;flex:1;justify-content:center;">
- <input type="radio" name="calc-tipo" value="antigo" id="calc-tipo-antigo" onchange="calcTipoChanged()" checked> Cálculo Antigo
- </label>
- <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border-light);border-radius:10px;font-size:13px;font-weight:600;flex:1;justify-content:center;">
- <input type="radio" name="calc-tipo" value="novo" id="calc-tipo-novo" onchange="calcTipoChanged()"> Cálculo Novo (ICMS)
- </label>
- </div>
- </div>
+            
+            <div id="calc-tipo-gadita" style="display:none;">
+              <div class="fsec" style="margin-bottom:8px;">Tipo de Cálculo</div>
+              <div style="display:flex;gap:8px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border-light);border-radius:10px;font-size:13px;font-weight:600;flex:1;justify-content:center;">
+                  <input type="radio" name="calc-tipo" value="antigo" id="calc-tipo-antigo" onchange="calcTipoChanged()" checked> Cálculo Antigo
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border:2px solid var(--border-light);border-radius:10px;font-size:13px;font-weight:600;flex:1;justify-content:center;">
+                  <input type="radio" name="calc-tipo" value="novo" id="calc-tipo-novo" onchange="calcTipoChanged()"> Cálculo Novo (ICMS)
+                </label>
+              </div>
+            </div>
 
- 
- <div id="calc-bloco-simples" style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
- <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros</div>
- <div class="fg">
- <label class="fl">% Custo aplicado sobre Vl. Empenho</label>
- <div style="display:flex;align-items:center;gap:8px;">
- <input type="number" class="fc" id="calc-pct-simples" value="9" step="0.1" oninput="calcRecalcular()" style="flex:1;font-size:18px;font-weight:700;text-align:center;">
- <span style="font-size:20px;font-weight:800;color:var(--warning);">%</span>
- </div>
- </div>
- </div>
+            
+            <div id="calc-bloco-simples" style="background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
+              <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros</div>
+              <div class="fg">
+                <label class="fl">% Custo aplicado sobre Vl. Empenho</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="number" class="fc" id="calc-pct-simples" value="9" step="0.1" oninput="calcRecalcular()" style="flex:1;font-size:18px;font-weight:700;text-align:center;">
+                  <span style="font-size:20px;font-weight:800;color:var(--warning);">%</span>
+                </div>
+              </div>
+            </div>
 
- 
- <div id="calc-bloco-icms-info" style="display:none;background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
- <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros ICMS</div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
- <div style="text-align:center;padding:10px;background:var(--accent)10;border:1px solid var(--border-light);border-radius:8px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Estado</div>
- <div id="calc-estado-display" style="font-size:22px;font-weight:900;color:var(--accent);"></div>
- </div>
- <div style="text-align:center;padding:10px;background:var(--warning-soft);border:1px solid var(--border-light);border-radius:8px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">ICMS</div>
- <div id="calc-icms-display" style="font-size:22px;font-weight:900;color:var(--warning);"></div>
- </div>
- </div>
- <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;text-align:center;">PIS 0,65% · COFINS 3% · IRPJ (Base×8%×15%) · CSLL (Base×12%×9%)</div>
- <div id="calc-bloco-icms-opts">
- <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border-light);border-radius:8px;font-size:13px;margin-bottom:8px;">
- <input type="checkbox" id="calc-custo-empresa" onchange="calcRecalcular()"> Incluir custo da empresa (+3%)
- </label>
- <div class="fg" style="margin:0;">
- <label class="fl">Crédito de ICMS a abater (R$)</label>
- <input type="number" class="fc" id="calc-credito-icms" placeholder="0,00" step="0.01" oninput="calcRecalcular()">
- </div>
- </div>
- </div>
+            
+            <div id="calc-bloco-icms-info" style="display:none;background:var(--bg-surface-2,#f8fafc);border:1px solid var(--border-light);border-radius:10px;padding:14px;">
+              <div class="fsec" style="margin-bottom:10px;">⚙️ Parâmetros ICMS</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                <div style="text-align:center;padding:10px;background:var(--accent)10;border:1px solid var(--border-light);border-radius:8px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Estado</div>
+                  <div id="calc-estado-display" style="font-size:22px;font-weight:900;color:var(--accent);"></div>
+                </div>
+                <div style="text-align:center;padding:10px;background:var(--warning-soft);border:1px solid var(--border-light);border-radius:8px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;font-weight:700;margin-bottom:4px;">ICMS</div>
+                  <div id="calc-icms-display" style="font-size:22px;font-weight:900;color:var(--warning);"></div>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;text-align:center;">PIS 0,65% · COFINS 3% · IRPJ (Base×8%×15%) · CSLL (Base×12%×9%)</div>
+              <div id="calc-bloco-icms-opts">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border:1px solid var(--border-light);border-radius:8px;font-size:13px;margin-bottom:8px;">
+                  <input type="checkbox" id="calc-custo-empresa" onchange="calcRecalcular()"> Incluir custo da empresa (+3%)
+                </label>
+                <div class="fg" style="margin:0;">
+                  <label class="fl">Crédito de ICMS a abater (R$)</label>
+                  <input type="number" class="fc" id="calc-credito-icms" placeholder="0,00" step="0.01" oninput="calcRecalcular()">
+                </div>
+              </div>
+            </div>
 
- 
- <div id="calc-resultado-wrap" style="display:none;background:linear-gradient(135deg,var(--success-soft),rgba(16,185,129,0.05));border:2px solid var(--success);border-radius:14px;padding:16px;flex:1;">
- <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--success);margin-bottom:12px;letter-spacing:1px;">📊 Resultado Total</div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
- <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Val. Empenho</div>
- <div id="calc-res-vem" style="font-size:17px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">—</div>
- </div>
- <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Custo Total</div>
- <div id="calc-res-custo" style="font-size:17px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</div>
- </div>
- <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Lucro</div>
- <div id="calc-res-lucro" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
- </div>
- <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
- <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">% Margem</div>
- <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
- </div>
- </div>
- 
- <div id="calc-icms-detalhes" style="font-size:11px;color:var(--text-secondary);border-top:1px solid rgba(16,185,129,0.3);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;"></div>
- 
- <div id="calc-retornar-wrap" style="display:none;margin-top:14px;border-top:1px solid rgba(16,185,129,0.3);padding-top:12px;">
- <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">↩️ Retornar resultado para o item no contrato:</div>
- <div style="display:flex;gap:8px;flex-wrap:wrap;">
- <button class="btn btn-primary btn-sm" onclick="calcUsarCusto()" style="flex:1;">✅ Usar Custo Total: <strong id="calc-retornar-custo-label">—</strong></button>
- <button class="btn btn-ghost btn-sm" onclick="calcCancelarRetorno()">✕ Cancelar</button>
- </div>
- </div>
- </div>
+            
+            <div id="calc-resultado-wrap" style="display:none;background:linear-gradient(135deg,var(--success-soft),rgba(16,185,129,0.05));border:2px solid var(--success);border-radius:14px;padding:16px;flex:1;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--success);margin-bottom:12px;letter-spacing:1px;">📊 Resultado Total</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Val. Empenho</div>
+                  <div id="calc-res-vem" style="font-size:17px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">—</div>
+                </div>
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Custo Total</div>
+                  <div id="calc-res-custo" style="font-size:17px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">—</div>
+                </div>
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Lucro</div>
+                  <div id="calc-res-lucro" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
+                </div>
+                <div style="text-align:center;padding:10px;background:var(--bg-surface-soft);border-radius:10px;">
+                  <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">% Margem</div>
+                  <div id="calc-res-margem" style="font-size:17px;font-weight:800;color:var(--success);font-family:var(--font-mono);">—</div>
+                </div>
+              </div>
+              
+              <div id="calc-icms-detalhes" style="font-size:11px;color:var(--text-secondary);border-top:1px solid rgba(16,185,129,0.3);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;"></div>
+              
+              <div id="calc-retornar-wrap" style="display:none;margin-top:14px;border-top:1px solid rgba(16,185,129,0.3);padding-top:12px;">
+                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">↩️ Retornar resultado para o item no contrato:</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="calcUsarCusto()" style="flex:1;">✅ Usar Custo Total: <strong id="calc-retornar-custo-label">—</strong></button>
+                  <button class="btn btn-ghost btn-sm" onclick="calcCancelarRetorno()">✕ Cancelar</button>
+                </div>
+              </div>
+            </div>
 
- </div>
+          </div>
 
- </div>
+        </div>
 
- </div>
- </div>
- </div>
+            </div>
+    </div>
+  </div>
 </div>
 
 <div class="confirm-modal-overlay" id="modal-confirm">
- <div class="confirm-modal-box">
- <span class="confirm-modal-icon" id="confirm-modal-icon">🗑️</span>
- <div class="confirm-modal-title" id="confirm-modal-title">Confirmar exclusão</div>
- <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
- <div class="confirm-modal-actions">
- <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
- <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn">Sim, excluir</button>
- </div>
- </div>
+  <div class="confirm-modal-box">
+    <span class="confirm-modal-icon" id="confirm-modal-icon">🗑️</span>
+    <div class="confirm-modal-title" id="confirm-modal-title">Confirmar exclusão</div>
+    <div class="confirm-modal-msg" id="confirm-msg">Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</div>
+    <div class="confirm-modal-actions">
+      <button class="btn btn-ghost" style="min-width:110px;" onclick="closeConfirm()">✕ Cancelar</button>
+      <button class="btn btn-danger" style="min-width:110px;" id="confirm-del-btn">Sim, excluir</button>
+    </div>
+  </div>
 </div>
 
 <div id="offline-banner">
- <span id="offline-icon">📡</span>
- <span id="offline-msg">Sem conexão — trabalhando offline</span>
+  <span id="offline-icon">📡</span>
+  <span id="offline-msg">Sem conexão — trabalhando offline</span>
 </div>
 
 <div class="toast-container" id="toasts"></div>
@@ -1320,45 +1317,48 @@
 <script src="./js/14-boot.js"></script>
 
 <div class="detail-popup-overlay" id="popup-disputa">
- <div class="detail-popup">
- <div class="detail-popup-header">
- <div>
- <div class="detail-popup-title" id="popup-d-title">Detalhes do Contrato</div>
- <div class="detail-popup-sub" id="popup-d-sub"></div>
- </div>
- <button class="detail-close" onclick="fecharPopup('disputa')">&#10005;</button>
- </div>
- <div id="popup-d-body"></div>
- <div class="detail-actions">
- <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
- <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="color:var(--warning);border-color:var(--warning);display:none;">Reabrir</button>
- <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
- <button class="btn btn-success" id="popup-d-new-emp-btn">+ Novo Empenho</button>
- <button class="btn btn-danger" id="popup-d-del-btn" style="display:none;">Excluir Contrato</button>
- </div>
- </div>
+  <div class="detail-popup">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="popup-d-title">Detalhes do Contrato</div>
+        <div class="detail-popup-sub" id="popup-d-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharPopup('disputa')">&#10005;</button>
+    </div>
+    <div id="popup-d-body"></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharPopup('disputa')">Fechar</button>
+      <button class="btn btn-ghost" id="popup-d-reabrir-btn" style="color:var(--warning);border-color:var(--warning);display:none;">Reabrir</button>
+      <button class="btn btn-primary" id="popup-d-edit-btn">Editar</button>
+      <button class="btn btn-success" id="popup-d-new-emp-btn">+ Novo Empenho</button>
+      <button class="btn btn-danger" id="popup-d-del-btn" style="display:none;">Excluir Contrato</button>
+    </div>
+  </div>
 </div>
 
 <div class="detail-popup-overlay" id="popup-empenho">
- <div class="detail-popup">
- <div class="detail-popup-header">
- <div>
- <div class="detail-popup-title" id="popup-e-title">Detalhes do Empenho</div>
- <div class="detail-popup-sub" id="popup-e-sub"></div>
- </div>
- <button class="detail-close" onclick="fecharPopup('empenho')">&#10005;</button>
- </div>
- <div id="popup-e-body"></div>
- <div class="detail-actions">
- <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
- <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
- <button class="btn btn-danger" id="popup-e-del-btn">Excluir</button>
- </div>
- </div>
+  <div class="detail-popup">
+    <div class="detail-popup-header">
+      <div>
+        <div class="detail-popup-title" id="popup-e-title">Detalhes do Empenho</div>
+        <div class="detail-popup-sub" id="popup-e-sub"></div>
+      </div>
+      <button class="detail-close" onclick="fecharPopup('empenho')">&#10005;</button>
+    </div>
+    <div id="popup-e-body"></div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" onclick="fecharPopup('empenho')">Fechar</button>
+      <button class="btn btn-primary" id="popup-e-edit-btn">Editar</button>
+      <button class="btn btn-danger" id="popup-e-del-btn">Excluir</button>
+    </div>
+  </div>
 </div>
 
 <script src="./js/15-interface-enterprise.js"></script>
 <script src="./js/16-ui-ux-enhancements.js"></script>
 <script src="./js/17-security-productivity-checklists.js?v=20260717-related-1"></script>
+<script src="./js/20-acabamento-visual.js"></script>
+
+
 </body>
 </html>
