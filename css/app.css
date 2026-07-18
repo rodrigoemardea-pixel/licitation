@@ -1567,3 +1567,131 @@ body .detail-popup:is(.lb-resized,.lb-resizing,.lb-popup-redimensionado,.lb-popu
   }
 }
 
+/* ==========================================================================
+   AJUSTE FINAL UNIVERSAL - DETALHAMENTOS EM TELA CHEIA
+   Abrange contratos, empenhos, acompanhamentos e demais detail-popup.
+   ========================================================================== */
+
+/* A camada de sobreposicao ocupa integralmente a area visivel do navegador. */
+body .detail-popup-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  overflow: hidden !important;
+}
+
+body .detail-popup-overlay.open {
+  display: flex !important;
+}
+
+/* Usa seletor descendente para funcionar mesmo quando houver um elemento
+   intermediario entre o overlay e o painel de detalhe. */
+body .detail-popup-overlay .detail-popup {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  transform: none !important;
+  resize: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  animation: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Cabecalho permanece visivel e o conteudo central ocupa o espaco restante. */
+body .detail-popup-overlay .detail-popup-header {
+  position: relative !important;
+  inset: auto !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  min-height: 64px !important;
+  margin: 0 !important;
+  padding: 15px 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Compatibilidade com corpos identificados por classe ou pelos IDs atuais. */
+body .detail-popup-overlay :is(
+  .detail-popup-body,
+  #popup-d-body,
+  #popup-e-body,
+  #popup-ac-body
+) {
+  flex: 1 1 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 18px 20px 24px !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  box-sizing: border-box !important;
+}
+
+/* Evita que tabelas largas ampliem o popup alem da largura da tela. */
+body .detail-popup-overlay :is(
+  .detail-popup-body,
+  #popup-d-body,
+  #popup-e-body,
+  #popup-ac-body
+) :is(.table-wrapper,.table-wrap,[style*="overflow-x:auto"]) {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* Rodape ou barra de acoes permanece no limite inferior quando estiver fora
+   do corpo rolavel. */
+body .detail-popup-overlay :is(.detail-popup-footer,.detail-actions) {
+  flex: 0 0 auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Bloqueia regras antigas de redimensionamento manual. */
+body .detail-popup-overlay :is(
+  .lb-resize-handle,
+  .lb-canto-redimensionar,
+  .lb-resize-indicador
+) {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  body .detail-popup-overlay .detail-popup-header {
+    min-height: 56px !important;
+    padding: 11px 14px !important;
+  }
+
+  body .detail-popup-overlay :is(
+    .detail-popup-body,
+    #popup-d-body,
+    #popup-e-body,
+    #popup-ac-body
+  ) {
+    padding: 14px 12px 20px !important;
+  }
+}
+
