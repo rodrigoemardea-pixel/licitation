@@ -1257,3 +1257,74 @@ body.lb-modern-ui .lb-pagination .page-info{
   .detail-popup-body [style*="grid-template-columns"]{grid-template-columns:1fr!important}
 }
 
+/* ========================================================================== 
+   CORRECAO - ROLAGEM NAS TELAS DE DETALHAMENTO
+   Aplicar no final do app.css da Etapa 4.
+   ========================================================================== */
+
+/* O popup permanece limitado a altura da janela e distribui o espaco em coluna. */
+#popup-disputa .detail-popup,
+#popup-empenho .detail-popup,
+#popup-acomp .detail-popup {
+  height: auto !important;
+  max-height: calc(100dvh - 32px) !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Os corpos efetivos dos tres detalhamentos usam IDs, por isso precisam receber
+   diretamente a rolagem que antes havia sido aplicada apenas a uma classe. */
+#popup-d-body,
+#popup-e-body,
+#popup-ac-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 150px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  padding-bottom: 24px !important;
+}
+
+/* Mantem tabelas e textos extensos com rolagem horizontal interna, sem impedir
+   a rolagem vertical do detalhamento. */
+#popup-d-body .table-wrapper,
+#popup-d-body .table-wrap,
+#popup-e-body .table-wrapper,
+#popup-e-body .table-wrap,
+#popup-ac-body .table-wrapper,
+#popup-ac-body .table-wrap,
+#popup-d-body [style*="overflow-x:auto"],
+#popup-e-body [style*="overflow-x:auto"],
+#popup-ac-body [style*="overflow-x:auto"] {
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+/* A camada externa tambem aceita rolagem como contingencia em telas baixas. */
+#popup-disputa.detail-popup-overlay,
+#popup-empenho.detail-popup-overlay,
+#popup-acomp.detail-popup-overlay {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+@media (max-width: 760px) {
+  #popup-disputa .detail-popup,
+  #popup-empenho .detail-popup,
+  #popup-acomp .detail-popup {
+    max-height: calc(100dvh - 16px) !important;
+  }
+
+  #popup-d-body,
+  #popup-e-body,
+  #popup-ac-body {
+    max-height: calc(100dvh - 120px) !important;
+    padding-bottom: 20px !important;
+  }
+}
