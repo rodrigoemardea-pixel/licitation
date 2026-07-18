@@ -617,3 +617,342 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   color:var(--text-tertiary)!important;
 }
 .lb-btn-lixo:hover{color:var(--danger)!important}
+
+/* ========================================================================== 
+   ETAPA 2 - TABELAS E BARRAS DE FERRAMENTAS
+   Camada estritamente visual e isolada nas telas operacionais.
+   ========================================================================== */
+
+/* Barra de ferramentas: uma superficie unica, controles alinhados e quebra
+   previsivel, sem alterar a ordem, os IDs ou os eventos dos elementos. */
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar{
+  display:flex!important;
+  align-items:center!important;
+  align-content:center!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  padding:10px!important;
+  margin:0 0 14px!important;
+  border:1px solid var(--border-light)!important;
+  border-radius:14px!important;
+  background:var(--bg-surface)!important;
+  box-shadow:0 1px 2px rgba(15,23,42,.035)!important;
+  position:relative!important;
+  top:auto!important;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar > :is(.btn,.filter-group,.search-box){
+  min-height:36px;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .filter-group{
+  display:flex;
+  align-items:center;
+  flex:0 1 auto;
+  min-width:0;
+  min-height:36px;
+  padding:3px 9px;
+  gap:6px;
+  border:1px solid var(--border-light);
+  border-radius:9px;
+  background:var(--bg-surface-soft);
+  box-shadow:none;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .filter-group label{
+  flex:0 0 auto;
+  margin:0;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.38px;
+  color:var(--text-tertiary);
+  white-space:nowrap;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .filter-group select{
+  min-width:74px;
+  height:28px;
+  padding:2px 24px 2px 4px;
+  border:0;
+  border-radius:6px;
+  background-color:transparent;
+  color:var(--text-primary);
+  font:600 11px/1 var(--font-sans);
+  box-shadow:none;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .search-box{
+  flex:1 1 240px;
+  min-width:210px;
+  max-width:none;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .search-box input{
+  height:36px;
+  border-color:var(--border-light);
+  border-radius:9px;
+  background:var(--bg-surface-soft);
+  font-size:11.5px;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar .search-box input:focus{
+  border-color:var(--accent);
+  background:var(--bg-surface);
+  box-shadow:var(--lb-focus);
+}
+
+/* Os contenedores sem classe existentes nas barras guardam ações secundárias.
+   A regra apenas os alinha, sem mudar botões ou eventos. */
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) > .toolbar > div:not([class]){
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-left:auto;
+}
+
+body.lb-modern-ui .lb-advanced-panel{
+  flex:1 0 100%;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  padding:10px;
+  border-top:1px solid var(--border-light);
+  background:var(--bg-surface-soft);
+  border-radius:0 0 10px 10px;
+}
+body.lb-modern-ui .lb-advanced-panel[hidden]{display:none!important;}
+
+/* Tabelas operacionais: mesma moldura, cabecalho, hover e alinhamento. */
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) :is(.table-wrapper,.table-wrap){
+  width:100%;
+  overflow:auto;
+  border:1px solid var(--border-light)!important;
+  border-radius:14px!important;
+  background:var(--bg-surface)!important;
+  box-shadow:0 1px 3px rgba(15,23,42,.04)!important;
+  scrollbar-gutter:stable;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) table{
+  width:100%;
+  margin:0;
+  border-collapse:separate!important;
+  border-spacing:0!important;
+  background:var(--bg-surface);
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) thead th{
+  position:sticky;
+  top:0;
+  z-index:8;
+  height:38px!important;
+  padding:8px 10px!important;
+  border-bottom:1px solid var(--border-medium)!important;
+  background:#f8faf9!important;
+  color:#6b7889!important;
+  font-family:var(--font-sans)!important;
+  font-size:9.5px!important;
+  font-weight:750!important;
+  line-height:1.1!important;
+  letter-spacing:.48px!important;
+  text-transform:uppercase;
+  white-space:nowrap;
+  box-shadow:none!important;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) tbody tr{
+  transition:background-color .14s ease,box-shadow .14s ease;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) tbody tr:not(.group-header):hover > td{
+  background:#f5f9f7!important;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) tbody tr:focus-within{
+  box-shadow:inset 3px 0 0 var(--accent);
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) tbody td{
+  border-bottom:1px solid #edf1f3!important;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) tbody tr:last-child > td{
+  border-bottom:0!important;
+}
+
+body.lb-modern-ui :is(
+  #tab-acompanhamentos,
+  #tab-disputas,
+  #tab-empenhos,
+  #tab-finalizadas,
+  #tab-emp-finalizados
+) :is(.money,.lb-cell-value--success,.lb-cell-value--warning){
+  font-variant-numeric:tabular-nums;
+}
+
+/* Paginacao alinhada a moldura das tabelas. A logica e o tamanho da pagina
+   continuam definidos exclusivamente em 18-paginacao.js. */
+body.lb-modern-ui .lb-pagination{
+  min-height:44px;
+  margin:10px 0 0!important;
+  padding:6px 8px!important;
+  border:1px solid var(--border-light);
+  border-radius:11px;
+  background:var(--bg-surface);
+}
+body.lb-modern-ui .lb-pagination .page-info{
+  margin-left:6px;
+  color:var(--text-tertiary);
+  font-size:10.5px;
+  white-space:nowrap;
+}
+
+@media(max-width:980px){
+  body.lb-modern-ui :is(
+    #tab-acompanhamentos,
+    #tab-disputas,
+    #tab-empenhos,
+    #tab-finalizadas,
+    #tab-emp-finalizados
+  ) > .toolbar .search-box{
+    flex-basis:100%;
+    order:-1;
+  }
+}
+
+@media(max-width:700px){
+  body.lb-modern-ui :is(
+    #tab-acompanhamentos,
+    #tab-disputas,
+    #tab-empenhos,
+    #tab-finalizadas,
+    #tab-emp-finalizados
+  ) > .toolbar{
+    padding:8px!important;
+    align-items:stretch!important;
+  }
+  body.lb-modern-ui :is(
+    #tab-acompanhamentos,
+    #tab-disputas,
+    #tab-empenhos,
+    #tab-finalizadas,
+    #tab-emp-finalizados
+  ) > .toolbar .filter-group{
+    flex:1 1 170px;
+  }
+  body.lb-modern-ui :is(
+    #tab-acompanhamentos,
+    #tab-disputas,
+    #tab-empenhos,
+    #tab-finalizadas,
+    #tab-emp-finalizados
+  ) > .toolbar > div:not([class]){
+    margin-left:0;
+    flex:1 1 100%;
+  }
+}
+
