@@ -14,15 +14,16 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="./css/app.css?v=20260718-popup-opaco-2">
+<link rel="stylesheet" href="./css/app.css?v=20260718-popup-opaco-3">
 <!-- LB_POPUP_OPACO_INLINE -->
 <style>
-  .detail-popup-overlay .detail-popup,
-  .detail-popup-overlay .detail-popup-header,
-  .detail-popup-overlay #popup-d-body,
-  .detail-popup-overlay #popup-e-body,
-  .detail-popup-overlay #popup-ac-body,
-  .detail-popup-overlay .detail-actions {
+  /* A camada externa tambem e branca, impedindo a pagina de aparecer por baixo. */
+  #popup-disputa.detail-popup-overlay,
+  #popup-empenho.detail-popup-overlay,
+  #popup-acomp.detail-popup-overlay {
+    --bg-surface: #ffffff !important;
+    --bg-surface-solid: #ffffff !important;
+    --glass-bg: #ffffff !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     background-image: none !important;
@@ -31,6 +32,26 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     mix-blend-mode: normal !important;
+  }
+  #popup-disputa .detail-popup,
+  #popup-empenho .detail-popup,
+  #popup-acomp .detail-popup,
+  #popup-disputa .detail-popup-header,
+  #popup-empenho .detail-popup-header,
+  #popup-acomp .detail-popup-header,
+  #popup-d-body,
+  #popup-e-body,
+  #popup-ac-body,
+  #popup-disputa .detail-actions,
+  #popup-empenho .detail-actions,
+  #popup-acomp .detail-actions {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 </style>
 
@@ -760,7 +781,7 @@
   </div>
 </div>
 
-<div class="detail-popup-overlay" id="popup-acomp">
+<div class="detail-popup-overlay" id="popup-acomp" style="background:#ffffff!important;background-color:#ffffff!important;opacity:1!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;">
   <div class="detail-popup">
     <div class="detail-popup-header">
       <div>
@@ -1335,7 +1356,7 @@
 <script src="./js/13-painel-comentarios-inline.js"></script>
 <script src="./js/14-boot.js"></script>
 
-<div class="detail-popup-overlay" id="popup-disputa">
+<div class="detail-popup-overlay" id="popup-disputa" style="background:#ffffff!important;background-color:#ffffff!important;opacity:1!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;">
   <div class="detail-popup">
     <div class="detail-popup-header">
       <div>
@@ -1355,7 +1376,7 @@
   </div>
 </div>
 
-<div class="detail-popup-overlay" id="popup-empenho">
+<div class="detail-popup-overlay" id="popup-empenho" style="background:#ffffff!important;background-color:#ffffff!important;opacity:1!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;">
   <div class="detail-popup">
     <div class="detail-popup-header">
       <div>
