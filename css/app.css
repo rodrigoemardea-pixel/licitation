@@ -1811,3 +1811,43 @@ body .detail-popup-overlay .detail-popup :is(
   mix-blend-mode: normal !important;
 }
 
+
+
+/* ==========================================================================
+   BLOQUEIO TOTAL DE TRANSPARENCIA - OVERLAY BRANCO
+   A propria camada de tela cheia recebe fundo opaco. Assim, nenhum elemento
+   da pagina principal pode aparecer por baixo do detalhamento.
+   ========================================================================== */
+body #popup-disputa.detail-popup-overlay,
+body #popup-empenho.detail-popup-overlay,
+body #popup-acomp.detail-popup-overlay {
+  --bg-surface: #ffffff !important;
+  --bg-surface-solid: #ffffff !important;
+  --glass-bg: #ffffff !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  mix-blend-mode: normal !important;
+}
+body #popup-disputa .detail-popup,
+body #popup-empenho .detail-popup,
+body #popup-acomp .detail-popup,
+body #popup-disputa .detail-popup-header,
+body #popup-empenho .detail-popup-header,
+body #popup-acomp .detail-popup-header,
+body :is(#popup-d-body,#popup-e-body,#popup-ac-body),
+body #popup-disputa .detail-actions,
+body #popup-empenho .detail-actions,
+body #popup-acomp .detail-actions {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
