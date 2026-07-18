@@ -1328,3 +1328,89 @@ body.lb-modern-ui .lb-pagination .page-info{
     padding-bottom: 20px !important;
   }
 }
+
+
+
+/* ========================================================================== 
+   ETAPA 5 - ICONES E ACABAMENTO FINAL
+   Complemento visual. Adicionar ao final do css/app.css.
+   ========================================================================== */
+
+/* Icones vetoriais inseridos pelo modulo 20-acabamento-visual.js */
+.lb-ui-icon{
+  width:15px;height:15px;flex:0 0 15px;display:inline-block;
+  color:currentColor;vertical-align:-2px;pointer-events:none;
+}
+.lb-ui-icon svg{width:100%;height:100%;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn>.lb-ui-icon,.filter-group label>.lb-ui-icon,.search-box>.lb-ui-icon{margin-right:5px}
+.filter-group label{display:inline-flex;align-items:center;gap:3px}
+.filter-group label>.lb-ui-icon{width:13px;height:13px;flex-basis:13px;margin-right:1px;color:var(--text-tertiary)}
+.btn>.lb-ui-icon{width:14px;height:14px;flex-basis:14px}
+.action-dropdown-btn>.lb-ui-icon,.modal-close>.lb-ui-icon,.detail-close>.lb-ui-icon{margin:0}
+
+/* Acoes e controles */
+.btn,.action-dropdown-btn,.modal-close,.detail-close,.icon-btn{
+  font-family:var(--font-sans);font-weight:650;letter-spacing:0;
+}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.btn-primary{box-shadow:0 1px 2px rgba(30,82,59,.16)}
+.btn-primary:hover{box-shadow:0 4px 10px rgba(30,82,59,.16);transform:none}
+.btn-danger:hover{transform:none}
+.action-dropdown-btn{position:relative}
+.action-dropdown-btn::before{content:'';position:absolute;inset:-5px}
+
+/* Badges e estados */
+.badge,.status-badge,.lb-status-badge,.active-filters-badge{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  min-height:22px;padding:3px 8px;border-radius:999px;
+  font-size:9.5px;font-weight:750;line-height:1.1;letter-spacing:.2px;white-space:nowrap;
+}
+.active-filters-badge{border:1px solid #c8ddd2;background:#edf6f1;color:var(--accent)}
+
+/* Estados vazios e carregamento */
+.empty-state,.lb-empty-state,[class*="empty-state"]{
+  min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:7px;padding:28px 18px;color:var(--text-tertiary);text-align:center;
+}
+.empty-state-title,.lb-empty-state-title{color:var(--text-secondary);font-size:12.5px;font-weight:750}
+.empty-state-text,.lb-empty-state-text{max-width:420px;font-size:11px;line-height:1.5}
+
+/* Rolagem e selecao */
+:where(.content,.table-wrapper,.table-wrap,.modal-body,.detail-popup-body,#popup-d-body,#popup-e-body,#popup-ac-body){
+  scrollbar-width:thin;scrollbar-color:#bdc8c2 transparent;
+}
+:where(.content,.table-wrapper,.table-wrap,.modal-body,.detail-popup-body,#popup-d-body,#popup-e-body,#popup-ac-body)::-webkit-scrollbar{width:9px;height:9px}
+:where(.content,.table-wrapper,.table-wrap,.modal-body,.detail-popup-body,#popup-d-body,#popup-e-body,#popup-ac-body)::-webkit-scrollbar-track{background:transparent}
+:where(.content,.table-wrapper,.table-wrap,.modal-body,.detail-popup-body,#popup-d-body,#popup-e-body,#popup-ac-body)::-webkit-scrollbar-thumb{border:2px solid transparent;border-radius:999px;background:#bdc8c2;background-clip:padding-box}
+:where(.content,.table-wrapper,.table-wrap,.modal-body,.detail-popup-body,#popup-d-body,#popup-e-body,#popup-ac-body)::-webkit-scrollbar-thumb:hover{background:#95a69d;background-clip:padding-box}
+::selection{background:rgba(45,106,79,.18);color:var(--text-primary)}
+
+/* Foco consistente */
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid var(--accent)!important;outline-offset:2px!important;box-shadow:var(--lb-focus)!important;
+}
+:where(button,a,input,select,textarea,[tabindex]):focus:not(:focus-visible){outline:none}
+
+/* Links operacionais */
+a:not(.btn):not(.tab-btn):not(.nav-item){text-underline-offset:2px;text-decoration-thickness:1px}
+a:not(.btn):not(.tab-btn):not(.nav-item):hover{text-decoration-color:currentColor}
+
+/* Tooltips nativos mais previsiveis e textos extensos */
+.lb-cell-truncate,[data-truncate]{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td,th{font-variant-numeric:tabular-nums}
+
+/* Movimento discreto */
+@media(prefers-reduced-motion:no-preference){
+  .btn,.card,.chart-card,.nav-item,.tab-btn,.action-dropdown-btn{transition-duration:.16s!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* Impressao limpa para consultas eventuais */
+@media print{
+  .sidebar,header,.tabs,.toolbar,.modal-overlay,.detail-popup-overlay,.toast-container{display:none!important}
+  body,.content,.tab-pane.active{background:#fff!important;color:#111!important;box-shadow:none!important}
+  .content{margin:0!important;padding:0!important;overflow:visible!important}
+  .card,.chart-card,.table-wrapper{box-shadow:none!important;border-color:#bbb!important;break-inside:avoid}
+}
