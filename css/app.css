@@ -1414,3 +1414,110 @@ td,th{font-variant-numeric:tabular-nums}
   .content{margin:0!important;padding:0!important;overflow:visible!important}
   .card,.chart-card,.table-wrapper{box-shadow:none!important;border-color:#bbb!important;break-inside:avoid}
 }
+
+
+/* ========================================================================== 
+   POPUPS REDIMENSIONAVEIS - LARGURA E ALTURA PELOS QUATRO CANTOS
+   Complemento visual. Adicionar ao final de css/app.css.
+   ========================================================================== */
+
+#popup-disputa .detail-popup,
+#popup-empenho .detail-popup,
+#popup-acomp .detail-popup {
+  position: relative;
+  min-width: 680px !important;
+  min-height: 420px !important;
+  max-width: calc(100vw - 16px) !important;
+  max-height: calc(100dvh - 16px) !important;
+  box-sizing: border-box !important;
+}
+
+/* Durante o arraste, o popup usa coordenadas da janela para que os cantos
+   acompanhem exatamente o ponteiro. */
+.detail-popup.lb-resizing,
+.detail-popup.lb-resized {
+  position: fixed !important;
+  margin: 0 !important;
+  max-width: calc(100vw - 8px) !important;
+  max-height: calc(100dvh - 8px) !important;
+}
+
+.detail-popup.lb-resizing {
+  user-select: none !important;
+  transition: none !important;
+  will-change: width, height, left, top;
+}
+
+/* Quatro áreas de redimensionamento. */
+.lb-resize-handle {
+  position: absolute;
+  z-index: 80;
+  width: 22px;
+  height: 22px;
+  touch-action: none;
+  user-select: none;
+  background: transparent;
+}
+
+.lb-resize-handle::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  opacity: .42;
+  border-color: var(--accent, #2d6a4f);
+  pointer-events: none;
+}
+
+.lb-resize-handle--nw { left: 0; top: 0; cursor: nwse-resize; }
+.lb-resize-handle--ne { right: 0; top: 0; cursor: nesw-resize; }
+.lb-resize-handle--sw { left: 0; bottom: 0; cursor: nesw-resize; }
+.lb-resize-handle--se { right: 0; bottom: 0; cursor: nwse-resize; }
+
+.lb-resize-handle--nw::after {
+  left: 5px; top: 5px; border-left: 2px solid; border-top: 2px solid;
+}
+.lb-resize-handle--ne::after {
+  right: 5px; top: 5px; border-right: 2px solid; border-top: 2px solid;
+}
+.lb-resize-handle--sw::after {
+  left: 5px; bottom: 5px; border-left: 2px solid; border-bottom: 2px solid;
+}
+.lb-resize-handle--se::after {
+  right: 5px; bottom: 5px; border-right: 2px solid; border-bottom: 2px solid;
+}
+
+.detail-popup:hover .lb-resize-handle::after,
+.detail-popup.lb-resizing .lb-resize-handle::after {
+  opacity: .9;
+}
+
+/* O corpo continua rolável quando a altura escolhida for menor que o conteúdo. */
+#popup-disputa .detail-popup > #popup-d-body,
+#popup-empenho .detail-popup > #popup-e-body,
+#popup-acomp .detail-popup > #popup-ac-body,
+#popup-d-body,
+#popup-e-body,
+#popup-ac-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+
+body.lb-popup-resizing,
+body.lb-popup-resizing * {
+  cursor: inherit !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  #popup-disputa .detail-popup,
+  #popup-empenho .detail-popup,
+  #popup-acomp .detail-popup {
+    min-width: 300px !important;
+    min-height: 300px !important;
+  }
+  .lb-resize-handle { width: 30px; height: 30px; }
+  .lb-resize-handle::after { width: 12px; height: 12px; }
+}
