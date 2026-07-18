@@ -1,6 +1,10 @@
-/* LICITATIONBIZNIS 2026 PROFESSIONAL EDITION */
+/* ==========================================================================
+   LICITATIONBIZNIS 2026 - CAMADA VISUAL CONSOLIDADA
+   Etapa 1: organizacao e estabilizacao do CSS.
+   Escopo exclusivo de apresentacao. A ordem das camadas foi preservada.
+   ========================================================================== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--font-sans:'DM Sans','Inter',system-ui,sans-serif;--font-mono:'DM Mono','JetBrains Mono',monospace;--radius-xs:6px;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;--radius-2xl:24px;--radius-3xl:32px;--lb-sidebar-w:230px;--lb-topbar-h:64px;--lb-gap:12px;--ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--ease-smooth:cubic-bezier(0.4,0,0.2,1)}
+:root{--font-sans:'DM Sans','Inter',system-ui,sans-serif;--font-mono:'DM Mono','JetBrains Mono',monospace;--radius-xs:6px;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;--radius-2xl:24px;--radius-3xl:32px;--lb-sidebar-w:230px;--lb-topbar-h:64px;--lb-gap:12px;--ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--ease-smooth:cubic-bezier(0.4,0,0.2,1)--lb-control-h:36px;--lb-row-h:44px;--lb-muted:#64748b;--lb-line:#e8edf2;--lb-hover:#f3f8f5;--lb-touch-target:40px;--lb-focus:0 0 0 3px rgba(45,106,79,.20);--lb-standard-row-h:36px;}
 body[data-theme="light"]{--bg-app:#f8fafb;--bg-surface:rgba(255,255,255,0.82);--bg-surface-solid:#fff;--bg-surface-hover:#f4f6f8;--bg-surface-soft:#f0f3f6;--bg-inset:#e8ecf0;--bg-sidebar:#0c1f17;--border-light:rgba(0,0,0,0.06);--border-medium:rgba(0,0,0,0.10);--border-focus:#2d6a4f;--text-primary:#0c1421;--text-secondary:#3b4a5c;--text-tertiary:#7a8694;--text-placeholder:#b0b8c4;--accent:#2d6a4f;--accent-hover:#1b4332;--accent-muted:rgba(45,106,79,0.08);--accent-ring:rgba(45,106,79,0.16);--success:#16a34a;--success-soft:rgba(22,163,74,0.08);--warning:#ca8a04;--warning-soft:rgba(202,138,4,0.08);--danger:#dc2626;--danger-soft:rgba(220,38,38,0.07);--purple:#7c3aed;--purple-soft:rgba(124,58,237,0.08);--info:#2563eb;--info-soft:rgba(37,99,235,0.07);--shadow-xs:0 1px 2px rgba(0,0,0,0.03);--shadow-sm:0 2px 8px rgba(0,0,0,0.04),0 0 0 1px rgba(0,0,0,0.03);--shadow-md:0 8px 24px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.03);--shadow-lg:0 16px 48px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.03);--shadow-xl:0 24px 64px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);--glass-bg:rgba(255,255,255,0.72);--glass-border:rgba(255,255,255,0.5);--glass-blur:blur(20px) saturate(1.2);--chart-1:#2d6a4f;--chart-2:#7c3aed;--chart-3:#16a34a;--chart-4:#ca8a04;--chart-5:#dc2626;--sort-asc:#2d6a4f;--sort-desc:#dc2626;--nao-recebido-bg:#fefce8;--nao-recebido-border:#facc15;--nao-recebido-hover:#fef9c3}
 
 body{font-family:var(--font-sans);color:var(--text-primary);min-height:100vh;font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased;display:block!important;overflow-x:hidden;background:var(--bg-app)!important}
@@ -164,14 +168,6 @@ body.sidebar-hidden header{left:12px!important}
 /* LICITATIONBIZNIS MODERN UI 2026                                             */
 /* Modernizacao visual discreta, com foco em hierarquia, densidade e leitura.  */
 /* ========================================================================== */
-:root{
-  --lb-control-h:36px;
-  --lb-row-h:44px;
-  --lb-muted:#64748b;
-  --lb-line:#e8edf2;
-  --lb-hover:#f3f8f5;
-}
-
 body.lb-modern-ui{font-size:13px;background:#f6f8fa!important;color:#16202d}
 body.lb-modern-ui .content{padding-top:calc(var(--lb-topbar-h) + var(--lb-gap) + 24px)!important}
 
@@ -319,11 +315,6 @@ body.lb-modern-ui .page-btn{border-radius:8px}
 /* Camada final de consistencia, acessibilidade e responsividade.              */
 /* ========================================================================== */
 
-:root{
-  --lb-touch-target:40px;
-  --lb-focus:0 0 0 3px rgba(45,106,79,.20);
-}
-
 /* Foco visivel e navegacao por teclado */
 :where(button,a,input,select,textarea,[tabindex]):focus-visible{
   outline:2px solid var(--accent);
@@ -393,41 +384,6 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
-/* Ajuste final de densidade: usa Contratos Ativos como referencia */
-:root{--lb-standard-row-h:36px;}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)){
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-  padding-top:5px!important;
-  padding-bottom:5px!important;
-  line-height:1.15!important;
-}
-
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)),
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td,
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)),
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-}
-
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td > :is(div,span),
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td > :is(div,span){
-  margin-top:0!important;
-  margin-bottom:0!important;
-  line-height:1.15!important;
-}
-
-
 /* ========================================================================== */
 /* PADRAO UNIFICADO DAS LINHAS DE TABELA - 5 TELAS DE LISTAGEM                */
 /* Substitui os quatro blocos exclusivos anteriores (correcao acomp, ajuste  */
@@ -459,13 +415,15 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   background-color:var(--lb-hover)!important;
 }
 
-/* Regra 2: padding lateral, tipografia base e alinhamento identicos nas 5 telas.
-   A altura, min/max-height e padding vertical vem do bloco em ~L399. */
+/* Regra 2: altura, espacamento, tipografia e alinhamento identicos nas 5 telas. */
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td{
-  padding-left:10px!important;
-  padding-right:10px!important;
+  height:var(--lb-standard-row-h)!important;
+  min-height:var(--lb-standard-row-h)!important;
+  max-height:var(--lb-standard-row-h)!important;
+  padding:5px 10px!important;
+  line-height:1.15!important;
   box-sizing:border-box!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-family:var(--font-sans)!important;
   font-size:12px!important;
   color:#455468!important;
   vertical-align:middle!important;
@@ -473,14 +431,14 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 
 /* Regra 3: colunas monoespacadas (numeros, datas). Basta usar class="mono". */
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.mono{
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
+  font-family:var(--font-mono)!important;
   font-size:11px!important;
   font-weight:400!important;
 }
 
 /* Regra 4: colunas de dinheiro. Basta usar class="money". */
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.money{
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
+  font-family:var(--font-mono)!important;
   font-size:11px!important;
   font-weight:700!important;
   text-align:right!important;
