@@ -81,6 +81,8 @@ function calcSelecionarDisputa(id) {
   }
 
   g('calc-tipo-gadita').style.display = d.empresa === 'Gadita' ? '' : 'none';
+  // Garante que a opção "Produto importado" (radio value="importado") existe na calculadora rápida
+  _garantirOpcaoImportadoCalcRapida();
   g('calc-pct-simples').value = d.empresa === 'Hamate' ? 9 : 13.5;
   g('calc-estado-display').textContent = (d.estado || '—');
   const icms = ICMS_ESTADOS[d.estado] || 7;
@@ -276,19 +278,35 @@ function calcLimparItens() {
   calcRecalcular();
 }
 
+// Injeta dinamicamente o radio "Produto importado" na calculadora rápida (agrupado com os demais)
+function _garantirOpcaoImportadoCalcRapida() {
+  if (document.querySelector('input[name="calc-tipo"][value="importado"]')) return;
+  const radioIcms = document.querySelector('input[name="calc-tipo"][value="novo"]');
+  if (!radioIcms) return;
+  const lblIcms = radioIcms.closest('label') || radioIcms.parentNode;
+  if (!lblIcms || !lblIcms.parentNode) return;
+  const novoLbl = document.createElement('label');
+  novoLbl.id = 'calc-tipo-importado-lbl';
+  novoLbl.className = lblIcms.className || '';
+  novoLbl.style.cssText = lblIcms.getAttribute('style') || '';
+  novoLbl.innerHTML = '<input type="radio" name="calc-tipo" value="importado" onchange="calcTipoChanged()"> Produto importado (ICMS 4% + PIS/COFINS/IRPJ/CSLL)';
+  lblIcms.parentNode.insertBefore(novoLbl, lblIcms.nextSibling);
+}
+
 function calcGetTipo() {
   const d = calcDisputaSelecionada;
   if (!d) return 'simples';
   if (d.empresa !== 'Gadita') return 'simples';
   const radio = document.querySelector('input[name="calc-tipo"]:checked');
+  if (radio && radio.value === 'importado') return 'importado';
   return (radio && radio.value === 'novo') ? 'icms' : 'simples';
 }
 
 function calcCustoItem(vemTotal, tipo, d) {
   const pct = (+g('calc-pct-simples').value || 0) / 100;
   if (tipo === 'simples') return vemTotal * pct;
-  // ICMS
-  const icmsPct = (ICMS_ESTADOS[d.estado] || 7) / 100;
+  // ICMS variável por estado ou fixo 4% para produto importado
+  const icmsPct = tipo === 'importado' ? 0.04 : ((ICMS_ESTADOS[d.estado] || 7) / 100);
   const icmsVal   = vemTotal * icmsPct;
   const pisVal    = vemTotal * 0.0065;
   const cofinsVal = vemTotal * 0.03;
@@ -329,8 +347,10 @@ function calcRenderTabela() {
 function calcTipoChanged() {
   const tipo = calcGetTipo();
   g('calc-bloco-simples').style.display = tipo === 'simples' ? '' : 'none';
-  g('calc-bloco-icms-info').style.display = tipo === 'icms' ? '' : 'none';
-  g('calc-bloco-icms-opts').style.display = tipo === 'icms' ? '' : 'none';
+  // Info e opções ICMS reutilizadas para o modo 'importado' (mesmo painel com crédito e custo empresa)
+  const mostrarBlocoIcms = (tipo === 'icms' || tipo === 'importado');
+  g('calc-bloco-icms-info').style.display = mostrarBlocoIcms ? '' : 'none';
+  g('calc-bloco-icms-opts').style.display = mostrarBlocoIcms ? '' : 'none';
   if (tipo === 'simples') {
     const d = calcDisputaSelecionada;
     g('calc-pct-simples').value = d ? (d.empresa === 'Hamate' ? 9 : 13.5) : 9;
@@ -357,7 +377,7 @@ function calcRecalcular() {
   if (!d || !calcItensCalculo.length) { calcLimparResultado(); return; }
 
   const tipo = calcGetTipo();
-  const creditoICMS = tipo === 'icms' ? (+g('calc-credito-icms').value || 0) : 0;
+  const creditoICMS = (tipo === 'icms' || tipo === 'importado') ? (+g('calc-credito-icms').value || 0) : 0;
 
   let totalVem = 0, totalCusto = 0, totalCompra = 0;
   calcItensCalculo.forEach(({ item, qtd, vcompra }) => {
@@ -379,9 +399,10 @@ function calcRecalcular() {
   g('calc-res-margem').textContent = margem.toFixed(1) + '%';
   g('calc-res-margem').style.color = margem >= 0 ? 'var(--success)' : 'var(--danger)';
 
-  // Detalhamento ICMS (sobre total)
-  if (tipo === 'icms') {
-    const icmsPct = ICMS_ESTADOS[d.estado] || 7;
+  // Detalhamento (sobre total) para ICMS por estado ou Produto Importado (4% fixo)
+  if (tipo === 'icms' || tipo === 'importado') {
+    const icmsPct = tipo === 'importado' ? 4 : (ICMS_ESTADOS[d.estado] || 7);
+    const rotuloIcms = tipo === 'importado' ? `ICMS Importado (${icmsPct}%)` : `ICMS (${icmsPct}%)`;
     const icmsVal   = totalVem * (icmsPct/100);
     const pisVal    = totalVem * 0.0065;
     const cofinsVal = totalVem * 0.03;
@@ -389,7 +410,7 @@ function calcRecalcular() {
     const csllVal   = (totalVem * 0.12) * 0.09;
     const empVal    = g('calc-custo-empresa').checked ? totalVem * 0.03 : 0;
     let linhas = [
-      [`ICMS (${icmsPct}%)`, icmsVal],
+      [rotuloIcms, icmsVal],
       ['PIS (0,65%)', pisVal],
       ['COFINS (3%)', cofinsVal],
       ['IRPJ (Base×8%×15%)', irpjVal],
@@ -418,6 +439,19 @@ function calcRecalcular() {
 }
 
 // ========== CÁLCULO DE CUSTO NO MODAL DE COMPRA ==========
+// Injeta dinamicamente a opção "Produto importado" ao lado da opção ICMS, se ainda não existir no HTML
+function _garantirOpcaoImportadoCompra() {
+  if (g('c-calc-importado')) return;
+  const icmsLbl = g('c-calc-icms-lbl');
+  if (!icmsLbl) return;
+  const lbl = document.createElement('label');
+  lbl.id = 'c-calc-importado-lbl';
+  lbl.className = icmsLbl.className || '';
+  lbl.style.cssText = icmsLbl.getAttribute('style') || '';
+  lbl.innerHTML = '<input type="radio" name="c-calc-tipo" value="importado" id="c-calc-importado" onchange="calcCustoRecalcular()"> Produto importado (ICMS 4% + PIS/COFINS/IRPJ/CSLL)';
+  icmsLbl.parentNode.insertBefore(lbl, icmsLbl.nextSibling);
+}
+
 function calcCustoAutomatico() {
   const emp = DB.empenhos.find(x => x.id === compraEmpenhoId);
   if (!emp) return;
@@ -425,14 +459,19 @@ function calcCustoAutomatico() {
   const painel = g('c-custo-calc-painel');
   painel.style.display = '';
 
+  // Garante que a opção "Produto importado" existe no painel
+  _garantirOpcaoImportadoCompra();
+
   // Define empresa e ajusta opções
   const empresa = disp ? disp.empresa : 'Hamate';
   const estado  = disp ? (disp.estado || '') : '';
   const icmsLbl = g('c-calc-icms-lbl');
+  const impLbl  = g('c-calc-importado-lbl');
 
-  // Mostra opção ICMS só para Gadita
+  // Mostra opções ICMS e Importado só para Gadita
   if (empresa === 'Gadita') {
     icmsLbl.style.display = '';
+    if (impLbl) impLbl.style.display = '';
     g('c-calc-empresa-info').textContent = 'Gadita · ' + estado;
     g('c-calc-estado-label').textContent = 'Estado: ' + estado;
     const icmsPct = ICMS_ESTADOS[estado] || 7;
@@ -442,6 +481,7 @@ function calcCustoAutomatico() {
     g('c-calc-pct').value = 13.5;
   } else {
     icmsLbl.style.display = 'none';
+    if (impLbl) impLbl.style.display = 'none';
     g('c-calc-simples').checked = true;
     g('c-calc-empresa-info').textContent = 'Hamate';
     g('c-calc-pct').value = 9;
@@ -454,7 +494,8 @@ function calcCustoAutomatico() {
 function calcCustoRecalcular() {
   const tipo = document.querySelector('input[name="c-calc-tipo"]:checked')?.value || 'simples';
   g('c-calc-bloco-simples').style.display = tipo === 'simples' ? '' : 'none';
-  g('c-calc-bloco-icms').style.display  = tipo === 'icms'    ? '' : 'none';
+  // Bloco com crédito ICMS + custo empresa serve tanto para 'icms' quanto para 'importado'
+  g('c-calc-bloco-icms').style.display = (tipo === 'icms' || tipo === 'importado') ? '' : 'none';
 
   // Base = vl empenho do item × qtd comprando
   const vemItem   = +gv('c-vem-item') || 0;
@@ -470,10 +511,16 @@ function calcCustoRecalcular() {
     const pct = (+g('c-calc-pct').value || 0) / 100;
     custo = base * pct;
   } else {
-    const emp  = DB.empenhos.find(x => x.id === compraEmpenhoId);
-    const disp = emp?.disputaId ? DB.disputas.find(d => d.id === emp.disputaId) : null;
-    const estado = disp?.estado || '';
-    const icmsPct    = (ICMS_ESTADOS[estado] || 7) / 100;
+    // 'icms' (variável por estado) ou 'importado' (fixo 4%)
+    let icmsPct;
+    if (tipo === 'importado') {
+      icmsPct = 0.04;
+    } else {
+      const emp  = DB.empenhos.find(x => x.id === compraEmpenhoId);
+      const disp = emp?.disputaId ? DB.disputas.find(d => d.id === emp.disputaId) : null;
+      const estado = disp?.estado || '';
+      icmsPct = (ICMS_ESTADOS[estado] || 7) / 100;
+    }
     const icmsVal    = base * icmsPct;
     const pisVal     = base * 0.0065;
     const cofinsVal  = base * 0.03;
