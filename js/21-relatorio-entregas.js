@@ -35,11 +35,36 @@
   }
 
   // ---------- Coleta e filtragem ----------
+  function _bancoEmpenhos(){
+    if (window.DB && Array.isArray(window.DB.empenhos) && window.DB.empenhos.length) return window.DB.empenhos;
+    if (window._fullDB && Array.isArray(window._fullDB.empenhos) && window._fullDB.empenhos.length) return window._fullDB.empenhos;
+    if (window.DB && Array.isArray(window.DB.empenhos)) return window.DB.empenhos;
+    if (window._fullDB && Array.isArray(window._fullDB.empenhos)) return window._fullDB.empenhos;
+    return [];
+  }
+  function _bancoDisputas(){
+    if (window.DB && Array.isArray(window.DB.disputas) && window.DB.disputas.length) return window.DB.disputas;
+    if (window._fullDB && Array.isArray(window._fullDB.disputas) && window._fullDB.disputas.length) return window._fullDB.disputas;
+    if (window.DB && Array.isArray(window.DB.disputas)) return window.DB.disputas;
+    if (window._fullDB && Array.isArray(window._fullDB.disputas)) return window._fullDB.disputas;
+    return [];
+  }
+
   function coletarPendentes(){
-    const empenhos = (window.DB && Array.isArray(DB.empenhos)) ? DB.empenhos : [];
-    const disputas = (window.DB && Array.isArray(DB.disputas)) ? DB.disputas : [];
+    const empenhos = _bancoEmpenhos();
+    const disputas = _bancoDisputas();
     const dispMap = {};
     disputas.forEach(d => { dispMap[d.id] = d; });
+
+    // Diagnóstico: contadores brutos por status para ajudar em problemas de dados
+    const diag = { empenhos: empenhos.length, comprasTotal: 0, porStatus: {} };
+    empenhos.forEach(e => (e.compras||[]).forEach(c => {
+      diag.comprasTotal++;
+      const s = c.statusEntrega || '(sem statusEntrega)';
+      diag.porStatus[s] = (diag.porStatus[s]||0) + 1;
+    }));
+    console.log('[RelEntregas] fontes lidas:', diag);
+    window._relEntregasDiag = diag;
 
     const hoje = hojeISO();
     const linhas = [];
