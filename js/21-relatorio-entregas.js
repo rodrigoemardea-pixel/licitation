@@ -1,7 +1,8 @@
 // ========== RELATÓRIO DE ENTREGAS PENDENTES ==========
-// Lista todas as compras cujo statusEntrega ainda não é 'recebida'
-// (aguardando_envio, em_transito, nao_recebida). Filtros por status,
-// órgão e analista. Exportação para Excel (SheetJS) e PDF (janela impressão).
+// Lista todas as compras cujo statusEntrega ainda não é 'recebida',
+// excluindo empenhos já finalizados.
+// Permite editar status + data de recebimento diretamente na tela,
+// gravando a alteração de volta na compra do empenho.
 (function(){
   'use strict';
 
@@ -34,9 +35,7 @@
       ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   }
 
-  // ---------- Coleta e filtragem ----------
-  // Acesso direto ao identificador (não window.X), porque DB / _fullDB podem
-  // ter sido declarados com let/const globalmente e nesse caso NÃO ficam em window.
+  // ---------- Acesso ao banco em memória ----------
   function _tryGet(fn){ try { return fn(); } catch(e){ return undefined; } }
   function _bancoEmpenhos(){
     let arr;
@@ -44,7 +43,6 @@
     arr = _tryGet(() => _fullDB.empenhos); if (Array.isArray(arr) && arr.length) return arr;
     arr = _tryGet(() => window.DB && window.DB.empenhos);      if (Array.isArray(arr) && arr.length) return arr;
     arr = _tryGet(() => window._fullDB && window._fullDB.empenhos); if (Array.isArray(arr) && arr.length) return arr;
-    // último recurso: retorna qualquer array (mesmo vazio) só para não travar
     arr = _tryGet(() => DB.empenhos);      if (Array.isArray(arr)) return arr;
     arr = _tryGet(() => _fullDB.empenhos); if (Array.isArray(arr)) return arr;
     return [];
@@ -60,26 +58,20 @@
     return [];
   }
 
+  // ---------- Coleta ----------
   function coletarPendentes(){
     const empenhos = _bancoEmpenhos();
     const disputas = _bancoDisputas();
     const dispMap = {};
     disputas.forEach(d => { dispMap[d.id] = d; });
 
-    // Diagnóstico: contadores brutos por status para ajudar em problemas de dados
-    const diag = { empenhos: empenhos.length, comprasTotal: 0, porStatus: {} };
-    empenhos.forEach(e => (e.compras||[]).forEach(c => {
-      diag.comprasTotal++;
-      const s = c.statusEntrega || '(sem statusEntrega)';
-      diag.porStatus[s] = (diag.porStatus[s]||0) + 1;
-    }));
-    console.log('[RelEntregas] fontes lidas:', diag);
-    window._relEntregasDiag = diag;
-
     const hoje = hojeISO();
     const linhas = [];
 
     empenhos.forEach(e => {
+      // Exclui empenhos já finalizados
+      if (e.finalizado) return;
+
       (e.compras || []).forEach(c => {
         const status = c.statusEntrega || 'sem_status';
         if (status === 'recebida') return;
@@ -89,7 +81,7 @@
 
         const prev = c.dataPrevistaRecebimento || '';
         const diasDesdeCompra = c.dcompra ? diasEntre(c.dcompra, hoje) : '';
-        const diasParaPrevisao = prev ? diasEntre(hoje, prev) : ''; // negativo = atrasada
+        const diasParaPrevisao = prev ? diasEntre(hoje, prev) : '';
         const atrasada = (typeof diasParaPrevisao === 'number' && diasParaPrevisao < 0);
 
         linhas.push({
@@ -108,6 +100,7 @@
           status: status,
           statusLabel: STATUS_LABEL[status] || status,
           dataPrevista: prev,
+          dataRecebimentoMercadoria: c.dataRecebimentoMercadoria || '',
           plataforma: c.plataforma || '',
           link: c.link || '',
           diasDesdeCompra,
@@ -117,7 +110,6 @@
       });
     });
 
-    // Ordenação padrão: atrasadas primeiro, depois por data prevista
     linhas.sort((a, b) => {
       if (a.atrasada !== b.atrasada) return a.atrasada ? -1 : 1;
       if (a.dataPrevista && b.dataPrevista) return a.dataPrevista.localeCompare(b.dataPrevista);
@@ -153,25 +145,25 @@
     overlay.className = 'modal-overlay';
     overlay.id = 'modal-rel-entregas';
     overlay.innerHTML = `
-      <div class="modal" style="max-width:1180px;width:96vw;">
+      <div class="modal" style="max-width:98vw;width:98vw;max-height:96vh;display:flex;flex-direction:column;">
         <div class="modal-head" style="display:flex;align-items:center;justify-content:space-between;">
           <div>
             <div class="modal-title" style="font-size:16px;font-weight:800;">Entregas pendentes</div>
             <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">
-              Compras sem confirmação de recebimento (aguardando envio, em trânsito ou não recebida)
+              Compras sem confirmação de recebimento em empenhos ativos. Edite o status e a data de recebimento diretamente na tabela.
             </div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="fecharRelEntregas()">✕</button>
         </div>
 
-        <div class="modal-body" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:10px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">
             <div class="form-group" style="margin:0;">
               <label style="font-size:10px;">Status</label>
               <select id="rep-ent-status" class="fc" onchange="renderRelEntregas()">
-                <option value="">Todos</option>
+                <option value="">Todos pendentes</option>
                 <option value="aguardando_envio">Aguardando envio</option>
-                <option value="em_transito">Em trânsito</option>
+                <option value="em_transito" selected>Em trânsito</option>
                 <option value="nao_recebida">Não recebida</option>
                 <option value="sem_status">Sem status</option>
               </select>
@@ -202,8 +194,8 @@
 
           <div id="rep-ent-resumo" style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px;"></div>
 
-          <div style="max-height:60vh;overflow:auto;border:1px solid var(--border-light);border-radius:10px;">
-            <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <div style="flex:1;min-height:200px;overflow:auto;border:1px solid var(--border-light);border-radius:10px;">
+            <table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:auto;">
               <thead style="position:sticky;top:0;background:var(--bg-surface);z-index:1;">
                 <tr style="text-align:left;">
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);">Órgão</th>
@@ -213,8 +205,9 @@
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);text-align:right;">Vl. Total</th>
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);">Data compra</th>
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);text-align:right;">Dias</th>
-                  <th style="padding:8px;border-bottom:1px solid var(--border-light);">Status</th>
-                  <th style="padding:8px;border-bottom:1px solid var(--border-light);">Prev. entrega</th>
+                  <th style="padding:8px;border-bottom:1px solid var(--border-light);min-width:150px;">Status</th>
+                  <th style="padding:8px;border-bottom:1px solid var(--border-light);min-width:145px;">Prev. entrega</th>
+                  <th style="padding:8px;border-bottom:1px solid var(--border-light);min-width:145px;">Data recebimento</th>
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);">Plataforma</th>
                   <th style="padding:8px;border-bottom:1px solid var(--border-light);">Analista</th>
                 </tr>
@@ -242,14 +235,34 @@
     if (!tbody) return;
 
     if (!linhas.length) {
-      tbody.innerHTML = `<tr><td colspan="11" style="padding:24px;text-align:center;color:var(--text-tertiary);">Nenhuma compra pendente de recebimento com os filtros atuais.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="12" style="padding:24px;text-align:center;color:var(--text-tertiary);">Nenhuma compra pendente de recebimento com os filtros atuais.</td></tr>`;
     } else {
       tbody.innerHTML = linhas.map(l => {
-        const cor = STATUS_COR[l.status] || '#94a3b8';
         const rowStyle = l.atrasada ? 'background:rgba(239,68,68,0.06);' : '';
         const previsao = l.dataPrevista
           ? `<span style="${l.atrasada?'color:#ef4444;font-weight:700;':''}">${l.dataPrevista}${l.atrasada?' ⚠':''}</span>`
           : '<span style="color:var(--text-tertiary);">—</span>';
+
+        // Seletor de status editável
+        const opts = ['aguardando_envio','em_transito','nao_recebida','recebida'].map(v => {
+          const lbl = v === 'recebida' ? 'Recebida' : STATUS_LABEL[v];
+          const sel = (v === l.status) ? ' selected' : '';
+          return `<option value="${v}"${sel}>${lbl}</option>`;
+        }).join('');
+        const statusSelect = `
+          <select class="fc rep-ent-status-inline"
+                  style="font-size:11px;padding:2px 4px;min-width:140px;"
+                  onchange="salvarEdicaoEntrega('${l.empenhoId}','${l.compraId}','status',this.value)">
+            ${opts}
+          </select>`;
+
+        // Input de data de recebimento
+        const dataRec = `
+          <input type="date" class="fc"
+                 style="font-size:11px;padding:2px 4px;min-width:135px;"
+                 value="${l.dataRecebimentoMercadoria || ''}"
+                 onchange="salvarEdicaoEntrega('${l.empenhoId}','${l.compraId}','dataRecebimento',this.value)">`;
+
         return `
           <tr style="border-bottom:1px solid var(--border-light);${rowStyle}">
             <td style="padding:6px 8px;">${escHTML(l.orgao)}</td>
@@ -259,12 +272,9 @@
             <td style="padding:6px 8px;text-align:right;font-family:monospace;">${fmtBR(l.vtotal)}</td>
             <td style="padding:6px 8px;">${escHTML(l.dcompra || '—')}</td>
             <td style="padding:6px 8px;text-align:right;">${l.diasDesdeCompra===''?'—':l.diasDesdeCompra}</td>
-            <td style="padding:6px 8px;">
-              <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:${cor}22;color:${cor};">
-                ${escHTML(l.statusLabel)}
-              </span>
-            </td>
+            <td style="padding:6px 8px;">${statusSelect}</td>
             <td style="padding:6px 8px;">${previsao}</td>
+            <td style="padding:6px 8px;">${dataRec}</td>
             <td style="padding:6px 8px;">${escHTML(l.plataforma || '—')}</td>
             <td style="padding:6px 8px;">${escHTML(l.analista || '—')}</td>
           </tr>
@@ -272,7 +282,6 @@
       }).join('');
     }
 
-    // Resumo por status
     const agrup = { aguardando_envio:0, em_transito:0, nao_recebida:0, sem_status:0 };
     let totalValor = 0, atrasadas = 0;
     linhas.forEach(l => {
@@ -295,9 +304,79 @@
     }
   }
 
+  // ---------- Edição inline ----------
+  function salvarEdicaoEntrega(empenhoId, compraId, campo, valor){
+    const empenhos = _bancoEmpenhos();
+    const emp = empenhos.find(e => e.id === empenhoId);
+    if (!emp) { toastSafe('Empenho não encontrado.', 'error'); return; }
+    const compra = (emp.compras || []).find(c => c.id === compraId);
+    if (!compra) { toastSafe('Compra não encontrada.', 'error'); return; }
+
+    if (campo === 'status') {
+      compra.statusEntrega = valor;
+      // Regras coerentes com o formulário de compra (08-compras.js):
+      // - "em_transito" sem data prevista → mantém o que houver
+      // - mudar para "recebida" sem data → assume hoje
+      if (valor === 'recebida' && !compra.dataRecebimentoMercadoria) {
+        compra.dataRecebimentoMercadoria = hojeISO();
+      }
+      if (valor !== 'recebida') {
+        // Se voltou para pendente, limpa data de recebimento
+        compra.dataRecebimentoMercadoria = '';
+      }
+      if (valor !== 'em_transito') {
+        compra.dataPrevistaRecebimento = compra.dataPrevistaRecebimento || '';
+      }
+    } else if (campo === 'dataRecebimento') {
+      compra.dataRecebimentoMercadoria = valor || '';
+      // Se preencheu data e status ainda estava pendente, marca como recebida
+      if (valor) {
+        compra.statusEntrega = 'recebida';
+      }
+    }
+
+    // Auto-finaliza empenho se aplicável (mesma regra do saveCompra em 08-compras.js)
+    if (typeof empenhoEstaPago === 'function') {
+      try {
+        if (empenhoEstaPago(emp)) {
+          if (!emp.finalizado) {
+            emp.finalizado = true;
+            emp.dataFinalizacao = emp.dataFinalizacao || hojeISO();
+          }
+        }
+      } catch(e){}
+    }
+
+    // Persiste no Firebase / storage (usa a mesma função save do sistema)
+    if (typeof save === 'function') {
+      try { save('empenhos', empenhos); } catch(e){ console.error(e); }
+    } else if (typeof window.save === 'function') {
+      try { window.save('empenhos', empenhos); } catch(e){ console.error(e); }
+    }
+
+    toastSafe('Entrega atualizada ✓', 'success');
+
+    // Se o popup de detalhes do empenho estiver aberto, atualiza-o
+    try {
+      const popupEmp = document.getElementById('popup-empenho');
+      if (popupEmp && popupEmp.classList.contains('open') && typeof abrirPopupEmpenho === 'function') {
+        abrirPopupEmpenho(empenhoId);
+      }
+    } catch(e){}
+
+    // Atualiza a tabela principal do sistema se possível
+    if (typeof renderActive === 'function') { try { renderActive(); } catch(e){} }
+
+    // Rerenderiza a lista (empenho pode ter saído: finalizado ou recebida)
+    renderRelEntregas();
+  }
+
+  // ---------- Abrir / fechar ----------
   function abrirRelEntregas(){
     garantirModal();
-    ['rep-ent-status','rep-ent-orgao','rep-ent-analista','rep-ent-empresa'].forEach(id => {
+    // Reseta filtros, deixando 'Em trânsito' como padrão
+    const st = document.getElementById('rep-ent-status'); if (st) st.value = 'em_transito';
+    ['rep-ent-orgao','rep-ent-analista','rep-ent-empresa'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
     const chk = document.getElementById('rep-ent-atrasadas'); if (chk) chk.checked = false;
@@ -317,26 +396,25 @@
 
     const cabecalho = [
       'Órgão','Empresa','UF','Nº Empenho','Item','Qtd','Vl. Unit.','Vl. Total',
-      'Data compra','Dias desde compra','Status','Data prevista','Dias até previsão',
-      'Plataforma','Analista','Link'
+      'Data compra','Dias desde compra','Status','Data prevista','Data recebimento',
+      'Dias até previsão','Plataforma','Analista','Link'
     ];
     const dados = linhas.map(l => [
       l.orgao, l.empresa, l.estado, l.numEmpenho, l.item, l.qtd, l.vunit, l.vtotal,
-      l.dcompra, l.diasDesdeCompra, l.statusLabel, l.dataPrevista,
+      l.dcompra, l.diasDesdeCompra, l.statusLabel, l.dataPrevista, l.dataRecebimentoMercadoria,
       l.diasParaPrevisao === '' ? '' : l.diasParaPrevisao,
       l.plataforma, l.analista, l.link
     ]);
 
     const totalQtd    = linhas.reduce((s,l)=>s+(+l.qtd||0),0);
     const totalValor  = linhas.reduce((s,l)=>s+(+l.vtotal||0),0);
-    const totais = ['TOTAL','','','','', totalQtd, '', totalValor, '','','','','','','',''];
+    const totais = ['TOTAL','','','','', totalQtd, '', totalValor, '','','','','','','','',''];
 
     const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...dados, totais]);
     ws['!cols'] = [
       {wch:32},{wch:10},{wch:6},{wch:16},{wch:36},{wch:8},{wch:12},{wch:14},
-      {wch:12},{wch:10},{wch:18},{wch:12},{wch:12},{wch:16},{wch:16},{wch:32}
+      {wch:12},{wch:10},{wch:18},{wch:12},{wch:14},{wch:12},{wch:16},{wch:16},{wch:32}
     ];
-    // Formatação moeda (colunas G e H = índices 6 e 7)
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R=1; R<=range.e.r; R++){
       [6,7].forEach(C => {
@@ -436,20 +514,18 @@
   }
 
   function init(){
-    // Expõe as funções que os handlers HTML chamam
-    window.abrirRelEntregas       = abrirRelEntregas;
-    window.fecharRelEntregas      = fecharRelEntregas;
-    window.renderRelEntregas      = renderRelEntregas;
+    window.abrirRelEntregas        = abrirRelEntregas;
+    window.fecharRelEntregas       = fecharRelEntregas;
+    window.renderRelEntregas       = renderRelEntregas;
+    window.salvarEdicaoEntrega     = salvarEdicaoEntrega;
     window.exportarRelEntregasXLSX = exportarRelEntregasXLSX;
     window.exportarRelEntregasPDF  = exportarRelEntregasPDF;
 
-    // Tenta injetar o botão. Se a aba ainda não existir, observa o DOM.
     if (!injetarBotao()){
       const obs = new MutationObserver(() => {
         if (injetarBotao()) obs.disconnect();
       });
       obs.observe(document.body, { childList:true, subtree:true });
-      // Segurança extra: tenta de novo após 2s
       setTimeout(injetarBotao, 2000);
     }
   }
