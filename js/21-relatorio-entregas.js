@@ -35,18 +35,28 @@
   }
 
   // ---------- Coleta e filtragem ----------
+  // Acesso direto ao identificador (não window.X), porque DB / _fullDB podem
+  // ter sido declarados com let/const globalmente e nesse caso NÃO ficam em window.
+  function _tryGet(fn){ try { return fn(); } catch(e){ return undefined; } }
   function _bancoEmpenhos(){
-    if (window.DB && Array.isArray(window.DB.empenhos) && window.DB.empenhos.length) return window.DB.empenhos;
-    if (window._fullDB && Array.isArray(window._fullDB.empenhos) && window._fullDB.empenhos.length) return window._fullDB.empenhos;
-    if (window.DB && Array.isArray(window.DB.empenhos)) return window.DB.empenhos;
-    if (window._fullDB && Array.isArray(window._fullDB.empenhos)) return window._fullDB.empenhos;
+    let arr;
+    arr = _tryGet(() => DB.empenhos);      if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => _fullDB.empenhos); if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => window.DB && window.DB.empenhos);      if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => window._fullDB && window._fullDB.empenhos); if (Array.isArray(arr) && arr.length) return arr;
+    // último recurso: retorna qualquer array (mesmo vazio) só para não travar
+    arr = _tryGet(() => DB.empenhos);      if (Array.isArray(arr)) return arr;
+    arr = _tryGet(() => _fullDB.empenhos); if (Array.isArray(arr)) return arr;
     return [];
   }
   function _bancoDisputas(){
-    if (window.DB && Array.isArray(window.DB.disputas) && window.DB.disputas.length) return window.DB.disputas;
-    if (window._fullDB && Array.isArray(window._fullDB.disputas) && window._fullDB.disputas.length) return window._fullDB.disputas;
-    if (window.DB && Array.isArray(window.DB.disputas)) return window.DB.disputas;
-    if (window._fullDB && Array.isArray(window._fullDB.disputas)) return window._fullDB.disputas;
+    let arr;
+    arr = _tryGet(() => DB.disputas);      if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => _fullDB.disputas); if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => window.DB && window.DB.disputas);      if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => window._fullDB && window._fullDB.disputas); if (Array.isArray(arr) && arr.length) return arr;
+    arr = _tryGet(() => DB.disputas);      if (Array.isArray(arr)) return arr;
+    arr = _tryGet(() => _fullDB.disputas); if (Array.isArray(arr)) return arr;
     return [];
   }
 
