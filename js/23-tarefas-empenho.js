@@ -2,15 +2,13 @@
 // - Tarefas textuais livres com data (prazo) opcional
 // - Clique na tarefa para marcar/desmarcar como concluída (tachada)
 // - Editar tarefas ainda não concluídas (texto e data)
-// - Arrastar para reordenar
+// - Arrastar pela alça (grip) para reordenar  [pointer events, funciona em modal]
 // - Excluir tarefas
 // - Notificação das tarefas pendentes que vencem HOJE (navegador + painel interno)
 // Persistência em emp.tarefas[] via save('empenhos').
-// Módulo autônomo: faz wrap de abrirPopupEmpenho, sem alterar código existente.
 (function(){
   'use strict';
 
-  // ---------- Acesso ao banco ----------
   function _tryGet(fn){ try { return fn(); } catch(e){ return undefined; } }
   function _bancoEmpenhos(){
     let arr;
@@ -46,7 +44,6 @@
     return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
   }
 
-  // ---------- Estilos ----------
   function injetarEstilos(){
     if (document.getElementById('lb-tarefas-empenho-style')) return;
     const st = document.createElement('style');
@@ -62,12 +59,11 @@
       .lb-tarefas-data{font-size:13px;padding:8px 10px;border:1px solid var(--border-light);border-radius:8px;background:var(--bg-surface);color:var(--text-primary);outline:none;}
       .lb-tarefas-add{border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;background:var(--accent,#2d6a4f);color:#fff;cursor:pointer;white-space:nowrap;}
       .lb-tarefas-add:hover{filter:brightness(1.08);}
-      .lb-tarefas-lista{display:flex;flex-direction:column;gap:6px;}
-      .lb-tarefa-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg-surface);border:1px solid var(--border-light);transition:background .15s,opacity .15s;}
+      .lb-tarefas-lista{display:flex;flex-direction:column;gap:6px;position:relative;}
+      .lb-tarefa-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg-surface);border:1px solid var(--border-light);transition:background .15s,box-shadow .15s;}
       .lb-tarefa-item:hover{background:var(--bg-surface-soft);}
-      .lb-tarefa-item.lb-dragging{opacity:.5;border-style:dashed;}
-      .lb-tarefa-item.lb-drag-over{border-color:var(--accent,#2d6a4f);box-shadow:0 0 0 2px var(--accent,#2d6a4f) inset;}
-      .lb-tarefa-grip{cursor:grab;color:var(--text-tertiary);font-size:14px;line-height:1;user-select:none;opacity:.5;padding:0 2px;}
+      .lb-tarefa-item.lb-dragging{opacity:.9;border-style:dashed;box-shadow:0 6px 18px rgba(0,0,0,0.18);background:var(--bg-surface-soft);}
+      .lb-tarefa-grip{cursor:grab;color:var(--text-tertiary);font-size:14px;line-height:1;user-select:none;opacity:.5;padding:2px 4px;touch-action:none;}
       .lb-tarefa-grip:hover{opacity:1;}
       .lb-tarefa-grip:active{cursor:grabbing;}
       .lb-tarefa-check{width:18px;height:18px;min-width:18px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:#fff;background:transparent;transition:all .15s;}
@@ -104,7 +100,6 @@
     document.head.appendChild(st);
   }
 
-  // ---------- Operações ----------
   function _getEmpenho(id){ return _bancoEmpenhos().find(e => e.id === id) || null; }
   const _editando = {};
 
@@ -177,52 +172,62 @@
     renderTarefas(empenhoId);
   }
 
-  // ---------- Reordenação (drag & drop) ----------
-  let _drag = null;
-  function _reordenar(empenhoId, origemId, destinoId){
-    if (origemId === destinoId) return;
-    const emp = _getEmpenho(empenhoId);
-    if (!emp || !Array.isArray(emp.tarefas)) return;
-    const arr = emp.tarefas;
-    const io = arr.findIndex(t => t.id === origemId);
-    const id2 = arr.findIndex(t => t.id === destinoId);
-    if (io === -1 || id2 === -1) return;
-    const [mov] = arr.splice(io, 1);
-    arr.splice(id2, 0, mov);
-    _salvar(_bancoEmpenhos());
-    renderTarefas(empenhoId);
-  }
+  // ---------- Reordenação por POINTER EVENTS (robusto em modais) ----------
+  let _pdrag = null;
   function _bindDragEvents(empenhoId){
     const lista = document.getElementById('lb-tarefas-lista-' + empenhoId);
     if (!lista) return;
-    lista.querySelectorAll('.lb-tarefa-item[draggable="true"]').forEach(item => {
-      item.addEventListener('dragstart', e => {
-        _drag = { empenhoId, tarefaId: item.dataset.tid };
-        item.classList.add('lb-dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        try { e.dataTransfer.setData('text/plain', item.dataset.tid); } catch(err){}
-      });
-      item.addEventListener('dragend', () => {
-        item.classList.remove('lb-dragging');
-        lista.querySelectorAll('.lb-drag-over').forEach(el => el.classList.remove('lb-drag-over'));
-        _drag = null;
-      });
-      item.addEventListener('dragover', e => {
-        e.preventDefault();
-        if (_drag && _drag.empenhoId === empenhoId) item.classList.add('lb-drag-over');
-      });
-      item.addEventListener('dragleave', () => item.classList.remove('lb-drag-over'));
-      item.addEventListener('drop', e => {
-        e.preventDefault();
-        item.classList.remove('lb-drag-over');
-        if (_drag && _drag.empenhoId === empenhoId) {
-          _reordenar(empenhoId, _drag.tarefaId, item.dataset.tid);
-        }
-      });
+    lista.querySelectorAll('.lb-tarefa-grip').forEach(grip => {
+      grip.addEventListener('pointerdown', e => _iniciarDrag(e, empenhoId, grip));
     });
   }
+  function _iniciarDrag(e, empenhoId, grip){
+    if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const item = grip.closest('.lb-tarefa-item');
+    const lista = document.getElementById('lb-tarefas-lista-' + empenhoId);
+    if (!item || !lista) return;
+    _pdrag = { empenhoId, item, lista, moveu:false, _grip:grip, _pointerId:e.pointerId };
+    item.classList.add('lb-dragging');
+    try { grip.setPointerCapture(e.pointerId); } catch(err){}
+    document.addEventListener('pointermove', _onDragMove);
+    document.addEventListener('pointerup', _onDragUp, { once:true });
+    document.addEventListener('pointercancel', _onDragUp, { once:true });
+  }
+  function _onDragMove(e){
+    if (!_pdrag) return;
+    _pdrag.moveu = true;
+    const { lista, item } = _pdrag;
+    const irmaos = [...lista.querySelectorAll('.lb-tarefa-item')].filter(el => el !== item);
+    let alvo = null;
+    for (const s of irmaos){
+      const r = s.getBoundingClientRect();
+      if (e.clientY < r.top + r.height / 2){ alvo = s; break; }
+    }
+    if (alvo) {
+      if (item.nextElementSibling !== alvo) lista.insertBefore(item, alvo);
+    } else {
+      if (lista.lastElementChild !== item) lista.appendChild(item);
+    }
+  }
+  function _onDragUp(){
+    if (!_pdrag) return;
+    const { empenhoId, item, lista, moveu } = _pdrag;
+    item.classList.remove('lb-dragging');
+    document.removeEventListener('pointermove', _onDragMove);
+    try { if (_pdrag._grip) _pdrag._grip.releasePointerCapture(_pdrag._pointerId); } catch(err){}
+    _pdrag = null;
+    if (!moveu) return;
+    const novaOrdem = [...lista.querySelectorAll('.lb-tarefa-item')].map(el => el.dataset.tid);
+    const emp = _getEmpenho(empenhoId);
+    if (emp && Array.isArray(emp.tarefas)){
+      emp.tarefas.sort((a,b) => novaOrdem.indexOf(a.id) - novaOrdem.indexOf(b.id));
+      _salvar(_bancoEmpenhos());
+      renderTarefas(empenhoId);
+    }
+  }
 
-  // ---------- Render da lista ----------
   function renderTarefas(empenhoId){
     const lista = document.getElementById('lb-tarefas-lista-' + empenhoId);
     const contador = document.getElementById('lb-tarefas-contador-' + empenhoId);
@@ -239,14 +244,14 @@
         if (editId === t.id && !t.feita) {
           return `
           <div class="lb-tarefa-item" data-tid="${t.id}">
-            <span class="lb-tarefa-grip" title="Arraste para reordenar">⋮⋮</span>
+            <span class="lb-tarefa-grip" title="Arraste para reordenar">&#8942;&#8942;</span>
             <div class="lb-tarefa-edit-wrap">
               <input type="text" class="lb-tarefa-edit-texto" id="lb-edit-texto-${t.id}"
                      value="${escAttr(t.texto)}"
                      onkeydown="if(event.key==='Enter'){event.preventDefault();lbTarefaSalvarEdicao('${empenhoId}','${t.id}');}if(event.key==='Escape'){lbTarefaCancelarEdicao('${empenhoId}');}">
               <input type="date" class="lb-tarefa-edit-data" id="lb-edit-data-${t.id}" value="${t.data||''}">
-              <button class="lb-tarefa-btn" title="Salvar" onclick="lbTarefaSalvarEdicao('${empenhoId}','${t.id}')">💾</button>
-              <button class="lb-tarefa-btn" title="Cancelar" onclick="lbTarefaCancelarEdicao('${empenhoId}')">✕</button>
+              <button class="lb-tarefa-btn" title="Salvar" onclick="lbTarefaSalvarEdicao('${empenhoId}','${t.id}')">&#128190;</button>
+              <button class="lb-tarefa-btn" title="Cancelar" onclick="lbTarefaCancelarEdicao('${empenhoId}')">&#10005;</button>
             </div>
           </div>`;
         }
@@ -255,23 +260,23 @@
           let cls = '';
           if (!t.feita && t.data < hoje) cls = 'atrasada';
           else if (!t.feita && t.data === hoje) cls = 'hoje';
-          const rot = (cls === 'atrasada') ? '⚠ atrasada · ' : (cls === 'hoje' ? '⏰ hoje · ' : '📅 ');
+          const rot = (cls === 'atrasada') ? '&#9888; atrasada &middot; ' : (cls === 'hoje' ? '&#9200; hoje &middot; ' : '&#128197; ');
           dataHTML = `<span class="lb-tarefa-data ${cls}">${rot}${fmtDataBR(t.data)}</span>`;
         }
         const btnEditar = t.feita ? '' :
-          `<button class="lb-tarefa-btn edit" title="Editar" onclick="event.stopPropagation();lbTarefaEditar('${empenhoId}','${t.id}')">✏️</button>`;
+          `<button class="lb-tarefa-btn edit" title="Editar" onclick="event.stopPropagation();lbTarefaEditar('${empenhoId}','${t.id}')">&#9999;&#65039;</button>`;
         return `
-        <div class="lb-tarefa-item${t.feita ? ' feita' : ''}" data-tid="${t.id}" draggable="true">
-          <span class="lb-tarefa-grip" title="Arraste para reordenar">⋮⋮</span>
+        <div class="lb-tarefa-item${t.feita ? ' feita' : ''}" data-tid="${t.id}">
+          <span class="lb-tarefa-grip" title="Arraste para reordenar">&#8942;&#8942;</span>
           <div class="lb-tarefa-check" title="Marcar como concluída"
-               onclick="lbTarefaAlternar('${empenhoId}','${t.id}')">${t.feita ? '✓' : ''}</div>
+               onclick="lbTarefaAlternar('${empenhoId}','${t.id}')">${t.feita ? '&#10003;' : ''}</div>
           <div class="lb-tarefa-corpo" onclick="lbTarefaAlternar('${empenhoId}','${t.id}')">
             <span class="lb-tarefa-texto">${escHTML(t.texto)}</span>
             ${dataHTML}
           </div>
           <div class="lb-tarefa-acoes">
             ${btnEditar}
-            <button class="lb-tarefa-btn del" title="Excluir" onclick="event.stopPropagation();lbTarefaExcluir('${empenhoId}','${t.id}')">🗑</button>
+            <button class="lb-tarefa-btn del" title="Excluir" onclick="event.stopPropagation();lbTarefaExcluir('${empenhoId}','${t.id}')">&#128465;</button>
           </div>
         </div>`;
       }).join('');
@@ -283,7 +288,6 @@
     }
   }
 
-  // ---------- Injeção no popup ----------
   function montarBloco(empenhoId){
     const body = document.getElementById('popup-e-body');
     if (!body) return;
@@ -292,7 +296,7 @@
     box.className = 'lb-tarefas-box';
     box.innerHTML = `
       <div class="lb-tarefas-head">
-        <div class="lb-tarefas-titulo">📋 Tarefas do empenho</div>
+        <div class="lb-tarefas-titulo">&#128203; Tarefas do empenho</div>
         <span class="lb-tarefas-contador" id="lb-tarefas-contador-${empenhoId}">0/0</span>
       </div>
       <div class="lb-tarefas-form">
@@ -308,7 +312,6 @@
     renderTarefas(empenhoId);
   }
 
-  // ---------- Wrap do abrirPopupEmpenho ----------
   function wrapAbrirPopup(){
     const original = window.abrirPopupEmpenho;
     if (typeof original !== 'function') return false;
@@ -325,7 +328,6 @@
     return true;
   }
 
-  // ---------- Notificações ----------
   function coletarTarefasDoDia(){
     const hoje = hojeISO();
     const itens = [];
@@ -362,13 +364,10 @@
     const hoje = itens.filter(i => !i.atrasada).length;
     const atras = itens.filter(i => i.atrasada).length;
     let corpo = '';
-    if (hoje)  corpo += `${hoje} tarefa(s) para hoje`;
-    if (atras) corpo += (corpo?' · ':'') + `${atras} atrasada(s)`;
+    if (hoje)  corpo += hoje + ' tarefa(s) para hoje';
+    if (atras) corpo += (corpo?' - ':'') + atras + ' atrasada(s)';
     try {
-      const n = new Notification('Tarefas de empenhos', {
-        body: corpo + '. Clique para ver.',
-        icon: 'data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>")
-      });
+      const n = new Notification('Tarefas de empenhos', { body: corpo + '. Clique para ver.' });
       n.onclick = function(){ window.focus(); abrirPainelNotif(); n.close(); };
     } catch(e){}
   }
@@ -383,20 +382,20 @@
     const hoje = itens.filter(i => !i.atrasada).length;
     const atras = itens.filter(i => i.atrasada).length;
     let resumo = [];
-    if (hoje)  resumo.push(`${hoje} para hoje`);
-    if (atras) resumo.push(`${atras} atrasada(s)`);
+    if (hoje)  resumo.push(hoje + ' para hoje');
+    if (atras) resumo.push(atras + ' atrasada(s)');
     painel.innerHTML = `
       <div class="lb-notif-head">
-        <b>📋 Tarefas pendentes (${resumo.join(' · ')})</b>
-        <button class="lb-notif-close" onclick="lbFecharPainelNotif()">✕</button>
+        <b>&#128203; Tarefas pendentes (${resumo.join(' - ')})</b>
+        <button class="lb-notif-close" onclick="lbFecharPainelNotif()">&#10005;</button>
       </div>
       <div class="lb-notif-body">
         ${itens.map(i => `
           <div class="lb-notif-item${i.atrasada?' atrasada':''}" onclick="lbAbrirEmpenhoTarefa('${i.empenhoId}')">
             <span class="t">${escHTML(i.texto)}</span>
             <span class="m">
-              ${escHTML(i.orgao)}${i.numEmpenho?(' · #'+escHTML(i.numEmpenho)):''}
-              · <span class="prazo">${i.atrasada?'⚠ atrasada ':'⏰ '}${fmtDataBR(i.data)}</span>
+              ${escHTML(i.orgao)}${i.numEmpenho?(' - #'+escHTML(i.numEmpenho)):''}
+              <span class="prazo">${i.atrasada?' &#9888; atrasada ':' &#9200; '}${fmtDataBR(i.data)}</span>
             </span>
           </div>
         `).join('')}
