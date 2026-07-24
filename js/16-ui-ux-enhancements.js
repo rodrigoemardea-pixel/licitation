@@ -148,7 +148,7 @@
     if(recebimentoWrap){
       recebimentoWrap.style.setProperty('display', status === 'recebida' ? 'block' : 'none', 'important');
     }
-    if(status !== 'em_transito' && previstaInput) previstaInput.value = '';
+    if(status !== 'em_transito' && status !== 'aguardando_envio' && previstaInput) previstaInput.value = '';
     if(status !== 'recebida' && recebimentoInput) recebimentoInput.value = '';
   }
 
