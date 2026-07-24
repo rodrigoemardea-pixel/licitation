@@ -132,7 +132,13 @@ function abrirTodosAcompanhamentos() {
 
   const rows = (DB.acomp||[]).filter(r => {
     if (analista !== 'todos' && r.analista !== analista) return false;
-    if (status !== 'todos' && r.status !== status) return false;
+    if (status !== 'todos') {
+  const _ret = r.retorno ? new Date(r.retorno) : null;
+  const _agora = new Date();
+  if (!_ret) return false;
+  if (status === 'vencido' && !(_ret < _agora)) return false;
+  if (status === 'a_vencer' && !(_ret >= _agora)) return false;
+}
     if (empresa !== 'todos' && r.empresa !== empresa) return false;
     if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
     if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
@@ -314,7 +320,13 @@ function renderAcomp() {
 
   let rows = (DB.acomp||[]).filter(r => {
     if (analista !== 'todos' && r.analista !== analista) return false;
-    if (status !== 'todos' && r.status !== status) return false;
+    if (status !== 'todos') {
+  const _ret = r.retorno ? new Date(r.retorno) : null;
+  const _agora = new Date();
+  if (!_ret) return false;
+  if (status === 'vencido' && !(_ret < _agora)) return false;
+  if (status === 'a_vencer' && !(_ret >= _agora)) return false;
+}
     if (empresa !== 'todos' && r.empresa !== empresa) return false;
     if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
     if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
