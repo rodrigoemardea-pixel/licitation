@@ -73,9 +73,9 @@ function atualizarCamposStatusEntrega() {
   const dataPrevista = g('c-data-prevista-recebimento');
   const wrapRecebimento = g('c-data-recebimento-wrap');
   const dataRecebimento = g('c-data-recebimento-mercadoria');
-  if (wrapPrevista) wrapPrevista.style.display = status === 'em_transito' ? '' : 'none';
+  if (wrapPrevista) wrapPrevista.style.display = (status === 'em_transito' || status === 'aguardando_envio') ? '' : 'none';
   if (wrapRecebimento) wrapRecebimento.style.display = status === 'recebida' ? '' : 'none';
-  if (status !== 'em_transito' && dataPrevista) dataPrevista.value = '';
+  if (status !== 'em_transito' && status !== 'aguardando_envio' && dataPrevista) dataPrevista.value = '';
   if (status !== 'recebida' && dataRecebimento) dataRecebimento.value = '';
 }
 
