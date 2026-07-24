@@ -143,7 +143,7 @@
     var recebimentoInput = document.getElementById('c-data-recebimento-mercadoria');
 
     if(previstaWrap){
-      previstaWrap.style.setProperty('display', status === 'em_transito' ? 'block' : 'none', 'important');
+      previstaWrap.style.setProperty('display', (status === 'em_transito' || status === 'aguardando_envio') ? 'block' : 'none', 'important');
     }
     if(recebimentoWrap){
       recebimentoWrap.style.setProperty('display', status === 'recebida' ? 'block' : 'none', 'important');
