@@ -1,12 +1,9 @@
 // Localizacao no projeto: api/ml/shipment.js
-// Consulta o status de um envio no Mercado Livre.
+// Consulta o status de um envio + tenta obter as datas estimadas (lead_time).
 // Uso: https://licitation.vercel.app/api/ml/shipment?id=SHIPMENT_ID
-//
-// Retorna um JSON resumido com o status e dados uteis para a tela de entregas.
 
 const { getAccessToken } = require('../_lib/mlToken');
 
-// Traducao dos status/substatus mais comuns para exibir na tela.
 const STATUS_PT = {
   pending: 'Pendente',
   handling: 'Em preparacao',
@@ -19,7 +16,6 @@ const STATUS_PT = {
 
 module.exports = async function handler(req, res) {
   const shipmentId = req.query && req.query.id;
-
   if (!shipmentId) {
     res.status(400).json({ erro: 'Informe o parametro id (shipment id).' });
     return;
@@ -27,38 +23,44 @@ module.exports = async function handler(req, res) {
 
   try {
     const accessToken = await getAccessToken();
+    const headers = { Authorization: 'Bearer ' + accessToken, 'x-format-new': 'true' };
 
-    const resp = await fetch(
+    // 1) Detalhe do envio
+    const rShip = await fetch(
       'https://api.mercadolibre.com/shipments/' + encodeURIComponent(shipmentId),
-      {
-        headers: {
-          Authorization: 'Bearer ' + accessToken,
-          'x-format-new': 'true',
-        },
-      }
+      { headers }
     );
-
-    const data = await resp.json();
-
-    if (!resp.ok) {
-      res.status(resp.status).json({ erro: 'Falha ao consultar envio', detalhe: data });
+    const ship = await rShip.json();
+    if (!rShip.ok) {
+      res.status(rShip.status).json({ erro: 'Falha ao consultar envio', detalhe: ship });
       return;
     }
 
-    // Monta uma resposta enxuta para o front consumir.
-    const resumo = {
-      id: data.id,
-      order_id: data.order_id,
-      status: data.status,
-      status_pt: STATUS_PT[data.status] || data.status,
-      substatus: data.substatus || null,
-      tracking_number: data.tracking_number || null,
-      tracking_method: data.tracking_method || null,
-      last_updated: data.last_updated || null,
-      date_created: data.date_created || null,
-    };
+    // 2) Prazo estimado (lead_time) - pode nao existir para todos os envios.
+    let leadTime = null;
+    try {
+      const rLead = await fetch(
+        'https://api.mercadolibre.com/shipments/' + encodeURIComponent(shipmentId) + '/lead_time',
+        { headers }
+      );
+      if (rLead.ok) leadTime = await rLead.json();
+    } catch (e) { /* ignora se nao existir */ }
 
-    res.status(200).json(resumo);
+    // Retorna tudo cru para inspecionarmos os campos de data disponiveis.
+    res.status(200).json({
+      resumo: {
+        id: ship.id,
+        order_id: ship.order_id,
+        status: ship.status,
+        status_pt: STATUS_PT[ship.status] || ship.status,
+        substatus: ship.substatus || null,
+        tracking_number: ship.tracking_number || null,
+        last_updated: ship.last_updated || null,
+        date_created: ship.date_created || null,
+      },
+      lead_time_bruto: leadTime,     // aqui devem aparecer as datas estimadas, se existirem
+      status_history_bruto: ship.status_history || null, // data real de entrega, se vier
+    });
   } catch (err) {
     res.status(500).json({ erro: 'Erro interno', detalhe: String(err) });
   }
