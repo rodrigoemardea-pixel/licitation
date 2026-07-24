@@ -2,9 +2,9 @@
 // - Tarefas textuais livres com data (prazo) opcional
 // - Clique na tarefa para marcar/desmarcar como concluída (tachada)
 // - Editar tarefas ainda não concluídas (texto e data)
-// - Arrastar pela alça para reordenar (pointer events)
+// - Arrastar pela alça (grip) para reordenar  [pointer events, funciona em modal]
 // - Excluir tarefas
-// - Integração com o sino de notificações do sistema (atualizarNotificacoes)
+// - Notificação das tarefas pendentes que vencem HOJE (navegador + painel interno)
 // Persistência em emp.tarefas[] via save('empenhos').
 (function(){
   'use strict';
@@ -42,12 +42,6 @@
     if (!iso) return '';
     const p = iso.split('-');
     return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
-  }
-  // Dispara a atualização do sino do sistema
-  function _refreshSino(){
-    if (typeof window.atualizarNotificacoes === 'function') {
-      try { window.atualizarNotificacoes(); } catch(e){}
-    }
   }
 
   function injetarEstilos(){
@@ -89,6 +83,19 @@
       .lb-tarefa-edit-wrap{flex:1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
       .lb-tarefa-edit-texto{flex:1;min-width:140px;font-size:13px;padding:6px 8px;border:1px solid var(--accent,#2d6a4f);border-radius:6px;background:var(--bg-surface);color:var(--text-primary);outline:none;}
       .lb-tarefa-edit-data{font-size:12px;padding:6px 8px;border:1px solid var(--border-light);border-radius:6px;background:var(--bg-surface);color:var(--text-primary);}
+      .lb-notif-tarefas{position:fixed;right:18px;bottom:18px;width:360px;max-width:92vw;max-height:70vh;background:var(--bg-surface,#fff);border:1px solid var(--border-light);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.22);z-index:99999;display:flex;flex-direction:column;overflow:hidden;font-family:inherit;}
+      .lb-notif-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#b45309;color:#fff;}
+      .lb-notif-head b{font-size:13px;}
+      .lb-notif-close{border:none;background:none;color:#fff;font-size:16px;cursor:pointer;opacity:.9;}
+      .lb-notif-close:hover{opacity:1;}
+      .lb-notif-body{padding:8px;overflow:auto;display:flex;flex-direction:column;gap:6px;}
+      .lb-notif-item{display:flex;flex-direction:column;gap:2px;padding:9px 10px;border:1px solid var(--border-light);border-radius:9px;cursor:pointer;transition:background .15s;}
+      .lb-notif-item:hover{background:var(--bg-surface-soft);}
+      .lb-notif-item .t{font-size:13px;font-weight:600;color:var(--text-primary);}
+      .lb-notif-item .m{font-size:11px;color:var(--text-tertiary);}
+      .lb-notif-item.atrasada{border-color:#ef4444;}
+      .lb-notif-item.atrasada .prazo{color:#ef4444;font-weight:700;}
+      .lb-notif-foot{padding:8px 12px;border-top:1px solid var(--border-light);font-size:10px;color:var(--text-tertiary);text-align:center;}
     `;
     document.head.appendChild(st);
   }
@@ -112,7 +119,6 @@
     if (inputData) inputData.value = '';
     renderTarefas(empenhoId);
     input.focus();
-    _refreshSino();
   }
 
   function alternarTarefa(empenhoId, tarefaId){
@@ -125,7 +131,6 @@
     if (_editando[empenhoId] === tarefaId) delete _editando[empenhoId];
     _salvar(_bancoEmpenhos());
     renderTarefas(empenhoId);
-    _refreshSino();
   }
 
   function excluirTarefa(empenhoId, tarefaId){
@@ -135,7 +140,6 @@
     if (_editando[empenhoId] === tarefaId) delete _editando[empenhoId];
     _salvar(_bancoEmpenhos());
     renderTarefas(empenhoId);
-    _refreshSino();
   }
 
   function iniciarEdicao(empenhoId, tarefaId){
@@ -162,14 +166,13 @@
     delete _editando[empenhoId];
     _salvar(_bancoEmpenhos());
     renderTarefas(empenhoId);
-    _refreshSino();
   }
   function cancelarEdicao(empenhoId){
     delete _editando[empenhoId];
     renderTarefas(empenhoId);
   }
 
-  // ---------- Reordenação por POINTER EVENTS ----------
+  // ---------- Reordenação por POINTER EVENTS (robusto em modais) ----------
   let _pdrag = null;
   function _bindDragEvents(empenhoId){
     const lista = document.getElementById('lb-tarefas-lista-' + empenhoId);
@@ -325,87 +328,99 @@
     return true;
   }
 
-  // Handler chamado pelo item do sino
-  function abrirEmpenhoDaTarefa(empenhoId){
-    const painel = document.getElementById('notif-panel');
-    if (painel) painel.style.display = 'none';
-    if (typeof window.abrirPopupEmpenho === 'function') {
-      try { window.abrirPopupEmpenho(empenhoId); } catch(e){}
-    }
-  }
-
-  // Coleta alertas de tarefas para o sino (mesmo padrão dos outros alertas)
-  function _coletarAlertasTarefas(){
-    const alertas = [];
+  function coletarTarefasDoDia(){
     const hoje = hojeISO();
-    const empenhos = _bancoEmpenhos();
-    const dismissed = (window._notifDismissed instanceof Set) ? window._notifDismissed : null;
-
-    empenhos.forEach(e => {
+    const itens = [];
+    _bancoEmpenhos().forEach(e => {
       if (e.finalizado) return;
       (e.tarefas || []).forEach(t => {
         if (t.feita || !t.data) return;
-        if (t.data > hoje) return;
-        const chave = `tarefa-${e.id}-${t.id}`;
-        if (dismissed && dismissed.has(chave)) return;
-        const atrasada = t.data < hoje;
-        const icone = atrasada ? '⏰' : '📌';
-        const rotulo = atrasada ? 'Tarefa atrasada' : 'Tarefa para hoje';
-        const numEmp = e.num || '?';
-        const orgao = e.orgao || '—';
-        const textoLim = String(t.texto || '').length > 80 ? String(t.texto).slice(0,80) + '...' : t.texto;
-        alertas.push({
-          chave,
-          icon: icone,
-          msg: `${rotulo}: "${textoLim}" · Empenho #${numEmp} · ${orgao} · ${fmtDataBR(t.data)}`,
-          onclick: `lbAbrirEmpenhoDaTarefa('${e.id}')`
-        });
+        if (t.data <= hoje) {
+          itens.push({
+            empenhoId: e.id, orgao: e.orgao || '', numEmpenho: e.num || '',
+            texto: t.texto, data: t.data, atrasada: t.data < hoje
+          });
+        }
       });
     });
-    // Atrasadas primeiro
-    alertas.sort((a,b) => {
-      const aA = a.icon === '⏰' ? 0 : 1;
-      const bA = b.icon === '⏰' ? 0 : 1;
-      return aA - bA;
+    itens.sort((a,b) => {
+      if (a.atrasada !== b.atrasada) return a.atrasada ? -1 : 1;
+      return (a.data||'').localeCompare(b.data||'');
     });
-    return alertas;
+    return itens;
+  }
+  function _notificarNavegador(itens){
+    try {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(p => { if (p === 'granted') _dispararNativa(itens); });
+      } else if (Notification.permission === 'granted') {
+        _dispararNativa(itens);
+      }
+    } catch(e){}
+  }
+  function _dispararNativa(itens){
+    if (!itens.length) return;
+    const hoje = itens.filter(i => !i.atrasada).length;
+    const atras = itens.filter(i => i.atrasada).length;
+    let corpo = '';
+    if (hoje)  corpo += hoje + ' tarefa(s) para hoje';
+    if (atras) corpo += (corpo?' - ':'') + atras + ' atrasada(s)';
+    try {
+      const n = new Notification('Tarefas de empenhos', { body: corpo + '. Clique para ver.' });
+      n.onclick = function(){ window.focus(); abrirPainelNotif(); n.close(); };
+    } catch(e){}
+  }
+  function abrirPainelNotif(){
+    const itens = coletarTarefasDoDia();
+    let painel = document.getElementById('lb-notif-tarefas');
+    if (painel) painel.remove();
+    if (!itens.length) return;
+    painel = document.createElement('div');
+    painel.className = 'lb-notif-tarefas';
+    painel.id = 'lb-notif-tarefas';
+    const hoje = itens.filter(i => !i.atrasada).length;
+    const atras = itens.filter(i => i.atrasada).length;
+    let resumo = [];
+    if (hoje)  resumo.push(hoje + ' para hoje');
+    if (atras) resumo.push(atras + ' atrasada(s)');
+    painel.innerHTML = `
+      <div class="lb-notif-head">
+        <b>&#128203; Tarefas pendentes (${resumo.join(' - ')})</b>
+        <button class="lb-notif-close" onclick="lbFecharPainelNotif()">&#10005;</button>
+      </div>
+      <div class="lb-notif-body">
+        ${itens.map(i => `
+          <div class="lb-notif-item${i.atrasada?' atrasada':''}" onclick="lbAbrirEmpenhoTarefa('${i.empenhoId}')">
+            <span class="t">${escHTML(i.texto)}</span>
+            <span class="m">
+              ${escHTML(i.orgao)}${i.numEmpenho?(' - #'+escHTML(i.numEmpenho)):''}
+              <span class="prazo">${i.atrasada?' &#9888; atrasada ':' &#9200; '}${fmtDataBR(i.data)}</span>
+            </span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="lb-notif-foot">Clique em uma tarefa para abrir o empenho</div>
+    `;
+    document.body.appendChild(painel);
+  }
+  function fecharPainelNotif(){
+    const p = document.getElementById('lb-notif-tarefas');
+    if (p) p.remove();
+  }
+  function abrirEmpenhoTarefa(empenhoId){
+    fecharPainelNotif();
+    if (typeof abrirPopupEmpenho === 'function') { try { abrirPopupEmpenho(empenhoId); } catch(e){} }
   }
 
-  // Faz o wrap da função atualizarNotificacoes para injetar as tarefas
-  function wrapAtualizarNotificacoes(){
-    const original = window.atualizarNotificacoes;
-    if (typeof original !== 'function') return false;
-    if (original._lbTarefasWrapped) return true;
-
-    const wrapped = function(){
-      // Chama a original (que preenche list e badge com os alertas dela)
-      const alertasOriginais = original.apply(this, arguments) || [];
-      const alertasTarefas = _coletarAlertasTarefas();
-      const combinado = [...alertasTarefas, ...alertasOriginais];
-
-      // Re-renderiza list e badge com o conjunto combinado, usando as mesmas funções do sistema
-      const list = document.getElementById('notif-list');
-      if (list) {
-        if (!combinado.length) {
-          list.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;">Sem alertas no momento ✅</div>';
-        } else {
-          list.innerHTML = combinado.map(a => `
-            <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;margin-bottom:6px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:10px;font-size:12px;">
-              <span style="font-size:16px;line-height:1;flex-shrink:0;">${a.icon}</span>
-              <span style="flex:1;cursor:pointer;color:var(--text-primary);line-height:1.4;" onclick="${a.onclick}">${a.msg}</span>
-              <button onclick="event.stopPropagation();dispensarNotificacao('${a.chave}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:12px;padding:0 2px;flex-shrink:0;" title="Dispensar">✕</button>
-            </div>
-          `).join('');
-        }
-      }
-      if (typeof window._atualizarBadgeNotificacoes === 'function') {
-        try { window._atualizarBadgeNotificacoes(combinado); } catch(e){}
-      }
-      return combinado;
-    };
-    wrapped._lbTarefasWrapped = true;
-    window.atualizarNotificacoes = wrapped;
-    return true;
+  let _jaNotificou = false;
+  function verificarTarefasDoDia(force){
+    const itens = coletarTarefasDoDia();
+    if (!itens.length) return;
+    if (!force && _jaNotificou) return;
+    _jaNotificou = true;
+    _notificarNavegador(itens);
+    abrirPainelNotif();
   }
 
   function init(){
@@ -416,7 +431,9 @@
     window.lbTarefaEditar        = iniciarEdicao;
     window.lbTarefaSalvarEdicao  = salvarEdicao;
     window.lbTarefaCancelarEdicao= cancelarEdicao;
-    window.lbAbrirEmpenhoDaTarefa= abrirEmpenhoDaTarefa;
+    window.lbFecharPainelNotif   = fecharPainelNotif;
+    window.lbAbrirEmpenhoTarefa  = abrirEmpenhoTarefa;
+    window.lbVerificarTarefasDia = () => verificarTarefasDoDia(true);
 
     if (!wrapAbrirPopup()){
       let tentativas = 0;
@@ -425,25 +442,12 @@
         if (wrapAbrirPopup() || tentativas > 25) clearInterval(t);
       }, 200);
     }
-
-    // Espera atualizarNotificacoes existir e faz wrap
     let n = 0;
     const it = setInterval(() => {
       n++;
-      if (wrapAtualizarNotificacoes()) {
-        // Assim que envolver, aciona uma atualização para popular o badge
-        if (_bancoEmpenhos().length) _refreshSino();
-        clearInterval(it);
-      }
-      if (n > 40) clearInterval(it);
-    }, 300);
-
-    // Também dispara refresh do sino sempre que dados forem carregados
-    let m = 0;
-    const it2 = setInterval(() => {
-      m++;
-      if (_bancoEmpenhos().length) { _refreshSino(); clearInterval(it2); }
-      if (m > 30) clearInterval(it2);
+      const temDados = _bancoEmpenhos().length > 0;
+      if (temDados) { verificarTarefasDoDia(false); clearInterval(it); }
+      if (n > 30) clearInterval(it);
     }, 1000);
   }
 
