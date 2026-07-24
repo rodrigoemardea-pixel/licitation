@@ -1,5 +1,7 @@
 // Localizacao no projeto: api/ml/login.js
 // Redireciona o usuario para a pagina de autorizacao do Mercado Livre.
+// O refresh_token e habilitado pelo checkbox "Refresh Token" (Fluxos OAuth)
+// nas configuracoes do app, entao nao precisamos passar scope na URL.
 // Basta acessar https://licitation.vercel.app/api/ml/login para iniciar o fluxo.
 
 module.exports = function handler(req, res) {
