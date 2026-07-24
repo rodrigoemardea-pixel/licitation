@@ -21,6 +21,20 @@
   function _findEmp(id) { return (_banco() || []).find(function (e) { return e.id === id; }); }
   function _toast(m, t) { if (typeof toast === 'function') { try { toast(m, t); } catch (e) {} } }
 
+    // Coleta todos os order_id do ML ja vinculados em qualquer compra de qualquer empenho.
+  // Aceita opcionalmente um order_id a ignorar (o da compra que esta sendo editada agora).
+  function _vinculadosSet(ignorarOrderId) {
+    var set = new Set();
+    (_banco() || []).forEach(function (e) {
+      (e.compras || []).forEach(function (c) {
+        if (c.mlOrderId && String(c.mlOrderId) !== String(ignorarOrderId || '')) {
+          set.add(String(c.mlOrderId));
+        }
+      });
+    });
+    return set;
+  }
+
   var STATUS_ML_PT = {
     pending: 'Pendente', handling: 'Em preparacao', ready_to_ship: 'Pronto para envio',
     shipped: 'A caminho', delivered: 'Entregue', not_delivered: 'Nao entregue', cancelled: 'Cancelado'
@@ -71,7 +85,13 @@
   function renderLista(arr) {
     var lista = document.getElementById('c-ml-lista');
     if (!lista) return;
-    if (!arr.length) { lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra encontrada.</div>'; return; }
+    // Remove compras ja vinculadas a algum empenho (evita duplicidade).
+    // Preserva o vinculo da propria compra em edicao, se houver.
+    var atual = (document.getElementById('c-ml-order') || {}).value || '';
+    var vinculados = _vinculadosSet(atual);
+    arr = (arr || []).filter(function (c) { return !vinculados.has(String(c.order_id)); });
+    if (!arr.length) { lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra disponivel para vincular (as demais ja foram vinculadas ou entregues).</div>'; return; }
+
     lista.innerHTML = arr.map(function (c) {
       var sub = (c.vendedor || '') + (c.total ? ' - R$ ' + Number(c.total).toFixed(2) : '') + (c.shipment_id ? ' - envio ' + c.shipment_id : ' - sem envio');
       return '<div onclick="lbMlSelecionar(\'' + (c.shipment_id || '') + '\',\'' + c.order_id + '\')" ' +
