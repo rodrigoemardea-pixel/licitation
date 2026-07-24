@@ -1,95 +1,113 @@
 // Localizacao no projeto: api/cron/atualizar-entregas.js
-// Rotina agendada (Cron Job da Vercel, 1x por dia) que atualiza o status
-// das entregas VINCULADAS ao Mercado Livre.
-//
-// Le a colecao "entregas_ml" no Firestore, onde cada documento representa
-// uma compra que VOCE vinculou manualmente a um shipment do Mercado Livre.
-// Para cada uma com shipment_id, consulta o status e regrava.
-//
-// Compras de outros sites (sem shipment_id) sao IGNORADAS por esta rotina,
-// continuando sob controle manual.
+// Roda 1x por dia (16h Brasilia). Atualiza status, previsao de entrega e data de recebimento
+// das compras vinculadas ao Mercado Livre (colecao entregas_ml).
 
 const { getAccessToken } = require('../_lib/mlToken');
 const { db } = require('../_lib/firebase');
 
-const STATUS_PT = {
-  pending: 'Pendente',
-  handling: 'Em preparacao',
-  ready_to_ship: 'Pronto para envio',
-  shipped: 'Enviado / a caminho',
-  delivered: 'Entregue',
-  not_delivered: 'Nao entregue',
-  cancelled: 'Cancelado',
-};
+// Mapeia o status do ML para o status de entrega do seu sistema.
+function mapStatusEntrega(status) {
+  if (status === 'delivered') return 'recebida';
+  if (status === 'shipped') return 'em transito';
+  if (status === 'pending' || status === 'handling' || status === 'ready_to_ship') return 'aguardando envio';
+  if (status === 'not_delivered' || status === 'cancelled') return 'nao recebida';
+  return 'aguardando envio';
+}
 
 module.exports = async function handler(req, res) {
   try {
     const accessToken = await getAccessToken();
+    const headers = { Authorization: 'Bearer ' + accessToken, 'x-format-new': 'true' };
 
-    // Busca apenas os vinculos que tem shipment_id e ainda nao foram entregues.
     const snap = await db.collection('entregas_ml').get();
 
     let atualizados = 0;
     let ignorados = 0;
+    const mudancas = []; // usado para gerar notificacoes no sininho
     const erros = [];
 
     for (const doc of snap.docs) {
       const item = doc.data();
 
-      // Sem shipment_id => controle manual, nao mexe.
-      if (!item.shipment_id) {
-        ignorados++;
-        continue;
-      }
-
-      // Ja entregue => nao precisa consultar de novo.
-      if (item.status === 'delivered') {
-        ignorados++;
-        continue;
-      }
+      if (!item.shipment_id) { ignorados++; continue; }
+      if (item.status === 'delivered') { ignorados++; continue; }
 
       try {
-        const resp = await fetch(
-          'https://api.mercadolibre.com/shipments/' +
-            encodeURIComponent(item.shipment_id),
-          {
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-              'x-format-new': 'true',
-            },
+        // 1) status do envio
+        const rShip = await fetch(
+          'https://api.mercadolibre.com/shipments/' + encodeURIComponent(item.shipment_id),
+          { headers }
+        );
+        const s = await rShip.json();
+        if (!rShip.ok) { erros.push({ id: doc.id, detalhe: s }); continue; }
+
+        // 2) previsao de entrega (lead_time)
+        let previsaoEntrega = null;
+        try {
+          const rLead = await fetch(
+            'https://api.mercadolibre.com/shipments/' + encodeURIComponent(item.shipment_id) + '/lead_time',
+            { headers }
+          );
+          if (rLead.ok) {
+            const lt = await rLead.json();
+            previsaoEntrega =
+              (lt.estimated_delivery_time && lt.estimated_delivery_time.date) ||
+              (lt.estimated_delivery_limit && lt.estimated_delivery_limit.date) ||
+              null;
           }
-        );
+        } catch (e) { /* segue sem previsao */ }
 
-        const s = await resp.json();
+        const statusEntrega = mapStatusEntrega(s.status);
+        const statusAntigo = item.status_entrega || null;
 
-        if (!resp.ok) {
-          erros.push({ id: doc.id, detalhe: s });
-          continue;
-        }
+        const novo = {
+          status: s.status || null,
+          status_entrega: statusEntrega,
+          substatus: s.substatus || null,
+          tracking_number: s.tracking_number || null,
+          previsao_entrega: previsaoEntrega,
+          data_recebimento: s.status === 'delivered' ? (s.last_updated || null) : null,
+          last_updated_ml: s.last_updated || null,
+          atualizado_em: Date.now(),
+        };
 
-        await doc.ref.set(
-          {
-            status: s.status || null,
-            status_pt: STATUS_PT[s.status] || s.status || null,
-            substatus: s.substatus || null,
-            tracking_number: s.tracking_number || null,
-            last_updated_ml: s.last_updated || null,
-            atualizado_em: Date.now(),
-          },
-          { merge: true }
-        );
-
+        await doc.ref.set(novo, { merge: true });
         atualizados++;
+
+        // registra mudanca de status para o sininho
+        if (statusAntigo && statusAntigo !== statusEntrega) {
+          mudancas.push({
+            order_id: item.order_id,
+            titulo: item.titulo || null,
+            referencia: item.referencia || null,
+            de: statusAntigo,
+            para: statusEntrega,
+          });
+        }
       } catch (e) {
         erros.push({ id: doc.id, detalhe: String(e) });
       }
     }
 
+    // grava as mudancas numa colecao que o sininho pode ler
+    for (const m of mudancas) {
+      await db.collection('notificacoes_entregas').add({
+        tipo: 'mudanca_status_entrega',
+        order_id: m.order_id,
+        titulo: m.titulo,
+        referencia: m.referencia,
+        mensagem: 'Entrega "' + (m.titulo || m.order_id) + '" mudou para: ' + m.para,
+        lida: false,
+        criado_em: Date.now(),
+      });
+    }
+
     res.status(200).json({
       ok: true,
-      atualizados: atualizados,
-      ignorados: ignorados,
-      erros: erros,
+      atualizados,
+      ignorados,
+      notificacoes_geradas: mudancas.length,
+      erros,
     });
   } catch (err) {
     res.status(500).json({ erro: 'Erro interno', detalhe: String(err) });
