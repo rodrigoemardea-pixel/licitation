@@ -1,6 +1,7 @@
 /* LICITATIONBIZNIS v4.1: filtros, visualizacoes, colunas, cards e checklist */
 (function(){
  'use strict';
+ function escapeHTML(str){if(str==null)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
  const KVIEW='lb-saved-views-v1', KCOL='lb-columns-v1';
  const checklistModel={
   disputas:['Proposta registrada','Contrato assinado','Empenho recebido','Compra realizada','Entrega comprovada','Pagamento recebido'],
@@ -24,8 +25,6 @@
  function init(){tagTabs();addAdvancedFilters();savedViews();columnChooser();wrapPopups();clickableCards();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-
-
 /* LB_SAFE_UI_ENHANCEMENTS_20260717 */
 (function(){
  'use strict';
