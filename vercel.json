@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/atualizar-entregas",
-      "schedule": "0 9 * * *"
+      "schedule": "0 19 * * *"
     }
   ]
 }
