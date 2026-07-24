@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Entregas Mercado Livre - LicitationBiznis</title>
+<style>
+  :root { --verde:#2d6a4f; --cinza:#f4f6f8; --borda:#e2e6ea; }
+  * { box-sizing:border-box; }
+  body { font-family:Segoe UI, Arial, sans-serif; margin:0; background:var(--cinza); color:#22303c; }
+  header { background:var(--verde); color:#fff; padding:16px 24px; }
+  header h1 { margin:0; font-size:20px; }
+  main { padding:24px; max-width:1200px; margin:0 auto; }
+  .abas { display:flex; gap:8px; margin-bottom:16px; }
+  .aba { padding:10px 18px; border:1px solid var(--borda); background:#fff; border-radius:8px; cursor:pointer; font-size:14px; }
+  .aba.ativa { background:var(--verde); color:#fff; border-color:var(--verde); }
+  .card { background:#fff; border:1px solid var(--borda); border-radius:10px; padding:16px; margin-bottom:16px; }
+  .barra { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+  input[type=text] { padding:9px 12px; border:1px solid var(--borda); border-radius:8px; font-size:14px; min-width:220px; }
+  button { padding:9px 14px; border:none; border-radius:8px; background:var(--verde); color:#fff; cursor:pointer; font-size:14px; }
+  button.sec { background:#fff; color:var(--verde); border:1px solid var(--verde); }
+  button.del { background:#c0392b; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:10px; border-bottom:1px solid var(--borda); vertical-align:middle; }
+  th { background:#f0f3f5; font-weight:600; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+  .b-entregue { background:#d7f5e3; color:#1b7a45; }
+  .b-transito { background:#fff3cd; color:#946200; }
+  .b-outro { background:#e2e6ea; color:#5a6b78; }
+  .ref-input { min-width:160px; }
+  .vazio { text-align:center; color:#7a8a96; padding:24px; }
+  small.muted { color:#7a8a96; }
+</style>
+</head>
+<body>
+<header><h1>Entregas Mercado Livre</h1></header>
+<main>
+
+  <div class="abas">
+    <div class="aba ativa" id="tab-acomp" onclick="mostrar('acomp')">Entregas acompanhadas</div>
+    <div class="aba" id="tab-compras" onclick="mostrar('compras')">Vincular novas compras</div>
+  </div>
+
+  <!-- ABA 1: entregas ja vinculadas -->
+  <section id="sec-acomp" class="card">
+    <div class="barra">
+      <strong>Compras acompanhadas</strong>
+      <small class="muted">Atualizadas automaticamente 1x por dia.</small>
+      <span style="flex:1"></span>
+      <button class="sec" onclick="carregarEntregas()">Recarregar</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Produto</th><th>Referencia</th><th>Status</th>
+          <th>Rastreio</th><th>Atualizado</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tb-entregas">
+        <tr><td colspan="6" class="vazio">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ABA 2: listar compras do ML para vincular -->
+  <section id="sec-compras" class="card" style="display:none;">
+    <div class="barra">
+      <strong>Compras no Mercado Livre</strong>
+      <input type="text" id="busca" placeholder="Filtrar por produto ou vendedor..." oninput="filtrar()" />
+      <span style="flex:1"></span>
+      <button class="sec" onclick="carregarCompras()">Recarregar</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Produto</th><th>Vendedor</th><th>Valor</th>
+          <th>Data</th><th>Referencia (empenho)</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tb-compras">
+        <tr><td colspan="6" class="vazio">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<script>
+const API = ''; // mesmo dominio; deixe vazio se a pagina estiver em licitation.vercel.app
+let COMPRAS = [];
+let VINCULADAS = new Set();
+
+function mostrar(qual){
+  document.getElementById('sec-acomp').style.display   = qual==='acomp'   ? 'block':'none';
+  document.getElementById('sec-compras').style.display = qual==='compras' ? 'block':'none';
+  document.getElementById('tab-acomp').classList.toggle('ativa', qual==='acomp');
+  document.getElementById('tab-compras').classList.toggle('ativa', qual==='compras');
+  if(qual==='compras' && COMPRAS.length===0) carregarCompras();
+}
+
+function fmtMoeda(v, m){
+  try { return (v||0).toLocaleString('pt-BR',{style:'currency',currency:m||'BRL'}); }
+  catch(e){ return 'R$ '+(v||0); }
+}
+function fmtData(s){
+  if(!s) return '-';
+  const d = new Date(s);
+  return isNaN(d) ? '-' : d.toLocaleDateString('pt-BR');
+}
+function badge(status, statusPt){
+  let cls='b-outro';
+  if(status==='delivered') cls='b-entregue';
+  else if(status==='shipped'||status==='ready_to_ship'||status==='handling') cls='b-transito';
+  return '<span class="badge '+cls+'">'+(statusPt||status||'-')+'</span>';
+}
+
+// ---------- ABA 1 ----------
+async function carregarEntregas(){
+  const tb = document.getElementById('tb-entregas');
+  tb.innerHTML = '<tr><td colspan="6" class="vazio">Carregando...</td></tr>';
+  try {
+    const r = await fetch(API+'/api/ml/entregas');
+    const j = await r.json();
+    VINCULADAS = new Set((j.entregas||[]).map(e=>String(e.order_id)));
+    if(!j.entregas || j.entregas.length===0){
+      tb.innerHTML = '<tr><td colspan="6" class="vazio">Nenhuma entrega acompanhada ainda. Use a aba "Vincular novas compras".</td></tr>';
+      return;
+    }
+    tb.innerHTML = j.entregas.map(function(e){
+      return '<tr>'+
+        '<td>'+(e.titulo||'-')+'</td>'+
+        '<td>'+(e.referencia||'<small class="muted">sem referencia</small>')+'</td>'+
+        '<td>'+badge(e.status, e.status_pt)+'</td>'+
+        '<td>'+(e.tracking_number||'-')+'</td>'+
+        '<td>'+fmtData(e.last_updated_ml)+'</td>'+
+        '<td><button class="del" onclick="desvincular(\''+e.order_id+'\')">Remover</button></td>'+
+      '</tr>';
+    }).join('');
+  } catch(err){
+    tb.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar: '+err+'</td></tr>';
+  }
+}
+
+async function desvincular(orderId){
+  if(!confirm('Remover esta entrega do acompanhamento?')) return;
+  await fetch(API+'/api/ml/vincular?order_id='+encodeURIComponent(orderId), { method:'DELETE' });
+  carregarEntregas();
+}
+
+// ---------- ABA 2 ----------
+async function carregarCompras(){
+  const tb = document.getElementById('tb-compras');
+  tb.innerHTML = '<tr><td colspan="6" class="vazio">Carregando...</td></tr>';
+  try {
+    // garante que sabemos o que ja esta vinculado
+    if(VINCULADAS.size===0){
+      try { const re = await fetch(API+'/api/ml/entregas'); const je = await re.json();
+        VINCULADAS = new Set((je.entregas||[]).map(e=>String(e.order_id))); } catch(e){}
+    }
+    const r = await fetch(API+'/api/ml/orders');
+    const j = await r.json();
+    COMPRAS = j.compras || [];
+    renderCompras(COMPRAS);
+  } catch(err){
+    tb.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar: '+err+'</td></tr>';
+  }
+}
+
+function renderCompras(lista){
+  const tb = document.getElementById('tb-compras');
+  if(!lista.length){ tb.innerHTML = '<tr><td colspan="6" class="vazio">Nenhuma compra encontrada.</td></tr>'; return; }
+  tb.innerHTML = lista.map(function(c){
+    const jaVinc = VINCULADAS.has(String(c.order_id));
+    const acao = jaVinc
+      ? '<span class="badge b-entregue">Acompanhando</span>'
+      : '<button onclick="vincular(this, \''+c.order_id+'\')">Acompanhar</button>';
+    return '<tr>'+
+      '<td>'+(c.titulo||'-')+'</td>'+
+      '<td>'+(c.vendedor||'-')+'</td>'+
+      '<td>'+fmtMoeda(c.total, c.moeda)+'</td>'+
+      '<td>'+fmtData(c.data_compra)+'</td>'+
+      '<td><input type="text" class="ref-input" id="ref-'+c.order_id+'" placeholder="empenho / compra" '+(jaVinc?'disabled':'')+'></td>'+
+      '<td>'+acao+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function filtrar(){
+  const q = document.getElementById('busca').value.toLowerCase();
+  renderCompras(COMPRAS.filter(function(c){
+    return (c.titulo||'').toLowerCase().includes(q) || (c.vendedor||'').toLowerCase().includes(q);
+  }));
+}
+
+async function vincular(btn, orderId){
+  const compra = COMPRAS.find(x=>String(x.order_id)===String(orderId));
+  const ref = (document.getElementById('ref-'+orderId)||{}).value || '';
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    await fetch(API+'/api/ml/vincular', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        order_id: compra.order_id,
+        shipment_id: compra.shipment_id,
+        titulo: compra.titulo,
+        referencia: ref
+      })
+    });
+    VINCULADAS.add(String(orderId));
+    renderCompras(COMPRAS);
+  } catch(err){
+    alert('Erro ao vincular: '+err);
+    btn.disabled = false; btn.textContent = 'Acompanhar';
+  }
+}
+
+// inicio
+carregarEntregas();
+</script>
+</body>
+</html>
