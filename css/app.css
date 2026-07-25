@@ -533,6 +533,17 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   vertical-align:middle!important;
 }
 
+/* Regra 9: uniformiza o nome do órgão nas 5 telas.
+   Remove o negrito/cor escura de Contratos Ativos e Finalizados,
+   igualando ao texto base de Empenhos e Acompanhamentos. */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.hi,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td .lb-cell-strong,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td strong,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td b{
+  font-weight:400!important;
+  color:#455468!important;
+}
+
 /* ========================================================================== */
 /* COMPONENTES REUTILIZAVEIS (usados por 19-componentes.js)                    */
 /* Cards de resumo, badges de empresa, analista, UF e status.                  */
