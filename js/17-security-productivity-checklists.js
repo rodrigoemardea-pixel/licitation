@@ -22,7 +22,7 @@
  function bindChecklist(tipo,id,root){root.querySelectorAll('.lb-checklist input').forEach(c=>c.onchange=()=>{const r=_fullDB[tipo].find(x=>x.id===id);if(!r)return;r.checklist=[...root.querySelectorAll('.lb-checklist input:checked')].map(x=>+x.dataset.check);save(tipo,_fullDB[tipo]);registrarAuditoria(tipo,id,'checklist',null,r.checklist);const bar=root.querySelector('.lb-check-progress span');bar.style.width=Math.round(r.checklist.length/checklistModel[tipo].length*100)+'%';});}
  function wrapPopups(){if(window.abrirPopupDisputa){const od=window.abrirPopupDisputa;window.abrirPopupDisputa=function(id){od(id);const body=document.getElementById('popup-d-body'),r=_fullDB.disputas.find(x=>x.id===id);if(body&&r&&!body.querySelector('.lb-checklist')){body.insertAdjacentHTML('afterbegin',checklistHTML('disputas',id,r));bindChecklist('disputas',id,body);}};}}
  function clickableCards(){document.addEventListener('click',e=>{const c=e.target.closest('.summary-row .card');if(!c)return;const pane=c.closest('.tab-pane');if(pane?.id==='tab-empenhos'&&/A Receber|Lucro Empenhado/i.test(c.textContent)){const s=document.getElementById('filtro-compras-empenhos');if(s){s.value='com-compras';filtrarEmpenhos();}}});}
- function init(){tagTabs();addAdvancedFilters();savedViews();columnChooser();wrapPopups();clickableCards();}
+ function init(){tagTabs();addAdvancedFilters();wrapPopups();clickableCards();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 /* LB_SAFE_UI_ENHANCEMENTS_20260717 */
