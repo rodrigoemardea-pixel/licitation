@@ -671,3 +671,80 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   color:var(--text-tertiary)!important;
 }
 .lb-btn-lixo:hover{color:var(--danger)!important}
+
+/* ==========================================================================
+   LICITATIONBIZNIS - MODERNIZACAO DE LAYOUT (append no FINAL do app.css)
+   Somente layout/performance. Nao altera nenhuma regra de negocio.
+   Cole este bloco depois da ultima linha do app.css atual.
+   Lembre de trocar a versao do CSS no index.html (app.css?v=...).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1) color-scheme: controles nativos (date, select, scrollbar interna)
+      renderizam coerentes com o tema claro. Efeito imediato nos inputs de
+      data usados nos modais e filtros.
+   -------------------------------------------------------------------------- */
+:root{color-scheme:light}
+
+/* --------------------------------------------------------------------------
+   2) content-visibility: o navegador pula o calculo de layout/pintura das
+      abas que nao estao ativas. Acelera a troca de aba e o carregamento
+      inicial, sem alterar comportamento. contain-intrinsic-size reserva um
+      espaco estimado para o scroll nao "pular".
+   -------------------------------------------------------------------------- */
+.tab-pane:not(.active){
+  content-visibility:auto;
+  contain-intrinsic-size:1px 800px;
+}
+
+/* Mesmo principio para blocos pesados do dashboard (graficos e tabelas
+   auxiliares) quando fora da area visivel. */
+body.lb-modern-ui #tab-dashboard .chart-card{
+  content-visibility:auto;
+  contain-intrinsic-size:1px 300px;
+}
+
+/* --------------------------------------------------------------------------
+   3) Coluna do orgao fixa no scroll horizontal (apenas telas de contrato,
+      que sao as mais largas). A coluna 2 (Orgao / UF) fica visivel ao rolar
+      lateralmente. Puro CSS, sem custo de performance.
+      Escopo restrito a #tab-disputas e #tab-finalizadas para nao afetar
+      as demais telas. Os fundos ja vem das regras de linha existentes.
+   -------------------------------------------------------------------------- */
+@media(min-width:861px){
+  :is(#tab-disputas,#tab-finalizadas) .table-wrapper table thead th:nth-child(2),
+  :is(#tab-disputas,#tab-finalizadas) .table-wrap table thead th:nth-child(2){
+    position:sticky;
+    left:0;
+    z-index:11;
+    background:#f8fafb;
+  }
+  :is(#tab-disputas,#tab-finalizadas) tbody > tr:not(:has(.empty-state)) > td:nth-child(2){
+    position:sticky;
+    left:0;
+    z-index:9;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4) Refino visual dos cards de resumo: mais respiro entre rotulo e valor
+      e rotulo levemente mais leve. Ajuste estetico, nao muda estrutura.
+   -------------------------------------------------------------------------- */
+body.lb-modern-ui .summary-row .card-label{
+  margin-bottom:7px;
+  font-weight:600;
+  color:#7a8694!important;
+}
+body.lb-modern-ui .summary-row .card-value{
+  line-height:1.1;
+}
+
+/* --------------------------------------------------------------------------
+   5) Transicao suave (e barata) de hover nas linhas, respeitando quem
+      pediu reducao de movimento. Nao adiciona repaint continuo.
+   -------------------------------------------------------------------------- */
+@media(prefers-reduced-motion:no-preference){
+  :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr > td{
+    transition:background-color .12s ease;
+  }
+}
