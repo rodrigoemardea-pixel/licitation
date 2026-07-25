@@ -131,12 +131,27 @@
     }));
   }
 
-  function selecionar(shipmentId, orderId) {
+    function selecionar(shipmentId, orderId) {
     var wrap = document.getElementById('c-ml-lista-wrap'); if (wrap) wrap.style.display = 'none';
     var sEl = document.getElementById('c-ml-shipment'); if (sEl) sEl.value = shipmentId || '';
     var oEl = document.getElementById('c-ml-order'); if (oEl) oEl.value = orderId || '';
-    var plat = document.getElementById('c-plataforma'); if (plat) plat.value = 'MERCADO LIVRE';
-    var link = document.getElementById('c-link'); if (link && orderId) link.value = 'https://www.mercadolivre.com.br/vendas/' + orderId + '/detalhe';
+    // Plataforma e link: so preenche se estiverem em branco.
+    var plat = document.getElementById('c-plataforma'); if (plat && !plat.value) plat.value = 'MERCADO LIVRE';
+    var link = document.getElementById('c-link'); if (link && !link.value && orderId) link.value = 'https://www.mercadolivre.com.br/vendas/' + orderId + '/detalhe';
+    // Qtd, valor unitario e data da compra: so preenche se o campo estiver vazio.
+    var compraML = (_ordersCache || []).find(function (x) { return String(x.order_id) === String(orderId); });
+    if (compraML) {
+      var dcomp = document.getElementById('c-dcompra');
+      if (dcomp && !dcomp.value && compraML.data_compra) dcomp.value = String(compraML.data_compra).slice(0, 10);
+      var vunitEl = document.getElementById('c-vunit');
+      if (vunitEl && !vunitEl.value && compraML.vunit != null) vunitEl.value = Number(compraML.vunit).toFixed(2);
+      var qtdEl = document.getElementById('c-qtd');
+      if (qtdEl && !qtdEl.value && compraML.quantidade) {
+        var maxQ = parseInt(qtdEl.max, 10);
+        qtdEl.value = (maxQ && compraML.quantidade > maxQ) ? maxQ : compraML.quantidade;
+      }
+      if (typeof calcCompra === 'function') { try { calcCompra(); } catch (e) {} }
+    }
     refletirVinculo();
         // Preenche automaticamente qtd, valor unitario e data da compra com os dados do ML.
     var compraML = (_ordersCache || []).find(function (x) { return String(x.order_id) === String(orderId); });
