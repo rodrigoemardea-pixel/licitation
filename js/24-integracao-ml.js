@@ -186,11 +186,11 @@
       }
       if (typeof atualizarCamposStatusEntrega === 'function') { try { atualizarCamposStatusEntrega(); } catch (e) {} }
 
-      var prevEl = document.getElementById('c-data-prevista-recebimento');
-      if (prevEl && previsao && (novoStatus === 'em_transito' || novoStatus === 'aguardando_envio')) prevEl.value = previsao;
+           var prevEl = document.getElementById('c-data-prevista-recebimento');
+      if (prevEl && !prevEl.value && previsao && (novoStatus === 'em_transito' || novoStatus === 'aguardando_envio')) prevEl.value = previsao;
       if (novoStatus === 'recebida') {
         var recEl = document.getElementById('c-data-recebimento-mercadoria');
-        if (recEl && resumo.last_updated) recEl.value = String(resumo.last_updated).slice(0, 10);
+        if (recEl && !recEl.value && resumo.last_updated) recEl.value = String(resumo.last_updated).slice(0, 10);
       }
       if (stEl) stEl.textContent = 'Vinculado - status ML: ' + (STATUS_ML_PT[mlStatus] || mlStatus) + (previsao ? ' - previsao ' + previsao : '');
       refletirVinculo();
