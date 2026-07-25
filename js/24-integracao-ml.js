@@ -62,6 +62,9 @@
         '<button type="button" id="c-ml-unlink" class="btn btn-ghost btn-sm" style="display:none;color:#ef4444;" onclick="lbMlDesvincular()">Desvincular</button>' +
       '</div>' +
       '<div id="c-ml-lista-wrap" style="display:none;margin-top:8px;">' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-tertiary);margin-bottom:6px;cursor:pointer;">' +
+          '<input type="checkbox" id="c-ml-todas" onchange="lbMlRecarregar()"> Incluir compras ja entregues' +
+        '</label>' +
         '<input type="text" id="c-ml-busca" class="fc" placeholder="Filtrar por produto ou vendedor..." oninput="lbMlFiltrar()" style="margin-bottom:6px;">' +
         '<div id="c-ml-lista" style="max-height:220px;overflow:auto;border:1px solid var(--border-light);border-radius:8px;"></div>' +
       '</div>';
@@ -96,20 +99,28 @@
   function renderLista(arr) {
     var lista = document.getElementById('c-ml-lista');
     if (!lista) return;
-    // Remove compras ja vinculadas a algum empenho (evita duplicidade)
-    // e as ja entregues/canceladas. Preserva o vinculo da propria compra em edicao.
+    var incluirEntregues = (document.getElementById('c-ml-todas') || {}).checked;
+    // Remove compras ja vinculadas a algum empenho (evita duplicidade).
+    // Entregues/canceladas so sao escondidas se o checkbox nao estiver marcado.
+    // Preserva o vinculo da propria compra em edicao.
     var atual = (document.getElementById('c-ml-order') || {}).value || '';
     var vinculados = _vinculadosSet(atual);
     arr = (arr || []).filter(function (c) {
-      if (vinculados.has(String(c.order_id))) return false;      // ja vinculada
-      if (c.entregue === true) return false;                     // entregue (flag do endpoint)
-      if (c.envio_status === 'delivered') return false;          // entregue (status ML)
-      if (c.status_pedido === 'cancelled' || c.envio_status === 'cancelled') return false;
+      if (vinculados.has(String(c.order_id))) return false;      // ja vinculada a outro empenho
+      if (!incluirEntregues) {
+        if (c.entregue === true) return false;
+        if (c.envio_status === 'delivered') return false;
+        if (c.status_pedido === 'cancelled' || c.envio_status === 'cancelled') return false;
+      }
       return true;
     });
-    if (!arr.length) { lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra disponivel para vincular (as demais ja foram vinculadas ou entregues).</div>'; return; }
+    if (!arr.length) {
+      lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra disponivel para vincular. Marque "Incluir compras ja entregues" para ver as demais.</div>';
+      return;
+    }
     lista.innerHTML = arr.map(function (c) {
-      var sub = (c.vendedor || '') + (c.total ? ' - R$ ' + Number(c.total).toFixed(2) : '') + (c.shipment_id ? ' - envio ' + c.shipment_id : ' - sem envio');
+      var tag = c.entregue ? ' [entregue]' : '';
+      var sub = (c.vendedor || '') + (c.total ? ' - R$ ' + Number(c.total).toFixed(2) : '') + (c.shipment_id ? ' - envio ' + c.shipment_id : ' - sem envio') + tag;
       return '<div onclick="lbMlSelecionar(\'' + (c.shipment_id || '') + '\',\'' + c.order_id + '\')" ' +
         'style="padding:8px 10px;border-bottom:1px solid var(--border-light);cursor:pointer;font-size:12px;" ' +
         'onmouseover="this.style.background=\'var(--bg-surface-soft)\'" onmouseout="this.style.background=\'\'">' +
@@ -118,20 +129,34 @@
     }).join('');
   }
 
-  function abrirBusca() {
-    var wrap = document.getElementById('c-ml-lista-wrap');
+  // Carrega a lista do endpoint (sempre atualizada) e renderiza.
+  function carregar() {
     var lista = document.getElementById('c-ml-lista');
-    if (!wrap || !lista) return;
-    wrap.style.display = (wrap.style.display === 'none') ? 'block' : 'none';
-    if (wrap.style.display === 'none') return;
+    if (!lista) return;
     lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Carregando compras do Mercado Livre...</div>';
-    if (_ordersCache) { renderLista(_ordersCache); return; }
-    fetch(API + '/api/ml/orders').then(function (r) { return r.json(); }).then(function (j) {
+    var incluirEntregues = (document.getElementById('c-ml-todas') || {}).checked;
+    fetch(API + '/api/ml/orders' + (incluirEntregues ? '?todas=1' : '')).then(function (r) { return r.json(); }).then(function (j) {
       _ordersCache = j.compras || [];
       renderLista(_ordersCache);
     }).catch(function (e) {
       lista.innerHTML = '<div style="padding:12px;color:#ef4444;font-size:12px;">Erro ao carregar: ' + e + '</div>';
     });
+  }
+
+  function abrirBusca() {
+    var wrap = document.getElementById('c-ml-lista-wrap');
+    if (!wrap) return;
+    wrap.style.display = (wrap.style.display === 'none') ? 'block' : 'none';
+    if (wrap.style.display === 'none') return;
+    // Sempre refaz a busca (sem reaproveitar cache) para refletir desvinculos recentes.
+    carregar();
+  }
+
+  // Recarrega mantendo o painel aberto (usado pelo checkbox "incluir entregues").
+  function recarregar() {
+    var wrap = document.getElementById('c-ml-lista-wrap');
+    if (wrap) wrap.style.display = 'block';
+    carregar();
   }
 
   function filtrar() {
@@ -349,6 +374,7 @@
 
   function init() {
     window.lbMlAbrirBusca = abrirBusca;
+    window.lbMlRecarregar = recarregar;
     window.lbMlFiltrar = filtrar;
     window.lbMlSelecionar = selecionar;
     window.lbMlDesvincular = desvincular;
