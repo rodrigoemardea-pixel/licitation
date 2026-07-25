@@ -1,7 +1,7 @@
 // Localizacao no projeto: api/ml/orders.js
 // Lista as compras recentes da conta Mercado Livre autorizada (perspectiva de comprador),
 // JA ENRIQUECIDAS com o status de envio, e por padrao EXCLUI as entregues e canceladas.
-// Assim, na tela de vinculo so aparecem compras que ainda nao constam como entregues.
+// O valor unitario ja considera o desconto de cupom (coupon_amount dos pagamentos).
 //
 // Uso normal:                 /api/ml/orders          (esconde entregues/canceladas)
 // Para ver todas (debug):     /api/ml/orders?todas=1
@@ -33,20 +33,28 @@ module.exports = async function handler(req, res) {
     const data = await resp.json();
     if (!resp.ok) { res.status(resp.status).json({ erro: 'Falha ao listar compras', detalhe: data }); return; }
 
-       const base = (data.results || []).map(function (order) {
+    const base = (data.results || []).map(function (order) {
       const oi = (order.order_items && order.order_items[0]) ? order.order_items[0] : {};
       const primeiroItem = (oi.item && oi.item.title) ? oi.item.title : null;
       const qtd = oi.quantity || 1;
-      // unit_price ja e o valor unitario; fallback: total / quantidade.
-      const vunit = (oi.unit_price != null)
-        ? oi.unit_price
-        : (order.total_amount && qtd ? order.total_amount / qtd : order.total_amount) || 0;
+
+      // Desconto de cupom vem nos pagamentos (coupon_amount), nao no item.
+      const pagamentos = Array.isArray(order.payments) ? order.payments : [];
+      const totalCupom = pagamentos.reduce(function (s, p) { return s + (p.coupon_amount || 0); }, 0);
+
+      // Valor efetivamente pago pelos produtos (sem frete): total dos itens - cupom.
+      const totalItens = (order.total_amount != null) ? order.total_amount : ((oi.unit_price || 0) * qtd);
+      const totalFinal = Math.max(0, totalItens - totalCupom);
+      const vunit = qtd ? (totalFinal / qtd) : totalFinal;
+
       return {
         order_id: order.id,
         shipment_id: order.shipping ? order.shipping.id : null,
         titulo: primeiroItem,
         quantidade: qtd,
         vunit: vunit,
+        total_final: totalFinal,
+        cupom: totalCupom,
         quantidade_itens: (order.order_items || []).length,
         total: order.total_amount,
         moeda: order.currency_id,
