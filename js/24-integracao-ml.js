@@ -68,12 +68,24 @@
     campos.insertBefore(box, campos.firstChild);
   }
 
-  function refletirVinculo() {
+  // Ha vinculo? shipment, order OU plataforma marcada como MERCADO LIVRE (compras antigas).
+  function _temVinculo() {
     var shp = (document.getElementById('c-ml-shipment') || {}).value || '';
+    var ord = (document.getElementById('c-ml-order') || {}).value || '';
+    var plat = ((document.getElementById('c-plataforma') || {}).value || '').toUpperCase();
+    return { shp: shp, ord: ord, plataformaML: plat === 'MERCADO LIVRE', any: !!(shp || ord || plat === 'MERCADO LIVRE') };
+  }
+
+  function refletirVinculo() {
+    var v = _temVinculo();
     var st = document.getElementById('c-ml-status');
     var un = document.getElementById('c-ml-unlink');
-    if (shp) {
-      if (st) st.textContent = 'Vinculado ao envio ' + shp + ' - atualiza sozinho 1x/dia (16h).';
+    if (v.any) {
+      if (st) {
+        if (v.shp) st.textContent = 'Vinculado ao envio ' + v.shp + ' - atualiza sozinho 1x/dia (16h).';
+        else if (v.ord) st.textContent = 'Vinculado ao pedido ' + v.ord + ' (sem envio rastreavel).';
+        else st.textContent = 'Compra marcada como Mercado Livre.';
+      }
       if (un) un.style.display = '';
     } else {
       if (st) st.textContent = 'Nenhuma compra vinculada (opcional).';
@@ -190,8 +202,13 @@
   function desvincular() {
     var s = document.getElementById('c-ml-shipment'); if (s) s.value = '';
     var o = document.getElementById('c-ml-order'); if (o) o.value = '';
+    // Limpa a marca de plataforma/link deixada pela integracao (se ainda for do ML).
+    var plat = document.getElementById('c-plataforma');
+    if (plat && (plat.value || '').toUpperCase() === 'MERCADO LIVRE') plat.value = '';
+    var link = document.getElementById('c-link');
+    if (link && (link.value || '').indexOf('mercadolivre.com.br') >= 0) link.value = '';
     refletirVinculo();
-    _toast('Vinculo removido.', 'info');
+    _toast('Vinculo removido. Salve a compra para confirmar.', 'info');
   }
 
   // ---------- Wrappers de funcoes do 08-compras.js ----------
@@ -200,12 +217,18 @@
     if (typeof orig !== 'function') return false;
     if (orig._lbMlWrapped) return true;
     window.abrirCompra = function () {
+      var editando = false;
+      try { editando = !!compraEditId; } catch (e) {}
       var r = orig.apply(this, arguments);
       setTimeout(function () {
         garantirUI();
-        var s = document.getElementById('c-ml-shipment'); if (s) s.value = '';
-        var o = document.getElementById('c-ml-order'); if (o) o.value = '';
         var w = document.getElementById('c-ml-lista-wrap'); if (w) w.style.display = 'none';
+        // So limpa o vinculo quando e uma compra NOVA. Na edicao, o
+        // selecionarCompraLote restaura os campos a partir da compra salva.
+        if (!editando) {
+          var s = document.getElementById('c-ml-shipment'); if (s) s.value = '';
+          var o = document.getElementById('c-ml-order'); if (o) o.value = '';
+        }
         refletirVinculo();
       }, 0);
       return r;
@@ -255,8 +278,15 @@
           if (!target) target = emp2.compras.find(function (c) { return before.indexOf(c.id) === -1; });
           if (!target) target = emp2.compras[emp2.compras.length - 1];
           if (target) {
-            if (shipmentId) { target.mlShipmentId = shipmentId; target.mlOrderId = orderId; }
-            else { delete target.mlShipmentId; delete target.mlOrderId; delete target.mlUltimaMudanca; delete target.mlLastSync; }
+            if (shipmentId || orderId) {
+              // Vinculado (com ou sem envio rastreavel): grava o que houver.
+              if (shipmentId) target.mlShipmentId = shipmentId; else delete target.mlShipmentId;
+              target.mlOrderId = orderId || target.mlOrderId || '';
+            } else {
+              // Sem vinculo: remove marcas da integracao.
+              delete target.mlShipmentId; delete target.mlOrderId;
+              delete target.mlUltimaMudanca; delete target.mlLastSync;
+            }
             if (typeof save === 'function') save('empenhos', _banco());
           }
         }
