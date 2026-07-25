@@ -138,6 +138,20 @@
     var plat = document.getElementById('c-plataforma'); if (plat) plat.value = 'MERCADO LIVRE';
     var link = document.getElementById('c-link'); if (link && orderId) link.value = 'https://www.mercadolivre.com.br/vendas/' + orderId + '/detalhe';
     refletirVinculo();
+        // Preenche automaticamente qtd, valor unitario e data da compra com os dados do ML.
+    var compraML = (_ordersCache || []).find(function (x) { return String(x.order_id) === String(orderId); });
+    if (compraML) {
+      var dcomp = document.getElementById('c-dcompra');
+      if (dcomp && compraML.data_compra) dcomp.value = String(compraML.data_compra).slice(0, 10);
+      var vunitEl = document.getElementById('c-vunit');
+      if (vunitEl && compraML.vunit != null) vunitEl.value = Number(compraML.vunit).toFixed(2);
+      var qtdEl = document.getElementById('c-qtd');
+      if (qtdEl && compraML.quantidade) {
+        var maxQ = parseInt(qtdEl.max, 10);
+        qtdEl.value = (maxQ && compraML.quantidade > maxQ) ? maxQ : compraML.quantidade;
+      }
+      if (typeof calcCompra === 'function') { try { calcCompra(); } catch (e) {} }
+    }
     var stEl = document.getElementById('c-ml-status');
     if (!shipmentId) { _toast('Compra sem envio rastreavel no ML.', 'info'); return; }
     if (stEl) stEl.textContent = 'Consultando status do envio...';
