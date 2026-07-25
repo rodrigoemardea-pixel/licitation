@@ -33,14 +33,20 @@ module.exports = async function handler(req, res) {
     const data = await resp.json();
     if (!resp.ok) { res.status(resp.status).json({ erro: 'Falha ao listar compras', detalhe: data }); return; }
 
-    const base = (data.results || []).map(function (order) {
-      const primeiroItem =
-        order.order_items && order.order_items[0] && order.order_items[0].item
-          ? order.order_items[0].item.title : null;
+       const base = (data.results || []).map(function (order) {
+      const oi = (order.order_items && order.order_items[0]) ? order.order_items[0] : {};
+      const primeiroItem = (oi.item && oi.item.title) ? oi.item.title : null;
+      const qtd = oi.quantity || 1;
+      // unit_price ja e o valor unitario; fallback: total / quantidade.
+      const vunit = (oi.unit_price != null)
+        ? oi.unit_price
+        : (order.total_amount && qtd ? order.total_amount / qtd : order.total_amount) || 0;
       return {
         order_id: order.id,
         shipment_id: order.shipping ? order.shipping.id : null,
         titulo: primeiroItem,
+        quantidade: qtd,
+        vunit: vunit,
         quantidade_itens: (order.order_items || []).length,
         total: order.total_amount,
         moeda: order.currency_id,
