@@ -3,10 +3,9 @@
 //  1) Injeta um bloco "Integracao Mercado Livre" no modal de compra.
 //  2) Permite buscar/vincular uma compra do ML (consumindo /api/ml/orders e
 //     /api/ml/shipment) e preenche automaticamente status de entrega, datas,
-//     plataforma e link.
+//     plataforma, link, qtd, valor unitario e data da compra (so se vazios).
 //  3) Persiste mlShipmentId / mlOrderId na compra (wrap de saveCompra).
-//  4) Adiciona ao sininho um alerta sempre que o cron mudar o status (usa o
-//     campo mlUltimaMudanca gravado por api/cron/atualizar-entregas.js).
+//  4) Adiciona ao sininho um alerta sempre que o cron mudar o status.
 // A integracao e OPCIONAL: compras de outros sites seguem manuais.
 (function () {
   'use strict';
@@ -21,7 +20,7 @@
   function _findEmp(id) { return (_banco() || []).find(function (e) { return e.id === id; }); }
   function _toast(m, t) { if (typeof toast === 'function') { try { toast(m, t); } catch (e) {} } }
 
-    // Coleta todos os order_id do ML ja vinculados em qualquer compra de qualquer empenho.
+  // Coleta todos os order_id do ML ja vinculados em qualquer compra de qualquer empenho.
   // Aceita opcionalmente um order_id a ignorar (o da compra que esta sendo editada agora).
   function _vinculadosSet(ignorarOrderId) {
     var set = new Set();
@@ -85,9 +84,9 @@
   function renderLista(arr) {
     var lista = document.getElementById('c-ml-lista');
     if (!lista) return;
-    // Remove compras ja vinculadas a algum empenho (evita duplicidade).
-    // Preserva o vinculo da propria compra em edicao, se houver.
-      var atual = (document.getElementById('c-ml-order') || {}).value || '';
+    // Remove compras ja vinculadas a algum empenho (evita duplicidade)
+    // e as ja entregues/canceladas. Preserva o vinculo da propria compra em edicao.
+    var atual = (document.getElementById('c-ml-order') || {}).value || '';
     var vinculados = _vinculadosSet(atual);
     arr = (arr || []).filter(function (c) {
       if (vinculados.has(String(c.order_id))) return false;      // ja vinculada
@@ -97,7 +96,6 @@
       return true;
     });
     if (!arr.length) { lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra disponivel para vincular (as demais ja foram vinculadas ou entregues).</div>'; return; }
-
     lista.innerHTML = arr.map(function (c) {
       var sub = (c.vendedor || '') + (c.total ? ' - R$ ' + Number(c.total).toFixed(2) : '') + (c.shipment_id ? ' - envio ' + c.shipment_id : ' - sem envio');
       return '<div onclick="lbMlSelecionar(\'' + (c.shipment_id || '') + '\',\'' + c.order_id + '\')" ' +
@@ -131,13 +129,15 @@
     }));
   }
 
-    function selecionar(shipmentId, orderId) {
+  function selecionar(shipmentId, orderId) {
     var wrap = document.getElementById('c-ml-lista-wrap'); if (wrap) wrap.style.display = 'none';
     var sEl = document.getElementById('c-ml-shipment'); if (sEl) sEl.value = shipmentId || '';
     var oEl = document.getElementById('c-ml-order'); if (oEl) oEl.value = orderId || '';
+
     // Plataforma e link: so preenche se estiverem em branco.
     var plat = document.getElementById('c-plataforma'); if (plat && !plat.value) plat.value = 'MERCADO LIVRE';
     var link = document.getElementById('c-link'); if (link && !link.value && orderId) link.value = 'https://www.mercadolivre.com.br/vendas/' + orderId + '/detalhe';
+
     // Qtd, valor unitario e data da compra: so preenche se o campo estiver vazio.
     var compraML = (_ordersCache || []).find(function (x) { return String(x.order_id) === String(orderId); });
     if (compraML) {
@@ -153,20 +153,7 @@
       if (typeof calcCompra === 'function') { try { calcCompra(); } catch (e) {} }
     }
     refletirVinculo();
-        // Preenche automaticamente qtd, valor unitario e data da compra com os dados do ML.
-    var compraML = (_ordersCache || []).find(function (x) { return String(x.order_id) === String(orderId); });
-    if (compraML) {
-      var dcomp = document.getElementById('c-dcompra');
-      if (dcomp && compraML.data_compra) dcomp.value = String(compraML.data_compra).slice(0, 10);
-      var vunitEl = document.getElementById('c-vunit');
-      if (vunitEl && compraML.vunit != null) vunitEl.value = Number(compraML.vunit).toFixed(2);
-      var qtdEl = document.getElementById('c-qtd');
-      if (qtdEl && compraML.quantidade) {
-        var maxQ = parseInt(qtdEl.max, 10);
-        qtdEl.value = (maxQ && compraML.quantidade > maxQ) ? maxQ : compraML.quantidade;
-      }
-      if (typeof calcCompra === 'function') { try { calcCompra(); } catch (e) {} }
-    }
+
     var stEl = document.getElementById('c-ml-status');
     if (!shipmentId) { _toast('Compra sem envio rastreavel no ML.', 'info'); return; }
     if (stEl) stEl.textContent = 'Consultando status do envio...';
@@ -186,7 +173,7 @@
       }
       if (typeof atualizarCamposStatusEntrega === 'function') { try { atualizarCamposStatusEntrega(); } catch (e) {} }
 
-           var prevEl = document.getElementById('c-data-prevista-recebimento');
+      var prevEl = document.getElementById('c-data-prevista-recebimento');
       if (prevEl && !prevEl.value && previsao && (novoStatus === 'em_transito' || novoStatus === 'aguardando_envio')) prevEl.value = previsao;
       if (novoStatus === 'recebida') {
         var recEl = document.getElementById('c-data-recebimento-mercadoria');
