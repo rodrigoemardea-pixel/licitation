@@ -473,9 +473,10 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
 
 /* Regra 3: colunas monoespacadas (numeros, datas). Basta usar class="mono". */
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.mono{
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
-  font-size:11px!important;
+  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-size:12px!important;
   font-weight:400!important;
+  font-variant-numeric:tabular-nums;
 }
 
 /* Regra 4: colunas de dinheiro. Basta usar class="money". */
