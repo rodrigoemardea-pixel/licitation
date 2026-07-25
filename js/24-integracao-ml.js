@@ -87,9 +87,15 @@
     if (!lista) return;
     // Remove compras ja vinculadas a algum empenho (evita duplicidade).
     // Preserva o vinculo da propria compra em edicao, se houver.
-    var atual = (document.getElementById('c-ml-order') || {}).value || '';
+      var atual = (document.getElementById('c-ml-order') || {}).value || '';
     var vinculados = _vinculadosSet(atual);
-    arr = (arr || []).filter(function (c) { return !vinculados.has(String(c.order_id)); });
+    arr = (arr || []).filter(function (c) {
+      if (vinculados.has(String(c.order_id))) return false;      // ja vinculada
+      if (c.entregue === true) return false;                     // entregue (flag do endpoint)
+      if (c.envio_status === 'delivered') return false;          // entregue (status ML)
+      if (c.status_pedido === 'cancelled' || c.envio_status === 'cancelled') return false;
+      return true;
+    });
     if (!arr.length) { lista.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;">Nenhuma compra disponivel para vincular (as demais ja foram vinculadas ou entregues).</div>'; return; }
 
     lista.innerHTML = arr.map(function (c) {
