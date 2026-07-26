@@ -1,62 +1,51 @@
-/* LICITATIONBIZNIS DESKTOP PREVIEW - TESTE FORTE */
-
-/* TESTE VISUAL DIRETO - XP PREVIEW 2 */
-
-body .tabs {
-  background: blue !important;
-  border: 5px solid yellow !important;
-}
-
-body header {
-  background: blue !important;
-  border: 5px solid yellow !important;
-}
-
-body .content {
-  background: #ece9d8 !important;
-}
+/* LICITATIONBIZNIS DESKTOP PREVIEW - XP REFINADO */
 
 body,
 body.lb-modern-ui,
 body.lb-saas-enterprise {
   font-family: Tahoma, "Segoe UI", Verdana, Arial, sans-serif !important;
-  background: #3a6ea5 !important;
+  background: #d6d0b8 !important;
   color: #111 !important;
 }
 
-/* MENU LATERAL */
+/* Menu lateral */
 body .tabs {
-  background: linear-gradient(180deg, #3f8cff 0%, #245edb 45%, #1746a2 100%) !important;
-  border: 1px solid #0b2f7a !important;
-  border-radius: 4px !important;
+  background: linea*-gradient(180deg, #3f8cff 0%, #245*db 42%, #1746a2 100%) !important;
+* border: 1px solid #0b2f7a !import*nt;
+  border-radius: 4px !importan*;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.7),
-    inset -1px -1px 0 rgba(0,0,0,.38),
-    2px 2px 0 rgba(0,0,0,.28) !important;
-}
+    inset 1px 1px * rgba(255,255,255,.65),
+    inset *1px -1px 0 rgba(0,0,0,.35),
+    2p* 2px 0 rgba(0,0,0,.25) !important;*}
 
 body .tabs::before {
-  content: "LB" !important;
-  background: linear-gradient(180deg, #fff, #c8dcff) !important;
+  content:*"LB" !important;
+  background: lin*ar-gradient(180deg, #fff, #c8dcff)*!important;
   color: #1746a2 !important;
   border: 1px solid #fff !important;
   border-radius: 4px !important;
-  box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #1746a2 !important;
 }
 
 body .tabs::after {
-  content: "LicitationBiznis\AProfessional Desktop" !important;
+  content: "LicitationBiznis\AProfessional" !important;
   color: #fff !important;
   text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
   font-family: Tahoma, "Segoe UI", sans-serif !important;
 }
 
-/* BOTÕES DO MENU */
+/* Seções do menu */
+body .lb-nav-section {
+  color: rgba(255,255,255,.62) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: .4px !important;
+  text-transform: uppercase !important;
+}
+
+/* Botões do menu */
 body .tab-btn {
-  border-radius: 2px !important;
-  color: #fff !important;
+  border-radius: 6px !important;
+  color: rgba(255,255,255,.88) !important;
   background: transparent !important;
   border: 1px solid transparent !important;
   font-family: Tahoma, "Segoe UI", sans-serif !important;
@@ -74,21 +63,22 @@ body .tab-btn:hover {
 }
 
 body .tab-btn.active {
-  background: linear-gradient(180deg, #fff, #c8dcff) !important;
-  color: #000 !important;
+  background: linear-gradient(180deg, #8fc0ff, #3f8cff) !important;
+  color: #001c4a !important;
   text-shadow: none !important;
-  border-color: #fff #0b2f7a #0b2f7a #fff !important;
+  border-color: #dbeafe #0b2f7a #0b2f7a #dbeafe !important;
+  font-weight: 700 !important;
 }
 
-/* TOPO */
+/* Topo */
 body header {
   background: linear-gradient(180deg, #3f8cff 0%, #245edb 55%, #1746a2 100%) !important;
   border: 1px solid #0b2f7a !important;
   border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.7),
+    inset 1px 1px 0 rgba(255,255,255,.65),
     inset -1px -1px 0 rgba(0,0,0,.35),
-    2px 2px 0 rgba(0,0,0,.28) !important;
+    2px 2px 0 rgba(0,0,0,.22) !important;
 }
 
 body header::before {
@@ -101,16 +91,16 @@ body header::before {
   white-space: nowrap !important;
 }
 
-/* ÁREA DO CONTEÚDO */
+/* Fundo da área de trabalho */
 body .content {
   background: #ece9d8 !important;
 }
 
-/* CABEÇALHOS */
+/* Cabeçalho das páginas */
 body .lb-page-head {
   background: linear-gradient(180deg, #fff, #ece9d8) !important;
   border: 1px solid #7f9db9 !important;
-  border-radius: 3px !important;
+  border-radius: 2px !important;
   box-shadow:
     inset 1px 1px 0 #fff,
     inset -1px -1px 0 #b8b2a1 !important;
@@ -119,13 +109,15 @@ body .lb-page-head {
 body .lb-page-title {
   color: #003c74 !important;
   font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-size: 22px !important;
 }
 
 body .lb-page-subtitle {
   color: #333 !important;
+  font-size: 11px !important;
 }
 
-/* CARDS */
+/* Cards */
 body .card,
 body .lb-card,
 body .chart-card,
@@ -134,31 +126,27 @@ body .dash-kpi,
 body .painel-section,
 body .acomp-card {
   background: #f4f1df !important;
-  border: 1px solid #7f9db9 !important;
-  border-radius: 3px !important;
-  box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #b8b2a1 !important;
+  border: 1px solid #d8d2bd !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 
-/* TOOLBAR */
+/* Toolbar */
 body .toolbar {
-  background: linear-gradient(180deg, #fff, #ece9d8) !important;
-  border: 1px solid #7f9db9 !important;
-  border-radius: 3px !important;
-  box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #b8b2a1 !important;
+  background: #fff !important;
+  border: 1px solid #d8d2bd !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
 }
 
-/* BOTÕES */
+/* Botões */
 body .btn,
 body .hbtn,
 body .user-chip {
   background: linear-gradient(180deg, #fff, #d8d2bd) !important;
   border: 1px solid !important;
   border-color: #fff #7f9db9 #7f9db9 #fff !important;
-  border-radius: 2px !important;
+  border-radius: 4px !important;
   color: #111 !important;
   box-shadow: none !important;
   font-family: Tahoma, "Segoe UI", sans-serif !important;
@@ -175,12 +163,12 @@ body .user-chip:hover {
 }
 
 body .btn-primary {
-  background: linear-gradient(180deg, #5f9ee8, #245edb) !important;
-  border-color: #9cc2ff #0b2f7a #0b2f7a #9cc2ff !important;
+  background: linear-gradient(180deg, #2f7d5c, #1f5f43) !important;
+  border-color: #bde5d3 #16452f #16452f #bde5d3 !important;
   color: #fff !important;
 }
 
-/* CAMPOS */
+/* Campos */
 body input,
 body select,
 body textarea,
@@ -192,19 +180,17 @@ body .fc {
   font-family: Tahoma, "Segoe UI", sans-serif !important;
   font-size: 11px !important;
   box-shadow:
-    inset 1px 1px 1px rgba(0,0,0,.18),
+    inset 1px 1px 1px rgba(0,0,0,.16),
     inset -1px -1px 0 rgba(255,255,255,.85) !important;
 }
 
-/* TABELAS */
+/* Tabelas */
 body .table-wrapper,
 body .table-wrap {
   background: #fff !important;
-  border: 1px solid #7f9db9 !important;
-  border-radius: 3px !important;
-  box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #b8b2a1 !important;
+  border: 1px solid #d8d2bd !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 
 body table {
@@ -217,9 +203,9 @@ body table {
 body th,
 body thead th {
   background: linear-gradient(180deg, #fff, #ece9d8) !important;
-  color: #111 !important;
-  border-right: 1px solid #b8b2a1 !important;
-  border-bottom: 1px solid #7f9db9 !important;
+  color: #5b6675 !important;
+  border-right: 1px solid #d8d2bd !important;
+  border-bottom: 1px solid #b8b2a1 !important;
   font-size: 10px !important;
   font-weight: 700 !important;
   text-transform: none !important;
@@ -229,7 +215,7 @@ body td,
 body tbody td {
   background: transparent !important;
   border-bottom: 1px solid #e5e0ca !important;
-  color: #111 !important;
+  color: #475569 !important;
   font-size: 11px !important;
 }
 
@@ -241,7 +227,21 @@ body tbody tr:hover {
   background: #fff7c0 !important;
 }
 
-/* MODAIS E POPUPS */
+/* Badges */
+body .badge,
+body .lb-badge,
+body .estado-badge,
+body .tab-badge {
+  border-radius: 2px !important;
+  border: 1px solid #7f9db9 !important;
+  background: #ece9d8 !important;
+  color: #111 !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+}
+
+/* Popups e modais */
 body .modal,
 body .detail-popup,
 body .confirm-modal-box,
@@ -268,18 +268,4 @@ body .detail-popup-title,
 body .confirm-modal-title {
   color: #fff !important;
   text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
-}
-
-/* BADGES */
-body .badge,
-body .lb-badge,
-body .estado-badge,
-body .tab-badge {
-  border-radius: 2px !important;
-  border: 1px solid #7f9db9 !important;
-  background: #ece9d8 !important;
-  color: #111 !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 9px !important;
-  font-weight: 700 !important;
 }
