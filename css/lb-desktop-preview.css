@@ -1,6 +1,7 @@
 /* ==========================================================================
-   LICITATIONBIZNIS CORPORATE DESKTOP
-   Camada visual: sistema corporativo desktop, sem alterar regras de negócio.
+   LICITATIONBIZNIS CORPORATE DESKTOP FINAL
+   Camada visual final: aplicativo corporativo desktop.
+   Não altera regras de negócio, Firebase, compras, Mercado Livre ou relatórios.
    ========================================================================== */
 
 :root {
@@ -10,58 +11,67 @@
   --radius-xs: 2px !imp*rtant;
   --radius-sm: 3px !importa*t;
   --radius-md: 4px !important;
-* --radius-lg: 6px !important;
-  --*adius-xl: 8px !important;
-  --radi*s-2xl: 8px !important;
-  --radius-*xl: 8px !important;
+* --radius-lg: 5px !important;
+  --*adius-xl: 6px !important;
+  --radi*s-2xl: 6px !important;
+  --radius-*xl: 6px !important;
 
-  --lb-sideba*-w: 218px !important;
-  --lb-topba*-h: 52px !important;
+  --lb-sideba*-w: 214px !important;
+  --lb-topba*-h: 50px !important;
   --lb-gap: 8*x !important;
 
-  --corp-blue-900: *0f2f60;
-  --corp-blue-800: #174a8b*
-  --corp-blue-700: #1f5fae;
-  --c*rp-blue-600: #2f73c9;
-  --corp-blu*-100: #e5efff;
+  --corp-blue-950: *0a2344;
+  --corp-blue-900: #0f2f60*
+  --corp-blue-800: #174a8b;
+  --c*rp-blue-700: #1f5fae;
+  --corp-blu*-600: #2f73c9;
+  --corp-blue-100: *e5efff;
 
-  --corp-panel: #e*e6d3;
-  --corp-panel-light: #f5f3e*;
-  --corp-panel-white: #ffffff;
- *--corp-border: #9aa8b8;
-  --corp-b*rder-soft: #d4d0bd;
-  --corp-text:*#1f2933;
+  --corp-green-800: #1e5e*3;
+  --corp-green-700: #2e7659;
+
+ *--corp-panel: #e4dfc9;
+  --corp-pa*el-soft: #ece9d8;
+  --corp-panel-l*ght: #f5f3e7;
+  --corp-white: #fff*ff;
+
+  --corp-border-dark: #0f2f60*
+  --corp-border: #9aa8b8;
+  --cor*-border-soft: #d4d0bd;
+
+  --corp-t*xt: #1f2933;
+  --corp-text-soft: #*84657;
   --corp-muted: #657386;
-*  --bg-app: #d6d0b8 !important;
-  *-bg-surface: #f5f3e7 !important;
- *--bg-surface-solid: #f5f3e7 !impor*ant;
-  --bg-surface-hover: #fff8d7*!important;
-  --bg-surface-soft: #*ce9d8 !important;
-  --bg-inset: #f*ffff !important;
 
-  --border-light* #d4d0bd !important;
-  --border-me*ium: #9aa8b8 !important;
-  --borde*-focus: #2f73c9 !important;
+ *--bg-app: #e4dfc9 !important;
+  --*g-surface: #f5f3e7 !important;
+  -*bg-surface-solid: #f5f3e7 !importa*t;
+  --bg-surface-hover: #fff6bd !*mportant;
+  --bg-surface-soft: #ec*9d8 !important;
+  --bg-inset: #fff*ff !important;
 
-  --t*xt-primary: #1f2933 !important;
-  *-text-secondary: #384657 !importan*;
-  --text-tertiary: #657386 !impo*tant;
-  --text-placeholder: #7b879* !important;
+  --border-light: *d4d0bd !important;
+  --border-medi*m: #9aa8b8 !important;
+  --border-*ocus: #2f73c9 !important;
 
-  --accent: #1f5fae *important;
-  --accent-hover: #174a*b !important;
-  --accent-muted: #e*efff !important;
-  --accent-ring: *gba(47, 115, 201, .24) !important;*
-  --success: #216e45 !important;
-* --warning: #b77900 !important;
-  *-danger: #b91c1c !important;
-  --p*rple: #5b4b91 !important;
-  --info* #1f5fae !important;
+  --tex*-primary: #1f2933 !important;
+  --*ext-secondary: #384657 !important;*  --text-tertiary: #657386 !import*nt;
+  --text-placeholder: #7b8794 *important;
 
-  --success-*oft: #e5f3eb !important;
+  --accent: #1f5fae !i*portant;
+  --accent-hover: #174a8b*!important;
+  --accent-muted: #e5e*ff !important;
+  --accent-ring: rg*a(47, 115, 201, .24) !important;
+
+* --success: #216e45 !important;
+  --success-soft: #e5f3eb !important;
+  --warning: #b77900 !important;
   --warning-soft: #fff4ce !important;
+  --danger: #b91c1c !important;
   --danger-soft: #fde4e4 !important;
+  --purple: #5b4b91 !important;
   --purple-soft: #eee9ff !important;
+  --info: #1f5fae !important;
   --info-soft: #e5efff !important;
 
   --shadow-xs: none !important;
@@ -75,14 +85,47 @@
    Base
    ========================================================================== */
 
+*,
+*::before,
+*::after {
+  box-shadow: none;
+}
+
+html {
+  background: var(--corp-panel) !important;
+}
+
 body,
 body.lb-modern-ui,
 body.lb-saas-enterprise {
   font-family: var(--font-sans) !important;
   font-size: 12px !important;
-  line-height: 1.35 !important;
+  line-height: 1.34 !important;
   background: var(--corp-panel) !important;
   color: var(--corp-text) !important;
+  letter-spacing: 0 !important;
+}
+
+/* Scrollbars com aparência desktop */
+
+::-webkit-scrollbar {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #ece9d8 !important;
+  border: 1px solid #d4d0bd !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ffffff, #d8d2bd) !important;
+  border: 1px solid #9aa8b8 !important;
+  border-radius: 0 !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #fff6bd, #d8d2bd) !important;
 }
 
 /* ==========================================================================
@@ -90,82 +133,110 @@ body.lb-saas-enterprise {
    ========================================================================== */
 
 body .tabs {
-  background:
-    *inear-gradient(180deg, #2f73c9 0%,*#1f5fae 42%, #174a8b 100%) !import*nt;
-  border: 1px solid #0f2f60 !i*portant;
-  border-radius: 4px !imp*rtant;
+  inset: 8px auto *px 8px !important;
+  width: var(--*b-sidebar-w) !important;
+  height:*calc(100vh - 16px) !important;
+  p*dding: 72px 7px 10px !important;
+ *gap: 1px !important;
+  background:*    linear-gradient(180deg, #2f73c* 0%, #1f5fae 43%, #174a8b 100%) !i*portant;
+  border: 1px solid var(-*corp-border-dark) !important;
+  bo*der-radius: 4px !important;
+  box-*hadow:
+    inset 1px 1px 0 rgba(25*,255,255,.55),
+    inset -1px -1px*0 rgba(0,0,0,.32),
+    2px 2px 0 r*ba(0,0,0,.22) !important;
+}
+
+body *tabs::before {
+  content: "LB" !im*ortant;
+  top: 14px !important;
+  *eft: 12px !important;
+  width: 40p* !important;
+  height: 40px !impor*ant;
+  background: linear-gradient*180deg, #ffffff, #d9e8ff) !importa*t;
+  color: #174a8b !important;
+  *order: 1px solid rgba(255,255,255,*9) !important;
+  border-radius: 4p* !important;
   box-shadow:
-    inset 1px*1px 0 rgba(255,255,255,.55),
-    i*set -1px -1px 0 rgba(0,0,0,.32),
- *  2px 2px 0 rgba(0,0,0,.22) !impor*ant;
+    ins*t 1px 1px 0 #ffffff,
+    inset -1p* -1px 0 #174a8b !important;
+  font*family: var(--font-sans) !importan*;
+  font-size: 14px !important;
+  *ont-weight: 800 !important;
+  lett*r-spacing: 0 !important;
 }
 
-body .tabs::before {
-  con*ent: "LB" !important;
-  background* linear-gradient(180deg, #ffffff, *d9e8ff) !important;
-  color: #174a*b !important;
-  border: 1px solid *gba(255,255,255,.85) !important;
- *border-radius: 4px !important;
-  b*x-shadow:
-    inset 1px 1px 0 #fff*ff,
-    inset -1px -1px 0 #174a8b *important;
-  font-family: Tahoma, *Segoe UI", sans-serif !important;
-* font-weight: 800 !important;
+body .*abs::after {
+  content: "Licitatio*Biznis\AEnterprise Desktop" !impor*ant;
+  top: 16px !important;
+  lef*: 62px !important;
+  right: 8px !i*portant;
+  color: #ffffff !importa*t;
+  text-shadow: 1px 1px 0 rgba(0*0,0,.42) !important;
+  font-family* var(--font-sans) !important;
+  fo*t-size: 12px !important;
+  line-he*ght: 1.22 !important;
+  font-weigh*: 700 !important;
+  letter-spacing* 0 !important;
 }
 
-b*dy .tabs::after {
-  content: "Lici*ationBiznis\AEnterprise Desktop" !*mportant;
-  color: #ffffff !import*nt;
-  text-shadow: 1px 1px 0 rgba(*,0,0,.42) !important;
-  font-famil*: Tahoma, "Segoe UI", sans-serif !*mportant;
-  font-size: 12px !impor*ant;
-  line-height: 1.22 !importan*;
-  font-weight: 700 !important;
-}*
-body .lb-nav-section {
-  color: r*ba(255,255,255,.62) !important;
-  *ont-size: 10px !important;
-  font-*eight: 700 !important;
-  letter-sp*cing: .35px !important;
-  text-tra*sform: uppercase !important;
+body .lb-nav-sec*ion {
+  margin: 10px 8px 4px !impo*tant;
+  padding: 2px 2px 4px !impo*tant;
+  color: rgba(255,255,255,.6*) !important;
+  font-size: 9.5px !*mportant;
+  font-weight: 700 !impo*tant;
+  letter-spacing: .35px !imp*rtant;
+  text-transform: uppercase*!important;
+  border-bottom: 1px s*lid rgba(255,255,255,.18) !importa*t;
 }
 
-bo*y .tab-btn {
-  height: 30px !impor*ant;
-  border-radius: 4px !importa*t;
-  color: rgba(255,255,255,.9) !*mportant;
-  background: transparen* !important;
-  border: 1px solid t*ansparent !important;
-  font-famil*: var(--font-sans) !important;
-  f*nt-size: 11px !important;
-  font-w*ight: 400 !important;
-  text-shado*: 1px 1px 0 rgba(0,0,0,.32) !impor*ant;
-  transform: none !important;*}
+body .tab-btn {
+  height: 29*x !important;
+  padding: 0 8px !im*ortant;
+  border-radius: 4px !impo*tant;
+  color: rgba(255,255,255,.9* !important;
+  background: transpa*ent !important;
+  border: 1px soli* transparent !important;
+  font-fa*ily: var(--font-sans) !important;
+* font-size: 11px !important;
+  fon*-weight: 400 !important;
+  text-sh*dow: 1px 1px 0 rgba(0,0,0,.32) !im*ortant;
+  transform: none !importa*t;
+  transition: none !important;
+*
+
+body .tab-btn svg {
+  width: 13p* !important;
+  height: 13px !impor*ant;
+  stroke-width: 2 !important;*}
 
 body .tab-btn:hover {
   backgro*nd: linear-gradient(180deg, #fff6b*, #f4bf42) !important;
   color: #1*1 !important;
   text-shadow: none *important;
-  border-color: #fff #9*6500 #9c6500 #fff !important;
-  tr*nsform: none !important;
+  border-color: #ffffff*#9c6500 #9c6500 #ffffff !important*
+  transform: none !important;
 }
 
-body .*ab-btn.active {
-  background: line*r-gradient(180deg, #ffffff, #c7ddf*) !important;
-  color: #0f2f60 !im*ortant;
-  text-shadow: none !impor*ant;
-  border-color: #ffffff #0f2f*0 #0f2f60 #ffffff !important;
-  fo*t-weight: 700 !important;
-  box-sh*dow: none !important;
+*ody .tab-btn.active {
+  background* linear-gradient(180deg, #ffffff, *c7ddff) !important;
+  color: #0f2f*0 !important;
+  text-shadow: none *important;
+  border-color: #ffffff*#0f2f60 #0f2f60 #ffffff !important*
+  font-weight: 700 !important;
+  *ox-shadow: none !important;
 }
 
-body .tab-btn.active::before {
-  display: none !important;
+bod* .tab-btn.active::before {
+  displ*y: none !important;
 }
 
-body .tab-badge {
-  border-radius: 3px !important;
-  border: 1px solid rgba(255,255,255,.7) !important;
+body .tab-b*dge {
+  min-width: 18px !important*
+  padding: 1px 5px !important;
+  *order-radius: 3px !important;
+  bo*der: 1px solid rgba(255,255,255,.65) !important;
   background: rgba(255,255,255,.22) !important;
   color: #ffffff !important;
   font-size: 9px !important;
@@ -179,43 +250,60 @@ body .tab-btn.active .tab-badge {
   border-color: #9aa8b8 !important;
 }
 
+body .sidebar-logout-wrap {
+  border-color: rgba(255,255,255,.18) !important;
+}
+
+body .sidebar-logout-btn {
+  width: 100% !important;
+}
+
 /* ==========================================================================
    Topbar
    ========================================================================== */
 
 body header {
+  top: 8px !impor*ant;
+  left: calc(var(--lb-sidebar*w) + 16px) !important;
+  right: 8p* !important;
+  height: var(--lb-to*bar-h) !important;
+  padding: 0 10*x !important;
+  gap: 8px !importan*;
   background:
-   *linear-gradient(180deg, #2f73c9 0%* #1f5fae 56%, #174a8b 100%) !impor*ant;
-  border: 1px solid #0f2f60 !*mportant;
-  border-radius: 4px !im*ortant;
+    linear-gradien*(180deg, #2f73c9 0%, #1f5fae 56%, *174a8b 100%) !important;
+  border:*1px solid var(--corp-border-dark) *important;
+  border-radius: 4px !i*portant;
   box-shadow:
-    inset 1p* 1px 0 rgba(255,255,255,.55),
-    *nset -1px -1px 0 rgba(0,0,0,.32),
-*   2px 2px 0 rgba(0,0,0,.2) !impor*ant;
+    inset 1*x 1px 0 rgba(255,255,255,.55),
+   *inset -1px -1px 0 rgba(0,0,0,.32),*    2px 2px 0 rgba(0,0,0,.2) !impo*tant;
 }
 
 body header::before {
-  di*play: block !important;
-  content:*"LicitationBiznis Enterprise" !imp*rtant;
-  color: #ffffff !important*
+  d*splay: block !important;
+  content* "LicitationBiznis Enterprise" !im*ortant;
+  color: #ffffff !importan*;
   font-size: 13px !important;
-  f*nt-weight: 700 !important;
-  text-*hadow: 1px 1px 0 rgba(0,0,0,.42) !*mportant;
-  white-space: nowrap !i*portant;
-  margin-right: 10px !imp*rtant;
+  *ont-weight: 700 !important;
+  text*shadow: 1px 1px 0 rgba(0,0,0,.42) *important;
+  white-space: nowrap !*mportant;
+  margin-right: 10px !im*ortant;
 }
 
-body #busca-global-input*{
-  height: 30px !important;
-  bor*er-radius: 3px !important;
-  borde*: 1px solid #0f2f60 !important;
-  *ackground: #ffffff !important;
-  c*lor: #111 !important;
-  font-famil*: var(--font-sans) !important;
-  font-size: 11px !important;
-  box-shadow:
-    inset 1px 1px 1px rgba(0,0,0,.18),
-    inset -1px -1px 0 rgba(255,255,255,.8) !important;
+body .spacer {
+  flex: * 1 auto !important;
+}
+
+body #busca*global-input {
+  height: 29px !imp*rtant;
+  min-height: 29px !importa*t;
+  border-radius: 3px !important*
+  border: 1px solid #0f2f60 !impo*tant;
+  background: #ffffff !impor*ant;
+  color: #111 !important;
+  f*nt-family: var(--font-sans) !impor*ant;
+  font-size: 11px !important;*  box-shadow:
+    inset 1px 1px 1p* rgba(0,0,0,.18),
+    inset -1px -*px 0 rgba(255,255,255,.8) !important;
 }
 
 body #busca-global-input:focus {
@@ -230,6 +318,14 @@ body .busca-kbd-hint {
   border: 1px solid #9aa8b8 !important;
   border-radius: 2px !important;
   color: #657386 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 9px !important;
+}
+
+body .hbtn,
+body .user-chip,
+body #user-role-badge {
+  height: 29px !important;
 }
 
 /* ==========================================================================
@@ -237,6 +333,11 @@ body .busca-kbd-hint {
    ========================================================================== */
 
 body .content {
+  padding:
+    calc(var(--lb-topbar-h) + 16px)
+    10px
+    24px
+    calc(var(--lb-sidebar-w) + 18px) !important;
   background: var(--corp-panel) !important;
 }
 
@@ -249,19 +350,21 @@ body .tab-pane.active {
    ========================================================================== */
 
 body .lb-page-head {
-  backgr*und: linear-gradient(180deg, #ffff*f, #f1eedf) !important;
+  margin* 0 0 8px !important;
+  padding: 7p* 10px !important;
+  background: li*ear-gradient(180deg, #ffffff, #f1e*df) !important;
   border: 1px solid #9aa8b8 !important;
   border-radius: 2px !important;
   box-shadow:
     inset 1px 1px 0 #ffffff,
     inset -1px -1px 0 #d4d0bd !important;
-  padding: 7px 10px !important;
 }
 
 body .lb-page-title {
   color: #0f4179 !important;
   font-family: var(--font-sans) !important;
   font-size: 21px !important;
+  line-height: 1.05 !important;
   font-weight: 700 !important;
   letter-spacing: -0.2px !important;
 }
@@ -269,25 +372,28 @@ body .lb-page-title {
 body .lb-page-subtitle {
   color: #384657 !important;
   font-size: 11px !important;
+  margin-top: 2px !important;
 }
 
 /* ==========================================================================
-   Toolbars e filtros
+   Toolbars, filtros e busca das telas
    ========================================================================== */
 
 body .toolbar {
-  background: *ffffff !important;
-  border: 1px s*lid #d4d0bd !important;
-  border-r*dius: 8px !important;
-  box-shadow* none !important;
-  padding: 8px 1*px !important;
-}
+  margin-bottom* 8px !important;
+  padding: 8px 10*x !important;
+  gap: 6px !importan*;
+  background: #ffffff !important*
+  border: 1px solid #d4d0bd !impo*tant;
+  border-radius: 6px !import*nt;
+  box-shadow: none !important;*}
 
 body .filter-group {
-  background: #f5f3e7 !important;
-  border: 1px solid #d4d0bd !important;
-  border-radius: 4px !important;
+  backgrou*d: #f5f3e7 !important;
+  border: 1*x solid #d4d0bd !important;
+  bord*r-radius: 4px !important;
   padding: 4px 8px !important;
+  gap: 4px !important;
 }
 
 body .filter-group label {
@@ -295,6 +401,7 @@ body .filter-group label {
   font-family: var(--font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
+  letter-spacing: .2px !important;
 }
 
 body .filter-group.active {
@@ -304,6 +411,10 @@ body .filter-group.active {
 
 body .filter-group.active label {
   color: #174a8b !important;
+}
+
+body .toolbar-separator {
+  background: #d4d0bd !important;
 }
 
 /* ==========================================================================
@@ -323,28 +434,41 @@ body .sidebar-logout-btn {*  background: linear-gradient(180d*g, #ffffff, #ded9c
   font-size: 11px*!important;
   font-weight: 700 !im*ortant;
   transform: none !importa*t;
+  transition: none !important;
+*
+
+body .btn {
+  min-height: 24px !*mportant;
+  padding: 4px 10px !imp*rtant;
+  gap: 5px !important;
 }
 
-body .btn:hover,
-body .hbtn:*over,
-body .user-chip:hover,
-body *sidebar-logout-btn:hover {
-  backg*ound: linear-gradient(180deg, #fff*bd, #f4bf42) !important;
-  color: *111 !important;
-  transform: none *important;
+b*dy .btn:hover,
+body .hbtn:hover,
+b*dy .user-chip:hover,
+body .sidebar*logout-btn:hover {
+  background: l*near-gradient(180deg, #fff6bd, #f4*f42) !important;
+  color: #111 !im*ortant;
+  transform: none !importa*t;
 }
 
 body .btn:active,
-bo*y .hbtn:active {
-  border-color: #*aa8b8 #ffffff #ffffff #9aa8b8 !imp*rtant;
-  background: linear-gradie*t(180deg, #ded9c5, #ffffff) !impor*ant;
+body .hbtn*active,
+body .sidebar-logout-btn:a*tive {
+  border-color: #9aa8b8 #ff*fff #ffffff #9aa8b8 !important;
+  *ackground: linear-gradient(180deg,*#ded9c5, #ffffff) !important;
 }
 
-body .btn-primary {
-  back*round: linear-gradient(180deg, #2e*659, #1e5e43) !important;
-  border*color: #bde5d3 #163f2e #163f2e #bd*5d3 !important;
-  color: #ffffff !*mportant;
-  text-shadow: 1px 1px 0*rgba(0,0,0,.32) !important;
+b*dy .btn-primary,
+body .login-btn {*  background: linear-gradient(180d*g, #2e7659, #1e5e43) !important;
+ *border-color: #bde5d3 #163f2e #163*2e #bde5d3 !important;
+  color: #f*ffff !important;
+  text-shadow: 1p* 1px 0 rgba(0,0,0,.32) !important;*}
+
+body .btn-primary:hover,
+body .*ogin-btn:hover {
+  background: lin*ar-gradient(180deg, #368768, #1e5e*3) !important;
+  color: #ffffff !important;
 }
 
 body .btn-danger {
@@ -366,22 +490,31 @@ body .btn-sm {
 }
 
 /* ==========================================================================
-   Cards
+   Cards e KPIs
    ========================================================================== */
 
+body .summary-row {
+  gap: 8px *important;
+  margin-bottom: 10px !*mportant;
+}
+
 body .card,
-body .lb-card,
-body*.chart-card,
-body .stat-card,
-body*.dash-kpi,
+body .lb-*ard,
+body .chart-card,
+body .stat-*ard,
+body .dash-kpi,
 body .painel-section,
-b*dy .acomp-card,
-body .compra-item-*ard,
+body .acomp-card,
+body .compra-item-card,
 body .lote-selector-card {
-  *ackground: #f5f3e7 !important;
+  background: #f5f3e7 !important;
   border: 1px solid #d4d0bd !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   box-shadow: none !important;
+}
+
+body .card {
+  padding: 12px 14px !important;
 }
 
 body .card:hover,
@@ -401,7 +534,9 @@ body .card-value,
 body .lb-card__valor {
   font-family: var(--font-sans) !important;
   font-size: 18px !important;
+  line-height: 1.15 !important;
   font-weight: 700 !important;
+  letter-spacing: 0 !important;
 }
 
 /* ==========================================================================
@@ -409,31 +544,34 @@ body .lb-card__valor {
    ========================================================================== */
 
 body .table-wrapper,
-body .tabl*-wrap {
-  background: #ffffff !imp*rtant;
-  border: 1px solid #d4d0bd*!important;
-  border-radius: 8px !*mportant;
-  box-shadow: none !impo*tant;
+body .table-wrap {
+  background: #ffffff !important;
+  border: 1px solid #d4d0bd !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  margin-bottom: 8px !important;
 }
 
 body table {
-  background* #ffffff !important;
-  border-coll*pse: collapse !important;
-  font-f*mily: var(--font-sans) !important;*  font-size: 11px !important;
+  background: #ffffff !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
 }
 
-b*dy th,
+body th,
 body thead th {
-  backgroun*: linear-gradient(180deg, #ffffff,*#ece9d8) !important;
-  color: #657*86 !important;
-  border-right: 1px*solid #d4d0bd !important;
-  border*bottom: 1px solid #9aa8b8 !importa*t;
+  background: linear-gradient(180deg, #ffffff, #ece9d8) !important;
+  color: #657386 !important;
+  border-right: 1px solid #d4d0bd !important;
+  border-bottom: 1px solid #9aa8b8 !important;
   font-size: 10px !important;
- *font-weight: 700 !important;
-  tex*-transform: none !important;
-  let*er-spacing: .2px !important;
-  pad*ing-top: 6px !important;
-  padding-bottom: 6px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  letter-spacing: .15px !important;
+  padding: 5px 7px !important;
+  height: 25px !important;
 }
 
 body td,
@@ -442,8 +580,9 @@ body tbody td {
   border-bottom: 1px solid #e8e3d0 !important;
   color: #475569 !important;
   font-size: 11px !important;
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
+  padding: 5px 7px !important;
+  line-height: 1.25 !important;
+  height: 28px !important;
 }
 
 body tbody tr:nth-child(even) {
@@ -460,8 +599,13 @@ body .money {
   font-size: 10.5px !important;
 }
 
+body .lb-cell-strong {
+  font-weight: 700 !important;
+  color: #334155 !important;
+}
+
 /* ==========================================================================
-   Campos
+   Campos de formulário
    ========================================================================== */
 
 body input,
@@ -474,6 +618,7 @@ body .fc {
   color: #111 !important;
   font-family: var(--font-sans) !important;
   font-size: 11px !important;
+  min-height: 24px !important;
   box-shadow:
     inset 1px 1px 1px rgba(0,0,0,.16),
     inset -1px -1px 0 rgba(255,255,255,.85) !important;
@@ -514,6 +659,7 @@ body .lb-badge-status {
   font-size: 9px !important;
   font-weight: 700 !important;
   padding: 2px 6px !important;
+  box-shadow: none !important;
 }
 
 /* ==========================================================================
@@ -537,6 +683,10 @@ body .page-btn {
   font-weight: 700 !important;
 }
 
+body .page-btn:hover {
+  background: linear-gradient(180deg, #fff6bd, #f4bf42) !important;
+}
+
 body .page-btn.active {
   background: linear-gradient(180deg, #2e7659, #1e5e43) !important;
   color: #ffffff !important;
@@ -549,13 +699,14 @@ body .page-info {
 }
 
 /* ==========================================================================
-   Modais e popups como janelas de aplicativo
+   Modais e popups como janelas desktop
    ========================================================================== */
 
 body .modal-overlay,
 body .detail-popup-overlay,
 body .wizard-overlay,
-body .confirm-modal-overlay {
+body .confirm-modal-overlay,
+body .shortcuts-modal {
   background: rgba(0,0,0,.32) !important;
   backdrop-filter: none !important;
 }
@@ -576,16 +727,19 @@ body .wizard {
 
 body .modal-head,
 body .detail-popup-head,
-body .confirm-modal-head {
+body .confirm-modal-head,
+body .shortcuts-modal-head {
   background:
     linear-gradient(180deg, #2f73c9, #1f5fae 55%, #174a8b) !important;
   color: #ffffff !important;
   border-bottom: 1px solid #0f2f60 !important;
+  border-radius: 3px 3px 0 0 !important;
 }
 
 body .modal-title,
 body .detail-popup-title,
 body .confirm-modal-title,
+body .shortcuts-modal-title,
 body #popup-d-title,
 body #popup-e-title,
 body #popup-ac-title {
@@ -609,14 +763,17 @@ body .detail-popup-body {
   background: #f5f3e7 !important;
 }
 
-/* Botões de fechar */
 body .modal-close,
 body .detail-close {
+  width: 22px !important;
+  height: 22px !important;
   background: linear-gradient(180deg, #ffffff, #ded9c5) !important;
   border: 1px solid !important;
   border-color: #ffffff #9aa8b8 #9aa8b8 #ffffff !important;
   border-radius: 3px !important;
   color: #111 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
 }
 
 body .modal-close:hover,
@@ -626,7 +783,7 @@ body .detail-close:hover {
 }
 
 /* ==========================================================================
-   Notificações, busca e menus suspensos
+   Busca global, notificações e menus suspensos
    ========================================================================== */
 
 body #busca-global-result,
@@ -640,15 +797,22 @@ body .lb-column-popover {
 }
 
 /* ==========================================================================
-   Módulos extras: Mercado Livre, tarefas, relatórios e popups redimensionáveis
+   Módulos extras
    ========================================================================== */
 
 body #c-ml-box,
 body .lb-tarefas-box,
-body .lb-related-empenhos {
+body .lb-related-empenhos,
+body #c-logistica-entrega {
   background: #f5f3e7 !important;
   border: 1px solid #d4d0bd !important;
-  border-radius: 6px !important;
+  border-radius: 5px !important;
+}
+
+body .lb-tarefa-item {
+  background: #ffffff !important;
+  border: 1px solid #d4d0bd !important;
+  border-radius: 4px !important;
 }
 
 body .lb-resize-indicador {
@@ -664,6 +828,18 @@ body .lb-canto-ne::before,
 body .lb-canto-sw::before,
 body .lb-canto-se::before {
   border-color: #1f5fae !important;
+}
+
+/* ==========================================================================
+   Relatório de entregas
+   ========================================================================== */
+
+body #modal-rel-entregas .modal {
+  background: #f5f3e7 !important;
+}
+
+body #rep-ent-tbody tr:hover {
+  background: #fff6bd !important;
 }
 
 /* ==========================================================================
@@ -695,24 +871,57 @@ body .login-footer {
   color: #384657 !important;
 }
 
+body .login-label {
+  color: #384657 !important;
+}
+
 /* ==========================================================================
-   Densidade e acabamento final
+   Ajustes finais de identidade
    ========================================================================== */
 
-body .summary-row {
-  gap: 10px !important;
-}
-
-body .toolbar-separator {
-  background: #d4d0bd !important;
-}
-
-body .sidebar-logout-wrap {
-  border-color: rgba(255,255,255,.18) !important;
-}
-
 body .user-avatar {
+  width: 23px !important;
+  height: 23px !important;
   background: #216e45 !important;
   border-radius: 3px !important;
   border: 1px solid rgba(255,255,255,.7) !important;
+  font-size: 10px !important;
+}
+
+body .cv-green {
+  color: #216e45 !important;
+}
+
+body .cv-yellow {
+  color: #b77900 !important;
+}
+
+body .cv-red {
+  color: #b91c1c !important;
+}
+
+body .cv-blue {
+  color: #1f5fae !important;
+}
+
+body .cv-purple {
+  color: #5b4b91 !important;
+}
+
+/* ==========================================================================
+   Responsivo
+   ========================================================================== */
+
+@media (max-width: 980px) {
+  :root {
+    --lb-sidebar-w: 204px !important;
+  }
+
+  body header::before {
+    display: none !important;
+  }
+
+  body #busca-global-input {
+    width: 210px !important;
+  }
 }
