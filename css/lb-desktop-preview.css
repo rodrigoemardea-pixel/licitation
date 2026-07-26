@@ -1,271 +1,718 @@
-/* LICITATIONBIZNIS DESKTOP PREVIEW - XP REFINADO */
+/* ==========================================================================
+   LICITATIONBIZNIS CORPORATE DESKTOP
+   Camada visual: sistema corporativo desktop, sem alterar regras de negócio.
+   ========================================================================== */
+
+:root {
+  --font-sans: Tahoma, *Segoe UI", Verdana, Arial, sans-se*if !important;
+  --font-mono: Cons*las, "Lucida Console", monospace !*mportant;
+
+  --radius-xs: 2px !imp*rtant;
+  --radius-sm: 3px !importa*t;
+  --radius-md: 4px !important;
+* --radius-lg: 6px !important;
+  --*adius-xl: 8px !important;
+  --radi*s-2xl: 8px !important;
+  --radius-*xl: 8px !important;
+
+  --lb-sideba*-w: 218px !important;
+  --lb-topba*-h: 52px !important;
+  --lb-gap: 8*x !important;
+
+  --corp-blue-900: *0f2f60;
+  --corp-blue-800: #174a8b*
+  --corp-blue-700: #1f5fae;
+  --c*rp-blue-600: #2f73c9;
+  --corp-blu*-100: #e5efff;
+
+  --corp-panel: #e*e6d3;
+  --corp-panel-light: #f5f3e*;
+  --corp-panel-white: #ffffff;
+ *--corp-border: #9aa8b8;
+  --corp-b*rder-soft: #d4d0bd;
+  --corp-text:*#1f2933;
+  --corp-muted: #657386;
+*  --bg-app: #d6d0b8 !important;
+  *-bg-surface: #f5f3e7 !important;
+ *--bg-surface-solid: #f5f3e7 !impor*ant;
+  --bg-surface-hover: #fff8d7*!important;
+  --bg-surface-soft: #*ce9d8 !important;
+  --bg-inset: #f*ffff !important;
+
+  --border-light* #d4d0bd !important;
+  --border-me*ium: #9aa8b8 !important;
+  --borde*-focus: #2f73c9 !important;
+
+  --t*xt-primary: #1f2933 !important;
+  *-text-secondary: #384657 !importan*;
+  --text-tertiary: #657386 !impo*tant;
+  --text-placeholder: #7b879* !important;
+
+  --accent: #1f5fae *important;
+  --accent-hover: #174a*b !important;
+  --accent-muted: #e*efff !important;
+  --accent-ring: *gba(47, 115, 201, .24) !important;*
+  --success: #216e45 !important;
+* --warning: #b77900 !important;
+  *-danger: #b91c1c !important;
+  --p*rple: #5b4b91 !important;
+  --info* #1f5fae !important;
+
+  --success-*oft: #e5f3eb !important;
+  --warning-soft: #fff4ce !important;
+  --danger-soft: #fde4e4 !important;
+  --purple-soft: #eee9ff !important;
+  --info-soft: #e5efff !important;
+
+  --shadow-xs: none !important;
+  --shadow-sm: none !important;
+  --shadow-md: none !important;
+  --shadow-lg: none !important;
+  --shadow-xl: 3px 3px 0 rgba(0,0,0,.28) !important;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
 body,
 body.lb-modern-ui,
 body.lb-saas-enterprise {
-  font-family: Tahoma, "Segoe UI", Verdana, Arial, sans-serif !important;
-  background: #d6d0b8 !important;
-  color: #111 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  background: var(--corp-panel) !important;
+  color: var(--corp-text) !important;
 }
 
-/* Menu lateral */
+/* ==========================================================================
+   Menu lateral
+   ========================================================================== */
+
 body .tabs {
-  background: linea*-gradient(180deg, #3f8cff 0%, #245*db 42%, #1746a2 100%) !important;
-* border: 1px solid #0b2f7a !import*nt;
-  border-radius: 4px !importan*;
+  background:
+    *inear-gradient(180deg, #2f73c9 0%,*#1f5fae 42%, #174a8b 100%) !import*nt;
+  border: 1px solid #0f2f60 !i*portant;
+  border-radius: 4px !imp*rtant;
   box-shadow:
-    inset 1px 1px * rgba(255,255,255,.65),
-    inset *1px -1px 0 rgba(0,0,0,.35),
-    2p* 2px 0 rgba(0,0,0,.25) !important;*}
+    inset 1px*1px 0 rgba(255,255,255,.55),
+    i*set -1px -1px 0 rgba(0,0,0,.32),
+ *  2px 2px 0 rgba(0,0,0,.22) !impor*ant;
+}
 
 body .tabs::before {
-  content:*"LB" !important;
-  background: lin*ar-gradient(180deg, #fff, #c8dcff)*!important;
-  color: #1746a2 !important;
-  border: 1px solid #fff !important;
-  border-radius: 4px !important;
+  con*ent: "LB" !important;
+  background* linear-gradient(180deg, #ffffff, *d9e8ff) !important;
+  color: #174a*b !important;
+  border: 1px solid *gba(255,255,255,.85) !important;
+ *border-radius: 4px !important;
+  b*x-shadow:
+    inset 1px 1px 0 #fff*ff,
+    inset -1px -1px 0 #174a8b *important;
+  font-family: Tahoma, *Segoe UI", sans-serif !important;
+* font-weight: 800 !important;
 }
 
-body .tabs::after {
-  content: "LicitationBiznis\AProfessional" !important;
-  color: #fff !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-}
-
-/* Seções do menu */
-body .lb-nav-section {
-  color: rgba(255,255,255,.62) !important;
-  font-size: 10px !important;
+b*dy .tabs::after {
+  content: "Lici*ationBiznis\AEnterprise Desktop" !*mportant;
+  color: #ffffff !import*nt;
+  text-shadow: 1px 1px 0 rgba(*,0,0,.42) !important;
+  font-famil*: Tahoma, "Segoe UI", sans-serif !*mportant;
+  font-size: 12px !impor*ant;
+  line-height: 1.22 !importan*;
   font-weight: 700 !important;
-  letter-spacing: .4px !important;
-  text-transform: uppercase !important;
+}*
+body .lb-nav-section {
+  color: r*ba(255,255,255,.62) !important;
+  *ont-size: 10px !important;
+  font-*eight: 700 !important;
+  letter-sp*cing: .35px !important;
+  text-tra*sform: uppercase !important;
 }
 
-/* Botões do menu */
-body .tab-btn {
-  border-radius: 6px !important;
-  color: rgba(255,255,255,.88) !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 400 !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.35) !important;
-}
+bo*y .tab-btn {
+  height: 30px !impor*ant;
+  border-radius: 4px !importa*t;
+  color: rgba(255,255,255,.9) !*mportant;
+  background: transparen* !important;
+  border: 1px solid t*ansparent !important;
+  font-famil*: var(--font-sans) !important;
+  f*nt-size: 11px !important;
+  font-w*ight: 400 !important;
+  text-shado*: 1px 1px 0 rgba(0,0,0,.32) !impor*ant;
+  transform: none !important;*}
 
 body .tab-btn:hover {
-  background: linear-gradient(180deg, #fff7c0, #f8c44a) !important;
-  color: #111 !important;
-  text-shadow: none !important;
-  border-color: #fff #9c6500 #9c6500 #fff !important;
-  transform: none !important;
+  backgro*nd: linear-gradient(180deg, #fff6b*, #f4bf42) !important;
+  color: #1*1 !important;
+  text-shadow: none *important;
+  border-color: #fff #9*6500 #9c6500 #fff !important;
+  tr*nsform: none !important;
 }
 
-body .tab-btn.active {
-  background: linear-gradient(180deg, #8fc0ff, #3f8cff) !important;
-  color: #001c4a !important;
-  text-shadow: none !important;
-  border-color: #dbeafe #0b2f7a #0b2f7a #dbeafe !important;
+body .*ab-btn.active {
+  background: line*r-gradient(180deg, #ffffff, #c7ddf*) !important;
+  color: #0f2f60 !im*ortant;
+  text-shadow: none !impor*ant;
+  border-color: #ffffff #0f2f*0 #0f2f60 #ffffff !important;
+  fo*t-weight: 700 !important;
+  box-sh*dow: none !important;
+}
+
+body .tab-btn.active::before {
+  display: none !important;
+}
+
+body .tab-badge {
+  border-radius: 3px !important;
+  border: 1px solid rgba(255,255,255,.7) !important;
+  background: rgba(255,255,255,.22) !important;
+  color: #ffffff !important;
+  font-size: 9px !important;
+  font-family: var(--font-sans) !important;
   font-weight: 700 !important;
 }
 
-/* Topo */
+body .tab-btn.active .tab-badge {
+  background: #ffffff !important;
+  color: #174a8b !important;
+  border-color: #9aa8b8 !important;
+}
+
+/* ==========================================================================
+   Topbar
+   ========================================================================== */
+
 body header {
-  background: linear-gradient(180deg, #3f8cff 0%, #245edb 55%, #1746a2 100%) !important;
-  border: 1px solid #0b2f7a !important;
-  border-radius: 4px !important;
+  background:
+   *linear-gradient(180deg, #2f73c9 0%* #1f5fae 56%, #174a8b 100%) !impor*ant;
+  border: 1px solid #0f2f60 !*mportant;
+  border-radius: 4px !im*ortant;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.65),
-    inset -1px -1px 0 rgba(0,0,0,.35),
-    2px 2px 0 rgba(0,0,0,.22) !important;
+    inset 1p* 1px 0 rgba(255,255,255,.55),
+    *nset -1px -1px 0 rgba(0,0,0,.32),
+*   2px 2px 0 rgba(0,0,0,.2) !impor*ant;
 }
 
 body header::before {
-  display: block !important;
-  content: "LicitationBiznis Professional" !important;
-  color: #fff !important;
+  di*play: block !important;
+  content:*"LicitationBiznis Enterprise" !imp*rtant;
+  color: #ffffff !important*
   font-size: 13px !important;
-  font-weight: 700 !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
-  white-space: nowrap !important;
+  f*nt-weight: 700 !important;
+  text-*hadow: 1px 1px 0 rgba(0,0,0,.42) !*mportant;
+  white-space: nowrap !i*portant;
+  margin-right: 10px !imp*rtant;
 }
 
-/* Fundo da área de trabalho */
-body .content {
+body #busca-global-input*{
+  height: 30px !important;
+  bor*er-radius: 3px !important;
+  borde*: 1px solid #0f2f60 !important;
+  *ackground: #ffffff !important;
+  c*lor: #111 !important;
+  font-famil*: var(--font-sans) !important;
+  font-size: 11px !important;
+  box-shadow:
+    inset 1px 1px 1px rgba(0,0,0,.18),
+    inset -1px -1px 0 rgba(255,255,255,.8) !important;
+}
+
+body #busca-global-input:focus {
+  border-color: #f4bf42 !important;
+  box-shadow:
+    inset 1px 1px 1px rgba(0,0,0,.2),
+    0 0 0 2px rgba(244,191,66,.4) !important;
+}
+
+body .busca-kbd-hint {
   background: #ece9d8 !important;
+  border: 1px solid #9aa8b8 !important;
+  border-radius: 2px !important;
+  color: #657386 !important;
 }
 
-/* Cabeçalho das páginas */
+/* ==========================================================================
+   Área de trabalho
+   ========================================================================== */
+
+body .content {
+  background: var(--corp-panel) !important;
+}
+
+body .tab-pane.active {
+  animation: none !important;
+}
+
+/* ==========================================================================
+   Cabeçalho das telas
+   ========================================================================== */
+
 body .lb-page-head {
-  background: linear-gradient(180deg, #fff, #ece9d8) !important;
-  border: 1px solid #7f9db9 !important;
+  backgr*und: linear-gradient(180deg, #ffff*f, #f1eedf) !important;
+  border: 1px solid #9aa8b8 !important;
   border-radius: 2px !important;
   box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #b8b2a1 !important;
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #d4d0bd !important;
+  padding: 7px 10px !important;
 }
 
 body .lb-page-title {
-  color: #003c74 !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 22px !important;
+  color: #0f4179 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.2px !important;
 }
 
 body .lb-page-subtitle {
-  color: #333 !important;
+  color: #384657 !important;
   font-size: 11px !important;
 }
 
-/* Cards */
-body .card,
-body .lb-card,
-body .chart-card,
-body .stat-card,
-body .dash-kpi,
-body .painel-section,
-body .acomp-card {
-  background: #f4f1df !important;
-  border: 1px solid #d8d2bd !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-}
+/* ==========================================================================
+   Toolbars e filtros
+   ========================================================================== */
 
-/* Toolbar */
 body .toolbar {
-  background: #fff !important;
-  border: 1px solid #d8d2bd !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
+  background: *ffffff !important;
+  border: 1px s*lid #d4d0bd !important;
+  border-r*dius: 8px !important;
+  box-shadow* none !important;
+  padding: 8px 1*px !important;
 }
 
-/* Botões */
-body .btn,
-body .hbtn,
-body .user-chip {
-  background: linear-gradient(180deg, #fff, #d8d2bd) !important;
-  border: 1px solid !important;
-  border-color: #fff #7f9db9 #7f9db9 #fff !important;
+body .filter-group {
+  background: #f5f3e7 !important;
+  border: 1px solid #d4d0bd !important;
   border-radius: 4px !important;
-  color: #111 !important;
-  box-shadow: none !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 11px !important;
+  padding: 4px 8px !important;
+}
+
+body .filter-group label {
+  color: #657386 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 9px !important;
   font-weight: 700 !important;
 }
 
+body .filter-group.active {
+  background: #e5efff !important;
+  border-color: #2f73c9 !important;
+}
+
+body .filter-group.active label {
+  color: #174a8b !important;
+}
+
+/* ==========================================================================
+   Botões
+   ========================================================================== */
+
+body .btn,
+body .hbtn,
+body .us*r-chip,
+body .sidebar-logout-btn {*  background: linear-gradient(180d*g, #ffffff, #ded9c5) !important;
+ *border: 1px solid !important;
+  bo*der-color: #ffffff #9aa8b8 #9aa8b8*#ffffff !important;
+  border-radiu*: 4px !important;
+  color: #1f2933*!important;
+  box-shadow: none !im*ortant;
+  font-family: var(--font-*ans) !important;
+  font-size: 11px*!important;
+  font-weight: 700 !im*ortant;
+  transform: none !importa*t;
+}
+
 body .btn:hover,
-body .hbtn:hover,
-body .user-chip:hover {
-  background: linear-gradient(180deg, #fff7c0, #f8c44a) !important;
-  color: #111 !important;
-  transform: none !important;
+body .hbtn:*over,
+body .user-chip:hover,
+body *sidebar-logout-btn:hover {
+  backg*ound: linear-gradient(180deg, #fff*bd, #f4bf42) !important;
+  color: *111 !important;
+  transform: none *important;
+}
+
+body .btn:active,
+bo*y .hbtn:active {
+  border-color: #*aa8b8 #ffffff #ffffff #9aa8b8 !imp*rtant;
+  background: linear-gradie*t(180deg, #ded9c5, #ffffff) !impor*ant;
 }
 
 body .btn-primary {
-  background: linear-gradient(180deg, #2f7d5c, #1f5f43) !important;
-  border-color: #bde5d3 #16452f #16452f #bde5d3 !important;
-  color: #fff !important;
+  back*round: linear-gradient(180deg, #2e*659, #1e5e43) !important;
+  border*color: #bde5d3 #163f2e #163f2e #bd*5d3 !important;
+  color: #ffffff !*mportant;
+  text-shadow: 1px 1px 0*rgba(0,0,0,.32) !important;
 }
 
-/* Campos */
+body .btn-danger {
+  background: linear-gradient(180deg, #fff1f1, #f2b8b8) !important;
+  color: #8b0000 !important;
+  border-color: #ffffff #b91c1c #b91c1c #ffffff !important;
+}
+
+body .btn-success {
+  background: linear-gradient(180deg, #4cae6f, #216e45) !important;
+  color: #ffffff !important;
+  border-color: #bde5d3 #13552f #13552f #bde5d3 !important;
+}
+
+body .btn-sm {
+  min-height: 22px !important;
+  padding: 3px 8px !important;
+  font-size: 10px !important;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+body .card,
+body .lb-card,
+body*.chart-card,
+body .stat-card,
+body*.dash-kpi,
+body .painel-section,
+b*dy .acomp-card,
+body .compra-item-*ard,
+body .lote-selector-card {
+  *ackground: #f5f3e7 !important;
+  border: 1px solid #d4d0bd !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+body .card:hover,
+body .lb-card:hover {
+  box-shadow: none !important;
+}
+
+body .card-label,
+body .lb-card__label {
+  color: #657386 !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: .25px !important;
+}
+
+body .card-value,
+body .lb-card__valor {
+  font-family: var(--font-sans) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   Tabelas
+   ========================================================================== */
+
+body .table-wrapper,
+body .tabl*-wrap {
+  background: #ffffff !imp*rtant;
+  border: 1px solid #d4d0bd*!important;
+  border-radius: 8px !*mportant;
+  box-shadow: none !impo*tant;
+}
+
+body table {
+  background* #ffffff !important;
+  border-coll*pse: collapse !important;
+  font-f*mily: var(--font-sans) !important;*  font-size: 11px !important;
+}
+
+b*dy th,
+body thead th {
+  backgroun*: linear-gradient(180deg, #ffffff,*#ece9d8) !important;
+  color: #657*86 !important;
+  border-right: 1px*solid #d4d0bd !important;
+  border*bottom: 1px solid #9aa8b8 !importa*t;
+  font-size: 10px !important;
+ *font-weight: 700 !important;
+  tex*-transform: none !important;
+  let*er-spacing: .2px !important;
+  pad*ing-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+body td,
+body tbody td {
+  background: transparent !important;
+  border-bottom: 1px solid #e8e3d0 !important;
+  color: #475569 !important;
+  font-size: 11px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+body tbody tr:nth-child(even) {
+  background: #fbfaf4 !important;
+}
+
+body tbody tr:hover {
+  background: #fff6bd !important;
+}
+
+body .mono,
+body .money {
+  font-family: var(--font-mono) !important;
+  font-size: 10.5px !important;
+}
+
+/* ==========================================================================
+   Campos
+   ========================================================================== */
+
 body input,
 body select,
 body textarea,
 body .fc {
-  background: #fff !important;
-  border: 1px solid #7f9db9 !important;
+  background: #ffffff !important;
+  border: 1px solid #9aa8b8 !important;
   border-radius: 2px !important;
   color: #111 !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-size: 11px !important;
   box-shadow:
     inset 1px 1px 1px rgba(0,0,0,.16),
     inset -1px -1px 0 rgba(255,255,255,.85) !important;
 }
 
-/* Tabelas */
-body .table-wrapper,
-body .table-wrap {
-  background: #fff !important;
-  border: 1px solid #d8d2bd !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
+body input:focus,
+body select:focus,
+body textarea:focus,
+body .fc:focus {
+  border-color: #2f73c9 !important;
+  outline: 1px solid #f4bf42 !important;
 }
 
-body table {
-  background: #fff !important;
-  border-collapse: collapse !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 11px !important;
-}
-
-body th,
-body thead th {
-  background: linear-gradient(180deg, #fff, #ece9d8) !important;
-  color: #5b6675 !important;
-  border-right: 1px solid #d8d2bd !important;
-  border-bottom: 1px solid #b8b2a1 !important;
+body label,
+body .form-group label {
+  color: #384657 !important;
+  font-family: var(--font-sans) !important;
   font-size: 10px !important;
   font-weight: 700 !important;
-  text-transform: none !important;
 }
 
-body td,
-body tbody td {
-  background: transparent !important;
-  border-bottom: 1px solid #e5e0ca !important;
-  color: #475569 !important;
-  font-size: 11px !important;
-}
+/* ==========================================================================
+   Badges
+   ========================================================================== */
 
-body tbody tr:nth-child(even) {
-  background: #f9f7ed !important;
-}
-
-body tbody tr:hover {
-  background: #fff7c0 !important;
-}
-
-/* Badges */
 body .badge,
 body .lb-badge,
 body .estado-badge,
-body .tab-badge {
+body .lb-badge-empresa,
+body .lb-badge-analista,
+body .lb-badge-uf,
+body .lb-badge-status {
   border-radius: 2px !important;
-  border: 1px solid #7f9db9 !important;
-  background: #ece9d8 !important;
+  border: 1px solid #9aa8b8 !important;
+  background: #f5f3e7 !important;
   color: #111 !important;
-  font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-size: 9px !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+}
+
+/* ==========================================================================
+   Paginação
+   ========================================================================== */
+
+body .lb-pagination,
+body .pagination {
+  font-family: var(--font-sans) !important;
+}
+
+body .page-btn {
+  min-width: 25px !important;
+  height: 25px !important;
+  border-radius: 4px !important;
+  border: 1px solid !important;
+  border-color: #ffffff #9aa8b8 #9aa8b8 #ffffff !important;
+  background: linear-gradient(180deg, #ffffff, #ded9c5) !important;
+  color: #111 !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
 }
 
-/* Popups e modais */
+body .page-btn.active {
+  background: linear-gradient(180deg, #2e7659, #1e5e43) !important;
+  color: #ffffff !important;
+  border-color: #bde5d3 #163f2e #163f2e #bde5d3 !important;
+}
+
+body .page-info {
+  color: #657386 !important;
+  font-size: 11px !important;
+}
+
+/* ==========================================================================
+   Modais e popups como janelas de aplicativo
+   ========================================================================== */
+
+body .modal-overlay,
+body .detail-popup-overlay,
+body .wizard-overlay,
+body .confirm-modal-overlay {
+  background: rgba(0,0,0,.32) !important;
+  backdrop-filter: none !important;
+}
+
 body .modal,
 body .detail-popup,
 body .confirm-modal-box,
+body .shortcuts-modal-box,
 body .wizard {
-  background: #f4f1df !important;
-  border: 1px solid #0b2f7a !important;
+  background: #f5f3e7 !important;
+  border: 1px solid #0f2f60 !important;
   border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 #fff,
-    inset -1px -1px 0 #7f9db9,
-    4px 4px 0 rgba(0,0,0,.35) !important;
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #9aa8b8,
+    4px 4px 0 rgba(0,0,0,.28) !important;
 }
 
 body .modal-head,
 body .detail-popup-head,
 body .confirm-modal-head {
-  background: linear-gradient(180deg, #3f8cff, #245edb 55%, #1746a2) !important;
-  color: #fff !important;
-  border-bottom: 1px solid #0b2f7a !important;
+  background:
+    linear-gradient(180deg, #2f73c9, #1f5fae 55%, #174a8b) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #0f2f60 !important;
 }
 
 body .modal-title,
 body .detail-popup-title,
-body .confirm-modal-title {
-  color: #fff !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
+body .confirm-modal-title,
+body #popup-d-title,
+body #popup-e-title,
+body #popup-ac-title {
+  color: #ffffff !important;
+  font-family: var(--font-sans) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.42) !important;
+}
+
+body .detail-popup-sub,
+body #popup-d-sub,
+body #popup-e-sub,
+body #popup-ac-sub {
+  color: #e5efff !important;
+  font-size: 10px !important;
+}
+
+body .modal-body,
+body .detail-popup-body {
+  background: #f5f3e7 !important;
+}
+
+/* Botões de fechar */
+body .modal-close,
+body .detail-close {
+  background: linear-gradient(180deg, #ffffff, #ded9c5) !important;
+  border: 1px solid !important;
+  border-color: #ffffff #9aa8b8 #9aa8b8 #ffffff !important;
+  border-radius: 3px !important;
+  color: #111 !important;
+}
+
+body .modal-close:hover,
+body .detail-close:hover {
+  background: linear-gradient(180deg, #ffdfdf, #b91c1c) !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Notificações, busca e menus suspensos
+   ========================================================================== */
+
+body #busca-global-result,
+body #notif-panel,
+body .action-dropdown-menu,
+body .lb-column-popover {
+  background: #f5f3e7 !important;
+  border: 1px solid #0f2f60 !important;
+  border-radius: 4px !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.26) !important;
+}
+
+/* ==========================================================================
+   Módulos extras: Mercado Livre, tarefas, relatórios e popups redimensionáveis
+   ========================================================================== */
+
+body #c-ml-box,
+body .lb-tarefas-box,
+body .lb-related-empenhos {
+  background: #f5f3e7 !important;
+  border: 1px solid #d4d0bd !important;
+  border-radius: 6px !important;
+}
+
+body .lb-resize-indicador {
+  background: #fff6bd !important;
+  border: 1px solid #b77900 !important;
+  border-radius: 3px !important;
+  color: #5f4300 !important;
+  font-family: var(--font-sans) !important;
+}
+
+body .lb-canto-nw::before,
+body .lb-canto-ne::before,
+body .lb-canto-sw::before,
+body .lb-canto-se::before {
+  border-color: #1f5fae !important;
+}
+
+/* ==========================================================================
+   Login
+   ========================================================================== */
+
+body .login-overlay {
+  background: linear-gradient(180deg, #2f73c9 0%, #174a8b 100%) !important;
+  backdrop-filter: none !important;
+}
+
+body .login-card {
+  background: #f5f3e7 !important;
+  border: 1px solid #0f2f60 !important;
+  border-radius: 4px !important;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #9aa8b8,
+    4px 4px 0 rgba(0,0,0,.28) !important;
+}
+
+body .login-title {
+  color: #0f4179 !important;
+  font-family: var(--font-sans) !important;
+}
+
+body .login-sub,
+body .login-footer {
+  color: #384657 !important;
+}
+
+/* ==========================================================================
+   Densidade e acabamento final
+   ========================================================================== */
+
+body .summary-row {
+  gap: 10px !important;
+}
+
+body .toolbar-separator {
+  background: #d4d0bd !important;
+}
+
+body .sidebar-logout-wrap {
+  border-color: rgba(255,255,255,.18) !important;
+}
+
+body .user-avatar {
+  background: #216e45 !important;
+  border-radius: 3px !important;
+  border: 1px solid rgba(255,255,255,.7) !important;
 }
