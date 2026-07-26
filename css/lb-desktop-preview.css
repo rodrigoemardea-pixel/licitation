@@ -1,822 +1,269 @@
+/* LICITATIONBIZNIS DESKTOP PREVIEW - TESTE FORTE */
 
-/* ==========================================================================
-   LICITATIONBIZNIS DESKTOP PREVIEW
-   Tema visual inspirado em Windows XP Professional, Office 2003 e sistemas
-   administrativos clássicos. Não altera regras de negócio.
-   ========================================================================== */
-
-:root {
-  --font-sans: Tahoma, *Segoe UI", Verdana, Arial, sans-se*if !important;
-  --font-mono: "Luc*da Console", Consolas, monospace !*mportant;
-
-  --radius-xs: 2px !imp*rtant;
-  --radius-sm: 2px !importa*t;
-  --radius-md: 3px !important;
-* --radius-lg: 4px !important;
-  --*adius-xl: 4px !important;
-  --radi*s-2xl: 4px !important;
-  --radius-*xl: 4px !important;
-
-  --lb-sideba*-w: 224px !important;
-  --lb-topba*-h: 52px !important;
-  --lb-gap: 8*x !important;
-
-  --xp-blue-1: #3f8*ff;
-  --xp-blue-2: #245edb;
-  --xp*blue-3: #1746a2;
-  --xp-blue-dark:*#0b2f7a;
-  --xp-green: #2f7d32;
-  *-xp-silver: #ece9d8;
-  --xp-silver*2: #d8d2bd;
-  --xp-panel: #f4f1df;*  --xp-border-dark: #7f9db9;
-  --x*-border-light: #ffffff;
-
-  --bg-ap*: #3a6ea5 !important;
-  --bg-surfa*e: #f4f1df !important;
-  --bg-surf*ce-solid: #f4f1df !important;
-  --*g-surface-hover: #fff7d7 !importan*;
-  --bg-surface-soft: #ece9d8 !im*ortant;
-  --bg-inset: #ffffff !imp*rtant;
-
-  --border-light: #b8b2a1 *important;
-  --border-medium: #7f9*b9 !important;
-  --border-focus: #*16ac5 !important;
-
-  --text-primar*: #111111 !important;
-  --text-sec*ndary: #333333 !important;
-  --tex*-tertiary: #555555 !important;
-  -*text-placeholder: #777777 !importa*t;
-
-  --accent: #245edb !important*
-  --accent-hover: #1746a2 !import*nt;
-  --accent-muted: #dbeafe !imp*rtant;
-  --accent-ring: rgba(49, 1*6, 197, .25) !important;
-
-  --succ*ss: #2f7d32 !important;
-  --warnin*: #b77900 !important;
-  --danger: *c00000 !important;
-  --purple: #5b*f91 !important;
-  --info: #245edb *important;
-
-  --success-soft: #e6f*df !important;
-  --warning-soft: #*ff4ce !important;
-  --danger-soft:*#fde4e4 !important;
-  --purple-sof*: #ece6ff !important;
-  --info-sof*: #e5efff !important;
-
-  --shadow-*s: none !important;
-  --shadow-sm:*none !important;
-  --shadow-md: none !important;
-  --shadow-lg: none !important;
-  --shadow-xl: 4px 4px 0 rgba(0, 0, 0, .35) !important;
+body,
+body.lb-modern-ui,
+body.lb-saas-enterprise {
+  font-family: Tahoma, "Segoe UI", Verdana, Arial, sans-serif !important;
+  background: #3a6ea5 !important;
+  color: #111 !important;
 }
 
-/* Base geral */
-
-body {
-  font*family: var*--font-sans) !important;
-  font-si*e: 12px !important;
-  line-height:*1.35 !important;
-  background:
-   *linear-gradient(180deg, #5f9ee8 0%, #3a6ea5 38%, #245077 100%) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Scroll mais clássico */
-
-::-webkit-scrollbar {
-  width: *5px !important;
-  height* 15px !important;
-}
-
-::-webkit-scr*llbar-track {
-  background: #ece9d* !important;
-  border: 1px solid #*8b2a1 !important;
-}
-
-::-webkit-scr*llbar-thumb {
-  background: linear*gradient(90deg, #f*fefe, #c9c3ad) !important;
-  borde*: 1px solid #7f9db9 !important;
-  *order-radius: 0 !important;
-}
-
-::-*ebkit-scrollbar-thumb:hover {
-  ba*kground: linear-gradient(90deg, #f*ffff, #bdb69c) !important;
-}
-
-/* Sidebar estilo aplicativo desktop */
-
-.tabs {
-  inset: 8px auto 8px 8px !important;
-  width: var(--lb-sidebar-w) !important;
-  height: calc(100vh - 16px) !important;
-  padding: 76px 6px 10px !important;
-  gap: 1px !important;
-  border-radius: 4px !important;
+/* MENU LATERAL */
+body .tabs {
+  background: linear-gradient(180deg, #3f8cff 0%, #245edb 45%, #1746a2 100%) !important;
   border: 1px solid #0b2f7a !important;
-  background:
-    linear-gradient(180deg, #3f8cff 0%, #245edb 42%, #1746a2 100%) !important;
+  border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.65),
-    inset -1px -1px 0 rgba(0,0,0,.35),
-    2px 2px 0 rgba(0,0,0,.25) !important;
+    inset 1px 1px 0 rgba(255,255,255,.7),
+    inset -1px -1px 0 rgba(0,0,0,.38),
+    2px 2px 0 rgba(0,0,0,.28) !important;
 }
 
-.tabs::before {
+body .tabs::before {
   content: "LB" !important;
-  top: 14px !important;
-  left: 12px !important;
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 5px !important;
-  background:
-    linear-gradient(180deg, #ffffff 0%, #dbeafe 45%, #7fb0ff 100%) !important;
+  background: linear-gradient(180deg, #fff, #c8dcff) !important;
   color: #1746a2 !important;
-  border: 1px solid #ffffff !important;
+  border: 1px solid #fff !important;
+  border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 #ffffff,
+    inset 1px 1px 0 #fff,
     inset -1px -1px 0 #1746a2 !important;
-  font-family: Tahoma, sans-serif !important;
-  font-size: 15px !important;
-  letter-spacing: 0 !important;
 }
 
-.tabs::after {
+body .tabs::after {
   content: "LicitationBiznis\AProfessional Desktop" !important;
-  top: 16px !important;
-  left: 64px !important;
-  right: 8px !important;
-  color: #ffffff !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.35) !important;
-  font-size: 12px !important;
-  line-height: 1.22 !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
+  color: #fff !important;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
 }
 
-.lb-nav-section {
-  margin: 10px 6px 4px !important;
-  padding: 3px 6px !important;
-  color: #dbeafe !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: .3px !important;
-  border-bottom: 1px solid rgba(255,255,255,.35) !important;
-}
-
-.tab-btn {
-  height: 29px !important;
-  padding: 0 7px !important;
+/* BOTÕES DO MENU */
+body .tab-btn {
   border-radius: 2px !important;
-  color: #ffffff !important;
+  color: #fff !important;
   background: transparent !important;
+  border: 1px solid transparent !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
   font-size: 11px !important;
   font-weight: 400 !important;
   text-shadow: 1px 1px 0 rgba(0,0,0,.35) !important;
-  border: 1px solid transparent !important;
-  gap: 6px !important;
 }
 
-.tab-btn svg {
-  width: 13px !important;
-  height: 13px !important;
-  stroke-width: 2 !important;
-}
-
-.tab-btn:hover {
+body .tab-btn:hover {
+  background: linear-gradient(180deg, #fff7c0, #f8c44a) !important;
+  color: #111 !important;
+  text-shadow: none !important;
+  border-color: #fff #9c6500 #9c6500 #fff !important;
   transform: none !important;
-  background: linear-gradient(180deg, #ffef9f, #f8c44a) !important;
-  color: #111111 !important;
+}
+
+body .tab-btn.active {
+  background: linear-gradient(180deg, #fff, #c8dcff) !important;
+  color: #000 !important;
   text-shadow: none !important;
-  border-color: #ffffff #9c6500 #9c6500 #ffffff !important;
+  border-color: #fff #0b2f7a #0b2f7a #fff !important;
 }
 
-.tab-btn.active {
-  background: linear-gradient(180deg, #ffffff, #c8dcff) !important;
-  color: #000000 !important;
-  text-shadow: none !important;
-  font-weight: 700 !important;
-  border-color: #ffffff #0b2f7a #0b2f7a #ffffff !important;
-  box-shadow: none !important;
-}
-
-.tab-btn.active::before {
-  display: none !important;
-}
-
-.tab-badge {
-  min-width: 18px !important;
-  padding: 1px 5px !important;
-  border-radius: 2px !important;
-  background: #f4f1df !important;
-  color: #111111 !important;
-  border: 1px solid #7f9db9 !important;
-  font-size: 10px !important;
-  font-family: var(--font-sans) !important;
-}
-
-/* Topbar estilo janela de aplicação */
-
-header {
-  top: 8px !important;
-  left: calc(var(--lb-sidebar-w) + 16px) !important;
-  right: 8px !important;
-  height: var(--lb-topbar-h) !important;
-  padding: 0 10px !important;
-  border-radius: 4px !important;
+/* TOPO */
+body header {
+  background: linear-gradient(180deg, #3f8cff 0%, #245edb 55%, #1746a2 100%) !important;
   border: 1px solid #0b2f7a !important;
-  background:
-    linear-gradient(180deg, #3f8cff 0%, #245edb 52%, #1746a2 100%) !important;
+  border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.65),
+    inset 1px 1px 0 rgba(255,255,255,.7),
     inset -1px -1px 0 rgba(0,0,0,.35),
-    2px 2px 0 rgba(0,0,0,.25) !important;
+    2px 2px 0 rgba(0,0,0,.28) !important;
 }
 
-header::before {
+body header::before {
   display: block !important;
   content: "LicitationBiznis Professional" !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-size: 13px !important;
   font-weight: 700 !important;
   text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
-  margin-right: 10px !important;
   white-space: nowrap !important;
 }
 
-header .spacer {
-  flex: 1 1 auto !important;
-}
-
-/* Busca, botões do topo e usuário */
-
-#busca-global-input {
-  height: 30px !important;
-  width: 260px !important;
-  border-radius: 2px !important;
-  border: 1px solid #003c74 !important;
-  background: #ffffff !important;
-  color: #111111 !important;
-  box-shadow:
-    inset 1px 1px 1px rgba(0,0,0,.18),
-    inset -1px -1px 0 rgba(255,255,255,.8) !important;
-  font-size: 11px !important;
-  padding: 0 30px !important;
-}
-
-#busca-global-input:focus {
-  width: 300px !important;
-  border-color: #ffcc00 !important;
-  box-shadow:
-    inset 1px 1px 1px rgba(0,0,0,.2),
-    0 0 0 2px rgba(255, 204, 0, .45) !important;
-}
-
-.busca-kbd-hint {
-  border-radius: 2px !important;
+/* ÁREA DO CONTEÚDO */
+body .content {
   background: #ece9d8 !important;
+}
+
+/* CABEÇALHOS */
+body .lb-page-head {
+  background: linear-gradient(180deg, #fff, #ece9d8) !important;
   border: 1px solid #7f9db9 !important;
-  color: #333333 !important;
-  font-size: 9px !important;
-}
-
-.hbtn,
-.user-chip,
-#user-role-badge {
-  height: 30px !important;
-  border-radius: 2px !important;
-  background: linear-gradient(180deg, #ffffff, #d8d2bd) !important;
-  border: 1px solid !important;
-  border-color: #ffffff #7f9db9 #7f9db9 #ffffff !important;
-  box-shadow: none !important;
-  color: #111111 !important;
-}
-
-.hbtn {
-  width: 32px !important;
-}
-
-.hbtn:hover,
-.user-chip:hover {
-  background: linear-gradient(180deg, #fff7d7, #f8c44a) !important;
-}
-
-.user-avatar {
-  width: 22px !important;
-  height: 22px !important;
-  border-radius: 2px !important;
-  background: #245edb !important;
-  border: 1px solid #ffffff !important;
-  font-size: 10px !important;
-}
-
-/* Área principal */
-
-.content {
-  padding:
-    calc(var(--lb-topbar-h) + 18px)
-    10px
-    24px
-    calc(var(--lb-sidebar-w) + 18px) !important;
-  background: transparent !important;
-}
-
-.tab-pane.active {
-  animation: none !important;
-}
-
-/* Cabeçalho das páginas */
-
-.lb-page-head {
-  margin: 0 0 8px !important;
-  padding: 8px 10px !important;
   border-radius: 3px !important;
-  border: 1px solid #7f9db9 !important;
-  background:
-    linear-gradient(180deg, #ffffff, #ece9d8) !important;
   box-shadow:
-    inset 1px 1px 0 #ffffff,
+    inset 1px 1px 0 #fff,
     inset -1px -1px 0 #b8b2a1 !important;
 }
 
-.lb-page-title {
-  font-size: 17px !important;
-  font-weight: 700 !important;
+body .lb-page-title {
   color: #003c74 !important;
-  letter-spacing: 0 !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
 }
 
-.lb-page-subtitle {
-  font-size: 11px !important;
-  color: #444444 !important;
-  margin-top: 2px !important;
+body .lb-page-subtitle {
+  color: #333 !important;
 }
 
-/* Toolbars */
-
-.toolbar {
-  top: calc(var(--lb-topbar-h) + 12px) !important;
-  padding: 6px !important;
-  gap: 4px !important;
-  margin-bottom: 8px !important;
-  border-radius: 3px !important;
+/* CARDS */
+body .card,
+body .lb-card,
+body .chart-card,
+body .stat-card,
+body .dash-kpi,
+body .painel-section,
+body .acomp-card {
+  background: #f4f1df !important;
   border: 1px solid #7f9db9 !important;
-  background:
-    linear-gradient(180deg, #ffffff, #ece9d8) !important;
+  border-radius: 3px !important;
   box-shadow:
-    inset 1px 1px 0 #ffffff,
+    inset 1px 1px 0 #fff,
     inset -1px -1px 0 #b8b2a1 !important;
 }
 
-.filter-group {
-  border-radius: 2px !important;
-  background: #f4f1df !important;
-  border: 1px solid #b8b2a1 !important;
-  padding: 3px 7px !important;
-  gap: 4px !important;
+/* TOOLBAR */
+body .toolbar {
+  background: linear-gradient(180deg, #fff, #ece9d8) !important;
+  border: 1px solid #7f9db9 !important;
+  border-radius: 3px !important;
+  box-shadow:
+    inset 1px 1px 0 #fff,
+    inset -1px -1px 0 #b8b2a1 !important;
 }
 
-.filter-group label {
-  font-size: 9px !important;
-  color: #333333 !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
-}
-
-.filter-group select,
-.fc,
-input,
-select,
-textarea {
-  font-family: var(--font-sans) !important;
-}
-
-.filter-group select {
-  font-size: 11px !important;
-  color: #111111 !important;
-}
-
-/* Botões */
-
-.btn {
-  min-height: 25px !important;
-  padding: 4px 10px !important;
-  border-radius: 2px !important;
-  font-family: var(--font-sans) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
+/* BOTÕES */
+body .btn,
+body .hbtn,
+body .user-chip {
+  background: linear-gradient(180deg, #fff, #d8d2bd) !important;
   border: 1px solid !important;
-  border-color: #ffffff #7f9db9 #7f9db9 #ffffff !important;
-  background: linear-gradient(180deg, #ffffff, #d8d2bd) !important;
-  color: #111111 !important;
+  border-color: #fff #7f9db9 #7f9db9 #fff !important;
+  border-radius: 2px !important;
+  color: #111 !important;
   box-shadow: none !important;
-  transform: none !important;
-}
-
-.btn:hover {
-  background: linear-gradient(180deg, #fff7d7, #f8c44a) !important;
-  color: #111111 !important;
-  transform: none !important;
-}
-
-.btn:active {
-  border-color: #7f9db9 #ffffff #ffffff #7f9db9 !important;
-  background: linear-gradient(180deg, #d8d2bd, #ffffff) !important;
-  padding-top: 5px !important;
-  padding-bottom: 3px !important;
-}
-
-.btn-primary,
-.login-btn {
-  background: linear-gradient(180deg, #5f9ee8, #245edb) !important;
-  color: #ffffff !important;
-  border-color: #9cc2ff #0b2f7a #0b2f7a #9cc2ff !important;
-  text-shadow: 1px 1px 0 rgba(0,0,0,.35) !important;
-}
-
-.btn-primary:hover,
-.login-btn:hover {
-  background: linear-gradient(180deg, #6fb0ff, #1746a2) !important;
-  color: #ffffff !important;
-}
-
-.btn-success {
-  background: linear-gradient(180deg, #62c462, #2f7d32) !important;
-  color: #ffffff !important;
-  border-color: #b9f0b9 #1f5a22 #1f5a22 #b9f0b9 !important;
-}
-
-.btn-danger {
-  background: linear-gradient(180deg, #fff0f0, #f4b4b4) !important;
-  color: #8b0000 !important;
-  border-color: #ffffff #b94a48 #b94a48 #ffffff !important;
-}
-
-.btn-sm {
-  min-height: 22px !important;
-  padding: 3px 8px !important;
-  font-size: 10px !important;
-}
-
-/* Cards e resumos */
-
-.summary-row {
-  gap: 6px !important;
-  margin-bottom: 8px !important;
-}
-
-.card,
-.lb-card,
-.chart-card,
-.stat-card,
-.dash-kpi,
-.acomp-card,
-.painel-section,
-.compra-item-card,
-.lote-selector-card {
-  border-radius: 3px !important;
-  border: 1px solid #7f9db9 !important;
-  background: #f4f1df !important;
-  box-shadow:
-    inset 1px 1px 0 #ffffff,
-    inset -1px -1px 0 #b8b2a1 !important;
-  padding: 10px 12px !important;
-}
-
-.card:hover,
-.lb-card:hover {
-  box-shadow:
-    inset 1px 1px 0 #ffffff,
-    inset -1px -1px 0 #b8b2a1 !important;
-}
-
-.card-label,
-.lb-card__label {
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  color: #555555 !important;
-  letter-spacing: .2px !important;
-  margin-bottom: 4px !important;
-}
-
-.card-value,
-.lb-card__valor {
-  font-family: var(--font-sans) !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
-}
-
-/* Tabelas estilo Explorer */
-
-.table-wrapper,
-.table-wrap {
-  border-radius: 3px !important;
-  border: 1px solid #7f9db9 !important;
-  background: #ffffff !important;
-  box-shadow:
-    inset 1px 1px 0 #ffffff,
-    inset -1px -1px 0 #b8b2a1 !important;
-  margin-bottom: 8px !important;
-}
-
-table {
-  border-collapse: collapse !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
   font-size: 11px !important;
-  background: #ffffff !important;
-}
-
-thead th,
-th {
-  padding: 5px 7px !important;
-  height: 26px !important;
-  background:
-    linear-gradient(180deg, #ffffff 0%, #ece9d8 100%) !important;
-  border-right: 1px solid #b8b2a1 !important;
-  border-bottom: 1px solid #7f9db9 !important;
-  color: #111111 !important;
-  font-size: 10px !important;
   font-weight: 700 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
 }
 
-tbody td,
-td {
-  padding: 4px 7px !important;
-  border-bottom: 1px solid #e5e0ca !important;
-  color: #111111 !important;
-  line-height: 1.25 !important;
+body .btn:hover,
+body .hbtn:hover,
+body .user-chip:hover {
+  background: linear-gradient(180deg, #fff7c0, #f8c44a) !important;
+  color: #111 !important;
+  transform: none !important;
 }
 
-tbody tr:nth-child(even) {
-  background: #f9f7ed !important;
+body .btn-primary {
+  background: linear-gradient(180deg, #5f9ee8, #245edb) !important;
+  border-color: #9cc2ff #0b2f7a #0b2f7a #9cc2ff !important;
+  color: #fff !important;
 }
 
-tbody tr:hover {
-  background: #fff7d7 !important;
-}
-
-.lb-row {
-  cursor: pointer !important;
-}
-
-.mono,
-.money {
-  font-family: var(--font-mono) !important;
-  font-size: 10.5px !important;
-}
-
-/* Badges */
-
-.badge,
-.lb-badge,
-.estado-badge,
-.lb-badge-empresa,
-.lb-badge-analista,
-.lb-badge-uf,
-.lb-badge-status {
-  border-radius: 2px !important;
+/* CAMPOS */
+body input,
+body select,
+body textarea,
+body .fc {
+  background: #fff !important;
   border: 1px solid #7f9db9 !important;
-  background: #ece9d8 !important;
-  color: #111111 !important;
-  font-family: var(--font-sans) !important;
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  padding: 2px 5px !important;
-  box-shadow: inset 1px 1px 0 #ffffff !important;
-}
-
-/* Formulários */
-
-.fc,
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="date"],
-input[type="datetime-local"],
-select,
-textarea {
   border-radius: 2px !important;
-  border: 1px solid #7f9db9 !important;
-  background: #ffffff !important;
-  color: #111111 !important;
+  color: #111 !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-size: 11px !important;
   box-shadow:
     inset 1px 1px 1px rgba(0,0,0,.18),
     inset -1px -1px 0 rgba(255,255,255,.85) !important;
-  font-size: 11px !important;
-  min-height: 25px !important;
 }
 
-.fc:focus,
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #316ac5 !important;
-  outline: 1px solid #ffcc00 !important;
+/* TABELAS */
+body .table-wrapper,
+body .table-wrap {
+  background: #fff !important;
+  border: 1px solid #7f9db9 !important;
+  border-radius: 3px !important;
   box-shadow:
-    inset 1px 1px 1px rgba(0,0,0,.18),
-    0 0 0 1px rgba(255,204,0,.55) !important;
+    inset 1px 1px 0 #fff,
+    inset -1px -1px 0 #b8b2a1 !important;
 }
 
-.form-group label,
-label {
+body table {
+  background: #fff !important;
+  border-collapse: collapse !important;
+  font-family: Tahoma, "Segoe UI", sans-serif !important;
+  font-size: 11px !important;
+}
+
+body th,
+body thead th {
+  background: linear-gradient(180deg, #fff, #ece9d8) !important;
+  color: #111 !important;
+  border-right: 1px solid #b8b2a1 !important;
+  border-bottom: 1px solid #7f9db9 !important;
   font-size: 10px !important;
   font-weight: 700 !important;
-  color: #333333 !important;
+  text-transform: none !important;
 }
 
-/* Modais como janelas */
-
-.modal-overlay,
-.detail-popup-overlay,
-.wizard-overlay,
-.confirm-modal-overlay {
-  background: rgba(0, 0, 0, .35) !important;
-  backdrop-filter: none !important;
+body td,
+body tbody td {
+  background: transparent !important;
+  border-bottom: 1px solid #e5e0ca !important;
+  color: #111 !important;
+  font-size: 11px !important;
 }
 
-.modal,
-.detail-popup,
-.shortcuts-modal-box,
-.confirm-modal-box,
-.wizard {
-  border-radius: 4px !important;
-  border: 1px solid #0b2f7a !important;
+body tbody tr:nth-child(even) {
+  background: #f9f7ed !important;
+}
+
+body tbody tr:hover {
+  background: #fff7c0 !important;
+}
+
+/* MODAIS E POPUPS */
+body .modal,
+body .detail-popup,
+body .confirm-modal-box,
+body .wizard {
   background: #f4f1df !important;
+  border: 1px solid #0b2f7a !important;
+  border-radius: 4px !important;
   box-shadow:
-    inset 1px 1px 0 #ffffff,
+    inset 1px 1px 0 #fff,
     inset -1px -1px 0 #7f9db9,
     4px 4px 0 rgba(0,0,0,.35) !important;
 }
 
-.modal-head,
-.detail-popup-head,
-.confirm-modal-head {
-  min-height: 34px !important;
-  padding: 6px 8px !important;
-  border-radius: 3px 3px 0 0 !important;
+body .modal-head,
+body .detail-popup-head,
+body .confirm-modal-head {
+  background: linear-gradient(180deg, #3f8cff, #245edb 55%, #1746a2) !important;
+  color: #fff !important;
   border-bottom: 1px solid #0b2f7a !important;
-  background:
-    linear-gradient(180deg, #3f8cff, #245edb 55%, #1746a2) !important;
-  color: #ffffff !important;
 }
 
-.modal-title,
-.detail-popup-title,
-.confirm-modal-title,
-#popup-d-title,
-#popup-e-title,
-#popup-ac-title {
-  color: #ffffff !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
+body .modal-title,
+body .detail-popup-title,
+body .confirm-modal-title {
+  color: #fff !important;
   text-shadow: 1px 1px 0 rgba(0,0,0,.45) !important;
 }
 
-.detail-popup-sub,
-#popup-d-sub,
-#popup-e-sub,
-#popup-ac-sub {
-  color: #e5efff !important;
-  font-size: 10px !important;
-}
-
-.modal-body,
-.detail-popup-body {
-  background: #f4f1df !important;
-  color: #111111 !important;
-}
-
-/* Botões de fechar dos popups */
-
-.modal-close,
-.detail-close {
-  width: 22px !important;
-  height: 22px !important;
+/* BADGES */
+body .badge,
+body .lb-badge,
+body .estado-badge,
+body .tab-badge {
   border-radius: 2px !important;
-  background: linear-gradient(180deg, #ffffff, #d8d2bd) !important;
-  color: #111111 !important;
-  border: 1px solid !important;
-  border-color: #ffffff #7f9db9 #7f9db9 #ffffff !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-}
-
-.modal-close:hover,
-.detail-close:hover {
-  background: linear-gradient(180deg, #ffcccc, #c00000) !important;
-  color: #ffffff !important;
-}
-
-/* Popups redimensionáveis, mantendo funcionalidade do módulo existente */
-
-.lb-resize-indicador {
-  border-radius: 2px !important;
-  background: #fff7d7 !important;
-  border: 1px solid #b77900 !important;
-  color: #5f4300 !important;
-  font-family: Tahoma, sans-serif !important;
-}
-
-.lb-canto-redimensionar::before {
-  filter: none !important;
-}
-
-.lb-canto-nw::before,
-.lb-canto-ne::before,
-.lb-canto-sw::before,
-.lb-canto-se::before {
-  border-color: #245edb !important;
-}
-
-/* Paginação */
-
-.lb-pagination,
-.pagination {
-  font-family: var(--font-sans) !important;
-}
-
-.page-btn {
-  min-width: 24px !important;
-  height: 24px !important;
-  border-radius: 2px !important;
-  border: 1px solid !important;
-  border-color: #ffffff #7f9db9 #7f9db9 #ffffff !important;
-  background: linear-gradient(180deg, #ffffff, #d8d2bd) !important;
-  color: #111111 !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-}
-
-.page-btn.active {
-  background: linear-gradient(180deg, #5f9ee8, #245edb) !important;
-  color: #ffffff !important;
-  border-color: #9cc2ff #0b2f7a #0b2f7a #9cc2ff !important;
-}
-
-.page-info {
-  color: #333333 !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-}
-
-/* Busca global, notificações e menus flutuantes */
-
-#busca-global-result,
-#notif-panel,
-.action-dropdown-menu,
-.lb-column-popover {
-  border-radius: 3px !important;
-  border: 1px solid #0b2f7a !important;
-  background: #f4f1df !important;
-  box-shadow: 4px 4px 0 rgba(0,0,0,.35) !important;
-}
-
-/* Login */
-
-.login-overlay {
-  background:
-    linear-gradient(180deg, #5f9ee8 0%, #3a6ea5 45%, #245077 100%) !important;
-  backdrop-filter: none !important;
-}
-
-.login-card {
-  border-radius: 4px !important;
-  border: 1px solid #0b2f7a !important;
-  background: #f4f1df !important;
-  box-shadow:
-    inset 1px 1px 0 #ffffff,
-    inset -1px -1px 0 #7f9db9,
-    4px 4px 0 rgba(0,0,0,.35) !important;
-}
-
-.login-title {
-  color: #003c74 !important;
+  border: 1px solid #7f9db9 !important;
+  background: #ece9d8 !important;
+  color: #111 !important;
   font-family: Tahoma, "Segoe UI", sans-serif !important;
-  font-size: 22px !important;
-}
-
-.login-sub,
-.login-footer {
-  color: #333333 !important;
-}
-
-/* Ajuste responsivo básico */
-
-@media (max-width: 900px) {
-  :root {
-    --lb-sidebar-w: 210px !important;
-  }
-
-  #busca-global-input {
-    width: 190px !important;
-  }
-
-  #busca-global-input:focus {
-    width: 220px !important;
-  }
+  font-size: 9px !important;
+  font-weight: 700 !important;
 }
