@@ -1,5 +1,21 @@
 /* LICITATIONBIZNIS DESKTOP PREVIEW - TESTE FORTE */
 
+/* TESTE VISUAL DIRETO - XP PREVIEW 2 */
+
+body .tabs {
+  background: blue !important;
+  border: 5px solid yellow !important;
+}
+
+body header {
+  background: blue !important;
+  border: 5px solid yellow !important;
+}
+
+body .content {
+  background: #ece9d8 !important;
+}
+
 body,
 body.lb-modern-ui,
 body.lb-saas-enterprise {
