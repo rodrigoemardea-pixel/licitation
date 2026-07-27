@@ -1,7 +1,8 @@
 // Localizacao no projeto: api/ml/orders.js
 // Lista as compras recentes da conta Mercado Livre autorizada (perspectiva de comprador),
 // JA ENRIQUECIDAS com o status de envio, e por padrao EXCLUI as entregues e canceladas.
-// O valor unitario ja considera o desconto de cupom (coupon_amount dos pagamentos).
+// O valor unitario considera o desconto (cupom em order.coupon.amount ou payments[].coupon_amount,
+// e usa paid_amount liquido de frete quando este for menor).
 //
 // Uso normal:                 /api/ml/orders          (esconde entregues/canceladas)
 // Para ver todas (debug):     /api/ml/orders?todas=1
@@ -38,13 +39,21 @@ module.exports = async function handler(req, res) {
       const primeiroItem = (oi.item && oi.item.title) ? oi.item.title : null;
       const qtd = oi.quantity || 1;
 
-      // Desconto de cupom vem nos pagamentos (coupon_amount), nao no item.
+      // O desconto pode vir em 2 lugares: order.coupon.amount (cupom ML) ou
+      // payments[].coupon_amount. Pegamos o maior para nao contar em dobro.
       const pagamentos = Array.isArray(order.payments) ? order.payments : [];
-      const totalCupom = pagamentos.reduce(function (s, p) { return s + (p.coupon_amount || 0); }, 0);
+      const cupomPag = pagamentos.reduce(function (s, p) { return s + (p.coupon_amount || 0); }, 0);
+      const cupomOrder = (order.coupon && order.coupon.amount) ? order.coupon.amount : 0;
+      const totalCupom = Math.max(cupomPag, cupomOrder);
 
-      // Valor efetivamente pago pelos produtos (sem frete): total dos itens - cupom.
+      // Alternativa: valor efetivamente pago (paid_amount) menos frete, se disponivel.
+      const fretePago = pagamentos.reduce(function (s, p) { return s + (p.shipping_cost || 0); }, 0);
+      const pagoLiquido = (order.paid_amount != null) ? (order.paid_amount - fretePago) : null;
+
       const totalItens = (order.total_amount != null) ? order.total_amount : ((oi.unit_price || 0) * qtd);
-      const totalFinal = Math.max(0, totalItens - totalCupom);
+      // Prefere o total ja com desconto de cupom; se paid_amount for menor e valido, usa ele.
+      let totalFinal = Math.max(0, totalItens - totalCupom);
+      if (pagoLiquido != null && pagoLiquido > 0 && pagoLiquido < totalFinal) totalFinal = pagoLiquido;
       const vunit = qtd ? (totalFinal / qtd) : totalFinal;
 
       return {
@@ -55,6 +64,9 @@ module.exports = async function handler(req, res) {
         vunit: vunit,
         total_final: totalFinal,
         cupom: totalCupom,
+        cupom_pag: cupomPag,
+        cupom_order: cupomOrder,
+        pago_liquido: pagoLiquido,
         quantidade_itens: (order.order_items || []).length,
         total: order.total_amount,
         moeda: order.currency_id,
