@@ -290,7 +290,7 @@ function saveCompra() {
     qtd: +gv('c-qtd')||1,
     dcompra: gv('c-dcompra') || '',
     statusEntrega: statusEntrega,
-    dataPrevistaRecebimento: statusEntrega === 'em_transito' ? dataPrevistaRecebimento : '',
+        dataPrevistaRecebimento: (statusEntrega === 'em_transito' || statusEntrega === 'aguardando_envio') ? dataPrevistaRecebimento : '',
     dataRecebimentoMercadoria: statusEntrega === 'recebida' ? dataRecebimentoMercadoria : '',
     plataforma: gv('c-plataforma').toUpperCase(),
     link: gv('c-link') || '',
