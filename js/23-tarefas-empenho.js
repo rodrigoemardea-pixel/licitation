@@ -339,7 +339,9 @@
     const alertas = [];
     const hoje = hojeISO();
     const empenhos = _bancoEmpenhos();
-    const dismissed = (window._notifDismissed instanceof Set) ? window._notifDismissed : null;
+       var dismissed = null;
+    try { if (typeof _notifDismissed !== 'undefined' && _notifDismissed instanceof Set) dismissed = _notifDismissed; } catch (e) {}
+    if (!dismissed && window._notifDismissed instanceof Set) dismissed = window._notifDismissed;
 
     empenhos.forEach(e => {
       if (e.finalizado) return;
