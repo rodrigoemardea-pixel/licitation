@@ -1,5 +1,9 @@
 /* LICITATIONBIZNIS - ETAPA 5: ICONES E ACABAMENTO VISUAL
-   Atua somente em textos visiveis da interface. IDs, eventos e valores permanecem intactos. */
+   Atua somente em textos visiveis da interface. IDs, eventos e valores permanecem intactos.
+
+   O simbolo de copiar (U+2398) e deliberadamente deixado de fora do mapa:
+   aquele botao alterna para "check" e volta via textContent, o que apagaria o
+   SVG e o deixaria permanentemente como caractere. Mantido como esta. */
 (function(){
   'use strict';
 
@@ -23,7 +27,17 @@
     trash:'<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/>',
     edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/>',
     filter:'<path d="M4 5h16l-6 7v6l-4 2v-8z"/>',
-    arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+    arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+    arrowLeft:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    chevronLeft:'<path d="M15 6l-6 6 6 6"/>',
+    chevronRight:'<path d="M9 6l6 6-6 6"/>',
+    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+    calculator:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h4"/>',
+    search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    save:'<path d="M5 3h11l3 3v15H5zM8 3v6h7V3M8 14h8v7H8z"/>',
+    check:'<path d="m4 12 5 5L20 6"/>',
+    checkCircle:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+    xCircle:'<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>'
   };
 
   const map = [
@@ -31,8 +45,34 @@
     ['📅','calendar'],['📄','file'],['🔁','repeat'],['💻','monitor'],['🗺️','map'],
     ['🗺','map'],['⏱️','clock'],['⏱','clock'],['🛒','cart'],['🔔','bell'],
     ['⬇','download'],['✕','x'],['×','x'],['＋','plus'],['+','plus'],
-    ['🗑️','trash'],['🗑','trash'],['✏️','edit'],['✏','edit'],['🔽','filter'],['→','arrow']
+    ['🗑️','trash'],['🗑','trash'],['✏️','edit'],['✏','edit'],['🔽','filter'],['→','arrow'],
+    // Complemento: sem estes, parte da interface ficaria com emoji ao lado
+    // dos icones vetoriais. Cobre paginacao, calculadora, busca e confirmacoes.
+    ['←','arrowLeft'],['‹','chevronLeft'],['›','chevronRight'],
+    ['☰','menu'],['🧮','calculator'],['🔍','search'],
+    ['💾','save'],['✅','checkCircle'],['✓','check'],['❌','xCircle']
   ];
+
+  // Nome acessivel para os botoes que ficam SOMENTE com o icone.
+  // Sem isto, um botao cujo unico conteudo era "x" passa a nao ter nome
+  // algum depois da troca, e o leitor de tela anuncia apenas "botao".
+  const rotulos = {
+    x:'Fechar', xCircle:'Fechar', plus:'Adicionar', trash:'Excluir',
+    edit:'Editar', download:'Baixar', bell:'Notificacoes', menu:'Menu',
+    search:'Pesquisar', save:'Salvar', calculator:'Calculadora',
+    chevronLeft:'Pagina anterior', chevronRight:'Proxima pagina',
+    arrowLeft:'Voltar', arrow:'Avancar', check:'Confirmar',
+    checkCircle:'Confirmar', filter:'Filtrar', link:'Abrir link',
+    cart:'Compras', clock:'Prazo', calendar:'Data', user:'Analista',
+    building:'Orgao', clipboard:'Processo', file:'Documento',
+    monitor:'Sistema', map:'UF', pin:'Status', repeat:'Registro de precos'
+  };
+
+  function nomear(el,name){
+    if(el.getAttribute('aria-label') || el.getAttribute('title')) return;
+    if((el.textContent||'').trim()) return;
+    if(rotulos[name]) el.setAttribute('aria-label',rotulos[name]);
+  }
 
   function icon(name){
     const span=document.createElement('span');
@@ -58,6 +98,7 @@
         node.nodeValue=leading+trimmed.slice(symbol.length).replace(/^\s+/, '');
         node.parentNode.insertBefore(icon(name),node);
         el.dataset.lbIconified='1';
+        nomear(el,name);
         return;
       }
     }
