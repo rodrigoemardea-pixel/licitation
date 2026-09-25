@@ -614,3 +614,85 @@ body.lb-modern-ui #busca-global-input:focus{
   font-size: 13px !important;
   font-weight: 400 !important;
 }
+
+/* ==========================================================================
+   11) HIERARQUIA DOS CARDS DE RESUMO
+   Antes, todos os cards pesavam igual: sete competiam entre si em Contratos
+   Ativos e seis em Empenhos, sem nenhum responder primeiro a pergunta
+   "como estamos". Agora ha dois niveis. Os primarios ocupam um terco da
+   linha e usam tipografia maior; os de apoio ocupam um quarto.
+   Nenhum valor, rotulo, cor ou calculo mudou: alterou-se ordem e peso.
+
+   A linha passa de grid para flex porque, com flex, a ultima fileira estica
+   para preencher a largura. Isso elimina os cards orfaos que o grid deixava
+   (com sete cards e minmax de 170px, sobrava um sozinho em 1366 e 1440) e
+   dispensa qualquer calculo de colunas por breakpoint.
+   Como 3 x 33,3% preenche a fileira exatamente, os primarios sempre ficam
+   juntos na primeira linha e os de apoio descem para a seguinte.
+   ========================================================================== */
+
+body.lb-modern-ui .summary-row{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+body.lb-modern-ui .summary-row > .lb-card{
+  flex: 1 1 calc(25% - 9px);   /* 4 por fileira */
+  min-width: 0;                /* impede que valor longo estoure a caixa */
+}
+
+body.lb-modern-ui .summary-row > .lb-card--destaque{
+  flex: 1 1 calc(33.333% - 8px);   /* 3 por fileira */
+}
+
+/* --- Indicador primario --- */
+body.lb-modern-ui .lb-card--destaque .card-value{
+  font-size: clamp(24px, 1.9vw, 30px) !important;
+  letter-spacing: -.6px !important;
+}
+
+body.lb-modern-ui .lb-card--destaque .card-label{
+  color: var(--text-secondary) !important;
+  font-weight: 700;
+}
+
+body.lb-modern-ui .lb-card--destaque::before{
+  width: 38px;
+  height: 3px;
+}
+
+body.lb-modern-ui .lb-card--destaque .lb-card-sub{
+  font-size: 10.5px;
+}
+
+/* --- Indicador de apoio: recua sem sumir --- */
+body.lb-modern-ui .summary-row > .lb-card:not(.lb-card--destaque) .card-value{
+  font-size: clamp(16px, 1.1vw, 19px) !important;
+}
+
+body.lb-modern-ui .summary-row > .lb-card:not(.lb-card--destaque)::before{
+  width: 20px;
+  height: 2px;
+  opacity: .55;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 1100px){
+  body.lb-modern-ui .summary-row > .lb-card{
+    flex: 1 1 calc(33.333% - 8px);   /* 3 por fileira */
+  }
+  body.lb-modern-ui .summary-row > .lb-card--destaque{
+    flex: 1 1 calc(50% - 6px);       /* 2 por fileira */
+  }
+}
+
+@media (max-width: 760px){
+  body.lb-modern-ui .summary-row > .lb-card,
+  body.lb-modern-ui .summary-row > .lb-card--destaque{
+    flex: 1 1 calc(50% - 6px);
+  }
+  body.lb-modern-ui .lb-card--destaque .card-value{
+    font-size: clamp(20px, 5vw, 24px) !important;
+  }
+}
