@@ -6,7 +6,7 @@ function abrirPopupDisputa(id) {
   const contrato = getValorContrato(r);
   const lotes = getLotesComSaldo(id);
   const emps = _empenhosDaDisputa(id);
-  
+
   // Lucro realizado = soma do lucro das compras que têm data de pagamento preenchida
   const lucroRealizado = emps.reduce((s,e) => {
     return s + (e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0);
@@ -461,6 +461,7 @@ function toggleLoteCard(el) {
   const av = g('lote-aviso'); if(av) av.style.display = 'none';
   atualizarVemTotal();
 }
+
 function atualizarVemTotal() {
   const disputaId = gv('e-disputa-id');
   const disp = disputaId ? DB.disputas.find(d=>d.id===disputaId) : null;
@@ -480,6 +481,7 @@ function atualizarVemTotal() {
     calcE();
   }
 }
+
 function atualizarVemPorLoteEl(input) {
   atualizarVemPorLote(input.dataset.lid, +input.dataset.vunit, +input.dataset.maxqtd);
 }
@@ -495,15 +497,18 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
 }
 
 var _expandedDisputas = new Set();
+
 function renderD(){
   const allRows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
   // Show skeleton while data is being prepared
   if (!tb) return;
   if(!allRows.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="icon">🏆</div><p>Nenhum contrato encontrado</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
+
   // Reset page if out of bounds
   const totalPages = Math.ceil(allRows.length / PAGE_SIZE);
   if (_page.disputas > totalPages) _page.disputas = 1;
+
   const start = (_page.disputas - 1) * PAGE_SIZE;
   const rows = allRows.slice(start, start + PAGE_SIZE);
   renderPagination('disputas', allRows.length);
@@ -552,8 +557,8 @@ function renderD(){
     const _lucPrev    = _vlCont - _compraPrev - _custoPrev;
     const _empsD = _empenhosDaDisputa(r.id);
     const _lucReal = _empsD.reduce((s,e)=>s+(e.compras||[]).filter(c=>c.dpag).reduce((ss,c)=>ss+(c.luc||0),0),0);
-
     var _progCor = pctProg>=100?'var(--success)':pctProg>0?'var(--accent)':'var(--border-light)';
+
     htmlParts.push(
       '<tr style="' + rowStyle + 'height:36px;" onclick="abrirPopupDisputa(\'' + r.id + '\')">' +
       '<td class="inline-edit-cell" style="padding-top:5px;padding-bottom:5px;" onclick="event.stopPropagation()" id="inline-date-disputas-' + r.id + '">' +
@@ -625,6 +630,7 @@ function renderD(){
         const loteDesc = lote ? '<div style="font-size:9px;color:var(--text-tertiary);margin-top:1px;">🗂 ' + lote.descricao.substring(0,24) + (lote.descricao.length>24?'…':'') + '</div>' : '';
         // Custo real: soma de custo das compras realizadas
         const _custoReal = (e.compras||[]).reduce((s,c)=>s+(c.custo||0),0);
+
         htmlParts.push(
           '<tr style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + e.id + '\')">' +
           '<td style="' + zebraTd + '"></td>' +
@@ -740,11 +746,17 @@ function atualizarHeaderEmpenhosAgrupado() {
       <th style="min-width:90px;text-align:center;" onclick="sort('empenhos','dias')" id="sort-empenhos-dias" title="Ordenar por dias">⏱️ Dias</th>
     `;
   } else {
+    // Visao simples: alem dos dados cadastrais, exibe os tres valores que
+    // orientam cobranca. Antes essas colunas so existiam na visao agrupada,
+    // que esta desativada, e a tela ficava sem nenhuma informacao financeira.
     headerRow.innerHTML = `
       <th style="width:36px;text-align:center;"><input type="checkbox" id="chk-all-empenhos" title="Selecionar todos" onchange="toggleSelectAll('empenhos',this.checked)" style="cursor:pointer;width:15px;height:15px;"></th>
       <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
       <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
       <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
+      <th class="money" style="min-width:110px;" onclick="sort('empenhos','valorEmpenho')" id="sort-empenhos-valorEmpenho" title="Ordenar pelo valor do empenho">Val. Empenho</th>
+      <th class="money" style="min-width:100px;" onclick="sort('empenhos','lucroCompras')" id="sort-empenhos-lucroCompras" title="Ordenar pelo lucro">Lucro</th>
+      <th class="money" style="min-width:110px;" onclick="sort('empenhos','aReceber')" id="sort-empenhos-aReceber" title="Ordenar pelo valor a receber">A Receber</th>
       <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
     `;
   }
@@ -758,7 +770,8 @@ function renderE(){
   atualizarHeaderEmpenhosAgrupado();
   const rows=getSorted('empenhos').filter(r=>matches('empenhos',r) && !r.finalizado);
   const tb=g('tbody-empenhos');
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; renderPagination('empenhos', 0); sumE(); verificarAlertas(); return; }
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="icon">📄</div><p>Nenhum empenho</p></div></td></tr>'; renderPagination('empenhos', 0); sumE(); verificarAlertas(); return; }
+
   if(_agrupado) {
     const totalPaginasAgrupado = Math.ceil(rows.length / PAGE_SIZE);
     if (_page.empenhos > totalPaginasAgrupado) _page.empenhos = totalPaginasAgrupado;
@@ -771,6 +784,7 @@ function renderE(){
     verificarAlertas();
     return;
   }
+
   tb.innerHTML=rows.map(r=>{
     const{luc}=eVals(r);
     const compras = r.compras || [];
@@ -798,20 +812,29 @@ function renderE(){
     }
 
     const btnStyle = 'padding:5px 9px;font-size:15px;line-height:1;border-radius:8px;';
-    const _vlCompra = (r.compras||[]).reduce((s,c)=>s+(c.vtotal||0),0);
-    const _vlLucro  = (r.compras||[]).reduce((s,c)=>s+(c.luc||0),0);
-    const _vlRec    = (r.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+    // Mesmo criterio do rodape de totais: usa as compras quando existem e
+    // cai para eVals quando o empenho ainda nao tem compra registrada.
+    const _comprasE = r.compras || [];
+    const _valsE    = eVals(r);
+    const _vlCompra = _comprasE.length ? _comprasE.reduce((s,c)=>s+(c.vtotal||0),0) : _valsE.tot;
+    const _vlLucro  = _comprasE.length ? _comprasE.reduce((s,c)=>s+(c.luc||0),0)    : _valsE.luc;
+    const _vlRec    = _comprasE.length ? _comprasE.filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0) : _valsE.rec;
+
     return '<tr class="'+rowClass+'" style="cursor:pointer;" onclick="abrirPopupEmpenho(\'' + r.id + '\')">' +
       '<td onclick="event.stopPropagation()" style="text-align:center;"><input type="checkbox" class="chk-row-empenhos" data-id="' + r.id + '" onchange="onRowCheck(\'empenhos\')" style="cursor:pointer;width:15px;height:15px;"></td>' +
       '<td class="mono hi" style="font-size:11px;font-weight:600;">' + (r.num||'—') + '</td>' +
       '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">' + (r.orgao||'—') + '</td>' +
       '<td><span class="badge ' + (_badgeClass(r.analista)) + '" style="font-size:10px;">' + (r.analista||'—') + '</span></td>' +
+      '<td class="money lb-c-accent">' + fmt(r.vem||0) + '</td>' +
+      '<td class="money ' + (_vlLucro >= 0 ? 'lb-c-success' : 'lb-c-danger') + '">' + (_vlLucro !== 0 ? fmt(_vlLucro) : '—') + '</td>' +
+      '<td class="money lb-c-warning">' + (_vlRec > 0 ? fmt(_vlRec) : '—') + '</td>' +
       '<td>' + diasBadge + '</td>' +
       '</tr>';
   }).join('');
   sumE();
   verificarAlertas();
 }
+
 function sumE(){
   const a=DB.empenhos.filter(r=>matches('empenhos',r) && !r.finalizado);
   const te=a.reduce((s,r)=>s+r.vem,0);
@@ -850,9 +873,10 @@ function sumE(){
 
   // Update tfoot empenhos
   // Os totais do rodapé devem refletir exatamente os registros exibidos na tela.
-  // Na visão agrupada, as colunas exibidas são: Empenho, Val. Empenho, Valor Compra, Lucro, A Receber e Dias.
+  // Com as colunas financeiras presentes tambem na visao simples, o rodape
+  // passa a ser exibido nos dois modos.
   const tfRowE = document.getElementById('tfoot-empenhos-row');
-  if (tfRowE && a.length > 0 && _agrupado) {
+  if (tfRowE && a.length > 0) {
     const totalValorEmpenhoTela = a.reduce((s, r) => s + (r.vem || 0), 0);
     const totalValorCompraTela = a.reduce((s, r) => {
       const compras = r.compras || [];
@@ -871,19 +895,26 @@ function sumE(){
     }, 0);
 
     tfRowE.style.display = '';
-    tfRowE.innerHTML = `
-      <td style="background:var(--bg-surface-soft);"></td>
-      <td style="text-align:right;padding:10px 12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;background:var(--bg-surface-soft);">TOTAIS</td>
-      <td class="mono" style="text-align:right;color:var(--accent);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
-      <td class="mono" style="text-align:right;color:var(--text-secondary);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-compra">${fmt(totalValorCompraTela)}</td>
-      <td class="mono" style="text-align:right;color:${totalLucroTela >= 0 ? 'var(--success)' : 'var(--danger)'};font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-lucro">${fmt(totalLucroTela)}</td>
-      <td class="mono" style="text-align:right;color:var(--warning);font-weight:800;background:var(--bg-surface-soft);" id="tfoot-e-areceber">${fmt(totalAReceberTela)}</td>
-      <td style="background:var(--bg-surface-soft);"></td>
+    // O rodape acompanha o cabecalho vigente: 7 colunas na visao agrupada,
+    // 8 na visao simples. Os valores somados sao os mesmos nos dois casos.
+    tfRowE.innerHTML = _agrupado ? `
+      <td></td>
+      <td class="lb-compras-total-label">TOTAIS</td>
+      <td class="money lb-c-accent lb-w800" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
+      <td class="money lb-c-secondary lb-w800" id="tfoot-e-compra">${fmt(totalValorCompraTela)}</td>
+      <td class="money ${totalLucroTela >= 0 ? 'lb-c-success' : 'lb-c-danger'} lb-w800" id="tfoot-e-lucro">${fmt(totalLucroTela)}</td>
+      <td class="money lb-c-warning lb-w800" id="tfoot-e-areceber">${fmt(totalAReceberTela)}</td>
+      <td></td>
+    ` : `
+      <td></td>
+      <td colspan="3" class="lb-compras-total-label">TOTAIS</td>
+      <td class="money lb-c-accent lb-w800" id="tfoot-e-vem">${fmt(totalValorEmpenhoTela)}</td>
+      <td class="money ${totalLucroTela >= 0 ? 'lb-c-success' : 'lb-c-danger'} lb-w800" id="tfoot-e-lucro">${fmt(totalLucroTela)}</td>
+      <td class="money lb-c-warning lb-w800" id="tfoot-e-areceber">${fmt(totalAReceberTela)}</td>
+      <td></td>
     `;
   } else if (tfRowE) {
-    // Na visão simples essas colunas financeiras não são exibidas; por isso o rodapé fica oculto para evitar uma linha vazia.
     tfRowE.style.display = 'none';
     tfRowE.innerHTML = '';
   }
 }
-
