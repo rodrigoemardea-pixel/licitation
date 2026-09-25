@@ -11,19 +11,11 @@
 
 /* --------------------------------------------------------------------------
    TOKENS DE APOIO
-   Escala unica de elevacao. Substitui gradualmente os valores avulsos
-   (450, 500, 2000, 3000, 8000, 99000, 2147483000) espalhados pelo projeto.
+   A escala de empilhamento (--lb-z-*) vive no app.css e NAO deve ser
+   redeclarada aqui: como esta folha carrega depois, qualquer valor repetido
+   sobrescreveria a escala real e rebaixaria popups e menus.
    -------------------------------------------------------------------------- */
 :root{
-  --lb-z-sidebar: 400;
-  --lb-z-header: 500;
-  --lb-z-sticky: 300;
-  --lb-z-dropdown: 1200;
-  --lb-z-modal: 2000;
-  --lb-z-popup: 3000;
-  --lb-z-confirm: 4000;
-  --lb-z-toast: 5000;
-
   --lb-gap-xs: 4px;
   --lb-gap-sm: 6px;
   --lb-gap-md: 10px;
@@ -312,7 +304,7 @@
 
 .lb-column-popover{
   position: fixed;
-  z-index: var(--lb-z-dropdown);
+  z-index: var(--lb-z-dropdown, 2147483000);
   min-width: 200px;
   max-height: 320px;
   overflow-y: auto;
