@@ -513,157 +513,6 @@ th[aria-sort="none"]::after{content:' ↕';color:var(--text-placeholder);font-si
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
-/* Ajuste final de densidade: usa Contratos Ativos como referencia */
-
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)){
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-  padding-top:5px!important;
-  padding-bottom:5px!important;
-  line-height:1.15!important;
-}
-
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)),
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td,
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)),
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td{
-  height:36px!important;
-  min-height:36px!important;
-  max-height:36px!important;
-}
-
-#tab-acompanhamentos table tbody > tr:not(:has(.empty-state)) > td > :is(div,span),
-#tab-finalizadas table tbody > tr:not(:has(.empty-state)) > td > :is(div,span){
-  margin-top:0!important;
-  margin-bottom:0!important;
-  line-height:1.15!important;
-}
-
-
-/* ========================================================================== */
-/* PADRAO UNIFICADO DAS LINHAS DE TABELA - 5 TELAS DE LISTAGEM                */
-/* Substitui os quatro blocos exclusivos anteriores (correcao acomp, ajuste  */
-/* acomp, padrao emp-finalizados, padrao empenhos). Toda tela de listagem    */
-/* passa a compartilhar exatamente o mesmo padrao visual.                    */
-/* Escopo: #tab-acompanhamentos, #tab-disputas, #tab-empenhos,              */
-/*         #tab-finalizadas, #tab-emp-finalizados                            */
-/* ========================================================================== */
-
-/* Regra 1: elimina qualquer fundo aplicado inline (vermelho de vencido,
-   amarelo de atraso etc). Mantem somente o zebrado neutro e o hover. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr > td,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr[style] > td,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-30 > td,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-60 > td,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-90 > td{
-  background:#fff!important;
-  background-color:#fff!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:nth-child(even) > td,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:nth-child(even)[style] > td{
-  background:#fbfcfd!important;
-  background-color:#fbfcfd!important;
-}
-
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:hover > td{
-  background:var(--lb-hover)!important;
-  background-color:var(--lb-hover)!important;
-}
-
-/* Regra 2: padding lateral, tipografia base e alinhamento identicos nas 5 telas.
-   A altura, min/max-height e padding vertical vem do bloco em ~L399. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td{
-  padding-left:10px!important;
-  padding-right:10px!important;
-  box-sizing:border-box!important;
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:12px!important;
-  color:#455468!important;
-  vertical-align:middle!important;
-}
-
-/* Regra 3: colunas monoespacadas (numeros, datas). Basta usar class="mono". */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.mono{
-  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
-  font-size:12px!important;
-  font-weight:400!important;
-  font-variant-numeric:tabular-nums;
-}
-
-/* Regra 4: colunas de dinheiro. Basta usar class="money". */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.money{
-  font-family:'DM Mono','JetBrains Mono',monospace!important;
-  font-size:11px!important;
-  font-weight:700!important;
-  text-align:right!important;
-}
-
-/* Regra 5: elementos internos nao podem ampliar a linha. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td > :is(div,span,a,button){
-  min-height:0!important;
-  max-height:28px!important;
-  margin-top:0!important;
-  margin-bottom:0!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
-}
-
-/* Regra 6: badges (analista, empresa, UF, status) com tamanho compacto. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) :is(.badge,.estado-badge,.lb-badge){
-  height:auto!important;
-  min-height:0!important;
-  max-height:26px!important;
-  padding:3px 8px!important;
-  font-size:10px!important;
-  line-height:1.15!important;
-  vertical-align:middle!important;
-}
-
-/* Regra 7: botao de menu de acoes (lixeira / kebab) contido em 28x26. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) .action-dropdown,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) .action-dropdown-btn{
-  width:28px!important;
-  min-width:28px!important;
-  max-width:28px!important;
-  height:26px!important;
-  min-height:26px!important;
-  max-height:26px!important;
-  margin:0!important;
-  padding:0!important;
-  line-height:26px!important;
-  vertical-align:middle!important;
-}
-
-/* Regra 8: checkbox compacto em qualquer coluna. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) input[type="checkbox"]{
-  width:15px!important;
-  height:15px!important;
-  min-width:15px!important;
-  min-height:15px!important;
-  margin:0!important;
-  vertical-align:middle!important;
-}
-
-/* Regra 9: uniformiza o nome do órgão nas 5 telas.
-   Remove o negrito/cor escura de Contratos Ativos e Finalizados,
-   igualando ao texto base de Empenhos e Acompanhamentos. */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.hi,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td .lb-cell-strong,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td strong,
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td b{
-  font-weight:400!important;
-  color:#455468!important;
-}
-
 /* ========================================================================== */
 /* COMPONENTES REUTILIZAVEIS (usados por 19-componentes.js)                    */
 /* Cards de resumo, badges de empresa, analista, UF e status.                  */
@@ -1149,24 +998,163 @@ body.lb-modern-ui tfoot td{
   font-variant-numeric:tabular-nums;
 }
 
-/* Cinco telas de listagem: remove rigidez que cortava conteudo */
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)),
-:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td{
+/* ==========================================================================
+   LICITATIONBIZNIS - LINHAS DAS 5 TELAS DE LISTAGEM (fonte unica)
+   Consolidacao de 18 regras que estavam espalhadas em tres pontos do arquivo
+   (~L514, ~L548-660 e ~L1150). Cada seletor aparece UMA vez, com as mesmas
+   declaracoes que ja venciam o cascade. Resultado visual identico.
+   Escopo: #tab-acompanhamentos, #tab-disputas, #tab-empenhos,
+           #tab-finalizadas, #tab-emp-finalizados
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. ALTURA DA LINHA E DA CELULA
+   Fonte unica da densidade. Antes: 4 blocos concorrentes com 36px e 40px.
+   Vence 40px, que e o valor que o navegador ja aplicava.
+   -------------------------------------------------------------------------- */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)){
   height:40px!important;
   min-height:40px!important;
   max-height:none!important;
 }
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td{
+  padding-top:5px!important;
+  padding-bottom:5px!important;
+  line-height:1.15!important;
+  height:40px!important;
+  min-height:40px!important;
+  max-height:none!important;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) table tbody > tr:not(:has(.empty-state)) > td > :is(div,span){
+  margin-top:0!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
+}
+
+/* --------------------------------------------------------------------------
+   2. FUNDO DAS LINHAS
+   Neutraliza fundos inline (vencido, atraso) e mantem zebrado + hover.
+   O zebrado #fbfcfd vence por especificidade, nao por ordem.
+   -------------------------------------------------------------------------- */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr > td,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr[style] > td,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-30 > td,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-60 > td,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr.alerta-90 > td{
+  background:#fff!important;
+  background-color:#fff!important;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:nth-child(even) > td,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:nth-child(even)[style] > td{
+  background:#fbfcfd!important;
+  background-color:#fbfcfd!important;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:hover > td{
+  background:var(--lb-hover)!important;
+  background-color:var(--lb-hover)!important;
+}
+
+/* --------------------------------------------------------------------------
+   3. TIPOGRAFIA E ESPACAMENTO DA CELULA
+   padding 7px 10px vem daqui; o padding vertical de 5px vem do bloco 1,
+   que tem especificidade maior por incluir o seletor de tipo 'table'.
+   -------------------------------------------------------------------------- */
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td{
+  box-sizing:border-box!important;
+  color:#455468!important;
+  vertical-align:middle!important;
   padding:7px 10px!important;
   font-family:var(--font-sans)!important;
   font-size:12.5px!important;
   line-height:1.25!important;
 }
+
+/* --------------------------------------------------------------------------
+   4. COLUNAS ESPECIAIS
+   Especificidade maior que a celula base, por isso sobrescrevem fonte e corpo.
+   -------------------------------------------------------------------------- */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.mono{
+  font-family:'DM Sans','Inter',system-ui,sans-serif!important;
+  font-size:12px!important;
+  font-weight:400!important;
+  font-variant-numeric:tabular-nums;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.money{
+  font-family:'DM Mono','JetBrains Mono',monospace!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  text-align:right!important;
+}
+
+/* --------------------------------------------------------------------------
+   5. CONTENCAO DE ELEMENTOS INTERNOS
+   Impede que div, span, badge ou botao estique a linha.
+   -------------------------------------------------------------------------- */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td > :is(div,span,a,button){
+  min-height:0!important;
+  max-height:28px!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
+}
+
 :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td > :is(div,span,a){
   min-height:0!important;
   max-height:none!important;
   line-height:1.25!important;
 }
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) :is(.badge,.estado-badge,.lb-badge){
+  height:auto!important;
+  min-height:0!important;
+  max-height:26px!important;
+  padding:3px 8px!important;
+  font-size:10px!important;
+  line-height:1.15!important;
+  vertical-align:middle!important;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) .action-dropdown,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) .action-dropdown-btn{
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:26px!important;
+  vertical-align:middle!important;
+}
+
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) input[type="checkbox"]{
+  width:15px!important;
+  height:15px!important;
+  min-width:15px!important;
+  min-height:15px!important;
+  margin:0!important;
+  vertical-align:middle!important;
+}
+
+/* --------------------------------------------------------------------------
+   6. PESO DO TEXTO DO ORGAO
+   Iguala Contratos e Finalizados ao texto base das demais telas.
+   -------------------------------------------------------------------------- */
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td.hi,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td .lb-cell-strong,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td strong,
+:is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:not(:has(.empty-state)) > td b{
+  font-weight:400!important;
+  color:#455468!important;
+}
+
 
 /* Badges: cores reservadas a significados funcionais */
 body.lb-modern-ui :is(.badge,.lb-badge,.estado-badge,.status-pago,.status-pendente){
