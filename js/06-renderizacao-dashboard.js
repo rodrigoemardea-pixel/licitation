@@ -330,10 +330,10 @@ function atualizarDashboard() {
   const situacoes = { 'Ativas': disputasFiltradas.filter(d=>!d.finalizada).length, 'Finalizadas': disputasFiltradas.filter(d=>d.finalizada).length };
   if(graficos.situacoes) graficos.situacoes.destroy();
   const ctx2 = document.getElementById('grafico-situacoes')?.getContext('2d');
-  const cores = ['var(--accent)','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+  const cores = ['#2d6a4f','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
   if(ctx2) graficos.situacoes = new Chart(ctx2, {
     type: 'doughnut',
-    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: ['var(--accent)','#10b981'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
+    data: { labels: Object.keys(situacoes), datasets: [{ data: Object.values(situacoes), backgroundColor: ['#2d6a4f','#10b981'], borderWidth: 2, borderColor: '#ffffff' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{font:{size:10}, boxWidth:12} } } }
   });
 
@@ -371,7 +371,7 @@ function atualizarDashboard() {
   const ctx4 = document.getElementById('grafico-analistas')?.getContext('2d');
   if(ctx4) graficos.analistas = new Chart(ctx4, {
     type: 'pie',
-    data: { labels: Object.keys(analistas), datasets: [{ data: Object.values(analistas), backgroundColor: ['var(--accent)','#10b981','#f59e0b','#8b5cf6'], borderWidth: 2, borderColor: 'var(--bg-surface)' }] },
+    data: { labels: Object.keys(analistas), datasets: [{ data: Object.values(analistas), backgroundColor: ['#2d6a4f','#10b981','#f59e0b','#8b5cf6'], borderWidth: 2, borderColor: '#ffffff' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels:{font:{size:10}} } } }
   });
 
