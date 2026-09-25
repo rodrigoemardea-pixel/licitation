@@ -417,17 +417,6 @@ body[data-theme="light"]{
   --text-tertiary: #5b6864;
 }
 
-/* Separacao de linha nas cinco telas de listagem. O zebrado foi neutralizado
-   na ultima camada do app.css; a borda mais definida devolve a ancoragem
-   horizontal sem reintroduzir faixas cinza. */
-body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr > td{
-  border-bottom: 1px solid #e3e9e6 !important;
-}
-
-body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:hover > td{
-  background: #eef5f1 !important;
-}
-
 /* Busca global: devolve o comportamento de expansao no foco, anulado hoje
    pelo style inline do index.html. Remova o inline e esta regra basta. */
 body.lb-modern-ui #busca-global-input{
