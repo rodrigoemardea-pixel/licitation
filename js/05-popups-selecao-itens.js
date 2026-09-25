@@ -29,12 +29,12 @@ function abrirPopupDisputa(id) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
   })[caractere]);
   const empenhosRelacionadosHTML = emps.length ?
-    '<section class="lb-related-empenhos" style="margin:0 0 14px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">' +
-      '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);letter-spacing:.05em;margin-bottom:7px;">EMPENHOS DESTE CONTRATO</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+    '<section class="lb-related-empenhos">' +
+      '<div class="lb-related-label">EMPENHOS DESTE CONTRATO</div>' +
+      '<div class="lb-related-list">' +
         emps.map(e =>
           '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escaparEmpenhoRelacionado(e.num || '') + '">' +
-            '#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · <span style="color:var(--success);font-weight:800;">PAGO</span>' : ' · <span style="color:var(--warning);font-weight:800;">PENDENTE</span>') +
+            '#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + (e.finalizado ? ' · <span class="lb-tag-pago">PAGO</span>' : ' · <span class="lb-tag-pendente">PENDENTE</span>') +
           '</button>'
         ).join('') +
       '</div>' +
@@ -69,16 +69,16 @@ function abrirPopupDisputa(id) {
         const temSaldo = (l.qtdRestante || 0) > 0;
         const rowClick = temSaldo ? `onclick="novoEmpenhoComItem('${id}','${l.id}')" title="Clique para criar empenho para este item" style="cursor:pointer;background:var(--info-soft);"` : '';
         return '<tr ' + rowClick + '>' +
-          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;">+ Empenhar</span>' : '') + '</td>' +
+          '<td><strong>' + (l.descricao||'—').toUpperCase() + '</strong>' + (temSaldo ? ' <span class="lb-tag-empenhar">+ Empenhar</span>' : '') + '</td>' +
           '<td class="mono">' + (l.qtd||0) + '</td>' +
           '<td class="mono">' + fmt(l.vunit) + '</td>' +
-          '<td class="mono" style="padding-top:5px;padding-bottom:5px;color:var(--accent);font-weight:600;">' + l.qtdEnviada + '</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:600;">' + qtdViaCompras + '</td>' +
+          '<td class="mono lb-py5 lb-c-accent lb-w600">' + l.qtdEnviada + '</td>' +
+          '<td class="mono lb-c-success lb-w600">' + qtdViaCompras + '</td>' +
           '<td class="mono ' + cls + '">' + (l.qtdRestante > 0 ? l.qtdRestante : '✓ COMPLETO') + '</td>' +
           '<td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pctVal + '%"></div></div></td>' +
           '</tr>';
       }).join('')}</tbody>
-    </table>` : '<p style="color:var(--text-tertiary);font-size:12px;margin-top:8px;">Nenhum item cadastrado.</p>';
+    </table>` : '<p class="lb-empty-note">Nenhum item cadastrado.</p>';
 
   // Todas as compras de todos os empenhos desto contrato
   const todasCompras = [];
@@ -97,27 +97,27 @@ function abrirPopupDisputa(id) {
   });
 
   const comprasDisputaHTML = todasCompras.length ? `
-    <div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;">
+    <div class="detail-section lb-section-actions lb-mt16">
       <span>🛒 TODAS AS COMPRAS DO CONTRATO</span>
-      <button class="btn btn-ghost btn-sm" onclick="exportarComprasDisputa('${id}')" style="color:var(--success);border-color:var(--success);font-weight:700;">⬇ Exportar Selecionadas</button>
+      <button class="btn btn-ghost btn-sm lb-btn-export" onclick="exportarComprasDisputa('${id}')">⬇ Exportar Selecionadas</button>
     </div>
-    <table class="lotes-status-table" style="margin-top:8px;">
+    <table class="lotes-status-table lb-mt8">
       <thead><tr>
-        <th style="width:30px;"><input type="checkbox" id="chk-all-disp-${id}" onchange="toggleTodasComprasDisputa('${id}',this.checked)" title="Selecionar todas"></th>
+        <th class="lb-th-check"><input type="checkbox" id="chk-all-disp-${id}" onchange="toggleTodasComprasDisputa('${id}',this.checked)" title="Selecionar todas"></th>
         <th>Nº Emp.</th><th>Produto</th><th>Plataforma</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Link</th>
       </tr></thead>
       <tbody>${todasCompras.map(c => {
         const linkBtn = c.link ? `<a href="${c.link}" target="_blank" style="color:var(--accent);font-size:11px;">🔗 ver</a>` : '—';
         return '<tr>' +
-        '<td style="text-align:center;"><input type="checkbox" class="chk-compra-disp-'+id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
+        '<td class="lb-td-check"><input type="checkbox" class="chk-compra-disp-'+id+'" data-cid="'+c.id+'"></td>' +
           '<td class="mono" style="font-weight:700;font-size:11px;">#'+c._empNum+'</td>' +
           '<td style="font-size:11px;font-weight:600;">'+c._produto+'</td>' +
           '<td style="font-size:11px;">'+(c.plataforma||'—')+'</td>' +
           '<td class="mono">'+(c.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
-          '<td class="mono" style="padding-top:5px;padding-bottom:5px;color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
+          '<td class="mono lb-py5 lb-c-warning">'+fmt(c.custo||0)+'</td>' +
+          '<td class="mono lb-c-success lb-w700">'+fmt(c.luc||0)+'</td>' +
+          '<td class="mono lb-c-accent">'+fmt(c.rec||0)+'</td>' +
           '<td>'+linkBtn+'</td>' +
           '</tr>';
       }).join('')}
@@ -135,23 +135,23 @@ function abrirPopupDisputa(id) {
       '<div class="detail-field"><div class="detail-field-label">LUCRO PREVISTO</div><div class="detail-field-value" style="color:var(--warning);font-weight:700;">' + fmt(lucroPrevisto) + '</div></div>' +
       '<div class="detail-field"><div class="detail-field-label">LUCRO REALIZADO</div><div class="detail-field-value" style="color:var(--success);font-weight:700;">' + fmt(lucroRealizado) + '</div></div>' +
       '</div>' +
-      '<div class="detail-section" style="margin-top:14px;">💰 RESUMO FINANCEIRO</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--warning);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL COMPRAS</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--warning);font-family:var(--font-mono);">' + fmt(totalComprasDisp) + '</div>' +
+      '<div class="detail-section lb-mt14">💰 RESUMO FINANCEIRO</div>' +
+      '<div class="lb-fin-grid">' +
+      '<div class="lb-fin-card lb-fin-card--warning">' +
+      '<div class="lb-fin-label">TOTAL COMPRAS</div>' +
+      '<div class="lb-fin-value lb-c-warning">' + fmt(totalComprasDisp) + '</div>' +
       '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--text-tertiary);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">TOTAL CUSTOS</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--text-secondary);font-family:var(--font-mono);">' + fmt(totalCustosDisp) + '</div>' +
+      '<div class="lb-fin-card lb-fin-card--neutral">' +
+      '<div class="lb-fin-label">TOTAL CUSTOS</div>' +
+      '<div class="lb-fin-value lb-c-secondary">' + fmt(totalCustosDisp) + '</div>' +
       '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--success);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">LUCRO TOTAL</div>' +
-      '<div style="font-size:15px;font-weight:800;color:' + (totalLucroDisp >= 0 ? 'var(--success)' : 'var(--danger)') + ';font-family:var(--font-mono);">' + fmt(totalLucroDisp) + '</div>' +
+      '<div class="lb-fin-card lb-fin-card--success">' +
+      '<div class="lb-fin-label">LUCRO TOTAL</div>' +
+      '<div class="lb-fin-value ' + (totalLucroDisp >= 0 ? 'lb-c-success' : 'lb-c-danger') + '">' + fmt(totalLucroDisp) + '</div>' +
       '</div>' +
-      '<div style="background:var(--bg-surface-soft);border:1px solid var(--border-light);border-left:3px solid var(--accent);border-radius:10px;padding:12px 14px;text-align:center;">' +
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px;">A RECEBER</div>' +
-      '<div style="font-size:15px;font-weight:800;color:var(--accent);font-family:var(--font-mono);">' + fmt(totalAReceberDisp) + '</div>' +
+      '<div class="lb-fin-card lb-fin-card--accent">' +
+      '<div class="lb-fin-label">A RECEBER</div>' +
+      '<div class="lb-fin-value lb-c-accent">' + fmt(totalAReceberDisp) + '</div>' +
       '</div>' +
       '</div>' +
       '<div class="detail-grid-3">' +
@@ -159,7 +159,7 @@ function abrirPopupDisputa(id) {
       (r.contratoData ? '<div class="detail-field"><div class="detail-field-label">DT. CONTRATO</div><div class="detail-field-value" style="font-weight:700;">' + fmtD(r.contratoData) + '</div></div>' : '') +
       (r.contratoVencimento ? (() => { const hoje=new Date(); const vs=r.contratoVencimento; const venc=vs.includes('/')?new Date(vs.split('/').reverse().join('-')+'T12:00'):new Date(vs+'T12:00'); const dias=Math.floor((venc-hoje)/86400000); const cor=dias<0?'var(--danger)':dias<=30?'var(--warning)':'var(--success)'; const label=dias<0?`VENCIDO há ${Math.abs(dias)}d`:dias<=30?`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vence em ${dias}d`:`✅ Vence em ${dias}d`; const exib=venc.toLocaleDateString('pt-BR'); return '<div class="detail-field"><div class="detail-field-label">VENCIMENTO CONTRATO</div><div class="detail-field-value" style="color:'+cor+';font-weight:700;">'+exib+' <span style="font-size:11px;padding:2px 7px;background:'+cor+'20;border-radius:10px;">'+label+'</span></div></div>'; })() : '') +
     '</div>' +
-    (r.observacao ? '<div class="detail-field" style="margin-bottom:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
+    (r.observacao ? '<div class="detail-field lb-mb12"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value lb-obs-value">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     empenhosRelacionadosHTML +
     lotesHTML +
     comprasDisputaHTML +
@@ -218,9 +218,9 @@ function abrirPopupEmpenho(id) {
     ? DB.empenhos.filter(e => e.disputaId === r.disputaId && e.id !== r.id)
     : [];
   const empenhosRelacionadosHTML = empenhosRelacionados.length
-    ? '<section class="lb-related-empenhos" style="margin:0 0 12px;padding:10px 12px;border:1px solid var(--border-light);border-radius:10px;background:var(--bg-surface-soft);">' +
-        '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:7px;">OUTROS EMPENHOS DESTE CONTRATO</div>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+    ? '<section class="lb-related-empenhos">' +
+        '<div class="lb-related-label">OUTROS EMPENHOS DESTE CONTRATO</div>' +
+        '<div class="lb-related-list">' +
           empenhosRelacionados.map(e =>
             '<button type="button" class="btn btn-ghost btn-sm" onclick="abrirPopupEmpenho(\'' + e.id + '\')" title="Abrir empenho ' + escaparEmpenhoRelacionado(e.num || '') + '">' +
               '<span>#' + escaparEmpenhoRelacionado(e.num || 'SEM NÚMERO') + ' · </span>' +
@@ -259,7 +259,7 @@ function abrirPopupEmpenho(id) {
           '<td><strong>'+(item.descricao||'—').toUpperCase()+'</strong></td>' +
           '<td class="mono">'+(item.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(item.vunit)+'</td>' +
-          '<td class="mono" style="color:var(--accent);font-weight:700;">'+fmt((item.qtd||0)*(item.vunit||0))+'</td>' +
+          '<td class="mono lb-c-accent lb-w700">'+fmt((item.qtd||0)*(item.vunit||0))+'</td>' +
           '<td class="mono">'+comprasItem.length+'</td>' +
           '<td>'+(pago ? '<span class="status-pago">✅ PAGO</span>' : '<span class="status-pendente">⏳ PENDENTE</span>')+'</td>' +
           '</tr>';
@@ -267,13 +267,13 @@ function abrirPopupEmpenho(id) {
     </table>` : '';
   
   const comprasHTML = compras.length ? `
-    <div class="detail-section" style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="detail-section lb-section-actions">
       <span>🛒 COMPRAS INDIVIDUAIS</span>
-      <button class="btn btn-ghost btn-sm" onclick="exportarComprasSelecionadas('${r.id}')" style="color:var(--success);border-color:var(--success);font-weight:700;">⬇ Exportar Selecionadas</button>
+      <button class="btn btn-ghost btn-sm lb-btn-export" onclick="exportarComprasSelecionadas('${r.id}')">⬇ Exportar Selecionadas</button>
     </div>
     <table class="lotes-status-table" id="tabela-compras-${r.id}">
       <thead><tr>
-        <th style="width:30px;"><input type="checkbox" id="chk-all-compras-${r.id}" onchange="toggleTodasCompras('${r.id}',this.checked)" title="Selecionar todas"></th>
+        <th class="lb-th-check"><input type="checkbox" id="chk-all-compras-${r.id}" onchange="toggleTodasCompras('${r.id}',this.checked)" title="Selecionar todas"></th>
         <th>Item</th><th>Plataforma</th><th>Dt.Compra</th><th>Qtd</th><th>Vl.Compra</th><th>Custo</th><th>Lucro</th><th>A Receber</th><th>Pago</th><th>Dt.Pag</th><th>Ações</th>
       </tr></thead>
       <tbody>${compras.map(c => {
@@ -281,15 +281,15 @@ function abrirPopupEmpenho(id) {
         const pago = c.recebido > 0;
         const linkBtn = c.link ? `<a href="${c.link}" target="_blank" title="${c.link}" style="font-size:10px;color:var(--accent);">🔗</a>` : '';
         return '<tr>' +
-          '<td style="text-align:center;"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'" style="cursor:pointer;"></td>' +
+          '<td class="lb-td-check"><input type="checkbox" class="chk-compra-'+r.id+'" data-cid="'+c.id+'"></td>' +
           '<td style="font-size:10px;">'+((itemRef?.descricao||'—').toUpperCase())+'</td>' +
           '<td style="font-size:10px;font-weight:600;">'+(c.plataforma||'—')+' '+linkBtn+'</td>' +
-          '<td class="mono" style="color:var(--text-secondary);">'+(fmtD(c.dcompra)||'—')+'</td>' +
+          '<td class="mono lb-c-secondary">'+(fmtD(c.dcompra)||'—')+'</td>' +
           '<td class="mono">'+(c.qtd||0)+'</td>' +
           '<td class="mono">'+fmt(c.vtotal||0)+'</td>' +
-          '<td class="mono" style="color:var(--warning);">'+fmt(c.custo||0)+'</td>' +
-          '<td class="mono" style="color:var(--success);font-weight:700;">'+fmt(c.luc||0)+'</td>' +
-          '<td class="mono" style="color:var(--accent);">'+fmt(c.rec||0)+'</td>' +
+          '<td class="mono lb-c-warning">'+fmt(c.custo||0)+'</td>' +
+          '<td class="mono lb-c-success lb-w700">'+fmt(c.luc||0)+'</td>' +
+          '<td class="mono lb-c-accent">'+fmt(c.rec||0)+'</td>' +
           '<td>'+(pago?'<span class="status-pago">✅ '+fmt(c.recebido)+'</span>':'<span class="status-pendente">—</span>')+'</td>'+
           '<td class="mono">'+(fmtD(c.dpag)||'—')+'</td>' +
           '<td onclick="event.stopPropagation()">' +
@@ -300,16 +300,16 @@ function abrirPopupEmpenho(id) {
           '</tr>';
       }).join('')}</tbody>
       <tfoot>
-        <tr style="background:var(--bg-inset);font-weight:700;border-top:2px solid var(--border);">
-          <td colspan="5" style="padding:6px 8px;font-size:11px;color:var(--text-secondary);text-align:right;letter-spacing:.05em;">TOTAL</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--accent);" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--warning);" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:12px;color:var(--success);font-weight:800;" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
-          <td class="mono" style="padding:6px 8px;font-size:13px;color:var(--accent);font-weight:800;" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
+        <tr class="lb-compras-total">
+          <td colspan="5" class="lb-compras-total-label">TOTAL</td>
+          <td class="mono lb-c-accent" title="Vlr Compra">${fmt(compras.reduce((s,c)=>s+(c.vtotal||0),0))}</td>
+          <td class="mono lb-c-warning" title="Custo/Imposto">${fmt(compras.reduce((s,c)=>s+(c.custo||0),0))}</td>
+          <td class="mono lb-c-success lb-w800" title="Lucro">${fmt(compras.reduce((s,c)=>s+(c.luc||0),0))}</td>
+          <td class="mono lb-c-accent lb-w800 lb-fs13" title="A Receber">${fmt(compras.reduce((s,c)=>s+(c.rec||0),0))}</td>
           <td colspan="3"></td>
         </tr>
       </tfoot>
-    </table>` : `<div class="detail-section">🛒 COMPRAS</div><div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhuma compra cadastrada.</div>`;
+    </table>` : `<div class="detail-section">🛒 COMPRAS</div><div class="lb-empty-note">Nenhuma compra cadastrada.</div>`;
 
   // Impostos calculados a partir das compras realizadas (soma dos custos)
   const impRealizado = compras.reduce((s,c) => s + (c.custo||0), 0);
@@ -343,11 +343,11 @@ function abrirPopupEmpenho(id) {
     '</div>' +
     empenhosRelacionadosHTML +
     itensHTML +
-    '<div style="margin-top:12px;">' +
+    '<div class="lb-mt12">' +
       (function(){ const _temP = empenhoTemSaldo(r.id); return '<button class="btn ' + (_temP ? 'btn-primary' : 'btn-ghost') + ' btn-sm" onclick="' + (_temP ? 'fecharPopup(\'empenho\');fecharPopup(\'disputa\');abrirCompra(\'' + r.id + '\')' : '') + '" style="width:100%;' + (!_temP ? 'opacity:0.45;cursor:not-allowed;pointer-events:none;' : '') + '" title="' + (!_temP ? 'Todos os itens já foram completamente comprados' : '') + '">＋ ' + (_temP ? 'NOVA COMPRA PARA ESTE EMPENHO' : 'ITENS JÁ COMPLETAMENTE COMPRADOS') + '</button>'; })() +
     '</div>' +
     comprasHTML +
-    (r.observacao ? '<div class="detail-field" style="margin-top:12px;"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value" style="font-size:13px;font-weight:400;">' + r.observacao.toUpperCase() + '</div></div>' : '') +
+    (r.observacao ? '<div class="detail-field lb-mt12"><div class="detail-field-label">OBSERVAÇÃO</div><div class="detail-field-value lb-obs-value">' + r.observacao.toUpperCase() + '</div></div>' : '') +
     renderComentarios('empenho', id);
 
   g('popup-e-edit-btn').onclick = () => { fecharPopup('empenho'); fecharPopup('disputa'); editE(id); };
