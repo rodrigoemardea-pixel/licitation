@@ -25,12 +25,15 @@
   //   sublinha: texto pequeno abaixo do valor (opcional)
   //   onclick: string com onclick (opcional, ja escapado)
   //   borda:   se true, aplica borda esquerda colorida
+  //   destaque: se true, marca o card como indicador primario da tela
+  //             (ocupa mais largura na linha e usa tipografia maior)
   // -------------------------------------------------------------------------
   window.lbCard = function(opts){
     opts = opts || {};
     var cor = opts.cor || 'accent';
     var classes = ['card', 'lb-card', 'lb-card--' + cor];
     if (opts.borda) classes.push('lb-card--borda');
+    if (opts.destaque) classes.push('lb-card--destaque');
     if (opts.onclick) classes.push('lb-card--clicavel');
     var attrs = 'class="' + classes.join(' ') + '"';
     if (opts.id) attrs += ' id="' + esc(opts.id) + '"';

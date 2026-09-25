@@ -179,9 +179,9 @@ function sumFinalizadas(rows) {
   }, 0);
   const el = g('sum-finalizadas');
   if (el) el.innerHTML =
+    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroTotal), cor: 'success', destaque: true }) +
     lbCard({ label: 'Finalizadas',      valor: rows.length,     cor: 'success' }) +
-    lbCard({ label: 'Valor Contratado', valor: fmt(tv),         cor: 'accent'  }) +
-    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroTotal), cor: 'success' });
+    lbCard({ label: 'Valor Contratado', valor: fmt(tv),         cor: 'accent'  });
 }
 
 // ========== EMPENHOS FINALIZADOS ==========
@@ -440,12 +440,14 @@ function sumEmpFinalizados(rows) {
   const corSlug = pct >= 0 ? 'success' : 'danger';
   const el = g('sum-emp-finalizados');
   if (el) el.innerHTML =
+    // Primarios: resultado consolidado do que ja foi pago.
+    lbCard({ label: 'Lucro Total',     valor: fmt(lucroTotal),    cor: 'success', destaque: true }) +
+    lbCard({ label: '% Lucro',         valor: fmtPct(pct),        cor: corSlug,   destaque: true,
+             sublinha: 'lucro total / total comprado' }) +
+    lbCard({ label: 'Total Empenhado', valor: fmt(tv),            cor: 'accent',  destaque: true }) +
+    // Secundarios: volume e detalhamento.
     lbCard({ label: 'Finalizados',     valor: rows.length,        cor: 'purple'  }) +
-    lbCard({ label: 'Total Empenhado', valor: fmt(tv),            cor: 'accent'  }) +
-    lbCard({ label: 'Total Comprado',  valor: fmt(totalComprado), cor: 'warning' }) +
-    lbCard({ label: 'Lucro Total',     valor: fmt(lucroTotal),    cor: 'success' }) +
-    lbCard({ label: '% Lucro',         valor: fmtPct(pct),        cor: corSlug, borda: true,
-             sublinha: 'lucro total / total comprado' });
+    lbCard({ label: 'Total Comprado',  valor: fmt(totalComprado), cor: 'warning' });
 }
 
 // ========== EXPORTAR COMPRAS SELECIONADAS ==========

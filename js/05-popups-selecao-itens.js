@@ -699,14 +699,16 @@ function sumD(){
 
   const corPctSlug = pctLucro >= 0 ? 'success' : 'danger';
   g('sum-disputas').innerHTML =
+    // Primarios: tamanho da carteira, dinheiro que ja entrou e eficiencia.
+    lbCard({ label: 'Valor Contratado', valor: fmt(tv),              cor: 'accent',  destaque: true }) +
+    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroRecebidoD),  cor: 'success', destaque: true }) +
+    lbCard({ label: '% Lucro',          valor: fmtPct(pctLucro),     cor: corPctSlug, destaque: true,
+             sublinha: 'lucro recebido / total comprado' }) +
+    // Secundarios: detalhamento e previsao.
     lbCard({ label: 'Total',            valor: a.length,             cor: 'accent'  }) +
-    lbCard({ label: 'Valor Contratado', valor: fmt(tv),              cor: 'accent'  }) +
     lbCard({ label: 'Total Comprado',   valor: fmt(totalComprado),   cor: 'warning' }) +
     lbCard({ label: 'Lucro Previsto',   valor: fmt(lucroPrevTotal),  cor: 'warning', borda: true }) +
-    lbCard({ label: 'Lucro Recebido',   valor: fmt(lucroRecebidoD),  cor: 'success' }) +
-    lbCard({ label: 'Lucro Empenhado',  valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
-    lbCard({ label: '% Lucro',          valor: fmtPct(pctLucro),     cor: corPctSlug, borda: true,
-             sublinha: 'lucro recebido / total comprado' });
+    lbCard({ label: 'Lucro Empenhado',  valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true });
 
 }
 
@@ -836,13 +838,15 @@ function sumE(){
   // Escrita unica no DOM: a mesma ordem de cards de antes, sem o segundo
   // innerHTML += que reserializava e reprocessava a linha inteira.
   g('sum-empenhos').innerHTML =
-    lbCard({ label: 'Empenhos',          valor: a.length,             cor: 'accent'  }) +
-    lbCard({ label: 'Total Empenhado',   valor: fmt(te),              cor: 'accent'  }) +
-    lbCard({ label: 'Total Comprado',    valor: fmt(totalComprado),   cor: 'warning' }) +
-    lbCard({ label: 'Lucro Empenhado',   valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
-    lbCard({ label: '% Lucro Empenhado', valor: fmtPct(pctLucroEmpenhado), cor: corEmpSlug, borda: true,
+    // Primarios: quanto esta empenhado, quanto ainda entra e a eficiencia.
+    lbCard({ label: 'Total Empenhado',   valor: fmt(te),              cor: 'accent',  destaque: true }) +
+    lbCard({ label: 'A Receber',         valor: fmt(aReceber),        cor: 'purple',  destaque: true }) +
+    lbCard({ label: '% Lucro Empenhado', valor: fmtPct(pctLucroEmpenhado), cor: corEmpSlug, destaque: true,
              sublinha: 'lucro empenhado / total comprado' }) +
-    lbCard({ label: 'A Receber',         valor: fmt(aReceber),        cor: 'purple',  borda: true });
+    // Secundarios: contagem e detalhamento.
+    lbCard({ label: 'Empenhos',          valor: a.length,             cor: 'accent'  }) +
+    lbCard({ label: 'Total Comprado',    valor: fmt(totalComprado),   cor: 'warning' }) +
+    lbCard({ label: 'Lucro Empenhado',   valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true });
 
   // Update tfoot empenhos
   // Os totais do rodapé devem refletir exatamente os registros exibidos na tela.
