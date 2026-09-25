@@ -12,8 +12,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="./css/app.css?v=20260925-etapa1">
-<link rel="stylesheet" href="./css/lb-layout.css?v=20260925-etapa1">
+<link rel="stylesheet" href="./css/app.css?v=20260925-etapa9">
+<link rel="stylesheet" href="./css/lb-layout.css?v=20260925-etapa9">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body data-theme="light" class="lb-modern-ui">
@@ -443,16 +443,6 @@
           <th style="min-width:80px;text-align:center;" onclick="sort('disputas', 'progresso')" id="sort-disputas-progresso" title="Ordenar pelo progresso">Progresso</th>
         </tr></thead>
         <tbody id="tbody-disputas"></tbody>
-        <tfoot id="tfoot-disputas" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
-          <tr id="tfoot-disputas-row" style="display:none;">
-            <td></td>
-            <td style="color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
-            <td></td>
-            <td class="money" id="tfoot-d-contrato" style="color:var(--accent);font-family:var(--font-mono);"></td>
-            <td class="money" id="tfoot-d-lucro-prev" style="color:var(--warning);font-family:var(--font-mono);"></td>
-            <td></td>
-          </tr>
-        </tfoot>
       </table>
     </div>
     <div id="pagination-disputas" class="pagination" style="display:none;"></div>
@@ -510,13 +500,20 @@
           <th onclick="sort('empenhos', 'num')" id="sort-empenhos-num" title="Ordenar pelo número do empenho">Empenho</th>
           <th onclick="sort('empenhos', 'orgao')" id="sort-empenhos-orgao" title="Ordenar por órgão">Órgão</th>
           <th onclick="sort('empenhos', 'analista')" id="sort-empenhos-analista" title="Ordenar por analista">Analista</th>
+          <th class="money" style="min-width:110px;" onclick="sort('empenhos','valorEmpenho')" id="sort-empenhos-valorEmpenho" title="Ordenar pelo valor do empenho">Val. Empenho</th>
+          <th class="money" style="min-width:100px;" onclick="sort('empenhos','lucroCompras')" id="sort-empenhos-lucroCompras" title="Ordenar pelo lucro">Lucro</th>
+          <th class="money" style="min-width:110px;" onclick="sort('empenhos','aReceber')" id="sort-empenhos-aReceber" title="Ordenar pelo valor a receber">A Receber</th>
           <th onclick="sort('empenhos','dias')" id="sort-empenhos-dias" style="cursor:pointer;user-select:none;" title="Ordenar por dias">⏱️ Dias</th>
         </tr></thead>
         <tbody id="tbody-empenhos"></tbody>
         <tfoot id="tfoot-empenhos" style="position:sticky;bottom:0;z-index:5;background:var(--bg-surface-soft);border-top:2px solid var(--border-medium);font-weight:700;font-size:11px;">
           <tr id="tfoot-empenhos-row" style="display:none;">
-            <td colspan="3" style="text-align:right;padding-right:12px;color:var(--text-tertiary);font-size:10px;text-transform:uppercase;letter-spacing:0.3px;">TOTAIS</td>
-            <td colspan="2"></td>
+            <td></td>
+            <td colspan="3" class="lb-compras-total-label">TOTAIS</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </tfoot>
       </table>
@@ -1168,7 +1165,7 @@
 <script src="./js/18-paginacao.js"></script>
 <script src="./js/19-componentes.js"></script>
 <script src="./js/04-calculos-filtros-navegacao.js"></script>
-<script src="./js/05-popups-selecao-itens.js"></script>
+<script src="./js/05-popups-selecao-itens.js?v=20260925-etapa9"></script>
 <script src="./js/06-renderizacao-dashboard.js"></script>
 <script src="./js/07-modais-formularios-crud.js"></script>
 <script src="./js/08-compras.js"></script>
@@ -1227,7 +1224,5 @@
 <!-- Por ultimo: troca os emojis iniciais dos botoes por SVG e mantem um
      MutationObserver ativo para o conteudo renderizado depois. -->
 <script src="./js/20-acabamento-visual.js?v=20260925-2"></script>
-<script src="./lb-layout.css?v=20260925-etapa8"></script>
-
 </body>
 </html>
