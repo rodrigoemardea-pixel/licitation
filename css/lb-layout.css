@@ -298,6 +298,36 @@
   opacity: 1;
 }
 
+/* Botoes sem texto ao lado do icone: fechar, paginacao e a alca da sidebar.
+   Sem isto, a margem de 6px desloca o desenho para a esquerda do centro. */
+.page-btn .lb-ui-icon,
+.sidebar-toggle .lb-ui-icon,
+.lb-tarefa-btn .lb-ui-icon,
+.mtg .lb-ui-icon{
+  margin-right: 0;
+}
+
+/* A alca da sidebar tem 24px: o icone precisa acompanhar. */
+.sidebar-toggle .lb-ui-icon{
+  width: 13px;
+  height: 13px;
+  flex-basis: 13px;
+  vertical-align: 0;
+}
+
+/* Botoes pequenos das tabelas (editar, duplicar, excluir) ficam mais
+   equilibrados com o traco um pouco mais fino. */
+.btn-sm .lb-ui-icon svg{
+  stroke-width: 1.75;
+}
+
+/* O modulo insere o SVG antes do texto; em botoes que ficam so com o icone
+   o texto remanescente e vazio e nao deve reservar espaco. */
+.modal-close,
+.detail-close{
+  line-height: 0;
+}
+
 /* ==========================================================================
    6) SELETOR DE COLUNAS  (17-security-productivity-checklists.js)
    ========================================================================== */
