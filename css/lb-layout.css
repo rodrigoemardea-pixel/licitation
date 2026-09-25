@@ -1,0 +1,484 @@
+/* ==========================================================================
+   LICITATIONBIZNIS - LB-LAYOUT.CSS
+   Camada de suporte para os modulos 17, 20 e 26.
+   Contem apenas as classes que o JavaScript aplica e que ainda nao existiam
+   no app.css. Nenhuma regra de negocio, nenhum calculo, nenhum comportamento.
+
+   Carregar SEMPRE depois de app.css:
+     <link rel="stylesheet" href="./css/app.css?v=...">
+     <link rel="stylesheet" href="./css/lb-layout.css?v=...">
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TOKENS DE APOIO
+   Escala unica de elevacao. Substitui gradualmente os valores avulsos
+   (450, 500, 2000, 3000, 8000, 99000, 2147483000) espalhados pelo projeto.
+   -------------------------------------------------------------------------- */
+:root{
+  --lb-z-sidebar: 400;
+  --lb-z-header: 500;
+  --lb-z-sticky: 300;
+  --lb-z-dropdown: 1200;
+  --lb-z-modal: 2000;
+  --lb-z-popup: 3000;
+  --lb-z-confirm: 4000;
+  --lb-z-toast: 5000;
+
+  --lb-gap-xs: 4px;
+  --lb-gap-sm: 6px;
+  --lb-gap-md: 10px;
+  --lb-gap-lg: 16px;
+}
+
+/* ==========================================================================
+   1) BARRA OPERACIONAL ORGANIZADA  (26-ui-operacional.js)
+   O modulo divide a .toolbar em duas faixas: acoes no topo, filtros embaixo.
+   Sem estas regras os blocos ficam empilhados e a toolbar cresce em altura.
+   ========================================================================== */
+
+.toolbar.lb-toolbar-organized{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lb-gap-md);
+}
+
+.lb-toolbar-top{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.lb-toolbar-actions{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+}
+
+/* Acoes secundarias empurradas para a direita. */
+.lb-toolbar-other{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+/* Faixa de filtros: separada por uma linha discreta, nunca competindo
+   visualmente com o botao de acao primaria. */
+.lb-toolbar-filters{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  padding-top: var(--lb-gap-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.lb-toolbar-filters .search-box{
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 340px;
+}
+
+/* Filtros excedentes (do quarto em diante em Contratos Ativos).
+   Ocupam a largura inteira quando abertos, para nao serrilhar a faixa. */
+.lb-extra-filters{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--lb-gap-sm);
+  padding: var(--lb-gap-md);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-extra-filters[hidden]{ display: none; }
+
+/* Botao "Mais filtros" / "Menos filtros". O texto ganha " (ativos)"
+   pelo proprio JS quando algum filtro escondido esta em uso. */
+.lb-toolbar-filters > .btn[aria-expanded]{
+  flex: 0 0 auto;
+}
+
+.lb-toolbar-filters > .btn[aria-expanded="true"]{
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* Painel de filtros avancados do 17-security-productivity-checklists.js */
+.lb-advanced-panel{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--lb-gap-sm);
+  padding: var(--lb-gap-md);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-advanced-panel[hidden]{ display: none; }
+
+.lb-more-filters[aria-expanded="true"]{
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* Seletor de visualizacoes salvas: altura igual aos demais controles. */
+.lb-view-select{
+  width: auto !important;
+  min-width: 150px;
+  min-height: 40px;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   2) RETORNOS VENCIDOS EM ACOMPANHAMENTOS  (26-ui-operacional.js)
+   ========================================================================== */
+
+.lb-overdue-button{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control, 8px);
+  background: #fff;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.lb-overdue-button::before{
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex: 0 0 auto;
+  opacity: .45;
+}
+
+.lb-overdue-button:hover{
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.lb-overdue-button[aria-pressed="true"]{
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.lb-overdue-button[aria-pressed="true"]::before{ opacity: 1; }
+
+.lb-overdue-hint{
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Celula de retorno ja vencido: marca lateral, sem pintar a linha toda. */
+.lb-overdue-cell{
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.lb-overdue-cell .lb-cell-retorno{
+  font-weight: 700;
+}
+
+/* Numero do processo separado do tipo, em peso menor. */
+.lb-process{
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   3) SUBTITULOS DO MODAL DE COMPRA  (26-ui-operacional.js)
+   O formulario tem 15 campos fixos mais tres blocos injetados por
+   08-compras.js, 24-integracao-ml.js e 25-nota-fiscal.js. Os subtitulos
+   quebram esse bloco unico em etapas legiveis.
+   ========================================================================== */
+
+.lb-purchase-heading{
+  grid-column: 1 / -1;
+  margin: 14px 0 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.lb-purchase-heading:first-child{
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   4) CORPO ROLAVEL DOS POPUPS DE DETALHE  (26-ui-operacional.js)
+   Mantem cabecalho e acoes sempre visiveis; so o miolo rola.
+   Convive com 21-popups-redimensionaveis.js, que injeta o proprio CSS.
+   ========================================================================== */
+
+.detail-popup{
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-popup .detail-popup-header,
+.detail-popup .detail-actions{
+  flex: 0 0 auto;
+}
+
+.lb-detail-scroll{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+/* ==========================================================================
+   5) ICONES VETORIAIS  (20-acabamento-visual.js)
+   O modulo troca emojis iniciais de botoes por SVG de traco.
+   Alinhamento otico com o texto ao lado.
+   ========================================================================== */
+
+.lb-ui-icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  flex: 0 0 15px;
+  vertical-align: -2px;
+  color: currentColor;
+}
+
+.lb-ui-icon svg{
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Em botoes so-icone (fechar, kebab) o icone nao precisa de respiro lateral. */
+.modal-close .lb-ui-icon,
+.detail-close .lb-ui-icon,
+.action-dropdown-btn .lb-ui-icon{
+  margin-right: 0;
+}
+
+.tab-btn .lb-ui-icon{
+  opacity: .82;
+}
+
+.tab-btn.active .lb-ui-icon{
+  opacity: 1;
+}
+
+/* ==========================================================================
+   6) SELETOR DE COLUNAS  (17-security-productivity-checklists.js)
+   ========================================================================== */
+
+.lb-column-popover{
+  position: fixed;
+  z-index: var(--lb-z-dropdown);
+  min-width: 200px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-solid);
+  box-shadow: var(--floating-shadow, 0 12px 32px rgba(15,23,42,.12));
+}
+
+.lb-column-popover label{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.lb-column-popover label:hover{
+  background: var(--bg-surface-soft);
+}
+
+.lb-column-popover input[type="checkbox"]{
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   7) CHECKLIST DE EXECUCAO  (17-security-productivity-checklists.js)
+   Hoje o wrapPopups() esta desativado. As regras ficam prontas caso o
+   checklist volte a ser usado, sem custo enquanto nao renderiza.
+   ========================================================================== */
+
+.lb-checklist{
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-checklist h3{
+  margin: 0 0 10px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.lb-checklist label{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.lb-checklist input[type="checkbox"]{
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  cursor: pointer;
+}
+
+.lb-checklist input[type="checkbox"]:checked + *,
+.lb-checklist label:has(input:checked){
+  color: var(--text-tertiary);
+}
+
+.lb-check-progress{
+  height: 5px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.lb-check-progress span{
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+
+/* ==========================================================================
+   8) AJUSTES PONTUAIS DE LEITURA
+   ========================================================================== */
+
+/* Contraste do texto terciario. O valor anterior (#6f7d78 sobre #f7f9f8)
+   fica proximo de 4,0:1, abaixo do minimo de 4,5:1 exigido para os
+   rotulos de 9 a 11px usados em cards, cabecalhos e filtros. */
+body[data-theme="light"]{
+  --text-tertiary: #5b6864;
+}
+
+/* Separacao de linha nas cinco telas de listagem. O zebrado foi neutralizado
+   na ultima camada do app.css; a borda mais definida devolve a ancoragem
+   horizontal sem reintroduzir faixas cinza. */
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr > td{
+  border-bottom: 1px solid #e3e9e6 !important;
+}
+
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody > tr:hover > td{
+  background: #eef5f1 !important;
+}
+
+/* Busca global: devolve o comportamento de expansao no foco, anulado hoje
+   pelo style inline do index.html. Remova o inline e esta regra basta. */
+body.lb-modern-ui #busca-global-input{
+  width: min(30vw, 380px) !important;
+  height: 40px !important;
+  padding: 0 38px !important;
+  font-size: 13px !important;
+  border-radius: var(--radius-control, 8px) !important;
+}
+
+body.lb-modern-ui #busca-global-input:focus{
+  width: min(36vw, 440px) !important;
+}
+
+/* ==========================================================================
+   9) RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 1100px){
+  .lb-toolbar-filters .search-box{ min-width: 160px; }
+}
+
+@media (max-width: 860px){
+  .lb-toolbar-other{ margin-left: 0; }
+
+  .lb-toolbar-filters{
+    padding-top: var(--lb-gap-sm);
+  }
+
+  .lb-detail-scroll{ max-height: none; }
+}
+
+@media (max-width: 700px){
+  .toolbar.lb-toolbar-organized{ gap: var(--lb-gap-sm); }
+
+  .lb-toolbar-actions,
+  .lb-toolbar-other{ width: 100%; }
+
+  .lb-toolbar-actions .btn,
+  .lb-toolbar-other .btn{ flex: 1 1 auto; }
+
+  .lb-toolbar-filters .search-box{
+    flex: 1 1 100%;
+    max-width: none;
+    order: -1;
+  }
+
+  .lb-overdue-button{ flex: 1 1 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .lb-check-progress span,
+  .lb-overdue-button{ transition: none; }
+}
