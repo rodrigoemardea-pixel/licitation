@@ -826,13 +826,6 @@ function sumE(){
   const corEmp = pctLucroEmpenhado >= 0 ? 'var(--warning)' : 'var(--danger)';
 
   const corEmpSlug = pctLucroEmpenhado >= 0 ? 'warning' : 'danger';
-  g('sum-empenhos').innerHTML =
-    lbCard({ label: 'Empenhos',          valor: a.length,             cor: 'accent'  }) +
-    lbCard({ label: 'Total Empenhado',   valor: fmt(te),              cor: 'accent'  }) +
-    lbCard({ label: 'Total Comprado',    valor: fmt(totalComprado),   cor: 'warning' }) +
-    lbCard({ label: 'Lucro Empenhado',   valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
-    lbCard({ label: '% Lucro Empenhado', valor: fmtPct(pctLucroEmpenhado), cor: corEmpSlug, borda: true,
-             sublinha: 'lucro empenhado / total comprado' });
 
   // "A receber": empenhos ainda não pagos
   // "A receber" = soma do campo rec das compras ainda não pagas
@@ -840,9 +833,16 @@ function sumE(){
     s + (r.compras||[]).filter(c => !c.dpag || c.dpag === '').reduce((ss,c) => ss + (c.rec||0), 0)
   , 0);
 
-  // Adiciona card "A Receber"
-  g('sum-empenhos').innerHTML +=
-    lbCard({ label: 'A Receber', valor: fmt(aReceber), cor: 'purple', borda: true });
+  // Escrita unica no DOM: a mesma ordem de cards de antes, sem o segundo
+  // innerHTML += que reserializava e reprocessava a linha inteira.
+  g('sum-empenhos').innerHTML =
+    lbCard({ label: 'Empenhos',          valor: a.length,             cor: 'accent'  }) +
+    lbCard({ label: 'Total Empenhado',   valor: fmt(te),              cor: 'accent'  }) +
+    lbCard({ label: 'Total Comprado',    valor: fmt(totalComprado),   cor: 'warning' }) +
+    lbCard({ label: 'Lucro Empenhado',   valor: fmt(lucroEmpenhado),  cor: 'warning', borda: true }) +
+    lbCard({ label: '% Lucro Empenhado', valor: fmtPct(pctLucroEmpenhado), cor: corEmpSlug, borda: true,
+             sublinha: 'lucro empenhado / total comprado' }) +
+    lbCard({ label: 'A Receber',         valor: fmt(aReceber),        cor: 'purple',  borda: true });
 
   // Update tfoot empenhos
   // Os totais do rodapé devem refletir exatamente os registros exibidos na tela.

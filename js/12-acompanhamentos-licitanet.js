@@ -359,10 +359,10 @@ function renderAcomp() {
   const vencidos = (DB.acomp||[]).filter(r=>r.retorno && new Date(r.retorno)<agora).length;
   const el = document.getElementById('sum-acomp');
   if (el) el.innerHTML =
-    `<div class="card"><div class="card-label">Total</div><div class="card-value cv-blue">${(DB.acomp||[]).length}</div></div>` +
-    `<div class="card"><div class="card-label">Pendentes</div><div class="card-value cv-yellow">${pendentes}</div></div>` +
-    `<div class="card"><div class="card-label">Em Recurso</div><div class="card-value cv-blue">${recursos}</div></div>` +
-    (vencidos ? `<div class="card" style="border-left:3px solid var(--danger);"><div class="card-label"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Retorno Vencido</div><div class="card-value" style="color:var(--danger);">${vencidos}</div></div>` : '');
+    lbCard({ label: 'Total',      valor: (DB.acomp||[]).length, cor: 'accent'  }) +
+    lbCard({ label: 'Pendentes',  valor: pendentes,             cor: 'warning' }) +
+    lbCard({ label: 'Em Recurso', valor: recursos,              cor: 'accent'  }) +
+    (vencidos ? lbCard({ label: 'Retorno Vencido', valor: vencidos, cor: 'danger', borda: true }) : '');
 }
 
 function verAcomp(id) {
