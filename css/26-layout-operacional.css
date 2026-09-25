@@ -1,0 +1,29 @@
+/* LicitationBiznis: camada unica de ajustes operacionais, apos app.css */
+body.lb-modern-ui .toolbar.lb-toolbar-organized{display:flex;flex-direction:column;align-items:stretch;gap:9px;position:relative;top:auto}
+.lb-toolbar-top,.lb-toolbar-filters,.lb-toolbar-actions,.lb-toolbar-other,.lb-extra-filters{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.lb-toolbar-top{justify-content:space-between}.lb-toolbar-filters{border-top:1px solid var(--border-light);padding-top:10px}
+.lb-extra-filters{width:100%}.lb-extra-filters[hidden]{display:none!important}
+body.lb-modern-ui .lb-toolbar-filters .search-box{flex:1 1 230px;max-width:none;min-width:190px}
+.lb-overdue-button{min-height:40px;padding:8px 12px;border:1px solid #e9c3c6;border-radius:8px;background:#fff7f7;color:#a5272f;font:600 12px var(--font-sans);cursor:pointer}
+.lb-overdue-button[aria-pressed="true"]{background:#ae2630;color:white}.lb-overdue-hint{font-size:11px;color:var(--text-tertiary)}
+body.lb-modern-ui #tab-acompanhamentos tbody td.lb-overdue-cell{color:#aa202b!important;font-weight:700!important;background:#fff3f3!important;box-shadow:inset 3px 0 #c9303c}
+body.lb-modern-ui #tab-acompanhamentos tbody tr:hover td.lb-overdue-cell{background:#ffebeb!important}
+#tab-acompanhamentos tbody td:nth-child(4){min-width:170px}.lb-process{margin-left:6px;color:var(--text-tertiary);font-size:11px}
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody>tr:not(:has(.empty-state)),
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody>tr:not(:has(.empty-state))>td{height:auto!important;min-height:42px!important;max-height:none!important}
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody>tr:not(:has(.empty-state))>td{padding:8px 10px!important;line-height:1.35!important}
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody>tr:not(:has(.empty-state))>td>:is(div,span,a,button){max-height:none!important;line-height:1.3!important}
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody .action-dropdown-btn{width:36px!important;min-width:36px!important;max-width:none!important;height:36px!important;min-height:36px!important;max-height:none!important;line-height:1!important}
+body.lb-modern-ui :is(#tab-acompanhamentos,#tab-disputas,#tab-empenhos,#tab-finalizadas,#tab-emp-finalizados) tbody input[type=checkbox]{width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important}
+body.lb-modern-ui .detail-popup-overlay .detail-popup{display:flex;flex-direction:column;width:min(96vw,1260px);max-height:min(90vh,900px);padding:0;overflow:hidden}
+body.lb-modern-ui .detail-popup-header{flex:0 0 auto;margin:0;padding:16px 22px 13px;border-bottom:1px solid var(--border-light);background:white}
+body.lb-modern-ui .detail-popup-title{font-size:18px!important}.lb-detail-scroll{flex:1 1 auto;min-height:0;overflow:auto;padding:18px 22px 22px;overscroll-behavior:contain}
+body.lb-modern-ui .detail-popup .detail-actions{flex:0 0 auto;margin:0;padding:12px 22px;background:#fafbfa;border-top:1px solid var(--border-light)}
+body.lb-modern-ui .detail-popup .detail-section{margin-top:18px;padding-bottom:8px;font-size:11px;color:#455468}
+body.lb-modern-ui .detail-popup .detail-close{min-width:40px;min-height:40px;border:1px solid var(--border-light);border-radius:8px}
+body.lb-modern-ui #modal-compra .modal{max-width:1040px!important;width:min(96vw,1040px);max-height:92vh}
+body.lb-modern-ui #modal-compra .modal-body{min-height:0}
+body.lb-modern-ui #modal-compra .lb-purchase-heading{grid-column:1/-1;margin:10px 0 0;padding:12px 0 8px;border-bottom:1px solid var(--border-light);font-size:13px;font-weight:700;color:var(--text-primary)}
+body.lb-modern-ui #modal-compra .fg:has(#c-luc-a),body.lb-modern-ui #modal-compra .fg:has(#c-pct-lucro),body.lb-modern-ui #modal-compra .fg:has(#c-rec-a){background:#f5faf7;border:1px solid #d6e7db;border-radius:9px;padding:10px}
+@media(max-width:1050px){body.lb-modern-ui #modal-compra #compra-campos>.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){body.lb-modern-ui .detail-popup-overlay .detail-popup{width:98vw;max-height:94dvh}body.lb-modern-ui .detail-popup-header,body.lb-modern-ui .lb-detail-scroll,body.lb-modern-ui .detail-popup .detail-actions{padding-left:14px;padding-right:14px}body.lb-modern-ui #modal-compra #compra-campos>.form-grid{grid-template-columns:1fr}}
