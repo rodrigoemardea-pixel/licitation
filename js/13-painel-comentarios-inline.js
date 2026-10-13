@@ -62,73 +62,159 @@ function atualizarPainel() {
   const emp90 = empPendentes.filter(e => diasSemPagamento(e) >= 90);
   const empAtrasados = [...emp30, ...emp60, ...emp90].sort((a,b) => diasSemPagamento(b) - diasSemPagamento(a)).slice(0, 8);
 
-  // Camada visual: calculos, selecao de registros e demais funcoes preservados.
-  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const actionId = id => esc(JSON.stringify(String(id)));
-  const icon = name => {
-    const paths = {
-      file:'M6 3h8l4 4v14H6z M14 3v5h4 M9 12h6 M9 16h6',
-      receipt:'M5 3h14v18l-3-2-4 2-4-2-3 2z M8 8h8 M8 12h8',
-      wallet:'M3 6h17v15H3z M3 6V3h14v3 M15 11h5v5h-5z',
-      clock:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 2',
-      chart:'M4 20V10 M10 20V4 M16 20v-8 M21 20H2',
-      calendar:'M4 5h16v16H4z M4 10h16 M8 2v6 M16 2v6',
-      users:'M9 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M3 20v-3a6 6 0 0 1 12 0v3z M17 4a3 3 0 0 1 0 6 M18 13a5 5 0 0 1 3 4v3',
-      external:'M14 3h7v7 M21 3l-9 9 M10 3H3v18h18v-7',
-      arrow:'M9 5l7 7-7 7'
-    };
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name]||paths.file}"/></svg>`;
-  };
-  const go = tab => `switchTab('${tab}',document.querySelector('.tabs .tab-btn[onclick*="${tab}"]'))${tab==='acompanhamentos'?';renderAcomp()':''}`;
-  const empty = text => `<div class="pm-empty">${text}</div>`;
-  const head = (name, glyph, tab) => `<div class="pm-card-head"><span class="pm-heading-icon">${icon(glyph)}</span><h2>${name}</h2>${tab?`<button type="button" class="pm-view-all" onclick="${esc(go(tab))}">Ver todos ${icon('arrow')}</button>`:''}</div>`;
-  const kpi = (label,value,glyph,tone,caption,tab) => `<article class="pm-kpi pm-${tone}"><span class="pm-kpi-icon">${icon(glyph)}</span><div class="pm-kpi-main"><h2>${label}</h2><strong class="pm-value">${value}</strong>${tab?`<button type="button" class="pm-kpi-link" onclick="${esc(go(tab))}">${caption} ${icon('arrow')}</button>`:`<span class="pm-caption">${caption}</span>`}</div></article>`;
-  const entries = Object.entries(porAnalista);
-  const tomorrow = new Date(agora.getFullYear(),agora.getMonth(),agora.getDate()+1);
-  const tomorrowCount = (DB.acomp||[]).filter(r=>r.retorno && new Date(r.retorno).toDateString()===tomorrow.toDateString()).length;
-  const dateText = agora.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const pageHead = document.querySelector('#tab-painel > .lb-page-head');
-  if(pageHead){
-    let meta=pageHead.querySelector('.pm-page-meta');
-    if(!meta){meta=document.createElement('div');meta.className='pm-page-meta';pageHead.appendChild(meta);}
-    meta.innerHTML=`<div class="pm-current-date">${icon('calendar')}<span>${esc(dateText)}</span></div><div class="pm-agenda">${icon('calendar')}<div><strong>${tomorrowCount} ${tomorrowCount===1?'retorno para amanhã':'retornos para amanhã'}</strong><span>Conforme os agendamentos cadastrados</span></div></div>`;
-  }
   el.innerHTML = `
-    <section class="pm-kpis" aria-label="Indicadores do painel">
-      ${kpi('Contratos ativos',disputasAtivas,'file','neutral','Ver contratos','disputas')}
-      ${kpi('Empenhos pendentes',empenhosPendentes,'receipt','purple','Ver empenhos','empenhos')}
-      ${kpi('Lucro total recebido',fmt(lucroTotal),'wallet','green','Acumulado')}
-      ${kpi('Lucro empenhado',fmt(lucroEmpenhado),'clock','amber','A receber')}
-      ${kpi('Lucro no mês',fmt(lucroMes),'chart','green',esc(agora.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})))}
-    </section>
-    <div class="pm-grid">
-      <section class="pm-card">
-        ${head('Próximos retornos','calendar','acompanhamentos')}
-        <div class="pm-return-list">${proximosRetornos.map(r=>{
-          const overdue=r._ret<agora;
-          const today=r._ret.toDateString()===agora.toDateString();
-          const isTomorrow=r._ret.toDateString()===tomorrow.toDateString();
-          const label=overdue?'Vencido':today?'Hoje':isTomorrow?'Amanhã':'Agendado';
-          let link='';
-          try{const u=new URL(r.link);if(['http:','https:'].includes(u.protocol))link=u.href;}catch(_){}
-          return `<div class="pm-return-row"><div class="pm-date ${overdue?'pm-overdue':''}"><strong>${r._ret.getDate().toString().padStart(2,'0')}</strong><span>${esc(r._ret.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''))}</span></div><div class="pm-row-main"><strong title="${esc(r.orgao)}">${esc(r.orgao||'—')}</strong><span>${esc(r.analista||'—')} · ${r._ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></div><span class="pm-pill ${overdue?'pm-danger':today?'pm-warning':isTomorrow?'':'pm-scheduled'}">${label}</span>${link?`<a class="pm-icon-button" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="Abrir link do acompanhamento" aria-label="Abrir link de ${esc(r.orgao||'acompanhamento')}">${icon('external')}</a>`:''}</div>`;
-        }).join('')||empty('Nenhum retorno agendado.')}</div>
-      </section>
-      <section class="pm-card pm-analysts">
-        ${head('Por analista','users')}
-        <div class="pm-table-wrap"><table class="pm-table"><thead><tr><th scope="col">Analista</th><th scope="col">Contratos</th><th scope="col">Empenhos</th><th scope="col">Lucro empenhado</th></tr></thead><tbody>${entries.map(([name,d],i)=>`<tr><td><div class="pm-person"><span class="pm-avatar pm-avatar-${i%4}">${esc(name.charAt(0).toUpperCase())}</span>${esc(name)}</div></td><td>${d.disputas}</td><td>${d.empenhos}</td><td>${fmt(d.lucro)}</td></tr>`).join('')||'<tr><td colspan="4" class="pm-empty">Sem dados por analista.</td></tr>'}</tbody></table></div>
-        ${disputasAtivas?`<div class="pm-distribution"><span>Distribuição de contratos ativos</span><div class="pm-bar" aria-hidden="true">${entries.filter(([,d])=>d.disputas>0).map(([name,d],i)=>`<span class="pm-segment-${i%4}" style="width:${d.disputas/disputasAtivas*100}%" title="${esc(name)}: ${d.disputas} contratos"></span>`).join('')}</div><div class="pm-legend">${entries.filter(([,d])=>d.disputas>0).map(([name,d])=>`<span><b>${Math.round(d.disputas/disputasAtivas*100)}%</b> ${esc(name)}</span>`).join('')}</div></div>`:''}
-      </section>
+    <div style="padding:4px 0 16px;">
+      <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">👋 Olá, ${usuarioLogado||'usuário'}!</div>
+      <div style="font-size:13px;color:var(--text-secondary);">${agora.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
     </div>
-    <div class="pm-grid">
-      <section class="pm-card">
-        ${head('Últimos contratos','file','disputas')}
-        ${ultimasDisputas.map(d=>`<button type="button" class="pm-record" onclick="abrirPopupDisputa(${actionId(d.id)})"><span class="pm-row-main"><strong title="${esc(d.orgao)}">${esc(d.orgao||'—')}</strong><span>${esc(d.analista||'—')} · ${d.data?esc(new Date(d.data+'T12:00').toLocaleDateString('pt-BR')):'—'}</span></span><span class="pm-amount">${fmt(d.venda||0)}</span>${icon('arrow')}</button>`).join('')||empty('Nenhum contrato cadastrado.')}
-      </section>
-      <section class="pm-card">
-        ${head('Últimos empenhos','receipt','empenhos')}
-        ${ultimosEmpenhos.map(e=>`<button type="button" class="pm-record" onclick="abrirPopupEmpenho(${actionId(e.id)})"><span class="pm-row-main"><strong title="${esc(e.orgao)}">${e.num?'#'+esc(e.num)+' · ':''}${esc(e.orgao||'—')}</strong><span>${esc(e.analista||'—')} · ${e.data?esc(new Date(e.data+'T12:00').toLocaleDateString('pt-BR')):'—'}</span></span><span class="pm-amount">${fmt(e.vem||0)}</span>${icon('arrow')}</button>`).join('')||empty('Nenhum empenho pendente.')}
-      </section>
+
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
+      <div class="card" style="border-left:4px solid var(--accent);cursor:pointer;" onclick="switchTab('disputas',document.querySelector('[onclick*=\\'disputas\\']'))">
+        <div class="card-label">Contratos Ativos</div>
+        <div class="card-value cv-blue">${disputasAtivas}</div>
+        <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">Ver disputas →</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--purple);cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+        <div class="card-label">Empenhos Pendentes</div>
+        <div class="card-value cv-purple">${empenhosPendentes}</div>
+        <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">Ver empenhos →</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--success);">
+        <div class="card-label">Lucro Total Recebido</div>
+        <div class="card-value cv-green">${fmt(lucroTotal)}</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--warning);">
+        <div class="card-label">Lucro Empenhado</div>
+        <div class="card-value cv-yellow">${fmt(lucroEmpenhado)}</div>
+        <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">A receber</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--accent);">
+        <div class="card-label">Lucro no Mês</div>
+        <div class="card-value cv-blue">${fmt(lucroMes)}</div>
+        <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;">${new Date().toLocaleDateString('pt-BR',{month:'long'})}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+
+      
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          ⏰ Próximos Retornos
+          <button onclick="switchTab('acompanhamentos',document.querySelector('[onclick*=acompanhamentos]'));renderAcomp();" class="btn btn-ghost btn-sm" style="font-size:11px;margin-left:auto;">Ver todos</button>
+        </div>
+        ${proximosRetornos.length ? proximosRetornos.map(r => {
+          const vencido = r._ret < agora;
+          const hoje = r._ret.toDateString() === agora.toDateString();
+          return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border-light);">
+            <div style="font-size:20px;">${vencido?'🔴':hoje?'🟠':'🟡'}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.orgao}</div>
+              <div style="font-size:10px;color:var(--text-tertiary);">${r.analista} · ${r._ret.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+            </div>
+            ${r.link ? `<a href="${r.link}" target="_blank" style="font-size:16px;">🔗</a>` : ''}
+          </div>`;
+        }).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:12px 0;text-align:center;">Nenhum retorno agendado 🎉</div>'}
+      </div>
+
+      
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;">👥 Por Analista</div>
+        ${Object.entries(porAnalista).map(([nome, dados]) => `
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span class="badge ${_badgeClass(nome)}" style="font-size:11px;">${nome}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+              <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
+                <div style="font-size:18px;font-weight:700;color:var(--accent);">${dados.disputas}</div>
+                <div style="font-size:9px;color:var(--text-tertiary);">Contratos</div>
+              </div>
+              <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
+                <div style="font-size:18px;font-weight:700;color:var(--purple);">${dados.empenhos}</div>
+                <div style="font-size:9px;color:var(--text-tertiary);">Empenhos</div>
+              </div>
+              <div style="background:var(--bg-surface-soft);border-radius:8px;padding:6px;text-align:center;">
+                <div style="font-size:12px;font-weight:700;color:var(--warning);">${fmt(dados.lucro)}</div>
+                <div style="font-size:9px;color:var(--text-tertiary);">Empenhado</div>
+              </div>
+            </div>
+          </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Sem dados</div>'}
+      </div>
+    </div>
+
+    
+    ${(emp30.length || emp60.length || emp90.length) ? `
+    <div class="card" style="margin-bottom:24px;border-left:4px solid var(--danger);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <div style="font-size:13px;font-weight:700;">⏳ Empenhos Pendentes com Atraso</div>
+        <button onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])" class="btn btn-ghost btn-sm" style="font-size:11px;margin-left:auto;">Ver todos</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:var(--warning-soft);border:1px solid var(--warning);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--warning);">${emp30.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🟡 30–60 dias</div>
+        </div>
+        <div style="background:var(--danger-soft);border:1px solid var(--danger);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--danger);">${emp60.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🟠 60–90 dias</div>
+        </div>
+        <div style="background:var(--danger-soft);border:2px solid var(--danger);border-radius:10px;padding:10px;text-align:center;cursor:pointer;" onclick="switchTab('empenhos',document.querySelectorAll('.tab-btn')[3])">
+          <div style="font-size:22px;font-weight:800;color:var(--danger);">${emp90.length}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600;">🔴 +90 dias</div>
+        </div>
+      </div>
+      ${empAtrasados.length ? `<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <thead><tr style="background:var(--bg-surface-soft);">
+          <th style="padding:7px 8px;text-align:left;">Empenho</th>
+          <th style="padding:7px 8px;text-align:left;">Órgão</th>
+          <th style="padding:7px 8px;text-align:left;">Analista</th>
+          <th style="padding:7px 8px;text-align:right;">A Receber</th>
+          <th style="padding:7px 8px;text-align:center;">Dias</th>
+        </tr></thead>
+        <tbody>
+          ${empAtrasados.map(e => {
+            const dias = diasSemPagamento(e);
+            const cor = dias>=90?'var(--danger)':dias>=60?'var(--warning)':'var(--text-secondary)';
+            const ico = dias>=90?'🔴':dias>=60?'🟠':'🟡';
+            const aRec = (e.compras||[]).filter(c=>!c.dpag||c.dpag==='').reduce((s,c)=>s+(c.rec||0),0);
+            return '<tr onclick="abrirPopupEmpenho(\'' + e.id + '\')" style="cursor:pointer;border-bottom:1px solid var(--border-light);">'
+              + '<td style="padding:7px 8px;font-weight:600;font-family:var(--font-mono);">' + (e.num?'#'+e.num:'—') + '</td>'
+              + '<td style="padding:7px 8px;">' + (e.orgao||'—') + '</td>'
+              + '<td style="padding:7px 8px;"><span class="badge ' + _badgeClass(e.analista) + '" style="font-size:10px;">' + (e.analista||'—') + '</span></td>'
+              + '<td style="padding:7px 8px;text-align:right;font-family:var(--font-mono);color:var(--accent);">' + fmt(aRec) + '</td>'
+              + '<td style="padding:7px 8px;text-align:center;font-weight:700;color:' + cor + ';">' + ico + ' ' + dias + 'd</td>'
+              + '</tr>';
+          }).join('')}
+        </tbody>
+      </table></div>` : ''}
+    </div>` : ''}
+
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">🏆 Últimos Contratos</div>
+        ${ultimasDisputas.map(d=>`
+          <div onclick="abrirPopupDisputa('${d.id}')" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.orgao}</div>
+              <div style="font-size:10px;color:var(--text-tertiary);">${d.analista||'—'} · ${d.data?new Date(d.data+'T12:00').toLocaleDateString('pt-BR'):'—'}</div>
+            </div>
+            <span style="font-size:11px;color:var(--accent);font-weight:600;">${fmt(d.venda||0)}</span>
+          </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhumo contrato</div>'}
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">📄 Últimos Empenhos</div>
+        ${ultimosEmpenhos.map(e=>`
+          <div onclick="abrirPopupEmpenho('${e.id}')" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.num?'#'+e.num+' — ':''} ${e.orgao||'—'}</div>
+              <div style="font-size:10px;color:var(--text-tertiary);">${e.analista||'—'} · ${e.data?new Date(e.data+'T12:00').toLocaleDateString('pt-BR'):'—'}</div>
+            </div>
+            <span style="font-size:11px;color:var(--accent);font-weight:600;">${fmt(e.vem||0)}</span>
+          </div>`).join('') || '<div style="color:var(--text-tertiary);font-size:12px;">Nenhum empenho</div>'}
+      </div>
     </div>`;
 }
 
