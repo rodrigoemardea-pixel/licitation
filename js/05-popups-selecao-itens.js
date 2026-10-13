@@ -499,6 +499,7 @@ function atualizarVemPorLote(loteId, vunit, maxQtd) {
 var _expandedDisputas = new Set();
 
 function renderD(){
+  const contractPageSize=Number((window.LB_PAGE_SIZES||{}).disputas)||PAGE_SIZE;
   const allRows=getSorted('disputas').filter(r=>!r.finalizada && matches('disputas',r));
   const tb=g('tbody-disputas');
   // Show skeleton while data is being prepared
@@ -506,11 +507,11 @@ function renderD(){
   if(!allRows.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="icon">🏆</div><p>Nenhum contrato encontrado</p></div></td></tr>'; sumD(); renderPagination('disputas', 0); return; }
 
   // Reset page if out of bounds
-  const totalPages = Math.ceil(allRows.length / PAGE_SIZE);
+  const totalPages = Math.ceil(allRows.length / contractPageSize);
   if (_page.disputas > totalPages) _page.disputas = 1;
 
-  const start = (_page.disputas - 1) * PAGE_SIZE;
-  const rows = allRows.slice(start, start + PAGE_SIZE);
+  const start = (_page.disputas - 1) * contractPageSize;
+  const rows = allRows.slice(start, start + contractPageSize);
   renderPagination('disputas', allRows.length);
 
   const htmlParts = [];
