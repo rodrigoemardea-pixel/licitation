@@ -1,0 +1,801 @@
+/* ==========================================================================
+   LICITATIONBIZNIS - LB-LAYOUT.CSS
+   Camada de suporte para os modulos 17, 20 e 26.
+   Contem apenas as classes que o JavaScript aplica e que ainda nao existiam
+   no app.css. Nenhuma regra de negocio, nenhum calculo, nenhum comportamento.
+
+   Carregar SEMPRE depois de app.css:
+     <link rel="stylesheet" href="./css/app.css?v=...">
+     <link rel="stylesheet" href="./css/lb-layout.css?v=...">
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TOKENS DE APOIO
+   A escala de empilhamento (--lb-z-*) vive no app.css e NAO deve ser
+   redeclarada aqui: como esta folha carrega depois, qualquer valor repetido
+   sobrescreveria a escala real e rebaixaria popups e menus.
+   -------------------------------------------------------------------------- */
+:root{
+  --lb-gap-xs: 4px;
+  --lb-gap-sm: 6px;
+  --lb-gap-md: 10px;
+  --lb-gap-lg: 16px;
+}
+
+/* ==========================================================================
+   1) BARRA OPERACIONAL ORGANIZADA  (26-ui-operacional.js)
+   O modulo divide a .toolbar em duas faixas: acoes no topo, filtros embaixo.
+   Sem estas regras os blocos ficam empilhados e a toolbar cresce em altura.
+   ========================================================================== */
+
+.toolbar.lb-toolbar-organized{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lb-gap-md);
+}
+
+.lb-toolbar-top{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.lb-toolbar-actions{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+}
+
+/* Acoes secundarias empurradas para a direita. */
+.lb-toolbar-other{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+/* Faixa de filtros: separada por uma linha discreta, nunca competindo
+   visualmente com o botao de acao primaria. */
+.lb-toolbar-filters{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  padding-top: var(--lb-gap-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.lb-toolbar-filters .search-box{
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 340px;
+}
+
+/* Filtros excedentes (do quarto em diante em Contratos Ativos).
+   Ocupam a largura inteira quando abertos, para nao serrilhar a faixa. */
+.lb-extra-filters{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--lb-gap-sm);
+  padding: var(--lb-gap-md);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-extra-filters[hidden]{ display: none; }
+
+/* Botao "Mais filtros" / "Menos filtros". O texto ganha " (ativos)"
+   pelo proprio JS quando algum filtro escondido esta em uso. */
+.lb-toolbar-filters > .btn[aria-expanded]{
+  flex: 0 0 auto;
+}
+
+.lb-toolbar-filters > .btn[aria-expanded="true"]{
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* Painel de filtros avancados do 17-security-productivity-checklists.js */
+.lb-advanced-panel{
+  display: flex;
+  align-items: center;
+  gap: var(--lb-gap-sm);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--lb-gap-sm);
+  padding: var(--lb-gap-md);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-advanced-panel[hidden]{ display: none; }
+
+.lb-more-filters[aria-expanded="true"]{
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* Seletor de visualizacoes salvas: altura igual aos demais controles. */
+.lb-view-select{
+  width: auto !important;
+  min-width: 150px;
+  min-height: 40px;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   2) RETORNOS VENCIDOS EM ACOMPANHAMENTOS  (26-ui-operacional.js)
+   ========================================================================== */
+
+.lb-overdue-button{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control, 8px);
+  background: #fff;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.lb-overdue-button::before{
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex: 0 0 auto;
+  opacity: .45;
+}
+
+.lb-overdue-button:hover{
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.lb-overdue-button[aria-pressed="true"]{
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.lb-overdue-button[aria-pressed="true"]::before{ opacity: 1; }
+
+.lb-overdue-hint{
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Celula de retorno ja vencido: marca lateral, sem pintar a linha toda. */
+.lb-overdue-cell{
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.lb-overdue-cell .lb-cell-retorno{
+  font-weight: 700;
+}
+
+/* Numero do processo separado do tipo, em peso menor. */
+.lb-process{
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   3) SUBTITULOS DO MODAL DE COMPRA  (26-ui-operacional.js)
+   O formulario tem 15 campos fixos mais tres blocos injetados por
+   08-compras.js, 24-integracao-ml.js e 25-nota-fiscal.js. Os subtitulos
+   quebram esse bloco unico em etapas legiveis.
+   ========================================================================== */
+
+.lb-purchase-heading{
+  grid-column: 1 / -1;
+  margin: 14px 0 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.lb-purchase-heading:first-child{
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   4) CORPO ROLAVEL DOS POPUPS DE DETALHE  (26-ui-operacional.js)
+   Mantem cabecalho e acoes sempre visiveis; so o miolo rola.
+   Convive com 21-popups-redimensionaveis.js, que injeta o proprio CSS.
+   ========================================================================== */
+
+.detail-popup{
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-popup .detail-popup-header,
+.detail-popup .detail-actions{
+  flex: 0 0 auto;
+}
+
+.lb-detail-scroll{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+/* ==========================================================================
+   5) ICONES VETORIAIS  (20-acabamento-visual.js)
+   O modulo troca emojis iniciais de botoes por SVG de traco.
+   Alinhamento otico com o texto ao lado.
+   ========================================================================== */
+
+.lb-ui-icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  flex: 0 0 15px;
+  vertical-align: -2px;
+  color: currentColor;
+}
+
+.lb-ui-icon svg{
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Em botoes so-icone (fechar, kebab) o icone nao precisa de respiro lateral. */
+.modal-close .lb-ui-icon,
+.detail-close .lb-ui-icon,
+.action-dropdown-btn .lb-ui-icon{
+  margin-right: 0;
+}
+
+.tab-btn .lb-ui-icon{
+  opacity: .82;
+}
+
+.tab-btn.active .lb-ui-icon{
+  opacity: 1;
+}
+
+/* Botoes sem texto ao lado do icone: fechar, paginacao e a alca da sidebar.
+   Sem isto, a margem de 6px desloca o desenho para a esquerda do centro. */
+.page-btn .lb-ui-icon,
+.sidebar-toggle .lb-ui-icon,
+.lb-tarefa-btn .lb-ui-icon,
+.mtg .lb-ui-icon{
+  margin-right: 0;
+}
+
+/* A alca da sidebar tem 24px: o icone precisa acompanhar. */
+.sidebar-toggle .lb-ui-icon{
+  width: 13px;
+  height: 13px;
+  flex-basis: 13px;
+  vertical-align: 0;
+}
+
+/* Botoes pequenos das tabelas (editar, duplicar, excluir) ficam mais
+   equilibrados com o traco um pouco mais fino. */
+.btn-sm .lb-ui-icon svg{
+  stroke-width: 1.75;
+}
+
+/* O modulo insere o SVG antes do texto; em botoes que ficam so com o icone
+   o texto remanescente e vazio e nao deve reservar espaco. */
+.modal-close,
+.detail-close{
+  line-height: 0;
+}
+
+/* ==========================================================================
+   6) SELETOR DE COLUNAS  (17-security-productivity-checklists.js)
+   ========================================================================== */
+
+.lb-column-popover{
+  position: fixed;
+  z-index: var(--lb-z-dropdown, 2147483000);
+  min-width: 200px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-solid);
+  box-shadow: var(--floating-shadow, 0 12px 32px rgba(15,23,42,.12));
+}
+
+.lb-column-popover label{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.lb-column-popover label:hover{
+  background: var(--bg-surface-soft);
+}
+
+.lb-column-popover input[type="checkbox"]{
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   7) CHECKLIST DE EXECUCAO  (17-security-productivity-checklists.js)
+   Hoje o wrapPopups() esta desativado. As regras ficam prontas caso o
+   checklist volte a ser usado, sem custo enquanto nao renderiza.
+   ========================================================================== */
+
+.lb-checklist{
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-checklist h3{
+  margin: 0 0 10px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.lb-checklist label{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.lb-checklist input[type="checkbox"]{
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  cursor: pointer;
+}
+
+.lb-checklist input[type="checkbox"]:checked + *,
+.lb-checklist label:has(input:checked){
+  color: var(--text-tertiary);
+}
+
+.lb-check-progress{
+  height: 5px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.lb-check-progress span{
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+
+/* ==========================================================================
+   8) AJUSTES PONTUAIS DE LEITURA
+   ========================================================================== */
+
+/* Contraste do texto terciario. O valor anterior (#6f7d78 sobre #f7f9f8)
+   fica proximo de 4,0:1, abaixo do minimo de 4,5:1 exigido para os
+   rotulos de 9 a 11px usados em cards, cabecalhos e filtros. */
+body[data-theme="light"]{
+  --text-tertiary: #5b6864;
+}
+
+/* Busca global: devolve o comportamento de expansao no foco, anulado hoje
+   pelo style inline do index.html. Remova o inline e esta regra basta. */
+body.lb-modern-ui #busca-global-input{
+  width: min(30vw, 380px) !important;
+  height: 40px !important;
+  padding: 0 38px !important;
+  font-size: 13px !important;
+  border-radius: var(--radius-control, 8px) !important;
+}
+
+body.lb-modern-ui #busca-global-input:focus{
+  width: min(36vw, 440px) !important;
+}
+
+/* ==========================================================================
+   9) RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 1100px){
+  .lb-toolbar-filters .search-box{ min-width: 160px; }
+}
+
+@media (max-width: 860px){
+  .lb-toolbar-other{ margin-left: 0; }
+
+  .lb-toolbar-filters{
+    padding-top: var(--lb-gap-sm);
+  }
+
+  .lb-detail-scroll{ max-height: none; }
+}
+
+@media (max-width: 700px){
+  .toolbar.lb-toolbar-organized{ gap: var(--lb-gap-sm); }
+
+  .lb-toolbar-actions,
+  .lb-toolbar-other{ width: 100%; }
+
+  .lb-toolbar-actions .btn,
+  .lb-toolbar-other .btn{ flex: 1 1 auto; }
+
+  .lb-toolbar-filters .search-box{
+    flex: 1 1 100%;
+    max-width: none;
+    order: -1;
+  }
+
+  .lb-overdue-button{ flex: 1 1 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .lb-check-progress span,
+  .lb-overdue-button{ transition: none; }
+}
+
+/* ==========================================================================
+   10) POPUPS DE DETALHE — CLASSES EXTRAIDAS DO JAVASCRIPT
+   Substituem os style="..." que estavam embutidos nas template strings de
+   05-popups-selecao-itens.js. Os valores sao exatamente os que ja vigoravam;
+   a mudanca e de local, nao de aparencia. A partir daqui, ajustar espacamento
+   ou cor dos popups deixa de exigir edicao em JavaScript.
+   ========================================================================== */
+
+/* --- Utilitarios de cor e peso (usados nas celulas das tabelas) --- */
+.lb-c-accent    { color: var(--accent) !important; }
+.lb-c-success   { color: var(--success) !important; }
+.lb-c-warning   { color: var(--warning) !important; }
+.lb-c-danger    { color: var(--danger) !important; }
+.lb-c-secondary { color: var(--text-secondary) !important; }
+
+.lb-w600 { font-weight: 600 !important; }
+.lb-w700 { font-weight: 700 !important; }
+.lb-w800 { font-weight: 800 !important; }
+
+.lb-fs13 { font-size: 13px !important; }
+.lb-py5  { padding-top: 5px !important; padding-bottom: 5px !important; }
+
+.lb-mt8  { margin-top: 8px; }
+.lb-mt12 { margin-top: 12px; }
+.lb-mt14 { margin-top: 14px; }
+.lb-mt16 { margin-top: 16px; }
+.lb-mb12 { margin-bottom: 12px; }
+
+/* --- Empenhos vinculados (topo dos dois popups) --- */
+.lb-related-empenhos{
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+}
+
+.lb-related-label{
+  margin-bottom: 7px;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.lb-related-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lb-tag-pago     { color: var(--success); font-weight: 800; }
+.lb-tag-pendente { color: var(--warning); font-weight: 800; }
+
+/* --- Resumo financeiro do popup de contrato --- */
+.lb-fin-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.lb-fin-card{
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--text-tertiary);
+  border-radius: 10px;
+  background: var(--bg-surface-soft);
+  text-align: center;
+}
+
+.lb-fin-card--warning { border-left-color: var(--warning); }
+.lb-fin-card--neutral { border-left-color: var(--text-tertiary); }
+.lb-fin-card--success { border-left-color: var(--success); }
+.lb-fin-card--accent  { border-left-color: var(--accent); }
+
+.lb-fin-label{
+  margin-bottom: 4px;
+  color: var(--text-tertiary);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.lb-fin-value{
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px){
+  .lb-fin-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Tabelas de itens e compras dentro dos popups --- */
+.lb-th-check{ width: 30px; }
+
+.lb-td-check{ text-align: center; }
+.lb-td-check input[type="checkbox"]{ cursor: pointer; }
+
+.lb-compras-total{
+  background: var(--bg-inset);
+  font-weight: 700;
+  /* O inline original pedia "2px solid var(--border)", mas o token --border
+     nunca foi definido no projeto: a declaracao era invalida e a borda jamais
+     apareceu. Mantido sem borda para nao alterar a aparencia atual.
+     Para ativar a separacao do rodape, descomente a linha abaixo. */
+  /* border-top: 2px solid var(--border-medium); */
+}
+
+.lb-compras-total-label{
+  color: var(--text-secondary);
+  font-size: 11px;
+  letter-spacing: .05em;
+  text-align: right;
+}
+
+/* --- Cabecalho de secao com acao alinhada a direita --- */
+.lb-section-actions{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lb-btn-export{
+  color: var(--success) !important;
+  border-color: var(--success) !important;
+  font-weight: 700 !important;
+}
+
+/* --- Elementos avulsos --- */
+.lb-tag-empenhar{
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+}
+
+.lb-empty-note{
+  padding: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.lb-obs-value{
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+
+/* ==========================================================================
+   11) HIERARQUIA DOS CARDS DE RESUMO
+   Antes, todos os cards pesavam igual: sete competiam entre si em Contratos
+   Ativos e seis em Empenhos, sem nenhum responder primeiro a pergunta
+   "como estamos". Agora ha dois niveis. Os primarios ocupam um terco da
+   linha e usam tipografia maior; os de apoio ocupam um quarto.
+   Nenhum valor, rotulo, cor ou calculo mudou: alterou-se ordem e peso.
+
+   A linha passa de grid para flex porque, com flex, a ultima fileira estica
+   para preencher a largura. Isso elimina os cards orfaos que o grid deixava
+   (com sete cards e minmax de 170px, sobrava um sozinho em 1366 e 1440) e
+   dispensa qualquer calculo de colunas por breakpoint.
+   Como 3 x 33,3% preenche a fileira exatamente, os primarios sempre ficam
+   juntos na primeira linha e os de apoio descem para a seguinte.
+   ========================================================================== */
+
+body.lb-modern-ui .summary-row{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+body.lb-modern-ui .summary-row > .lb-card{
+  flex: 1 1 calc(25% - 9px);   /* 4 por fileira */
+  min-width: 0;                /* impede que valor longo estoure a caixa */
+}
+
+body.lb-modern-ui .summary-row > .lb-card--destaque{
+  flex: 1 1 calc(33.333% - 8px);   /* 3 por fileira */
+}
+
+/* --- Indicador primario --- */
+body.lb-modern-ui .lb-card--destaque .card-value{
+  font-size: clamp(24px, 1.9vw, 30px) !important;
+  letter-spacing: -.6px !important;
+}
+
+body.lb-modern-ui .lb-card--destaque .card-label{
+  color: var(--text-secondary) !important;
+  font-weight: 700;
+}
+
+body.lb-modern-ui .lb-card--destaque::before{
+  width: 38px;
+  height: 3px;
+}
+
+body.lb-modern-ui .lb-card--destaque .lb-card-sub{
+  font-size: 10.5px;
+}
+
+/* --- Indicador de apoio: recua sem sumir --- */
+body.lb-modern-ui .summary-row > .lb-card:not(.lb-card--destaque) .card-value{
+  font-size: clamp(16px, 1.1vw, 19px) !important;
+}
+
+body.lb-modern-ui .summary-row > .lb-card:not(.lb-card--destaque)::before{
+  width: 20px;
+  height: 2px;
+  opacity: .55;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 1100px){
+  body.lb-modern-ui .summary-row > .lb-card{
+    flex: 1 1 calc(33.333% - 8px);   /* 3 por fileira */
+  }
+  body.lb-modern-ui .summary-row > .lb-card--destaque{
+    flex: 1 1 calc(50% - 6px);       /* 2 por fileira */
+  }
+}
+
+@media (max-width: 760px){
+  body.lb-modern-ui .summary-row > .lb-card,
+  body.lb-modern-ui .summary-row > .lb-card--destaque{
+    flex: 1 1 calc(50% - 6px);
+  }
+  body.lb-modern-ui .lb-card--destaque .card-value{
+    font-size: clamp(20px, 5vw, 24px) !important;
+  }
+}
+
+/* Painel moderno: regras isoladas, sem alterar as demais abas. */
+#tab-painel{--pm-green:#206b50;--pm-muted:var(--text-secondary,#627186);--pm-line:var(--border-light,#e3e9ee)}
+#tab-painel .lb-page-head{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+#tab-painel .lb-page-title{font-size:30px;letter-spacing:-.8px}
+#tab-painel .lb-page-subtitle{font-size:13px;line-height:1.6}
+#tab-painel .pm-page-meta{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+#tab-painel svg{width:20px;height:20px;flex-shrink:0}
+#tab-painel .pm-current-date{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--pm-muted)}
+#tab-painel .pm-agenda{display:flex;align-items:center;gap:14px;background:var(--success-soft,#eaf3ee);color:var(--pm-green);border-radius:10px;padding:14px 18px}
+#tab-painel .pm-agenda strong{display:block;font-size:13px;font-weight:650}
+#tab-painel .pm-agenda span{display:block;font-size:11px;margin-top:4px}
+#tab-painel .pm-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:20px}
+#tab-painel .pm-kpi{display:flex;align-items:flex-start;gap:12px;padding:20px 16px;background:var(--bg-surface,#fff);border:1px solid var(--pm-line);border-radius:13px;box-shadow:0 3px 12px #102e2004;min-width:0}
+#tab-painel .pm-kpi-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--bg-surface-soft,#eef2f5);color:var(--text-secondary)}
+#tab-painel .pm-kpi-main{min-width:0;flex:1}
+#tab-painel .pm-kpi h2{font-size:12px;font-weight:500;line-height:1.4;color:var(--pm-muted);margin:0 0 10px}
+#tab-painel .pm-value{font-size:clamp(18px,1.45vw,26px);font-weight:700;letter-spacing:-.7px;line-height:1.25;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#tab-painel .pm-neutral .pm-value,#tab-painel .pm-purple .pm-value{font-size:32px}
+#tab-painel .pm-green .pm-value{color:var(--pm-green)}
+#tab-painel .pm-green .pm-kpi-icon{background:var(--success-soft,#e8f3ed);color:var(--pm-green)}
+#tab-painel .pm-purple .pm-value{color:var(--purple,#7542c8)}
+#tab-painel .pm-purple .pm-kpi-icon{background:var(--purple-soft,#f0eafb);color:var(--purple,#7542c8)}
+#tab-painel .pm-amber .pm-value{color:#ac6416}
+#tab-painel .pm-amber .pm-kpi-icon{background:var(--warning-soft,#fcf2e5);color:#ac6416}
+#tab-painel .pm-caption,#tab-painel .pm-kpi-link{display:flex;align-items:center;gap:4px;margin-top:12px;font-size:11px;color:var(--pm-muted);line-height:1.4}
+#tab-painel .pm-kpi-link{border:0;background:none;padding:0;color:var(--pm-green);cursor:pointer}
+#tab-painel .pm-kpi-link svg{width:13px;height:13px}
+#tab-painel .pm-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+#tab-painel .pm-card{padding:18px 20px;background:var(--bg-surface,#fff);border:1px solid var(--pm-line);border-radius:13px;box-shadow:0 3px 12px #102e2004;min-width:0}
+#tab-painel .pm-card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;min-height:34px}
+#tab-painel .pm-heading-icon{display:flex;color:var(--pm-green)}
+#tab-painel .pm-card-head h2{font-size:16px;font-weight:650;margin:0;letter-spacing:-.25px}
+#tab-painel .pm-view-all{margin-left:auto;display:flex;align-items:center;gap:5px;padding:9px 12px;border:1px solid var(--pm-line);border-radius:8px;background:var(--bg-surface);color:var(--pm-muted);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+#tab-painel .pm-view-all svg{width:13px;height:13px}
+#tab-painel .pm-return-row{display:flex;align-items:center;gap:14px;min-height:62px;padding:8px 0;border-top:1px solid var(--pm-line)}
+#tab-painel .pm-date{width:46px;flex-shrink:0;border-radius:9px;background:var(--bg-surface-soft,#eef3f3);text-align:center;padding:8px 0}
+#tab-painel .pm-date strong{display:block;font-size:19px;line-height:1.1}
+#tab-painel .pm-date span{display:block;font-size:10px;text-transform:uppercase;margin-top:3px;color:var(--pm-muted)}
+#tab-painel .pm-row-main{flex:1;min-width:0;text-align:left}
+#tab-painel .pm-row-main strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:550;color:var(--text-primary)}
+#tab-painel .pm-row-main>span{display:block;font-size:11px;color:var(--pm-muted);margin-top:5px;line-height:1.5}
+#tab-painel .pm-pill{padding:5px 9px;border-radius:12px;background:var(--success-soft,#e8f3ed);color:var(--pm-green);font-size:10px;font-weight:600;white-space:nowrap}
+#tab-painel .pm-danger{background:var(--danger-soft,#fceaea);color:var(--danger,#b32d35)}
+#tab-painel .pm-warning{background:var(--warning-soft,#fff2de);color:#9c5a11}
+#tab-painel .pm-scheduled{background:var(--info-soft,#eaf0fb);color:var(--accent)}
+#tab-painel .pm-icon-button{width:32px;height:32px;border:1px solid var(--pm-line);border-radius:8px;display:grid;place-items:center;color:var(--pm-muted);flex-shrink:0;text-decoration:none}
+#tab-painel .pm-icon-button svg{width:16px;height:16px}
+#tab-painel .pm-table-wrap{overflow-x:auto}
+#tab-painel .pm-table{width:100%;border-collapse:collapse;font-size:12px}
+#tab-painel .pm-table th{background:var(--bg-surface-soft);padding:12px 10px;font-size:11px;color:var(--pm-muted);text-align:right;white-space:nowrap;text-transform:none;letter-spacing:0;cursor:default}
+#tab-painel .pm-table td{padding:13px 10px;text-align:right;border-bottom:1px solid var(--pm-line);font-variant-numeric:tabular-nums;white-space:nowrap}
+#tab-painel .pm-table th:first-child,#tab-painel .pm-table td:first-child{text-align:left}
+#tab-painel .pm-person{display:flex;align-items:center;gap:10px}
+#tab-painel .pm-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:650;background:var(--success-soft);color:var(--pm-green)}
+#tab-painel .pm-avatar-0{background:var(--purple-soft,#f0eafa);color:var(--purple)}
+#tab-painel .pm-distribution{margin-top:18px;font-size:12px;color:var(--pm-muted)}
+#tab-painel .pm-bar{height:12px;border-radius:8px;overflow:hidden;display:flex;margin-top:10px;background:var(--bg-surface-soft)}
+#tab-painel .pm-bar span{height:100%;background:#18815e;border-right:2px solid var(--bg-surface)}
+#tab-painel .pm-bar .pm-segment-1{background:#80c6a6}
+#tab-painel .pm-bar .pm-segment-2{background:#617b92}
+#tab-painel .pm-bar .pm-segment-3{background:#b8c6d2}
+#tab-painel .pm-legend{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:11px}
+#tab-painel .pm-legend b{color:var(--text-primary)}
+#tab-painel .pm-record{display:flex;align-items:center;gap:14px;width:100%;border:0;border-top:1px solid var(--pm-line);background:transparent;padding:13px 0;cursor:pointer;font:inherit;text-align:left}
+#tab-painel .pm-record:hover{background:var(--bg-surface-soft)}
+#tab-painel .pm-record>svg{width:15px;height:15px;color:var(--pm-muted)}
+#tab-painel .pm-amount{font-size:12px;font-weight:650;color:var(--pm-green);white-space:nowrap;font-variant-numeric:tabular-nums}
+#tab-painel .pm-empty{padding:25px 10px;text-align:center;color:var(--pm-muted);font-size:12px}
+#tab-painel button:focus-visible,#tab-painel a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:1400px){#tab-painel .pm-kpi{flex-direction:column;gap:10px}#tab-painel .pm-kpi-icon{width:34px;height:34px}#tab-painel .pm-value{font-size:22px}}
+@media(max-width:1100px){#tab-painel .pm-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}#tab-painel .pm-grid{grid-template-columns:1fr}#tab-painel .pm-kpi{flex-direction:column}#tab-painel .pm-page-meta{width:100%;justify-content:space-between}}
+@media(max-width:600px){#tab-painel .pm-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#tab-painel .pm-kpi{padding:14px 12px;flex-direction:column}#tab-painel .pm-kpi:last-child{grid-column:1/-1}#tab-painel .pm-card{padding:14px 12px}#tab-painel .pm-card-head h2{font-size:14px}#tab-painel .pm-return-row{gap:8px}#tab-painel .pm-row-main strong{font-size:12px}#tab-painel .pm-current-date{font-size:11px}#tab-painel .pm-page-meta{gap:12px}#tab-painel .pm-agenda{width:100%}#tab-painel .pm-value{font-size:21px}#tab-painel .pm-pill{font-size:9px;padding:5px 7px}#tab-painel .pm-amount{font-size:11px}}
