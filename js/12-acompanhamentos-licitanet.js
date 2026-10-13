@@ -1,3 +1,16 @@
+
+function LB_acompFiltrados() {
+  const value=id=>document.getElementById(id)?.value||'todos';
+  const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const query=normalize(document.getElementById('search-acomp')?.value);
+  return (DB.acomp||[]).filter(r=>{
+    for(const [id,key] of [['filtro-analista-acomp','analista'],['filtro-status-acomp','status'],['filtro-empresa-acomp','empresa'],['filtro-tipo-acomp','tipo']]){
+      if(value(id)!=='todos'&&r[key]!==value(id))return false;
+    }
+    if(window.LB_ACOMP_VENCIDOS&&!(r.retorno&&new Date(r.retorno)<new Date()))return false;
+    return !query||[r.orgao,r.observacao,r.processo,r.tipo,r.sistema].some(v=>normalize(v).includes(query));
+  });
+}
 // ========== ACOMPANHAMENTOS ==========
 let EID_acomp = null;
 let _notifTimer = null;
@@ -130,14 +143,7 @@ function abrirTodosAcompanhamentos() {
   const tipoFiltro = document.getElementById('filtro-tipo-acomp')?.value || 'todos';
   const busca = (document.getElementById('search-acomp')?.value || '').toLowerCase();
 
-  const rows = (DB.acomp||[]).filter(r => {
-    if (analista !== 'todos' && r.analista !== analista) return false;
-    if (status !== 'todos' && r.status !== status) return false;
-    if (empresa !== 'todos' && r.empresa !== empresa) return false;
-    if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
-    if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
-    return true;
-  });
+  const rows = LB_acompFiltrados();
 
   const comLink = rows.filter(r => r.link);
   if (!comLink.length) {
@@ -312,14 +318,7 @@ function renderAcomp() {
   const busca = (document.getElementById('search-acomp')?.value || '').toLowerCase();
   const agora = new Date();
 
-  let rows = (DB.acomp||[]).filter(r => {
-    if (analista !== 'todos' && r.analista !== analista) return false;
-    if (status !== 'todos' && r.status !== status) return false;
-    if (empresa !== 'todos' && r.empresa !== empresa) return false;
-    if (tipoFiltro !== 'todos' && r.tipo !== tipoFiltro) return false;
-    if (busca && !r.orgao?.toLowerCase().includes(busca) && !r.observacao?.toLowerCase().includes(busca)) return false;
-    return true;
-  }).sort(_compararAcomp);
+  let rows = LB_acompFiltrados().sort(_compararAcomp);
 
   const totalRowsAcomp = rows.length;
   const _pageAcomp = LB_paginar(rows, 'acompanhamentos');
@@ -330,28 +329,34 @@ function renderAcomp() {
   if (!rows.length) {
     tb.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">👁️</div><p>Nenhum acompanhamento</p></div></td></tr>';
     const el = document.getElementById('sum-acomp'); if(el) el.innerHTML='';
+    LB_renderPag('acompanhamentos', totalRowsAcomp, function(){renderAcomp();});
     return;
   }
 
-    tb.innerHTML = rows.map((r) => {
-    const ret = r.retorno ? new Date(r.retorno) : null;
-    const vencido = ret && ret < agora;
-    const hoje = ret && ret.toDateString() === agora.toDateString();
-    const retStatus = vencido ? 'vencido' : hoje ? 'hoje' : 'futuro';
-    const retStr = ret ? `<span class="lb-cell-retorno lb-cell-retorno--${retStatus}">${vencido?'🔴 ':''}${ret.toLocaleDateString('pt-BR')} ${ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>` : '—';
-    const statusLabels = {pendente:'⏳ Pendente',recurso:'⚖️ Recurso',perdida:'❌ Perdida'};
-    return `<tr class="lb-row" onclick="verAcomp('${r.id}')">
-      <td class="mono">${r.data ? new Date(r.data+'T12:00').toLocaleDateString('pt-BR') : '—'}</td>
-      <td><div class="lb-cell-inline"><span class="lb-cell-truncate">${r.orgao||'—'}</span>${r.estado ? lbBadgeUF(r.estado) : ''}${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" class="lb-cell-link" onclick="event.stopPropagation()">🔗</a>` : ''}</div></td>
-      <td>${lbBadgeEmpresa(r.empresa)}</td>
-      <td><div class="lb-cell-inline"><span class="lb-cell-strong">${r.tipo||'—'}</span>${r.processo ? `<span class="mono lb-cell-sub">${r.processo}</span>` : ''}</div></td>
-      <td>${lbBadgeAnalista(r.analista)}</td>
-      <td>${r.sistema||'—'}</td>
-      <td><span class="lb-cell-status lb-cell-status--${r.status}">${statusLabels[r.status]||r.status}</span></td>
-      <td onclick="event.stopPropagation();editarRetornoAcompInline('${r.id}',this)" title="Clique para editar a data e a hora de retorno" class="lb-cell-clicavel">${retStr}</td>
-      <td class="lb-cell-acao" onclick="event.stopPropagation()"><button onclick="delAcomp('${r.id}')" class="btn btn-ghost btn-sm lb-btn-lixo" title="Excluir">🗑</button></td>
-    </tr>`;
-  }).join('');
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const arg=id=>esc(JSON.stringify(String(id)));
+    tb.innerHTML = rows.map(r=>{
+      const ret=r.retorno?new Date(r.retorno):null;
+      const valid=ret&&!isNaN(ret);
+      const vencido=valid&&ret<agora;
+      const hoje=valid&&ret.toDateString()===agora.toDateString();
+      const days=valid?Math.floor((agora-ret)/86400000):0;
+      const elapsed=vencido?(days>=1?`Há ${days} ${days===1?'dia':'dias'}`:'Há menos de 1 dia'):'';
+      const label=vencido?'Vencido':hoje?'Hoje':'Agendado';
+      const status={pendente:'Pendente',recurso:'Em recurso',perdida:'Perdida'};
+      let link='';try{const url=new URL(r.link);if(['http:','https:'].includes(url.protocol))link=url.href;}catch(_){}
+      const ico=name=>window.LB_acompIcon?window.LB_acompIcon(name):'';
+      return `<tr class="am-row" onclick="verAcomp(${arg(r.id)})">
+        <td class="am-org"><div class="am-org-line"><span title="${esc(r.orgao)}">${esc(r.orgao||'—')}</span>${r.estado?`<span class="am-uf">${esc(r.estado)}</span>`:''}</div><small class="am-mobile-meta">${esc(r.empresa||'')} ${r.data?'· '+esc(new Date(r.data+'T12:00').toLocaleDateString('pt-BR')):''}</small></td>
+        <td class="am-process"><div>${esc(r.tipo||'—')}</div><small>${r.processo?'Processo '+esc(r.processo):'Processo não informado'}</small></td>
+        <td>${lbBadgeAnalista(r.analista)}</td>
+        <td><span class="am-status am-status-${esc(r.status||'pendente')}">${ico(r.status==='recurso'?'resource':'clock')}${esc(status[r.status]||r.status||'—')}</span></td>
+        <td class="am-return" onclick="event.stopPropagation();editarRetornoAcompInline(${arg(r.id)},this)" title="Clique para editar a data e a hora de retorno">${valid?`<strong class="${vencido?'am-red':''}">${ret.toLocaleDateString('pt-BR')} ${ret.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</strong><div class="am-return-meta"><span class="am-due ${vencido?'am-due-late':''}">${label}</span>${elapsed?`<small>${elapsed}</small>`:''}</div>`:'<span>Sem retorno</span>'}</td>
+        <td class="am-system">${esc(r.sistema||'—')}</td>
+        <td class="am-actions" onclick="event.stopPropagation()"><div class="am-action-group">${link?`<a href="${esc(link)}" target="_blank" rel="noopener noreferrer" class="am-icon-btn" title="Abrir link externo" aria-label="Abrir link de ${esc(r.orgao)}">${ico('external')}</a>`:''}<button type="button" class="am-icon-btn" onclick="verAcomp(${arg(r.id)})" title="Ver detalhes" aria-label="Ver detalhes de ${esc(r.orgao)}">${ico('eye')}</button><details class="am-more"><summary class="am-icon-btn" aria-label="Mais ações" title="Mais ações">${ico('more')}</summary><div class="am-menu"><button type="button" onclick="editAcomp(${arg(r.id)})">Editar acompanhamento</button><button type="button" class="am-delete" onclick="delAcomp(${arg(r.id)})">Excluir acompanhamento</button></div></details></div></td>
+        <td class="am-extra">${r.data?esc(new Date(r.data+'T12:00').toLocaleDateString('pt-BR')):'—'}</td><td class="am-extra">${lbBadgeEmpresa(r.empresa)}</td>
+      </tr>`;
+    }).join('');
   LB_renderPag('acompanhamentos', totalRowsAcomp, function(){ renderAcomp(); });
 
   const pendentes = (DB.acomp||[]).filter(r=>r.status==='pendente').length;

@@ -33,7 +33,7 @@
   //   const { itens, total, pags, cur } = LB_paginar(lista, 'disputas');
   // -------------------------------------------------------------------------
   window.LB_paginar = function(lista, tab){
-    var size = window.LB_PAGE_SIZE;
+    var size = Number((window.LB_PAGE_SIZES||{})[tab]) || window.LB_PAGE_SIZE;
     var total = lista.length;
     var pags = Math.max(1, Math.ceil(total / size));
     var cur = Math.min(_pag(tab), pags);
@@ -58,7 +58,7 @@
     var tb = tbodyId ? document.getElementById(tbodyId) : null;
     if (!tb) return;
 
-    var size = window.LB_PAGE_SIZE;
+    var size = Number((window.LB_PAGE_SIZES||{})[tab]) || window.LB_PAGE_SIZE;
     var pags = Math.max(1, Math.ceil(total / size));
     var cur = Math.min(_pag(tab), pags);
     _setPag(tab, cur);

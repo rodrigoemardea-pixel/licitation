@@ -37,7 +37,8 @@
    }
   });var hint=document.getElementById('lb-overdue-hint');if(hint)hint.textContent=overdueOnly?count+' vencido(s) na página exibida':'';
  }
- function overdue(){var filters=document.querySelector('#tab-acompanhamentos .lb-toolbar-filters'),tb=document.getElementById('tbody-acomp');if(!filters||!tb)return;
+ function overdue(){return; // Substituido pelo filtro global do modulo 27.
+var filters=document.querySelector('#tab-acompanhamentos .lb-toolbar-filters'),tb=document.getElementById('tbody-acomp');if(!filters||!tb)return;
   var btn=node('button','lb-overdue-button','Retornos vencidos'),hint=node('span','lb-overdue-hint');btn.type='button';btn.id='lb-overdue-toggle';hint.id='lb-overdue-hint';btn.setAttribute('aria-pressed','false');
   btn.title='Filtra somente a página exibida';btn.addEventListener('click',function(){overdueOnly=!overdueOnly;btn.setAttribute('aria-pressed',String(overdueOnly));paintAcomp();});
   filters.append(btn,hint);var pending=false;new MutationObserver(function(){if(pending)return;pending=true;requestAnimationFrame(function(){pending=false;paintAcomp();});}).observe(tb,{childList:true});paintAcomp();
