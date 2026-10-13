@@ -243,7 +243,9 @@
     if (orig._lbMlWrapped) return true;
     window.abrirCompra = function () {
       var editando = false;
-      try { editando = !!compraEditId; } catch (e) {}
+      // Correcao: compraEditId ainda guarda a abertura anterior neste ponto; o segundo argumento
+      // de abrirCompra(empenhoId, compraId) indica com seguranca se e uma edicao.
+      editando = !!arguments[1];
       var r = orig.apply(this, arguments);
       setTimeout(function () {
         garantirUI();
