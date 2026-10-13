@@ -156,17 +156,7 @@
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr>
-          <th id="sort-acomp-data" onclick="sortAcomp('data')" title="Ordenar por data">Data</th>
-          <th id="sort-acomp-orgao" onclick="sortAcomp('orgao')" title="Ordenar por órgão">Órgão / UF</th>
-          <th id="sort-acomp-empresa" onclick="sortAcomp('empresa')" title="Ordenar por empresa">Empresa</th>
-          <th id="sort-acomp-tipo" onclick="sortAcomp('tipo')" title="Ordenar por tipo e processo">Tipo / Processo</th>
-          <th id="sort-acomp-analista" onclick="sortAcomp('analista')" title="Ordenar por analista">Analista</th>
-          <th id="sort-acomp-sistema" onclick="sortAcomp('sistema')" title="Ordenar por sistema">Sistema</th>
-          <th id="sort-acomp-status" onclick="sortAcomp('status')" title="Ordenar por status">Status</th>
-          <th id="sort-acomp-retorno" onclick="sortAcomp('retorno')" title="Ordenar por data e hora de retorno">⏰ Retorno</th>
-          <th style="width:50px;text-align:center;"></th>
-        </tr></thead>
+        <thead><tr><th class="" id="sort-acomp-orgao" onclick="sortAcomp('orgao')" title="Ordenar por Órgão / UF">Órgão / UF</th><th class="" id="sort-acomp-tipo" onclick="sortAcomp('tipo')" title="Ordenar por Tipo / Processo">Tipo / Processo</th><th class="" id="sort-acomp-analista" onclick="sortAcomp('analista')" title="Ordenar por Analista">Analista</th><th class="" id="sort-acomp-status" onclick="sortAcomp('status')" title="Ordenar por Status">Status</th><th class="" id="sort-acomp-retorno" onclick="sortAcomp('retorno')" title="Ordenar por Retorno">Retorno</th><th class="" id="sort-acomp-sistema" onclick="sortAcomp('sistema')" title="Ordenar por Sistema">Sistema</th><th class="" >Ações</th><th class="am-extra" id="sort-acomp-data" onclick="sortAcomp('data')" title="Ordenar por Data de cadastro">Data de cadastro</th><th class="am-extra" id="sort-acomp-empresa" onclick="sortAcomp('empresa')" title="Ordenar por Empresa">Empresa</th></tr></thead>
         <tbody id="tbody-acomp"></tbody>
       </table>
     </div>
@@ -1162,7 +1152,7 @@
 <div class="toast-container" id="toasts"></div>
 <script src="./js/02-core-auth-state.js"></script>
 <script src="./js/03-contratos-lotes-cache.js"></script>
-<script src="./js/18-paginacao.js"></script>
+<script src="./js/18-paginacao.js?v=20261013-acomp-v1"></script>
 <script src="./js/19-componentes.js"></script>
 <script src="./js/04-calculos-filtros-navegacao.js"></script>
 <script src="./js/05-popups-selecao-itens.js?v=20260925-etapa9"></script>
@@ -1172,7 +1162,7 @@
 <script src="./js/09-calculadora.js"></script>
 <script src="./js/10-finalizacao-busca-ui.js"></script>
 <script src="./js/11-finalizados-exportacoes.js"></script>
-<script src="./js/12-acompanhamentos-licitanet.js"></script>
+<script src="./js/12-acompanhamentos-licitanet.js?v=20261013-acomp-v1"></script>
 <script src="./js/13-painel-comentarios-inline.js?v=20261013-painel-corrigido-v2"></script>
 <script src="./js/14-boot.js"></script>
 <div class="detail-popup-overlay" id="popup-disputa">
@@ -1220,9 +1210,10 @@
 <script src="./js/24-integracao-ml.js?v=20260724-2"></script>
 <script src="./js/25-nota-fiscal.js?v=20260813-1"></script>
 <script src="./js/21-popups-redimensionaveis.js?v=20260925-1"></script>
-<script src="./js/26-ui-operacional.js?v=20260925-1"></script>
+<script src="./js/26-ui-operacional.js?v=20261013-acomp-v1"></script>
 <!-- Por ultimo: troca os emojis iniciais dos botoes por SVG e mantem um
      MutationObserver ativo para o conteudo renderizado depois. -->
 <script src="./js/20-acabamento-visual.js?v=20260925-2"></script>
+<script src="./js/27-acompanhamentos-moderno.js?v=20261013-acomp-v1"></script>
 </body>
 </html>
