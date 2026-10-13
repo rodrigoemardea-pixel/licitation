@@ -45,7 +45,7 @@ function validarIntegridade(sil){
       // O 05 ja chama renderPagination na visao agrupada.
       return;
     }
-    var size = (window.LB_PAGE_SIZE) || 10;
+    var size = (window.LB_PAGE_SIZES && window.LB_PAGE_SIZES.empenhos) || (window.LB_PAGE_SIZE) || 10;
     var rows = [].slice.call(tb.querySelectorAll(':scope > tr'));
     // Se so tem empty-state, nao pagina.
     if(!rows.length || (rows.length === 1 && rows[0].querySelector('.empty-state'))){
