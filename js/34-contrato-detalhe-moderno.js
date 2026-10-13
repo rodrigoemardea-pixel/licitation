@@ -10,6 +10,7 @@
 #popup-disputa.dd-modern .detail-popup-title{font-size:18px!important;font-weight:700;letter-spacing:-.25px;line-height:1.3;overflow-wrap:anywhere}
 #popup-disputa.dd-modern .detail-popup-sub{margin-top:4px;font-size:12.5px;line-height:1.5;color:#687586}
 #popup-disputa.dd-modern .dd-tabs{display:flex;gap:4px;margin:0 0 12px;border-bottom:1px solid var(--surface-border,#e3e8e5);overflow-x:auto;flex:0 0 auto}
+#popup-disputa.dd-modern .dd-tabs:empty{display:none}
 #popup-disputa.dd-modern .dd-tab{display:flex;align-items:center;gap:8px;padding:10px 12px;border:0;border-bottom:2px solid transparent;background:none;color:#5f6d68;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;min-height:44px}
 #popup-disputa.dd-modern .dd-tab:hover{color:var(--text-primary,#17231e)}
 #popup-disputa.dd-modern .dd-tab svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important;display:block;flex:0 0 16px}
@@ -135,7 +136,11 @@
   }
 
   function safe(label, fn) {
-    try { fn(); return true; } catch (err) { if (window.console) console.warn('[contrato-detalhe] ' + label + ':', err); return false; }
+    try { fn(); return true; } catch (err) {
+      window.__ddErro = label + ': ' + (err && err.message ? err.message : err);
+      if (window.console) console.warn('[contrato-detalhe] ' + label + ':', err);
+      return false;
+    }
   }
 
   let nav = null;
@@ -190,31 +195,37 @@
     return [...list.children].filter((c) => !/Nenhum coment/i.test(c.textContent)).length;
   }
 
-  function build(id) {
+  function build() {
     const body = $('popup-d-body');
     if (!body || body.querySelector('.dd-sections')) return true;
-    const r = (window.DB && DB.disputas ? DB.disputas : []).find((x) => x.id === id);
     const grids = [...body.querySelectorAll(':scope > .detail-grid-3')];
     const fin = [...body.querySelectorAll(':scope > .lb-fin-grid .lb-fin-card')];
     const mainVals = grids[0] ? [...grids[0].querySelectorAll('.detail-field-value')] : [];
-    if (!r || mainVals.length < 6 || fin.length < 4) throw new Error('estrutura inesperada');
+    if (mainVals.length < 6 || fin.length < 4) throw new Error('estrutura inesperada: ' + mainVals.length + ' campos e ' + fin.length + ' cartoes financeiros');
     const txt = (e) => (e ? e.textContent.trim() : '');
     const finVal = (i) => txt(fin[i].querySelector('.lb-fin-value'));
+    const dash = (v) => (v && v !== '—' ? v : '');
 
-    /* Cabecalho: o titulo e escrito pela funcao original; o subtitulo ganha rotulos. */
+    /* Cabecalho: o subtitulo original e "processo · sistema · data". So recebe rotulos quando tem exatamente tres partes. */
     const sub = $('popup-d-sub');
     if (sub) {
-      const parts = [];
-      if (r.processo) parts.push('Processo ' + r.processo);
-      if (r.sistema) parts.push(r.sistema);
-      if (r.data && typeof fmtD === 'function') parts.push('Data ' + fmtD(r.data));
-      sub.textContent = parts.join(' · ');
+      const parts = sub.textContent.split(' · ').map((x) => x.trim());
+      if (parts.length === 3) {
+        const out = [];
+        if (dash(parts[0])) out.push('Processo ' + parts[0]);
+        if (dash(parts[1])) out.push(parts[1]);
+        if (dash(parts[2])) out.push('Data ' + parts[2]);
+        sub.textContent = out.join(' · ');
+      }
     }
 
-    /* Identificacao. */
+    /* Identificacao: lida do HTML que a funcao original ja escreveu ("UF · TIPO · RP x" e separado aqui). */
+    const triple = txt(mainVals[2]).split(' · ').map((x) => x.trim());
+    const rpRaw = (triple.length > 2 ? triple[triple.length - 1] : '').replace(/^RP\s*/i, '');
     const ident = card('dd-sec-ident', 'Identificação', 'building');
     ident.appendChild(fieldsList([
-      ['Empresa', r.empresa], ['Analista', r.analista], ['UF', r.estado], ['Tipo', r.tipo], ['RP', r.rp ? titleCase(r.rp) : '']
+      ['Empresa', dash(txt(mainVals[0]))], ['Analista', dash(txt(mainVals[1]))], ['UF', dash(triple[0])],
+      ['Tipo', dash(triple.length > 2 ? triple.slice(1, -1).join(' · ').trim() : '')], ['RP', rpRaw && rpRaw !== '—' ? titleCase(rpRaw) : '']
     ]));
 
     /* Vigencia: datas e selo de prazo vem do HTML gerado pela funcao original. */
@@ -474,14 +485,17 @@
     }
 
     const original = window.abrirPopupDisputa;
-    window.abrirPopupDisputa = function (id) {
+    window.abrirPopupDisputa = function () {
+      overlay.classList.add('dd-modern');
+      window.__ddErro = '';
       const result = original.apply(this, arguments);
-      const ok = safe('estrutura', () => build(id));
-      if (!ok) {
-        /* Estrutura inesperada ou erro: devolve o popup original, sem nenhuma alteracao. */
+      if (!safe('estrutura', build)) {
+        /* Estrutura inesperada ou erro: devolve o popup original completo, sem nenhum estilo desta camada.
+           O motivo fica em window.__ddErro e no console. */
+        overlay.classList.remove('dd-modern');
         sections = [];
         renderTabs();
-        original.call(this, id);
+        original.apply(this, arguments);
       }
       return result;
     };
