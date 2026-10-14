@@ -216,20 +216,63 @@ function renderEAgrupado(rows, tb) {
 }
 
 // ========== COMENTÁRIOS INTERNOS ==========
+// Renderização única para inclusão, exclusão e abertura do popup.
+// Correção: a exclusão redesenhava a lista em formato simplificado, sem o
+// botão de excluir, impedindo a remoção dos demais comentários. Agora todas
+// as operações usam o mesmo template, filtrado pela chave completa (tipo:id).
+const LB_COMENT_TRASH_SVG = '<span class="lb-ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/></svg></span>';
+
+function _comentEsc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, ch =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function _comentDoItem(key) {
+  return (DB.comentarios||[]).filter(c=>c.key===key).sort((a,b)=>a.ts-b.ts);
+}
+
+function _comentItemHTML(c, itemId) {
+  const data = new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const btnDel = c.autor===usuarioLogado
+    ? `<button type="button" class="lb-coment-del" title="Excluir" aria-label="Excluir comentário" data-lb-iconified="1" onclick="event.stopPropagation();delComentario('${c.id}','${itemId}')">${LB_COMENT_TRASH_SVG}</button>`
+    : '';
+  return `
+      <div class="lb-coment-item" data-cid="${c.id}">
+        <div class="lb-coment-head">
+          <span class="badge ${c.autor==='Márdea'?'bp':'bb'}" style="font-size:10px;">${_comentEsc(c.autor)}</span>
+          <span class="lb-coment-data">${data}</span>
+          ${btnDel}
+        </div>
+        <div class="lb-coment-texto">${_comentEsc(c.texto)}</div>
+      </div>`;
+}
+
+function _comentListaHTML(key, itemId) {
+  const todos = _comentDoItem(key);
+  return todos.length
+    ? todos.map(c=>_comentItemHTML(c, itemId)).join('')
+    : '<div class="lb-coment-vazio">Nenhum comentário ainda.</div>';
+}
+
+// Atualiza lista e contador de todas as instâncias abertas do mesmo item.
+function _comentAtualizar(key, itemId) {
+  const total = _comentDoItem(key).length;
+  document.querySelectorAll('[data-coment-key]').forEach(el => {
+    if (el.getAttribute('data-coment-key') !== key) return;
+    el.innerHTML = _comentListaHTML(key, itemId);
+    el.scrollTop = el.scrollHeight;
+  });
+  document.querySelectorAll('[data-coment-count]').forEach(el => {
+    if (el.getAttribute('data-coment-count') === key) el.textContent = '(' + total + ')';
+  });
+}
+
 function renderComentarios(tipo, itemId) {
   const key = tipo + ':' + itemId;
-  const todos = (DB.comentarios||[]).filter(c=>c.key===key).sort((a,b)=>a.ts-b.ts);
-  return `<div class="detail-section" style="margin-top:16px;">💬 COMENTÁRIOS <span style="font-size:11px;color:var(--text-tertiary);">(${todos.length})</span></div>
-  <div id="coment-list-${itemId}" style="max-height:200px;overflow-y:auto;margin-bottom:8px;">
-    ${todos.length ? todos.map(c=>`
-      <div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;position:relative;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span class="badge ${c.autor==='Márdea'?'bp':'bb'}" style="font-size:10px;">${c.autor}</span>
-          <span style="font-size:10px;color:var(--text-tertiary);">${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-          ${c.autor===usuarioLogado?`<button onclick="delComentario('${c.id}','${itemId}')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger);font-size:12px;">✕</button>`:''}
-        </div>
-        <div style="font-size:12px;line-height:1.5;">${c.texto}</div>
-      </div>`).join('') : '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum comentário ainda.</div>'}
+  const total = _comentDoItem(key).length;
+  return `<div class="detail-section" style="margin-top:16px;">\uD83D\uDCAC COMENTÁRIOS <span data-coment-count="${key}" style="font-size:11px;color:var(--text-tertiary);">(${total})</span></div>
+  <div id="coment-list-${itemId}" data-coment-key="${key}" class="lb-coment-lista">
+    ${_comentListaHTML(key, itemId)}
   </div>
   <div style="display:flex;gap:8px;">
     <input type="text" id="coment-input-${itemId}" placeholder="Escrever comentário..." style="flex:1;" class="fc" maxlength="300" onkeydown="if(event.key==='Enter')salvarComentario('${tipo}','${itemId}')">
@@ -241,40 +284,20 @@ function salvarComentario(tipo, itemId) {
   const input = g('coment-input-'+itemId);
   if(!input||!input.value.trim()) return;
   if(!DB.comentarios) DB.comentarios=[];
-  const novo = { id:uid(), key:tipo+':'+itemId, autor:usuarioLogado||'Usuário', texto:input.value.trim(), ts:Date.now() };
-  DB.comentarios.push(novo);
+  const key = tipo + ':' + itemId;
+  DB.comentarios.push({ id:uid(), key, autor:usuarioLogado||'Usuário', texto:input.value.trim(), ts:Date.now() });
   save('comentarios', DB.comentarios);
   input.value='';
-  // Atualiza só a lista de comentários sem fechar o popup
-  const listEl = g('coment-list-'+itemId);
-  if(listEl) {
-    const todos = DB.comentarios.filter(c=>c.key===tipo+':'+itemId).sort((a,b)=>a.ts-b.ts);
-    listEl.innerHTML = todos.map(c=>`
-      <div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span class="badge ${c.autor==='Márdea'?'bp':'bb'}" style="font-size:10px;">${c.autor}</span>
-          <span style="font-size:10px;color:var(--text-tertiary);">${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-          ${c.autor===usuarioLogado?`<button onclick="delComentario('${c.id}','${itemId}')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger);font-size:12px;">✕</button>`:''}
-        </div>
-        <div style="font-size:12px;line-height:1.5;">${c.texto}</div>
-      </div>`).join('');
-    listEl.scrollTop = listEl.scrollHeight;
-  }
+  _comentAtualizar(key, itemId);
+  input.focus();
 }
 
 function delComentario(comentId, itemId) {
-  DB.comentarios = (DB.comentarios||[]).filter(c=>c.id!==comentId);
+  const alvo = (DB.comentarios||[]).find(c=>c.id===comentId);
+  if (!alvo) return;
+  DB.comentarios = DB.comentarios.filter(c=>c.id!==comentId);
   save('comentarios', DB.comentarios);
-  // Re-render full popup to refresh
-  const popup = g('popup-e-body') || g('popup-d-body');
-  // Just remove the element
-  const allItems = document.querySelectorAll('[id^="coment-list-"]');
-  allItems.forEach(el => {
-    const iid = el.id.replace('coment-list-','');
-    const todos = (DB.comentarios||[]).filter(c=>c.key.endsWith(':'+iid)).sort((a,b)=>a.ts-b.ts);
-    if(todos.length===0) el.innerHTML='<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Nenhum comentário ainda.</div>';
-    else el.innerHTML = todos.map(c=>`<div style="padding:8px;background:var(--bg-surface-soft);border-radius:8px;margin-bottom:6px;"><div style="font-size:12px;">${c.autor} · ${new Date(c.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div style="font-size:12px;line-height:1.5;">${c.texto}</div></div>`).join('');
-  });
+  _comentAtualizar(alvo.key, itemId);
 }
 
 // Helper: parseia campo retorno (datetime-local ou date) de forma segura
