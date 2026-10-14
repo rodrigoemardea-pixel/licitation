@@ -26,25 +26,25 @@
     const st = document.createElement('style');
     st.id = 'lb-highlight-compras-style';
     st.textContent = `
-      .${CLS_RECEBIDA}{
+      #popup-e-body .${CLS_RECEBIDA}{
+        background-color: rgba(34,197,94,0.08) !important;
+        transition: background-color .2s;
+      }
+      #popup-e-body .${CLS_RECEBIDA}:hover{
         background-color: rgba(34,197,94,0.12) !important;
+      }
+      #popup-e-body .${CLS_PENDENTE}{
+        background-color: rgba(239,68,68,0.06) !important;
         transition: background-color .2s;
       }
-      .${CLS_RECEBIDA}:hover{
-        background-color: rgba(34,197,94,0.20) !important;
-      }
-      .${CLS_PENDENTE}{
+      #popup-e-body .${CLS_PENDENTE}:hover{
         background-color: rgba(239,68,68,0.10) !important;
-        transition: background-color .2s;
-      }
-      .${CLS_PENDENTE}:hover{
-        background-color: rgba(239,68,68,0.18) !important;
       }
       /* Garante que células de tabela herdem a cor */
-      tr.${CLS_RECEBIDA} > td,
-      tr.${CLS_RECEBIDA} > th { background-color: transparent !important; }
-      tr.${CLS_PENDENTE} > td,
-      tr.${CLS_PENDENTE} > th { background-color: transparent !important; }
+      #popup-e-body tr.${CLS_RECEBIDA} > td,
+      #popup-e-body tr.${CLS_RECEBIDA} > th { background-color: transparent !important; }
+      #popup-e-body tr.${CLS_PENDENTE} > td,
+      #popup-e-body tr.${CLS_PENDENTE} > th { background-color: transparent !important; }
     `;
     document.head.appendChild(st);
   }
