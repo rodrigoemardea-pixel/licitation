@@ -34,17 +34,19 @@
         background-color: rgba(34,197,94,0.12) !important;
       }
       #popup-e-body .${CLS_PENDENTE}{
-        background-color: rgba(239,68,68,0.06) !important;
+        background-color: #fff0f0 !important;
         transition: background-color .2s;
       }
       #popup-e-body .${CLS_PENDENTE}:hover{
-        background-color: rgba(239,68,68,0.10) !important;
+        background-color: #ffe4e4 !important;
       }
       /* Garante que células de tabela herdem a cor */
       #popup-e-body tr.${CLS_RECEBIDA} > td,
       #popup-e-body tr.${CLS_RECEBIDA} > th { background-color: transparent !important; }
       #popup-e-body tr.${CLS_PENDENTE} > td,
       #popup-e-body tr.${CLS_PENDENTE} > th { background-color: transparent !important; }
+      #popup-e-body tr.${CLS_PENDENTE} > td { background-color: #fff0f0 !important; }
+      #popup-e-body tr.${CLS_PENDENTE}:hover > td { background-color: #ffe4e4 !important; }
     `;
     document.head.appendChild(st);
   }
@@ -97,7 +99,8 @@
       const cls = status === 'recebida' ? CLS_RECEBIDA : CLS_PENDENTE;
 
       // 1ª tentativa: elementos com data-compra-id
-      let alvos = body.querySelectorAll('[data-compra-id="' + c.id + '"]');
+      let alvos = Array.from(body.querySelectorAll('[data-compra-id], [data-cid]')).filter(el =>
+        el.getAttribute('data-compra-id') === String(c.id) || el.getAttribute('data-cid') === String(c.id));
 
       // 2ª tentativa: procurar por handlers onclick que referenciem o id da compra
       // (padrão: onclick="editCompra('empId','compId')" ou similar)
