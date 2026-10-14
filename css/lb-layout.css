@@ -799,3 +799,15 @@ body.lb-modern-ui .summary-row > .lb-card:not(.lb-card--destaque)::before{
 @media(max-width:1400px){#tab-painel .pm-kpi{flex-direction:column;gap:10px}#tab-painel .pm-kpi-icon{width:34px;height:34px}#tab-painel .pm-value{font-size:22px}}
 @media(max-width:1100px){#tab-painel .pm-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}#tab-painel .pm-grid{grid-template-columns:1fr}#tab-painel .pm-kpi{flex-direction:column}#tab-painel .pm-page-meta{width:100%;justify-content:space-between}}
 @media(max-width:600px){#tab-painel .pm-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#tab-painel .pm-kpi{padding:14px 12px;flex-direction:column}#tab-painel .pm-kpi:last-child{grid-column:1/-1}#tab-painel .pm-card{padding:14px 12px}#tab-painel .pm-card-head h2{font-size:14px}#tab-painel .pm-return-row{gap:8px}#tab-painel .pm-row-main strong{font-size:12px}#tab-painel .pm-current-date{font-size:11px}#tab-painel .pm-page-meta{gap:12px}#tab-painel .pm-agenda{width:100%}#tab-painel .pm-value{font-size:21px}#tab-painel .pm-pill{font-size:9px;padding:5px 7px}#tab-painel .pm-amount{font-size:11px}}
+
+/* ===== Comentarios internos: lista e exclusao padronizada com as tarefas ===== */
+.lb-coment-lista{max-height:200px;overflow-y:auto;margin-bottom:8px;}
+.lb-coment-item{padding:8px 10px;background:var(--bg-surface-soft);border:1px solid var(--border-light);border-radius:8px;margin-bottom:6px;}
+.lb-coment-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.lb-coment-data{font-size:10px;color:var(--text-tertiary);}
+.lb-coment-texto{font-size:12px;line-height:1.5;word-break:break-word;}
+.lb-coment-vazio{color:var(--text-tertiary);font-size:12px;padding:8px;}
+.lb-coment-del{margin-left:auto;border:none;background:none;color:var(--text-tertiary);cursor:pointer;font-size:14px;line-height:1;padding:3px 5px;border-radius:6px;opacity:.6;display:inline-flex;align-items:center;justify-content:center;}
+.lb-coment-del:hover{opacity:1;color:var(--danger,#ef4444);background:rgba(239,68,68,0.1);}
+.lb-coment-del:focus-visible{opacity:1;outline:2px solid var(--accent,#2d6a4f);outline-offset:1px;}
+.lb-coment-del .lb-ui-icon{margin-right:0;}
