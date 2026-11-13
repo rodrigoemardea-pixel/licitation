@@ -148,8 +148,10 @@
     if(recebimentoWrap){
       recebimentoWrap.style.setProperty('display', status === 'recebida' ? 'block' : 'none', 'important');
     }
-    if(status !== 'em_transito' && status !== 'aguardando_envio' && previstaInput) previstaInput.value = '';
-    if(status !== 'recebida' && recebimentoInput) recebimentoInput.value = '';
+    // Não apaga datas automaticamente. Os campos ficam ocultos quando não se aplicam,
+    // mas seus valores só são removidos por decisão expressa do usuário.
+    if (previstaInput && previstaWrap && previstaWrap.style.display === 'none') previstaInput.dataset.lbPreservado = previstaInput.value ? '1' : '';
+    if (recebimentoInput && recebimentoWrap && recebimentoWrap.style.display === 'none') recebimentoInput.dataset.lbPreservado = recebimentoInput.value ? '1' : '';
   }
 
   document.addEventListener('change', function(event){

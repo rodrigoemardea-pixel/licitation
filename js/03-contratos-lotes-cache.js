@@ -7,8 +7,20 @@ function adicionarLote() {
 }
 
 function removerLote(idx) {
-  lotesTemp.splice(idx, 1);
-  renderLotes();
+  const lote = lotesTemp[idx];
+  if (!lote) return;
+  const contrato = EID && EID.disputas ? DB.disputas.find(x => x.id === EID.disputas) : null;
+  const jaSalvo = !!(contrato && (contrato.lotes || []).some(x => x.id === lote.id));
+  const executar = () => { lotesTemp.splice(idx, 1); renderLotes(); };
+  if (!jaSalvo) { executar(); return; }
+  _confirmarAcao({
+    icon: '!',
+    titulo: 'Remover item do contrato?',
+    msg: 'O item "' + (lote.descricao || 'sem descrição') + '" será retirado do contrato ao salvar. Compras vinculadas devem ser conferidas antes da confirmação.',
+    btnLabel: 'Remover item',
+    btnClass: 'btn-danger',
+    onConfirm: executar
+  });
 }
 
 function renderLotes() {
